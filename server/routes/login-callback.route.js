@@ -1,5 +1,5 @@
-const express = require('express');
-const { getToken } = require('../controllers/token-exchange.controller.js');
+import express from 'express'
+import { getToken } from '../controllers/token-exchange.controller.js'
 
 const router = express.Router();
 

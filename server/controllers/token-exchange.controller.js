@@ -1,8 +1,8 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const FormData = require('form-data');
-const axios = require('axios').default;
-const jwt = require("jsonwebtoken");
+import express from 'express';
+import mongoose from 'mongoose';
+import FormData from 'form-data';
+import axios from 'axios';
+import jwt from "jsonwebtoken";
 
 // const User = require('../models/user.model.js');
 

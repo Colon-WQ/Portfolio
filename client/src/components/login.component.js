@@ -51,13 +51,7 @@ class Login extends Component {
         const { loggedIn, user, error } = this.props
         return (
             <div className = 'form-container'>
-                <form id = 'login'>
-                    <label for = 'username'>Username:</label>
-                    <input id = 'username' name = 'username' type = 'text' onChange = {this.handleUsernameChanged}></input>
-                    <label for = 'password'>Password:</label>
-                    <input id = 'password' name = 'password' type = 'password' onChange = {this.handlePasswordChanged}></input>
-                    <button type = 'submit' onSubmit = {this.handleLogin}>Login</button>
-                </form>
+                <a href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}>Login with github</a>
             </div>
         )
     }
