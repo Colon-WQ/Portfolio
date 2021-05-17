@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
+import cookieParser from "cookie-parser";
+
 // route imports
 import loginRoutes from './routes/login-callback.route.js';
 import portfolioRoutes from './routes/portfolio.route.js';
@@ -9,6 +11,9 @@ import portfolioRoutes from './routes/portfolio.route.js';
 import auth from './middleware/auth.middleware.js';
 
 const app = express();
+
+app.use(express.json());
+app.use(cookieParser(process.env.SIGN_COOKIE_SECRET));
 
 // CORS setup
 const corsOptions = {
