@@ -1,8 +1,8 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const FormData = require('form-data');
-const axios = require('axios').default;
-const jwt = require("jsonwebtoken");
+import express from 'express';
+import mongoose from 'mongoose';
+import FormData from 'form-data';
+import axios from 'axios';
+import jwt from "jsonwebtoken";
 
 // const User = require('../models/user.model.js');
 
@@ -39,6 +39,7 @@ export const getToken = async (req, res) => {
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
                     process.env.ENCRYPT_SECRET,
                     // TODO: discuss expiry duration
+                    // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
                 res.cookie("authorization", jwtoken, cookieParams);
                 // TODO: check if name == null, replace login otherwise.
