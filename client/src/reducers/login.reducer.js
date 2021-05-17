@@ -10,6 +10,7 @@ const initialState = {
     user: GUEST,
     error: null
 }
+//TODO handle actions for GUEST
 
 export default function login(state = initialState, action) {
     switch(action.type) {
