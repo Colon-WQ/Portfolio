@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { log_in_user, log_out_user } from '../actions/login.action'
 import '../styles/login.css'
-import axios from 'axios'
 
 class Login extends Component {
 

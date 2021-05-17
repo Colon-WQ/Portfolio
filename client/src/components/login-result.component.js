@@ -41,7 +41,7 @@ export default class LoginResult extends Component {
 
     render() {
         return (
-            <div>
+            <div style = {{display: 'flex', flexDirection: 'row', paddingTop: '7%', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%'}}>
                 <h1>{this.state.ghCode}</h1>
             </div>
         )
