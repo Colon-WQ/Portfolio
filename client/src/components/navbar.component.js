@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { log_out_user } from '../actions/login.action'
 import '../styles/navbar.css'
 import axios from 'axios'
+import { Typography, Button } from '@material-ui/core'
 
 
 class Navbar extends Component {
@@ -35,10 +36,10 @@ class Navbar extends Component {
         return (
             <div className = 'navbar-container'>
                 <div className = 'navbar-title-container'>
-                    <div className = 'navbar-title'>Portfol.io</div>
+                    <Typography align = 'center' variant = 'h1' color = 'textPrimary'>Portfol.io</Typography>
                 </div>
                 <div className = 'navbar-text-container'>
-                    <div className = 'navbar-text'>Welcome {name}!</div>
+                    <Typography align = 'center' variant = 'h3' color = 'textPrimary'>Welcome {name}!</Typography>
                 </div>
                 <div className = 'navbar-button-container'>
                     {loggedIn 
