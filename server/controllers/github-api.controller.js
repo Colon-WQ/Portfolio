@@ -3,15 +3,16 @@ import mongoose from 'mongoose';
 import FormData from 'form-data';
 import axios from 'axios';
 import jwt from "jsonwebtoken";
+import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, ENCRYPT_SECRET } from '../utils/config.js';
 
 import fetch from 'node-fetch'
 
 // const User = require('../models/user.model.js');
 
 const router = express.Router();
-const client_id = process.env.CLIENT_ID;
-const client_secret = process.env.CLIENT_SECRET;
-const redirect_uri = process.env.REDIRECT_URI;
+const client_id = CLIENT_ID;
+const client_secret = CLIENT_SECRET;
+const redirect_uri = REDIRECT_URI;
 const cookieParams = {
     httpOnly: true,
     secure: true,
@@ -20,8 +21,7 @@ const cookieParams = {
     maxAge: 6 * 60 * 60 * 1000
 }
 
-export const getToken = async (req, res) => { 
-    console.log("getToken running");
+export const getToken = async (req, res) => {
     try {
         const code = req.body.code;
         const data = new FormData();
@@ -29,8 +29,6 @@ export const getToken = async (req, res) => {
         data.append("client_secret", client_secret);
         data.append("code", code);
         data.append("redirect_uri", redirect_uri);
-        console.log("getToken run");
-
         axios({ 
                 method: 'POST',
                 url: 'https://github.com/login/oauth/access_token',
@@ -55,7 +53,7 @@ export const getToken = async (req, res) => {
                 const ghToken = "bong"
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
-                    process.env.JWT_SECRET,
+                    ENCRYPT_SECRET,
                     // TODO: discuss expiry duration
                     // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
@@ -73,5 +71,26 @@ export const getToken = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
+export const checkRepo = async (req, res) => {
+    // TODO: get fields from cookie
+    const cookie = req.signedCookies.authorization;
+    const gh_token = cookie.gh_token;
+    const username = cookie.login;
+    // Might need authorization for private repos.
+    fetch(`https://api.github.com/repos/${username}/${username}.github.io`, {
+        method: "GET"
+    }).then((response) => {
+        if (response.status == 200) {
+            console.log("repo present");
+            return res.status(200).json({created: true});
+        } else if (response.status == 404) {
+            return res.status(404).json({created: false});
+        } else {
+            return res.status(404).json({error: "error in checkRepo in api controller"})
+        }
+    })
+};
+
 
 export default router;
