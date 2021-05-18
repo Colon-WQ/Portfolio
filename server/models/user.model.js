@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 
-const userSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
+    _id: Number,
     name: String,
     login: String,
-    id: String,
     avatar: String,
-    gravatar_id: String
-    // TODO: might add portfolio as part of user
+    gravatar_id: String,
+    portfolios: [{type: mongoose.Schema.Types.ObjectId, ref: 'portfolio'}]
 })
 
-let User = mongoose.model('User', userSchema);
+let User = mongoose.model('user', UserSchema);
 
 export default User;
