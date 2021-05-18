@@ -1,8 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv'
 import cookieParser from "cookie-parser";
+import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
 
 // route imports
 import loginRoutes from './routes/login-callback.route.js';
@@ -11,17 +11,14 @@ import logoutRoutes from './routes/logout.route.js'
 
 import auth from './middleware/auth.middleware.js';
 
-dotenv.config()
-
 const app = express();
-dotenv.config()
 
 app.use(express.json());
-app.use(cookieParser(process.env.SIGN_COOKIE_SECRET));
+app.use(cookieParser(SIGN_COOKIE_SECRET));
 
 // CORS setup
 const corsOptions = {
-    origin: [process.env.FRONT_END, process.env.BACK_END],
+    origin: [FRONT_END, BACK_END],
     methods: ['GET', 'PUT', 'POST'],
     optionsSuccessStatus: 204,
     credentials: true
@@ -33,12 +30,12 @@ app.use('/login', loginRoutes);
 app.use('/portfolio', portfolioRoutes);
 app.use('/logout', logoutRoutes)
 
-const CONNECTION_URL = process.env.MONGO_URL;
-const PORT = process.env.PORT || 5000;
+const CONNECTION_URL = MONGO_URL;
+const PORT_CONFIG = PORT || 5000;
 
-console.log(process.env.MONGO_URL)
+console.log(MONGO_URL)
 
-app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`));
+app.listen(PORT_CONFIG, () => console.log(`Server Running on Port: http://localhost:${PORT_CONFIG}`));
 
 // connects mongoose + express
 // mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })

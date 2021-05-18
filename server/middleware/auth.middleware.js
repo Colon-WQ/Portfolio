@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
-
+import { ENCRYPT_SECRET } from '../utils/config.js';
 // require('dotenv').config();
 
 const auth = async (req, res, next) => {
     try {
         console.log("middleware authenticating...");
         const token = req.signedCookies.authorization;
-        let decodedData = jwt.verify(token, process.env.JWT_SECRET);
+        let decodedData = jwt.verify(token, ENCRYPT_SECRET);
         // console.log(decodedData);
         // req.gh_token = decodedData?.gh_token;
         // req.username = decodedData?.login;
