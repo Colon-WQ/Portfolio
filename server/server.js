@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 // Append routes here
 app.use('/login', loginRoutes);
 app.use('/portfolio', portfolioRoutes);
-app.use('/', logoutRoutes)
+app.use('/logout', logoutRoutes)
 
 const CONNECTION_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;

@@ -24,20 +24,20 @@ export default function login(state = initialState, action) {
         case LOG_IN_USER:
             return {
                 ...state,
+                loggedIn: true,
                 name: action.payload.name,
                 id: action.payload.id,
                 avatar_url: action.payload.avatar_url,
                 gravatar_url: action.payload.gravatar_url,
-                loggedIn: true
             }
         case LOG_OUT_USER:
             return {
                 ...state,
-                user: GUEST,
+                loggedIn: false,
+                name: GUEST,
                 id: MISSING,
                 avatar_url: MISSING,
                 gravatar_url: MISSING,
-                loggedIn: false
             }
         default:
             return state

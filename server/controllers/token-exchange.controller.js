@@ -3,10 +3,11 @@ import mongoose from 'mongoose';
 import FormData from 'form-data';
 import axios from 'axios';
 import jwt from "jsonwebtoken";
-import dotenv from 'dotenv'
+
+import fetch from 'node-fetch'
 
 // const User = require('../models/user.model.js');
-dotenv.config()
+
 const router = express.Router();
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -22,7 +23,6 @@ const cookieParams = {
 export const getToken = async (req, res) => { 
     console.log("getToken running");
     try {
-        console.log(req.body)
         const code = req.body.code;
         const data = new FormData();
         data.append("client_id", client_id);
@@ -35,19 +35,27 @@ export const getToken = async (req, res) => {
                 method: 'POST',
                 url: 'https://github.com/login/oauth/access_token',
                 data: data,
-                headers: { "Content-Type": "multipart/form-data" }
+                responseType: 'text',
+                headers: data.getHeaders()
             })
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
+                //console.log(params)
                 console.log("access token achieved")
                 return params.get("access_token");;
             }).then((githubToken) => {
-                const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
-                    headers: {'Authorization': `token ${ghToken}`}
-                });
+                // const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
+                //     headers: {'Authorization': `token ${ghToken}`}
+                // });
+                const name = "bong"
+                const login = "bong"
+                const id = "bong"
+                const avatar_url = "bong"
+                const gravatar_id = "bong"
+                const ghToken = "bong"
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
-                    process.env.ENCRYPT_SECRET,
+                    process.env.JWT_SECRET,
                     // TODO: discuss expiry duration
                     // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
@@ -57,12 +65,11 @@ export const getToken = async (req, res) => {
                 return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });
             })
             .catch((error) => {
-                console.log(error.message);
+                console.log(error);
                 return res.status(400).json(error);
             });
     } catch (error) {
-        console.log(req.body);
-        console.log(error.message)
+        console.log(error)
         res.status(404).json({ message: error.message });
     }
 }

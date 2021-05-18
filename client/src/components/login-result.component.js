@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { log_in_user } from '../actions/login.action'
 import '../styles/login.css'
 import { BeatLoader } from 'react-spinners'
 
-export default class LoginResult extends Component {
+class LoginResult extends Component {
     constructor() {
         super()
         this.state = {
@@ -27,14 +28,6 @@ export default class LoginResult extends Component {
             //TODO: remove this vvv
             // console.log("printing code:");
             // console.log(ghCode);
-            // axios.post(process.env.REACT_APP_BACKEND + "login/authenticate", {
-            //     code: ghCode
-            // }).then(res => {
-            //     console.log("POST response: ")
-            //     console.log(res)
-            //     this.props.dispatch(log_in_user(res))
-            // })
-
             axios({
                 method: "POST",
                 url: process.env.REACT_APP_BACKEND + "login/authenticate",
@@ -46,7 +39,11 @@ export default class LoginResult extends Component {
             }).then(res => {
                 console.log("POST response: ");
                 console.log(res);
-                this.props.dispatch(log_in_user(res))
+                this.props.log_in_user(res.data)
+            }).then(this.setState({
+                isToken: true
+            })).catch(err => {
+                console.log(err.message)
             })
         } else {
             console.log("gh code missing");
@@ -68,3 +65,13 @@ export default class LoginResult extends Component {
         
     }
 }
+
+const mapStateToProps = state => ({
+
+})
+
+const mapDispatchToProps = {
+    log_in_user
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginResult)
