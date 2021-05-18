@@ -13,16 +13,19 @@ class Navbar extends Component {
     }
     
     handleLogout() {
+        console.log("logging out")
         this.props.dispatch(log_out_user())
-        axios('http://localhost:5000/logout', {
+        axios({
             method: 'GET',
-            mode: 'cors',
-            credentials: 'include',
+            url: 'http://localhost:5000/logout',
+            withCredentials: true
         }).then(res => {
             console.log("successfully deleted cookie")
             console.log(res)
-        })
-        window.location.pathname = '/login'
+        }).then(
+            //window.location.pathname = '/login'
+        )
+        
     }
     
 
