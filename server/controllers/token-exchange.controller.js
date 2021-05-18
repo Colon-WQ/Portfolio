@@ -3,9 +3,10 @@ import mongoose from 'mongoose';
 import FormData from 'form-data';
 import axios from 'axios';
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv'
 
 // const User = require('../models/user.model.js');
-
+dotenv.config()
 const router = express.Router();
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -21,7 +22,8 @@ const cookieParams = {
 export const getToken = async (req, res) => { 
     console.log("getToken running");
     try {
-        const { code } = req.body;
+        console.log(req.body)
+        const code = req.body.code;
         const data = new FormData();
         data.append("client_id", client_id);
         data.append("client_secret", client_secret);
@@ -29,9 +31,15 @@ export const getToken = async (req, res) => {
         data.append("redirect_uri", redirect_uri);
         console.log("getToken run");
 
-        axios.post('https://github.com/login/oauth/access_token', { body: data })
+        axios({ 
+                method: 'POST',
+                url: 'https://github.com/login/oauth/access_token',
+                data: data,
+                headers: { "Content-Type": "multipart/form-data" }
+            })
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
+                console.log("access token achieved")
                 return params.get("access_token");;
             }).then((githubToken) => {
                 const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
@@ -49,11 +57,12 @@ export const getToken = async (req, res) => {
                 return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });
             })
             .catch((error) => {
-                console.log(error);
+                console.log(error.message);
                 return res.status(400).json(error);
             });
     } catch (error) {
         console.log(req.body);
+        console.log(error.message)
         res.status(404).json({ message: error.message });
     }
 }

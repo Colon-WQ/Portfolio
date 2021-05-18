@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 // route imports
 import loginRoutes from './routes/login-callback.route.js';
 import portfolioRoutes from './routes/portfolio.route.js';
+import logoutRoutes from './routes/logout.route.js'
 
 import auth from './middleware/auth.middleware.js';
 
@@ -22,13 +23,15 @@ app.use(cookieParser(process.env.SIGN_COOKIE_SECRET));
 const corsOptions = {
     origin: [process.env.FRONT_END, process.env.BACK_END],
     methods: ['GET', 'PUT', 'POST'],
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 204,
+    credentials: true
 }
 app.use(cors(corsOptions));
 
 // Append routes here
 app.use('/login', loginRoutes);
 app.use('/portfolio', portfolioRoutes);
+app.use('/', logoutRoutes)
 
 const CONNECTION_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;

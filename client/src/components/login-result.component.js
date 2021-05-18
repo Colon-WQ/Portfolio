@@ -25,16 +25,24 @@ export default class LoginResult extends Component {
 
         if (ghCode !== "") {
             //TODO: remove this vvv
-            console.log("printing code:");
-            console.log(ghCode);
-            axios( process.env.REACT_APP_BACKEND + "login/authenticate", {
+            // console.log("printing code:");
+            // console.log(ghCode);
+            // axios.post(process.env.REACT_APP_BACKEND + "login/authenticate", {
+            //     code: ghCode
+            // }).then(res => {
+            //     console.log("POST response: ")
+            //     console.log(res)
+            //     this.props.dispatch(log_in_user(res))
+            // })
+
+            axios({
                 method: "POST",
-                mode: 'cors',
-                // headers: {
-                //     'Content-Type': 'application/json',
-                // },
-                credentials: 'include',
-                body: JSON.stringify(bodyJSON)
+                url: process.env.REACT_APP_BACKEND + "login/authenticate",
+                withCredentials: true,
+                responseType: 'json',
+                data: {
+                    code: ghCode
+                }
             }).then(res => {
                 console.log("POST response: ");
                 console.log(res);
