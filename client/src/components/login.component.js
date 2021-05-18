@@ -8,7 +8,7 @@ class Login extends Component {
         const { loggedIn } = this.props
         return (
             <div className = 'login-container'>
-                <a href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID} class = 'button'>Login with github</a>
+                <a href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID} className = 'button'>Login with github</a>
             </div>
         )
     }

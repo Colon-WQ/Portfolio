@@ -26,12 +26,13 @@ export const getToken = async (req, res) => {
         data.append("client_secret", client_secret);
         data.append("code", code);
         data.append("redirect_uri", redirect_uri);
-
+        console.log(code)
         axios.post('https://github.com/login/oauth/access_token', { body: data })
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
                 return params.get("access_token");;
-            }).then((githubToken) => {
+            }).then((ghToken) => {
+                console.log("successfully gotten token")
                 const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
                     headers: {'Authorization': `token ${ghToken}`}
                 });
