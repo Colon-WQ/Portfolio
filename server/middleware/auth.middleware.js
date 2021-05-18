@@ -8,8 +8,9 @@ const auth = async (req, res, next) => {
         const token = req.signedCookies.authorization;
         let decodedData = jwt.verify(token, ENCRYPT_SECRET);
         // console.log(decodedData);
-        // req.gh_token = decodedData?.gh_token;
-        // req.username = decodedData?.login;
+        // populates req for subsequent functions to use
+        req.gh_token = decodedData?.gh_token;
+        req.username = decodedData?.login;
         next();
     } catch (error) {
         console.log(error);
