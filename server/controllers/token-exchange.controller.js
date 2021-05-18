@@ -19,6 +19,7 @@ const cookieParams = {
 }
 
 export const getToken = async (req, res) => { 
+    console.log("getToken running");
     try {
         const { code } = req.body;
         const data = new FormData();
@@ -26,6 +27,7 @@ export const getToken = async (req, res) => {
         data.append("client_secret", client_secret);
         data.append("code", code);
         data.append("redirect_uri", redirect_uri);
+        console.log("getToken run");
 
         axios.post('https://github.com/login/oauth/access_token', { body: data })
             .then((paramsString) => {
@@ -51,6 +53,7 @@ export const getToken = async (req, res) => {
                 return res.status(400).json(error);
             });
     } catch (error) {
+        console.log(req.body);
         res.status(404).json({ message: error.message });
     }
 }

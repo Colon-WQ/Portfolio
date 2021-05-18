@@ -24,14 +24,15 @@ export default class LoginResult extends Component {
         const bodyJSON = { code: ghCode };
 
         if (ghCode !== "") {
+            //TODO: remove this vvv
             console.log("printing code:");
             console.log(ghCode);
-            axios("http://localhost:5000/authenticate", {
+            axios( process.env.REACT_APP_BACKEND + "login/authenticate", {
                 method: "POST",
                 mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                // headers: {
+                //     'Content-Type': 'application/json',
+                // },
                 credentials: 'include',
                 body: JSON.stringify(bodyJSON)
             }).then(res => {
