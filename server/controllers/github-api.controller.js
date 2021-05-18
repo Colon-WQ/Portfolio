@@ -5,7 +5,7 @@ import axios from 'axios';
 import jwt from "jsonwebtoken";
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, ENCRYPT_SECRET } from '../utils/config.js';
 
-import fetch from 'node-fetch'
+// import fetch from 'node-fetch'
 
 // const User = require('../models/user.model.js');
 
@@ -72,14 +72,14 @@ export const getToken = async (req, res) => {
     }
 }
 
-export const checkRepo = async (req, res) => {
-    // TODO: get fields from cookie
-    const cookie = req.signedCookies.authorization;
-    const gh_token = cookie.gh_token;
-    const username = cookie.login;
+export const checkGitCreated = async (req, res) => {
+    // fields gh_token and login should be populated from auth in middleware
+    const gh_token = req.gh_token;
+    const username = req.login;
     // Might need authorization for private repos.
-    fetch(`https://api.github.com/repos/${username}/${username}.github.io`, {
-        method: "GET"
+    axios({
+        method: "GET",
+        url: `https://api.github.com/repos/${username}/${username}.github.io`
     }).then((response) => {
         if (response.status == 200) {
             console.log("repo present");
@@ -91,6 +91,8 @@ export const checkRepo = async (req, res) => {
         }
     })
 };
+
+export const publishGithub = async (req, res) => {}
 
 
 export default router;
