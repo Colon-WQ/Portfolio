@@ -2,7 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv'
-
 import cookieParser from "cookie-parser";
 
 // route imports
@@ -14,6 +13,7 @@ import auth from './middleware/auth.middleware.js';
 dotenv.config()
 
 const app = express();
+dotenv.config()
 
 app.use(express.json());
 app.use(cookieParser(process.env.SIGN_COOKIE_SECRET));
@@ -31,7 +31,9 @@ app.use('/login', loginRoutes);
 app.use('/portfolio', portfolioRoutes);
 
 const CONNECTION_URL = process.env.MONGO_URL;
-const PORT = process.env.PORT|| 5000;
+const PORT = process.env.PORT || 5000;
+
+console.log(process.env.MONGO_URL)
 
 app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`));
 

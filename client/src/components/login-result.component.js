@@ -39,9 +39,7 @@ export default class LoginResult extends Component {
                 console.log("POST response: ");
                 console.log(res);
                 this.props.dispatch(log_in_user(res))
-            }).then(this.setState({
-                isToken: true
-            }))
+            })
         } else {
             console.log("gh code missing");
         }
