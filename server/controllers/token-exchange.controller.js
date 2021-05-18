@@ -17,7 +17,7 @@ const cookieParams = {
     secure: true,
     SameSite: "strict",
     signed: true,
-    maxAge: 6 * 60 * 60 * 1000
+    maxAge: 6 * 60 * 60 * 1000,
 }
 
 export const getToken = async (req, res) => { 
