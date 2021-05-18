@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import FormData from 'form-data';
 import axios from 'axios';
 import jwt from "jsonwebtoken";
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, ENCRYPT_SECRET } from '../utils/config.js';
+import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, JWT_SECRET } from '../utils/config.js';
 
 // import fetch from 'node-fetch'
 
@@ -53,7 +53,7 @@ export const getToken = async (req, res) => {
                 const ghToken = "bong"
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
-                    ENCRYPT_SECRET,
+                    JWT_SECRET,
                     // TODO: discuss expiry duration
                     // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
