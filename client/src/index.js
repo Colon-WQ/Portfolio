@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Navbar from './components/navbar.component'
 import Login from './components/login.component'
 import LoginResult from './components/login-result.component'
+import Home from './components/home.component'
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom"
 import { Provider } from 'react-redux';
@@ -26,6 +27,7 @@ ReactDOM.render(
           </Route>
           <Route exact path = '/login' component = {Login}></Route>
           <Route exact path = '/login/callback' component = {LoginResult}></Route>
+          <Route exact path = '/home' component = {Home}></Route>
         </Switch>
       </Provider>
     </BrowserRouter>

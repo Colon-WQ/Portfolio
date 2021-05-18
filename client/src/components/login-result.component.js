@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { Redirect } from 'react-router-dom'
+import { log_in_user } from '../actions/login.action'
+import '../styles/login.css'
+import { BeatLoader } from 'react-spinners'
 
 export default class LoginResult extends Component {
     constructor() {
         super()
         this.state = {
-            ghCode: ''
+            ghCode: '',
+            isToken: false
         }
     }
 
@@ -32,18 +37,27 @@ export default class LoginResult extends Component {
             }).then(res => {
                 console.log("POST response: ");
                 console.log(res);
-            });
+                this.props.dispatch(log_in_user(res))
+            }).then(this.setState({
+                isToken: true
+            }))
         } else {
-            console.log("code missing");
-            console.log(window.location.search);
+            console.log("gh code missing");
         }
     }
 
     render() {
-        return (
-            <div style = {{display: 'flex', flexDirection: 'row', paddingTop: '7%', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%'}}>
-                <h1>{this.state.ghCode}</h1>
-            </div>
-        )
+        if (this.state.isToken) {
+            return (
+                <Redirect to = '/home'></Redirect>
+            )
+        } else {
+            return (
+                <div className = 'login-container'>
+                    <BeatLoader></BeatLoader>
+                </div>
+            )
+        }
+        
     }
 }

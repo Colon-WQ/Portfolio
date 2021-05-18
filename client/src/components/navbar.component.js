@@ -1,13 +1,26 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { log_out_user } from '../actions/login.action'
 import '../styles/navbar.css'
+import axios from 'axios'
 
 
 class Navbar extends Component {
+    constructor() {
+        super()
+        this.handleLogout = this.handleLogout.bind(this)
+    }
+    
+    handleLogout() {
+        this.props.dispatch(log_out_user())
+
+        window.location.pathname = '/login'
+    }
+    
 
     render() {
-        const { loggedIn, user, error } = this.props
-
+        const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props
+        
         if (error) {
             return <div>Error! {error.message}</div>
         }
@@ -18,12 +31,15 @@ class Navbar extends Component {
                     <div className = 'navbar-title'>Portfol.io</div>
                 </div>
                 <div className = 'navbar-text-container'>
-                    <div className = 'navbar-text'>Welcome {user}!</div>
+                    <div className = 'navbar-text'>Welcome {name}!</div>
                 </div>
                 <div className = 'navbar-button-container'>
-                    <button className = 'navbar-button'>
-                        {loggedIn ? 'login' : 'logout'}
-                    </button>
+                    {loggedIn 
+                        ? <button onClick = {this.handleLogout} className = 'navbar-button'>
+                            logout
+                        </button>
+                        : <span></span>
+                    }
                 </div>
             </div>
         )
@@ -32,7 +48,10 @@ class Navbar extends Component {
 
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
-    user: state.login.user,
+    name: state.login.name,
+    id: state.login.id,
+    avatar_url: state.login.avatar_url,
+    gravatar_url: state.login.gravatar_url,
     error: state.login.error
 })
 
