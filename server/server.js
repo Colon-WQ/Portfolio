@@ -10,6 +10,8 @@ import portfolioRoutes from './routes/portfolio.route.js';
 
 import auth from './middleware/auth.middleware.js';
 
+dotenv.config()
+
 const app = express();
 dotenv.config()
 
@@ -34,8 +36,9 @@ const PORT = process.env.PORT || 5000;
 console.log(process.env.MONGO_URL)
 
 // connects mongoose + express
-//mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Mongoose server started."))
+  .catch((error) => console.log(`${error} did not connect`));
+mongoose.set('useFindAndModify', false);
 
-app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`))
-
-//mongoose.set('useFindAndModify', false);
+app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`));
