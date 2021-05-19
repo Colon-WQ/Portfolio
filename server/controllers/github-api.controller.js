@@ -39,22 +39,12 @@ export const getToken = async (req, res) => {
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
                 return params.get("access_token");
-            }).then((ghToken) => {
-                const data = await axios.get('https://api.github.com/user', {
+            }).then(async (ghToken) => {
+                const { name, login, id, avatar_url, gravatar_id } = await axios.get('https://api.github.com/user', {
                     headers: {'Authorization': `token ${ghToken}`}
                 }).then((response) => {
                     return response.data;
                 })
-
-                console.log(data);
-
-                const name = data.name;
-                const login = data.login;
-                const id = data.id;
-                const avatar_url = data.avatar_url;
-                const gravatar_id = data.gravatar_id;
-
-                console.log(id);
 
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
