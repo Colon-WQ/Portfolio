@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import '../styles/login.css';
 
 
-class Dashboard extends Component {
+class Home extends Component {
 
 
     render() {

@@ -33,6 +33,6 @@ const mapStateToProps = state => ({
     avatar_url: state.login.avatar_url,
     gravatar_url: state.login.gravatar_url,
     error: state.login.error
-})
+});
 
-export default connect(mapStateToProps)(Home)
+export default connect(mapStateToProps)(Dashboard);
