@@ -20,11 +20,8 @@ class Navbar extends Component {
             url: 'http://localhost:5000/logout',
             withCredentials: true
         }).then(res => {
-            console.log("successfully deleted cookie")
-            console.log(res)
-        }).then(
-            //window.location.pathname = '/login'
-        )
+            window.location.pathname = '/login'
+        })
         
     }
     
