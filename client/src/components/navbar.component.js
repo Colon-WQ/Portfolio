@@ -1,12 +1,13 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { log_out_user } from '../actions/login.action'
-import '../styles/navbar.css'
-import axios from 'axios'
-import AppBar from '@material-ui/core/AppBar'
-import ToolBar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import { FaBars } from 'react-icons/fa'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { log_out_user } from '../actions/login.action';
+import '../styles/navbar.css';
+import axios from 'axios';
+import { useStyles } from '../styles/styles';
+import AppBar from '@material-ui/core/AppBar';
+import ToolBar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { FaBars } from 'react-icons/fa';
 
 
 class Navbar extends Component {
@@ -27,7 +28,6 @@ class Navbar extends Component {
         })
         
     }
-    
 
     render() {
         const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props
@@ -35,6 +35,8 @@ class Navbar extends Component {
         if (error) {
             return <div>Error! {error.message}</div>
         }
+
+        const classes = useStyles();
 
         return (
             <div className = 'navbar-container'>

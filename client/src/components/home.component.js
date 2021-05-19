@@ -2,17 +2,12 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import '../styles/login.css';
-
+import AppBar from '@material-ui/core/AppBar'
 
 class Home extends Component {
-
-
     render() {
-        const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props
         return (
             <div className = 'login-container'>
-                <p>Here is your homepage {name}! You are loggedIn {loggedIn.toString()}</p>
-                <button onClick={this.checkCookie}>check cookie</button>
             </div>
         )
     }
