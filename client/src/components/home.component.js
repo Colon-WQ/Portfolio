@@ -1,20 +1,11 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import axios from 'axios';
-import { connect } from 'react-redux'
-import '../styles/login.css'
+import { connect } from 'react-redux';
+import '../styles/login.css';
 
 
-class Home extends Component {
+class Dashboard extends Component {
 
-    // Testing purposes
-    checkCookie(e) {
-        console.log(process.env.REACT_APP_BACKEND);
-
-        axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + '/portfolio/status',
-            withCredentials: true}).then(res => console.log(res.body.created));
-    }
 
     render() {
         const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props

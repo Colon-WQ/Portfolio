@@ -1,7 +1,7 @@
 import { 
     LOG_IN_USER,
     LOG_OUT_USER
-} from '../actions/login.action'
+} from '../actions/login.action';
 
 const GUEST = "Guest"
 

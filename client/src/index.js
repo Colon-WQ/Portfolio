@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Navbar from './components/navbar.component'
-import Login from './components/login.component'
-import LoginResult from './components/login-result.component'
-import Home from './components/home.component'
+import Navbar from './components/navbar.component';
+import Login from './components/login.component';
+import LoginResult from './components/login-result.component';
+import Dashboard from './components/dashboard.component';
+import Home from './components/home.component';
 import { createStore, applyMiddleware } from 'redux';
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom"
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import rootReducer from './reducers/root.reducer'
+import rootReducer from './reducers/root.reducer';
 import reportWebVitals from './reportWebVitals';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 const store = createStore(
   rootReducer,
@@ -54,12 +55,10 @@ ReactDOM.render(
         <Provider store = {store}>
           <Navbar></Navbar>
           <Switch>
-            <Route exact path = '/'>
-              <Redirect to = '/login'></Redirect>
-            </Route>
+            <Route exact path = '/' component = {Home}></Route>
             <Route exact path = '/login' component = {Login}></Route>
             <Route exact path = '/login/callback' component = {LoginResult}></Route>
-            <Route exact path = '/home' component = {Home}></Route>
+            <Route exact path = '/dashboard' component = {Dashboard}></Route>
           </Switch>
         </Provider>
       </BrowserRouter>

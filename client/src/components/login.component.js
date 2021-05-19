@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import '../styles/login.css'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import '../styles/login.css';
 
 class Login extends Component {
 

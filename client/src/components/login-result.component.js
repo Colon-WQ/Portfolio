@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import axios from 'axios'
-import { Redirect } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { log_in_user } from '../actions/login.action'
-import '../styles/login.css'
-import { BeatLoader } from 'react-spinners'
+import React, { Component } from 'react';
+import axios from 'axios';
+import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { log_in_user } from '../actions/login.action';
+import '../styles/login.css';
+import { BeatLoader } from 'react-spinners';
 
 class LoginResult extends Component {
     constructor() {
@@ -54,7 +54,7 @@ class LoginResult extends Component {
     render() {
         if (this.state.isToken) {
             return (
-                <Redirect to = '/home'></Redirect>
+                <Redirect to = '/dashboard'></Redirect>
             )
         } else {
             return (

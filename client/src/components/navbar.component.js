@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography'
 import { FaBars } from 'react-icons/fa'
 
 
-
 class Navbar extends Component {
     constructor() {
         super()
@@ -24,7 +23,7 @@ class Navbar extends Component {
             url: process.env.REACT_APP_BACKEND + '/logout',
             withCredentials: true
         }).then(res => {
-            window.location.pathname = '/login'
+            window.location.pathname = '/'
         })
         
     }

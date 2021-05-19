@@ -41,16 +41,10 @@ export const getToken = async (req, res) => {
                 //console.log(params)
                 console.log("access token achieved")
                 return params.get("access_token");;
-            }).then((githubToken) => {
-                // const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
-                //     headers: {'Authorization': `token ${ghToken}`}
-                // });
-                const name = "bong"
-                const login = "bong"
-                const id = "bong"
-                const avatar_url = "bong"
-                const gravatar_id = "bong"
-                const ghToken = "bong"
+            }).then((ghToken) => {
+                const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
+                    headers: {'Authorization': `token ${ghToken}`}
+                });
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
                     JWT_SECRET,
