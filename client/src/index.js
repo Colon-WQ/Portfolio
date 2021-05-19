@@ -24,7 +24,7 @@ ReactDOM.render(
     <ThemeProvider theme = {theme}>
       <BrowserRouter>
         <Provider store = {store}>
-          <Navbar></Navbar>
+          <Navbar/>
           <Switch>
             <Route exact path = '/' component = {Home}></Route>
             <Route exact path = '/login' component = {Login}></Route>
