@@ -35,4 +35,4 @@ const mapStateToProps = state => ({
     error: state.login.error
 })
 
-export default connect(mapStateToProps)(Home)
+export default connect(mapStateToProps)(Dashboard)

@@ -38,23 +38,30 @@ export const getToken = async (req, res) => {
             })
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
-                //console.log(params)
-                console.log("access token achieved")
                 return params.get("access_token");;
             }).then((ghToken) => {
-                const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
-                    headers: {'Authorization': `token ${ghToken}`}
-                });
-                const jwtoken = jwt.sign(
-                    {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
-                    JWT_SECRET,
-                    // TODO: discuss expiry duration
-                    // TODO: what happens when jwt expires while user editing
-                    { expiresIn: "6h"});
-                res.cookie("authorization", jwtoken, cookieParams);
-                // TODO: check if name == null, replace login otherwise.
-                // TODO: update db if user not found/query db for userdata instead.
-                return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });
+                console.log("getting user")
+                try {
+                    const { name, login, id , avatar_url, gravatar_id } = axios.get('https://api.github.com/user', {
+                        headers: {'Authorization': `token ${ghToken}`}
+                    }).catch(err => {
+                        console.log(err.message)
+                    });
+
+                    const jwtoken = jwt.sign(
+                        {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
+                        JWT_SECRET,
+                        // TODO: discuss expiry duration
+                        // TODO: what happens when jwt expires while user editing
+                        { expiresIn: "6h"});
+                    res.cookie("authorization", jwtoken, cookieParams);
+                    // TODO: check if name == null, replace login otherwise.
+                    // TODO: update db if user not found/query db for userdata instead.
+                    return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });
+                } catch (err) {
+                    console.log(err.message)
+                    return res.status(404).json({ message: error.message });
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -62,7 +69,7 @@ export const getToken = async (req, res) => {
             });
     } catch (error) {
         console.log(error)
-        res.status(404).json({ message: error.message });
+        return res.status(404).json({ message: error.message });
     }
 }
 

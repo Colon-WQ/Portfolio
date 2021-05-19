@@ -4,15 +4,18 @@ import { connect } from 'react-redux';
 import '../styles/login.css';
 
 
-class Dashboard extends Component {
+class Home extends Component {
 
+    toLogin() {
+        window.location.pathname = '/login'
+    }
 
     render() {
         const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props
         return (
             <div className = 'login-container'>
                 <p>Here is your homepage {name}! You are loggedIn {loggedIn.toString()}</p>
-                <button onClick={this.checkCookie}>check cookie</button>
+                <button onClick={this.toLogin}>To Login</button>
             </div>
         )
     }
