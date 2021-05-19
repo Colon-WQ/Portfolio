@@ -11,49 +11,20 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers/root.reducer';
 import reportWebVitals from './reportWebVitals';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { theme, useStyles } from './styles/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 
 const store = createStore(
   rootReducer,
   applyMiddleware(thunk)
 )
 
-//visit here to see what to override 
-//https://material-ui.com/customization/default-theme/
-const theme = createMuiTheme({
-  palette: {
-    type: 'dark',
-    primary: {
-      light: '#98F9FF',
-      main: '#98E0FF',
-      dark: '#0012C4'
-    },
-    secondary: {
-      light: '#E0B0FE',
-      main: '#B033FF',
-      dark: '#4E0080'
-    },
-    text: {
-      primary: 'rgba(255, 255, 255, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.87)'
-    }
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto'
-    ].join(',')
-  }
-})
-
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme = {theme}>
       <BrowserRouter>
         <Provider store = {store}>
-          <Navbar></Navbar>
+          <Navbar/>
           <Switch>
             <Route exact path = '/' component = {Home}></Route>
             <Route exact path = '/login' component = {Login}></Route>
