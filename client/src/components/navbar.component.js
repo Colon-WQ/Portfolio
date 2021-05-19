@@ -3,7 +3,11 @@ import { connect } from 'react-redux'
 import { log_out_user } from '../actions/login.action'
 import '../styles/navbar.css'
 import axios from 'axios'
-import { Typography, Button } from '@material-ui/core'
+import AppBar from '@material-ui/core/AppBar'
+import ToolBar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import { FaBars } from 'react-icons/fa'
+
 
 
 class Navbar extends Component {
@@ -17,7 +21,7 @@ class Navbar extends Component {
         this.props.dispatch(log_out_user())
         axios({
             method: 'GET',
-            url: 'http://localhost:5000/logout',
+            url: process.env.REACT_APP_BACKEND + '/logout',
             withCredentials: true
         }).then(res => {
             window.location.pathname = '/login'
