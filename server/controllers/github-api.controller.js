@@ -63,14 +63,15 @@ export const getToken = async (req, res) => {
             });
     } catch (error) {
         console.log(error)
-        res.status(404).json({ message: error.message });
+        return res.status(404).json({ message: error.message });
     }
 }
 
 export const checkGitCreated = async (req, res) => {
     // fields gh_token and login should be populated from auth in middleware
     const gh_token = req.gh_token;
-    const username = req.login;
+    const username = req.username;
+    console.log(username)
     // Might need authorization for private repos.
     axios({
         method: "GET",
@@ -87,7 +88,7 @@ export const checkGitCreated = async (req, res) => {
     })
 };
 
-export const publishGithub = async (req, res) => {}
+// export const publishGithub = async (req, res) => {}
 
 
 export default router;

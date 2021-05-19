@@ -6,7 +6,7 @@ import LoginResult from './components/login-result.component';
 import Dashboard from './components/dashboard.component';
 import Home from './components/home.component';
 import { createStore, applyMiddleware } from 'redux';
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers/root.reducer';

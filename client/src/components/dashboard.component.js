@@ -8,11 +8,15 @@ class Dashboard extends Component {
 
     // Testing purposes
     checkCookie(e) {
-        console.log(process.env.REACT_APP_BACKEND);
+        console.log('testing cookie')
         axios({
             method: "GET",
             url: process.env.REACT_APP_BACKEND + '/portfolio/status',
-            withCredentials: true}).then(res => console.log(res.body.created));
+            withCredentials: true
+        }).then(res => {
+            console.log("authorized")
+            console.log(res.data)
+        });
     }
 
     render() {

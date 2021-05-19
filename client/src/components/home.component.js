@@ -7,9 +7,15 @@ import AppBar from '@material-ui/core/AppBar'
 
 
 class Home extends Component {
+
+    tologin() {
+        window.location.pathname = '/login'
+    }
+
     render() {
         return (
             <div className = 'login-container'>
+                <button onClick = {this.tologin}>to Login</button>
             </div>
         )
     }
