@@ -12,7 +12,7 @@ import Slide from '@material-ui/core/Slide';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Button, Drawer, IconButton } from '@material-ui/core';
+import { Avatar, Button, Drawer, Hidden, IconButton } from '@material-ui/core';
 
 const drawerWidth=300;
 
@@ -104,8 +104,8 @@ const styles = (theme) => ({
         display: 'none'
     },
     expandedAvatar: {
-        height: theme.spacing(30),
-        width: theme.spacing(30)
+        height: theme.spacing(20),
+        width: theme.spacing(20)
     }
   });
 
@@ -185,10 +185,15 @@ class Navbar extends Component {
                 >
                     <div className={classes.toolbarIcon}>
                         <div className={classes.drawerDiv}>
-                            <Avatar src={avatar_url} className={classes.expandedAvatar}/>
+                            <Hidden xsDown>
+                                <Avatar src={avatar_url} className={classes.expandedAvatar}/>
+                            </Hidden>
                             <Typography>
                                 {name}
                             </Typography>
+                            <Button onClick={this.handleLogout} color="error">
+                                LOGOUT
+                            </Button>
                         </div>
                     </div>
                 </Drawer>
