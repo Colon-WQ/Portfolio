@@ -3,19 +3,21 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import '../styles/login.css';
 import AppBar from '@material-ui/core/AppBar'
+import { Button } from '@material-ui/core';
 
 
 
 class Home extends Component {
-
-    tologin() {
-        window.location.pathname = '/login'
+    handleLogin() {
+        window.location.pathname = '/login';
     }
 
     render() {
         return (
             <div className = 'login-container'>
-                <button onClick = {this.tologin}>to Login</button>
+                <Button onClick={this.handleLogin}>
+                    Login
+                </Button>
             </div>
         )
     }
