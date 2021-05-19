@@ -40,8 +40,8 @@ app.use('/logout', logoutRoutes)
 const CONNECTION_URL = MONGO_URL;
 const PORT_CONFIG = PORT || 5000;
 
-console.log(MONGO_URL)
-console.log(FRONT_END);
+// console.log(MONGO_URL)
+// console.log(FRONT_END);
 
 app.listen(PORT_CONFIG, () => console.log(`Server Running on Port: http://localhost:${PORT_CONFIG}`));
 
