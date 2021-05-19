@@ -12,7 +12,7 @@ class Home extends Component {
 
         axios({
             method: "GET",
-            url: `${process.env.REACT_APP_BACKEND}portfolio/status`,
+            url: process.env.REACT_APP_BACKEND + '/portfolio/status',
             withCredentials: true}).then(res => console.log(res.body.created));
     }
 

@@ -30,7 +30,7 @@ class LoginResult extends Component {
             // console.log(ghCode);
             axios({
                 method: "POST",
-                url: process.env.REACT_APP_BACKEND + "login/authenticate",
+                url: process.env.REACT_APP_BACKEND + "/login/authenticate",
                 withCredentials: true,
                 responseType: 'json',
                 data: {
