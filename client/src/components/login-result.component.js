@@ -30,8 +30,9 @@ class LoginResult extends Component {
             // console.log(ghCode);
             axios({
                 method: "POST",
-                url: process.env.REACT_APP_BACKEND + "login/authenticate",
+                url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
                 withCredentials: true,
+                mode: 'cors',
                 responseType: 'json',
                 data: {
                     code: ghCode
@@ -43,7 +44,7 @@ class LoginResult extends Component {
             }).then(this.setState({
                 isToken: true
             })).catch(err => {
-                console.log(err.message)
+                console.log(err.message);
             })
         } else {
             console.log("gh code missing");

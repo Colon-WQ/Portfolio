@@ -18,12 +18,21 @@ app.use(cookieParser(SIGN_COOKIE_SECRET));
 
 // CORS setup
 const corsOptions = {
-    origin: [FRONT_END, BACK_END],
-    methods: ['GET', 'PUT', 'POST'],
+    origin: [ FRONT_END, BACK_END ],
+    methods: ['GET', 'PUT', 'POST', 'DELETE' ],
     optionsSuccessStatus: 204,
     credentials: true
 }
 app.use(cors(corsOptions));
+
+// app.use((req, res, next) => {
+//     const allowedOrigins = [ FRONT_END, BACK_END ];
+//     const origin = req.headers.origin;
+//     if (allowedOrigins.includes(origin)) {
+//         res.setHeader('Access-Control-Allow-Origin', origin);
+//     }
+//     next();
+// });
 
 // Append routes here
 app.use('/login', loginRoutes);
@@ -34,6 +43,7 @@ const CONNECTION_URL = MONGO_URL;
 const PORT_CONFIG = PORT || 5000;
 
 console.log(MONGO_URL)
+console.log(FRONT_END);
 
 app.listen(PORT_CONFIG, () => console.log(`Server Running on Port: http://localhost:${PORT_CONFIG}`));
 
