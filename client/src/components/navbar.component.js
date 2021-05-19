@@ -159,7 +159,7 @@ class Navbar extends Component {
                 className={this.state.user_drawer_open 
                     ? `${classes.appBar} ${classes.appBarShift}` 
                     : classes.appBar}>
-                    <ToolBar classname={classes.toolbar}>
+                    <ToolBar className={classes.toolbar}>
                         <IconButton>
                             {/* logo here */}
                         </IconButton>
