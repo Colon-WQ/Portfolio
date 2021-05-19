@@ -35,9 +35,10 @@ export const getToken = async (req, res) => {
                 data: data,
                 responseType: 'text',
                 headers: data.getHeaders()
-            })
+            }).then((response) => response.data)
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
+<<<<<<< HEAD
                 return params.get("access_token");;
             }).then((ghToken) => {
                 console.log("getting user")
@@ -62,6 +63,36 @@ export const getToken = async (req, res) => {
                     console.log(err.message)
                     return res.status(404).json({ message: error.message });
                 }
+=======
+                return params.get("access_token");
+            }).then((ghToken) => {
+                const data = await axios.get('https://api.github.com/user', {
+                    headers: {'Authorization': `token ${ghToken}`}
+                }).then((response) => {
+                    return response.data;
+                })
+
+                console.log(data);
+
+                const name = data.name;
+                const login = data.login;
+                const id = data.id;
+                const avatar_url = data.avatar_url;
+                const gravatar_id = data.gravatar_id;
+
+                console.log(id);
+
+                const jwtoken = jwt.sign(
+                    {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
+                    JWT_SECRET,
+                    // TODO: discuss expiry duration
+                    // TODO: what happens when jwt expires while user editing
+                    { expiresIn: "6h"});
+                res.cookie("authorization", jwtoken, cookieParams);
+                // TODO: check if name == null, replace login otherwise.
+                // TODO: update db if user not found/query db for userdata instead.
+                return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });
+>>>>>>> d885b692f8562d230610409616c8fad993cf1c96
             })
             .catch((error) => {
                 console.log(error);
