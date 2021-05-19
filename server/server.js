@@ -9,8 +9,6 @@ import loginRoutes from './routes/login-callback.route.js';
 import portfolioRoutes from './routes/portfolio.route.js';
 import logoutRoutes from './routes/logout.route.js'
 
-import auth from './middleware/auth.middleware.js';
-
 const app = express();
 
 app.use(express.json());

@@ -32,7 +32,6 @@ class LoginResult extends Component {
                 method: "POST",
                 url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
                 withCredentials: true,
-                mode: 'cors',
                 responseType: 'json',
                 data: {
                     code: ghCode

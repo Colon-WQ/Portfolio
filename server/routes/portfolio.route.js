@@ -1,6 +1,5 @@
 
 import express from 'express';
-import auth from '../middleware/auth.middleware.js';
 import { 
     postPortfolio, 
     savePortfolio, 
@@ -9,19 +8,20 @@ import {
     getPortfolios, 
     deletePortfolio 
 } from '../controllers/portfolio.controller.js';
-import { publishGithub, checkGitCreated } from '../controllers/github-api.controller.js'; 
-import checkAuth from '../middleware/auth.middleware.js';
+import { checkGitCreated } from '../controllers/github-api.controller.js'; 
+import auth from '../middleware/auth.middleware.js';
 
 
 const router = express.Router();
 
 // publish includes pushing to github. Saving is only on backend
-router.get('/', getPortfolios);
+//NOTE: '/' MUST BE put at the END so it does not intercept the regex detection in the url
+router.get('/status', auth, checkGitCreated);
 router.post('/:id/publish', postPortfolio);
 router.patch('/:id/save', savePortfolio);
 router.get('/:id', getPortfolio);
 router.get('/create', createPortfolio);
-router.get('/status', checkAuth, checkGitCreated);
 router.delete('/:id', deletePortfolio);
+router.get('/', getPortfolios);
 
 export default router;

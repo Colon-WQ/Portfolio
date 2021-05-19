@@ -24,6 +24,8 @@ class Navbar extends Component {
             withCredentials: true
         }).then(res => {
             window.location.pathname = '/'
+        }).catch(err => {
+            console.log(err.message)
         })
         
     }
