@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { log_out_user } from '../actions/login.action';
+import { log_out_user, repopulate_state } from '../actions/login.action';
 import '../styles/navbar.css';
 import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { FaBars } from 'react-icons/fa';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Slide from '@material-ui/core/Slide';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -137,10 +136,19 @@ class Navbar extends Component {
             user_drawer_open: false
         }
     }
+
+    componentDidMount() {
+      if (!this.props.loggedIn) {
+        const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+        this.props.repopulate_state(localStorageItem)
+      }
+    }
     
     handleLogout() {
         console.log("logging out")
-        this.props.dispatch(log_out_user())
+        this.props.log_out_user()
+        localStorage.removeItem("portfolioUser")
+        console.log("successfully cleared localStorage")
         axios({
             method: 'GET',
             url: process.env.REACT_APP_BACKEND + '/logout',
@@ -158,7 +166,7 @@ class Navbar extends Component {
     }
 
     render() {
-        const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props
+        const { loggedIn, name, id, avatar_url, gravatar_id, error } = this.props
         
         if (error) {
             return <div>Error! {error.message}</div>
@@ -211,10 +219,11 @@ class Navbar extends Component {
                             <Button color="primary" className={classes.maxWidthButton}>
                                 PLACEHOLDER
                             </Button>
+                            <Button onClick={this.handleLogout} color="secondary" className={`${classes.maxWidthButton} ${classes.stickyDown}`}>
+                              LOGOUT
+                            </Button>
                         </div>
-                        <Button onClick={this.handleLogout} color="secondary" className={`${classes.maxWidthButton} ${classes.stickyDown}`}>
-                            LOGOUT
-                        </Button>
+                        
                     </div>
                 </Drawer>
             </div>
@@ -227,8 +236,13 @@ const mapStateToProps = state => ({
     name: state.login.name,
     id: state.login.id,
     avatar_url: state.login.avatar_url,
-    gravatar_url: state.login.gravatar_url,
+    gravatar_id: state.login.gravatar_id,
     error: state.login.error
 })
 
-export default connect(mapStateToProps)(withStyles(styles)(Navbar))
+const mapDispatchToProps = {
+  log_out_user,
+  repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Navbar))

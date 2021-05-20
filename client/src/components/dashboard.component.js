@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import { repopulate_state } from '../actions/login.action'
 import '../styles/login.css';
 
 
 class Dashboard extends Component {
+
+    componentDidMount() {
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+            this.props.repopulate_state(localStorageItem)
+        }
+    }
 
     // Testing purposes
     checkCookie(e) {
@@ -20,10 +28,10 @@ class Dashboard extends Component {
     }
 
     render() {
-        const { loggedIn, name, id, avatar_url, gravatar_url, error } = this.props
+        const { loggedIn, name } = this.props
         return (
             <div className = 'login-container'>
-                <p>Here is your homepage {name}! You are loggedIn {loggedIn.toString()}</p>
+                <p>Here is your homepage {name}! You are loggedIn</p>
                 <button onClick={this.checkCookie}>check cookie</button>
             </div>
         )
@@ -32,11 +40,11 @@ class Dashboard extends Component {
 
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
-    name: state.login.name,
-    id: state.login.id,
-    avatar_url: state.login.avatar_url,
-    gravatar_url: state.login.gravatar_url,
-    error: state.login.error
+    name: state.login.name
 });
 
-export default connect(mapStateToProps)(Dashboard);
+const mapDispatchToProps = {
+    repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
