@@ -1,6 +1,7 @@
 import { 
     LOG_IN_USER,
-    LOG_OUT_USER
+    LOG_OUT_USER,
+    REPOPULATE_STATE
 } from '../actions/login.action';
 
 const GUEST = "Guest"
@@ -10,7 +11,7 @@ const initialState = {
     name: GUEST,
     id: '',
     avatar_url: '',
-    gravatar_url: '',
+    gravatar_id: '',
     error: null
 }
 
@@ -24,20 +25,29 @@ export default function login(state = initialState, action) {
         case LOG_IN_USER:
             return {
                 ...state,
-                loggedIn: true,
                 name: action.payload.name,
                 id: action.payload.id,
                 avatar_url: action.payload.avatar_url,
-                gravatar_url: action.payload.gravatar_url,
+                gravatar_id: action.payload.gravatar_id,
+                loggedIn: true
             }
         case LOG_OUT_USER:
             return {
                 ...state,
-                loggedIn: false,
                 name: GUEST,
                 id: MISSING,
                 avatar_url: MISSING,
-                gravatar_url: MISSING,
+                gravatar_id: MISSING,
+                loggedIn: false
+            }
+        case REPOPULATE_STATE:
+            return {
+                ...state,
+                loggedIn: action.payload.loggedIn,
+                name: action.payload.name,
+                id: action.payload.id,
+                avatar_url: action.payload.avatar_url,
+                gravatar_id: action.payload.gravatar_id
             }
         default:
             return state

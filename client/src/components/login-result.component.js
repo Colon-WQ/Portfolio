@@ -10,33 +10,55 @@ class LoginResult extends Component {
     
 
     componentDidMount() {
-        let search = window.location.search;
-        let params = new URLSearchParams(search);
-        let ghCode = params.get('code');
-        const bodyJSON = { code: ghCode };
+        /**If user is loggedIn already, <Redirect> below would already redirect the user to dashboard.
+         * Otherwise, we try to login the user, either by getting info from localStorage if user was loggedIn,
+         * or we make a request to authenticate a new user.
+         */
 
-        if (ghCode !== "") {
-            //TODO: remove this vvv
-            // console.log("printing code:");
-            // console.log(ghCode);
-            axios({
-                method: "POST",
-                url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
-                withCredentials: true,
-                responseType: 'json',
-                data: {
-                    code: ghCode
+        //If user is not loggedIn already
+        if (!this.props.loggedIn) {
+            //Check if loggedIn user might have accidentally refreshed into this url
+            const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+            //If localStorage returns null, user is not loggedIn, proceed to login
+            if (localStorageItem == null) {
+                let search = window.location.search;
+                let params = new URLSearchParams(search);
+                let ghCode = params.get('code');
+
+                if (ghCode !== "") {
+                    axios({
+                        method: "POST",
+                        url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
+                        withCredentials: true,
+                        responseType: 'json',
+                        data: {
+                            code: ghCode
+                        }
+                    }).then(res => res.data)
+                    .then(data => {
+                        /** For setting to localStorage, chose not to just dump entire redux state here because
+                         * we may want to only save certain data to localStorage
+                         */
+                        const forLocalStorage = {
+                            loggedIn: true,
+                            name: data.name,
+                            id: data.id,
+                            avatar_url: data.avatar_url,
+                            gravatar_id: data.gravatar_id
+                        }
+                        window.localStorage.setItem("portfolioUser", JSON.stringify(forLocalStorage))
+                        this.props.log_in_user(data)
+                    }).catch(err => {
+                        console.log(err.message);
+                    })
+                } else {
+                    console.log("gh code missing");
                 }
-            }).then(res => {
-                console.log("POST response: ");
-                console.log(res);
-                this.props.log_in_user(res.data)
-            }).catch(err => {
-                console.log(err.message);
-            })
-        } else {
-            console.log("gh code missing");
+            } else { //If localStorage does return an item, then user is already logged in
+                this.props.repopulate_state(localStorageItem)
+            }
         }
+        
     }
 
     render() {
@@ -61,7 +83,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-    log_in_user
+    log_in_user,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginResult)
