@@ -14,7 +14,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Button, Drawer, Hidden, IconButton } from '@material-ui/core';
 
-const drawerWidth=300;
+const drawerWidth='20vw';
+const maxWidth='300';
 
 const styles = (theme) => ({
     root: {
@@ -39,7 +40,7 @@ const styles = (theme) => ({
     },
     appBarShift: {
       marginRight: drawerWidth,
-      width: `calc(100% - ${drawerWidth}px)`,
+      width: `calc(100% - ${drawerWidth})`,
       transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
@@ -58,11 +59,10 @@ const styles = (theme) => ({
     drawerDiv: {
         display: 'block',
         justifyContent: 'center',
-        margin: 'auto',
         textAlign: 'center',
+        height: '100vh',
     },
     drawerPaper: {
-    //   position: 'relative',
       whiteSpace: 'nowrap',
       width: drawerWidth,
       transition: theme.transitions.create('width', {
@@ -104,8 +104,23 @@ const styles = (theme) => ({
         display: 'none'
     },
     expandedAvatar: {
+        
+        marginTop: theme.spacing(5),
         height: theme.spacing(20),
-        width: theme.spacing(20)
+        width: theme.spacing(20),
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    },
+    maxWidthButton: {
+        width: '100%',
+        borderRadius: '0px'
+    },
+    stickyDown: {
+        position: 'relative',
+        bottom: 0,
+    },
+    maxHeight: {
+        height: '100%',
     }
   });
 
@@ -185,18 +200,21 @@ class Navbar extends Component {
                     }}
                     open={this.state.user_drawer_open}
                 >
-                    <div className={classes.toolbarIcon}>
-                        <div className={classes.drawerDiv}>
-                            <Hidden xsDown>
-                                <Avatar src={avatar_url} className={classes.expandedAvatar}/>
-                            </Hidden>
-                            <Typography>
-                                {name}
-                            </Typography>
-                            <Button onClick={this.handleLogout} color="error">
-                                LOGOUT
+                    <div className={classes.drawerDiv}>
+                        <Hidden xsDown>
+                            <Avatar src={avatar_url} className={classes.expandedAvatar}/>
+                        </Hidden>
+                        <Typography variant="h4" className={classes.title}>
+                            {name}
+                        </Typography>
+                        <div className={classes.maxHeight}>
+                            <Button color="primary" className={classes.maxWidthButton}>
+                                PLACEHOLDER
                             </Button>
                         </div>
+                        <Button onClick={this.handleLogout} color="secondary" className={`${classes.maxWidthButton} ${classes.stickyDown}`}>
+                            LOGOUT
+                        </Button>
                     </div>
                 </Drawer>
             </div>
