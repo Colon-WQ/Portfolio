@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { log_in_user } from '../actions/login.action';
+import { log_in_user, repopulate_state } from '../actions/login.action';
+import { fetchPortfolios } from '../actions/portfolio.action';
 import '../styles/login.css';
 import { BeatLoader } from 'react-spinners';
 
@@ -47,6 +48,17 @@ class LoginResult extends Component {
                             gravatar_id: data.gravatar_id
                         }
                         window.localStorage.setItem("portfolioUser", JSON.stringify(forLocalStorage))
+                        /**TODO: Implement IDEA => need to create a route that fetches user's portfolios' names and images only. We store this
+                         * in localStorage just like we did user peripherals.
+                         * In the dashboard, only when we click on the portfolio to be worked on. Then we fetch the actual portfolios themselves,
+                         * In the template editor, when the user is working on the portfolio, we will save his current work to localStorage in intervals
+                         * 
+                         * When user leaves the template editor, we save his current work to the mongodb database,
+                         * then wipe the localStorage of the current portfolio's work.
+                         */
+
+                        //NOTE: I'm not sure of the order in which the following two functions actually occur, so if undefined happens check here too
+                        this.props.fetchPortfolios(data.id)
                         this.props.log_in_user(data)
                     }).catch(err => {
                         console.log(err.message);
@@ -84,6 +96,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
     log_in_user,
+    repopulate_state,
+    fetchPortfolios
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginResult)
