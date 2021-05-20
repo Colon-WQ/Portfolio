@@ -3,10 +3,30 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/login.action'
 import '../styles/login.css';
-import AppBar from '@material-ui/core/AppBar'
-import { Button } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
+import { withStyles } from '@material-ui/core/styles';
+import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
 
+const styles = (theme) => ({
+    root: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+    
+    welcomeDiv: {
+        width: '100%',
+        height: '80vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundImage: `url("${"https://compote.slate.com/images/926e5009-c10a-48fe-b90e-fa0760f82fcd.png?width=1200&rect=680x453&offset=0x30"}")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+    }
+})
 
 class Home extends Component {
 
@@ -22,11 +42,16 @@ class Home extends Component {
     }
 
     render() {
+        const { classes } = this.props;
+
         return (
-            <div className = 'login-container'>
-                <Button onClick={this.handleLogin}>
-                    Login
-                </Button>
+            <div className = {classes.root}>
+                <CssBaseline/>
+                <div className={classes.welcomeDiv}>
+                    <Button onClick={this.handleLogin}>
+                        Login
+                    </Button>
+                </div>
             </div>
         )
     }
@@ -45,4 +70,4 @@ const mapDispatchToProps = {
     repopulate_state
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Home));

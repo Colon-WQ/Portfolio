@@ -6,16 +6,15 @@ import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Slide from '@material-ui/core/Slide';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import List from '@material-ui/core/List';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Button, Drawer, Hidden, IconButton } from '@material-ui/core';
+import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
 
-const drawerWidth='20vw';
-const maxWidth='300';
 
+// TODO: clean up unused styles
 const styles = (theme) => ({
     root: {
       display: 'flex',
@@ -38,18 +37,17 @@ const styles = (theme) => ({
       }),
     },
     appBarShift: {
-      marginRight: drawerWidth,
-      width: `calc(100% - ${drawerWidth})`,
+      marginRight: theme.spacing(30),
+      width: `calc(100% - ${theme.spacing(30)})`,
       transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
       }),
     },
-    menuButton: {
-    //   marginLeft: 0,
-      marginRight: 36,
+    homeButton: {
+      marginRight: 'auto',
     },
-    menuButtonHidden: {
+    homeButtonHidden: {
       display: 'none',
     },
     title: {
@@ -63,7 +61,7 @@ const styles = (theme) => ({
     },
     drawerPaper: {
       whiteSpace: 'nowrap',
-      width: drawerWidth,
+      width: theme.spacing(30),
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
@@ -103,7 +101,6 @@ const styles = (theme) => ({
         display: 'none'
     },
     expandedAvatar: {
-        
         marginTop: theme.spacing(5),
         height: theme.spacing(20),
         width: theme.spacing(20),
@@ -114,12 +111,12 @@ const styles = (theme) => ({
         width: '100%',
         borderRadius: '0px'
     },
-    stickyDown: {
-        position: 'relative',
-        bottom: 0,
-    },
     maxHeight: {
         height: '100%',
+    },
+    flexDown: {
+      display: 'flex',
+      flexDirection: 'column',
     }
   });
 
@@ -183,15 +180,13 @@ class Navbar extends Component {
                     ? `${classes.appBar} ${classes.appBarShift}` 
                     : classes.appBar}>
                     <ToolBar className={classes.toolbar}>
-                        <IconButton>
-                            {/* logo here */}
+                        <IconButton className={classes.homeButton}>
+                          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+                              Portfol.io
+                          </Typography>
                         </IconButton>
-                        <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                            Portfol.io
-                        </Typography>
                         <Button startIcon={<Avatar src={avatar_url}/>} 
                         onClick={this.handleUserMenu} 
-                        hidden={loggedIn}
                         className={loggedIn && !this.state.user_drawer_open ? "" : classes.hide }>
                             {name}
                         </Button>
@@ -215,15 +210,15 @@ class Navbar extends Component {
                         <Typography variant="h4" className={classes.title}>
                             {name}
                         </Typography>
-                        <div className={classes.maxHeight}>
-                            <Button color="primary" className={classes.maxWidthButton}>
+                        <Divider/>
+                          <List className={classes.flexDown}>
+                            <Button color="primary" fullWidth={true} >
                                 PLACEHOLDER
                             </Button>
-                            <Button onClick={this.handleLogout} color="secondary" className={`${classes.maxWidthButton} ${classes.stickyDown}`}>
-                              LOGOUT
+                            <Button onClick={this.handleLogout} fullWidth={true} color="secondary" >
+                                LOGOUT
                             </Button>
-                        </div>
-                        
+                        </List>
                     </div>
                 </Drawer>
             </div>

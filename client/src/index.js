@@ -24,12 +24,14 @@ ReactDOM.render(
     <ThemeProvider theme = {theme}>
       <BrowserRouter>
         <Provider store = {store}>
-          <Navbar/>
           <Switch>
             <Route exact path = '/' component = {Home}></Route>
-            <Route exact path = '/login' component = {Login}></Route>
-            <Route exact path = '/login/callback' component = {LoginResult}></Route>
-            <Route exact path = '/dashboard' component = {Dashboard}></Route>
+            <>
+              <Navbar/>
+              <Route exact path = '/login' component = {Login}></Route>
+              <Route exact path = '/login/callback' component = {LoginResult}></Route>
+              <Route exact path = '/dashboard' component = {Dashboard}></Route>
+            </>
           </Switch>
         </Provider>
       </BrowserRouter>
