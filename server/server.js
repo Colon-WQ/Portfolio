@@ -1,8 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename)
+
 import cookieParser from "cookie-parser";
 import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
+
 
 // route imports
 import loginRoutes from './routes/login-callback.route.js';
@@ -43,7 +49,14 @@ const PORT_CONFIG = PORT || 5000;
 // console.log(MONGO_URL)
 // console.log(FRONT_END);
 
-app.listen(PORT_CONFIG, () => console.log(`Server Running on Port: http://localhost:${PORT_CONFIG}`));
+app.use(express.static(path.join(__dirname, "..", "client/deploy")))
+
+app.get('*', function (req, res) {
+    //Note: You must use path.join() to handle relative paths i.e ../
+    res.sendFile(path.join(__dirname, "..", 'client/deploy/index.html'));
+});
+
+app.listen(PORT_CONFIG, () => console.log("server up and running"));
 
 // connects mongoose + express
 // mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })

@@ -7,21 +7,12 @@ import '../styles/login.css';
 import { BeatLoader } from 'react-spinners';
 
 class LoginResult extends Component {
-    constructor() {
-        super()
-        this.state = {
-            ghCode: '',
-            isToken: false
-        }
-    }
+    
 
     componentDidMount() {
         let search = window.location.search;
         let params = new URLSearchParams(search);
         let ghCode = params.get('code');
-        this.setState({
-            ghCode: ghCode
-        })
         const bodyJSON = { code: ghCode };
 
         if (ghCode !== "") {
@@ -40,9 +31,7 @@ class LoginResult extends Component {
                 console.log("POST response: ");
                 console.log(res);
                 this.props.log_in_user(res.data)
-            }).then(this.setState({
-                isToken: true
-            })).catch(err => {
+            }).catch(err => {
                 console.log(err.message);
             })
         } else {
@@ -51,7 +40,8 @@ class LoginResult extends Component {
     }
 
     render() {
-        if (this.state.isToken) {
+        const { loggedIn } = this.props
+        if (loggedIn) {
             return (
                 <Redirect to = '/dashboard'></Redirect>
             )
@@ -67,7 +57,7 @@ class LoginResult extends Component {
 }
 
 const mapStateToProps = state => ({
-
+    loggedIn: state.login.loggedIn
 })
 
 const mapDispatchToProps = {
