@@ -6,7 +6,6 @@ import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Slide from '@material-ui/core/Slide';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 
