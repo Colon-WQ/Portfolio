@@ -134,7 +134,7 @@ class Navbar extends Component {
 
     componentDidMount() {
       if (!this.props.loggedIn) {
-        const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+        const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
         this.props.repopulate_state(localStorageItem)
       }
     }
@@ -142,7 +142,7 @@ class Navbar extends Component {
     handleLogout() {
         console.log("logging out")
         this.props.log_out_user()
-        localStorage.removeItem("portfolioUser")
+        localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE)
         console.log("successfully cleared localStorage")
         axios({
             method: 'GET',

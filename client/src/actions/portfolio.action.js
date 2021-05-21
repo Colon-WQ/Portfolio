@@ -19,18 +19,18 @@ export const clearCurrentWork = () => ({
 //for saving user work temporarily on localStorage and in redux state
 export async function saveCurrentWorkToLocal(curr) {
     return dispatch => {
-        window.localStorage.setItem("portfolioWork", JSON.stringify(curr))
+        window.localStorage.setItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE, JSON.stringify(curr))
         dispatch(saveCurrentWork(curr))
-        console.log("portfolio work saved temporarily")
+        //console.log("portfolio work saved temporarily")
     }
 }
 
 //removing temporary user work from localStorage and from redux state
 export async function clearCurrentWorkFromLocal() {
     return dispatch => {
-        window.localStorage.removeItem("portfolioWork")
+        window.localStorage.removeItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE)
         dispatch(clearCurrentWork())
-        console.log("portfolio work cleared")
+        //console.log("portfolio work cleared")
     }
 }
 

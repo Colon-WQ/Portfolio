@@ -19,7 +19,7 @@ class LoginResult extends Component {
         //If user is not loggedIn already
         if (!this.props.loggedIn) {
             //Check if loggedIn user might have accidentally refreshed into this url
-            const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             //If localStorage returns null, user is not loggedIn, proceed to login
             if (localStorageItem == null) {
                 let search = window.location.search;
@@ -47,7 +47,7 @@ class LoginResult extends Component {
                             avatar_url: data.avatar_url,
                             gravatar_id: data.gravatar_id
                         }
-                        window.localStorage.setItem("portfolioUser", JSON.stringify(forLocalStorage))
+                        window.localStorage.setItem(process.env.REACT_APP_USER_LOCALSTORAGE, JSON.stringify(forLocalStorage))
                         /**TODO: Implement IDEA => need to create a route that fetches user's portfolios' names and images only. We store this
                          * in localStorage just like we did user peripherals.
                          * In the dashboard, only when we click on the portfolio to be worked on. Then we fetch the actual portfolios themselves,
