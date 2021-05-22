@@ -92,7 +92,7 @@ class Home extends Component {
 
     componentDidMount() {
         if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             this.props.repopulate_state(localStorageItem)
         }
     }
