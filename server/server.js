@@ -13,7 +13,7 @@ import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './util
 // route imports
 import loginRoutes from './routes/login-callback.route.js';
 import portfolioRoutes from './routes/portfolio.route.js';
-import logoutRoutes from './routes/logout.route.js'
+import logoutRoutes from './routes/logout.route.js';
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.use(cors(corsOptions));
 // Append routes here
 app.use('/login', loginRoutes);
 app.use('/portfolio', portfolioRoutes);
-app.use('/logout', logoutRoutes)
+app.use('/logout', logoutRoutes);
 
 const CONNECTION_URL = MONGO_URL;
 const PORT_CONFIG = PORT || 5000;

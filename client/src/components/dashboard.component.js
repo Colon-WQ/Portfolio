@@ -34,7 +34,7 @@ class Dashboard extends Component {
 
     componentDidMount() {
         if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem('portfolioUser'))
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             this.props.repopulate_state(localStorageItem)
         }
     }
@@ -52,6 +52,10 @@ class Dashboard extends Component {
         });
     }
 
+    openTemplateEditor() {
+        window.location.pathname = '/templateEditor'
+    }
+
     render() {
         const { loggedIn, name, portfolios, classes} = this.props
         return (
@@ -63,7 +67,7 @@ class Dashboard extends Component {
                             {element.title}
                         </Button>
                     })}
-                    <Button className = {classes.portfolioButton}>Add a Portfolio</Button>
+                    <Button onClick = {this.openTemplateEditor} className = {classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
                 <Button onClick = {this.checkCookie} className = {classes.portfolioButton}>Check Cookie</Button>
             </div>

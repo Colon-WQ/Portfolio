@@ -71,7 +71,7 @@ export const checkGitCreated = async (req, res) => {
     // fields gh_token and login should be populated from auth in middleware
     const gh_token = req.gh_token;
     const username = req.username;
-    console.log(username)
+    //console.log(username)
     // Might need authorization for private repos.
     axios({
         method: "GET",
