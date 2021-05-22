@@ -60,6 +60,7 @@ export const getRepoContent = async (req, res) => {
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
+        console.log("successfully fetched contents of repository " + req.query.repo)
         return res.status(200).json({ content: response.data })
     }).catch(err => {
         console.log(err.message)
