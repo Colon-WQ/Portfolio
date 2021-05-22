@@ -31,7 +31,7 @@ const auth = async (req, res, next) => {
         }).catch(err => {
             console.log(err.message)
             console.log("token was invalidated before")
-            return res.status(403).json({ message: "Invalid Token" })
+            return res.status(403).send("Invalid Token")
         })
     });
 }

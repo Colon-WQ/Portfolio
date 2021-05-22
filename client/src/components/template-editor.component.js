@@ -40,7 +40,8 @@ class TemplateEditor extends Component {
         this.state = {
             anchorEl: null,
             finalizeDialogState: false,
-            repo: ''
+            overrideDialogState: false,
+            repo: ""
         }
         this.handleMenuClick = this.handleMenuClick.bind(this);
         this.handleMenuClose = this.handleMenuClose.bind(this);
@@ -48,6 +49,8 @@ class TemplateEditor extends Component {
         this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleRepoChange = this.handleRepoChange.bind(this);
+        this.handleOverrideDialogClose = this.handleOverrideDialogClose.bind(this);
+        this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handleClearTemplate = this.handleClearTemplate.bind(this);
         this.handleUndo = this.handleUndo.bind(this);
     }
@@ -92,17 +95,46 @@ class TemplateEditor extends Component {
             url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
             withCredentials: true,
             params: {
-                repo: 'todo_list'
+                repo: this.state.repo
             }
-        }).then(res => {
+        }).then(async res => {
             console.log(res.data.message)
+            await axios({
+                method: "POST",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
+                withCredentials: true,
+                data: {
+                    repo: this.state.repo
+                }
+            }).then(response => {
+                console.log(response.data.message)
+            }).catch(err => {
+                console.log(err.message)
+                console.log("repository creation failed")
+            })
         }).catch(err => {
             console.log(err.response.data)
+            this.setState({
+                overrideDialogState: true
+            })
         })
 
         this.setState({
             finalizeDialogState: false,
             repo: ''
+        })
+    }
+
+    handleOverrideDialogClose() {
+        this.setState({
+            overrideDialogState: false
+        })
+    }
+
+    handleOverrideAllowed() {
+        //TODO Push to repo OR recreate repository
+        this.setState({
+            overrideDialogState: false
         })
     }
 
@@ -159,6 +191,29 @@ class TemplateEditor extends Component {
                         </Button>
                         <Button onClick = {this.handleFinalizeEdits} color = 'primary'>
                             Finalize
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open = {this.state.overrideDialogState}
+                    onClose = {this.handleOverrideDialogClose}
+                    aria-labelledby = "override permission input"
+                >
+                    <DialogTitle id = "override permission input">
+                        Warning!
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText color = 'primary'>
+                            Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
+                            Cancel
+                        </Button>
+                        <Button onClick = {this.handleOverrideAllowed} color = 'primary'>
+                            Allow Override
                         </Button>
                     </DialogActions>
                 </Dialog>
