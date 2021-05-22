@@ -5,9 +5,10 @@ import { repopulate_state } from '../actions/login.action'
 import '../styles/login.css';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
+import { Avatar, Button, Divider, Drawer, Hidden, IconButton, List, ListItem } from '@material-ui/core';
 
 const styles = (theme) => ({
     root: {
@@ -42,51 +43,79 @@ const styles = (theme) => ({
         height: '40vh',
         borderRadius: '20vh',
     },
-    aboutDiv: {
+    featuresDiv: {
+        position: 'relative',
         width: '100%',
         height: '60vh',
         flexDirection: 'row',
     },
-    aboutTextDiv: {
+    featureTextDiv: {
+        position: 'absolute',
+        top: 0,
+        right : 0,
         width: '55vw',
         height: '100%',
         padding: '10%',
     },
-    aboutImgDiv: {
+    featureImgDiv: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
         width: '45vw',
         height: '100%'
     },
     fullSize: {
         width: '100%',
         height: '100%',
+    },
+    floating: {
+        zIndex: 1,
+    },
+    featureButtonLeft: {
+        height: '100%',
+        position: 'absolute',
+        left: 0,
+    },
+    featureButtonRight: {
+        height: '100%',
+        position: 'absolute',
+        right: 0,
     }
-})
+});
 
-const aboutMaxIndex = 2;
-const aboutImage = [
+const featureMaxIndex = 2;
+// could combine constants into 1 array storing dictionary objs
+const featureImage = [
     'https://afkgaming.com/media/images/55143-08bf98e6a4535406acafc015adf99434.jpeg', 
-    'img2', 
-    'img3'];
-const aboutTitle = [
+    'https://www.streamscheme.com/wp-content/uploads/2020/09/ForsenCD-emote.jpg', 
+    'https://i.redd.it/93eeyq563wo11.png'
+];
+const featureTitle = [
     'Your Design. Your Website.',
     'temporary text',
     'third wheel'
-]
-const aboutText=[
+];
+const featureText=[
     'No watermarks, no restrictions — you own your website',
     'subtext2',
     'subtext3'
-]
+];
+// same here
+const faqQuestions=['is free?', 'can I has access token?', 'how to generate css'];
+const faqAnswers=['yes\nof\ncourse', 'no', 'idk' ];
 
 class Home extends Component {
     
     constructor() {
         super();
+        this.handleFeatureClick = this.handleFeatureClick.bind(this);
+        this.handleFeatureNext = this.handleFeatureNext.bind(this);
+        this.handleFeaturePrev = this.handleFeaturePrev.bind(this);
         this.state = {
-            aboutIndex: 0,
-            aboutText: aboutText[0],
-            aboutTitle: aboutTitle[0],
-            aboutImage: aboutImage[0]
+            featureIndex: 0,
+            featureText: featureText[0],
+            featureTitle: featureTitle[0],
+            featureImage: featureImage[0]
         }
     }
 
@@ -96,23 +125,32 @@ class Home extends Component {
             this.props.repopulate_state(localStorageItem)
         }
     }
-    
 
     handleLogin() {
         window.location.pathname = '/login';
     }
 
-    handleAboutNext() {
-        //
+    handleFeatureClick(newIndex) {
+        this.setState({
+            featureIndex: newIndex,
+            featureTitle: featureTitle[newIndex],
+            featureText: featureText[newIndex],
+            featureImage: featureImage[newIndex]
+        })
     }
 
-    handleAboutPrev() {
-        //
+    handleFeatureNext() {
+        const newIndex = this.state.featureIndex === featureMaxIndex ? 0 : this.state.featureIndex + 1;
+        this.handleFeatureClick(newIndex);
+    }
+
+    handleFeaturePrev() {
+        const newIndex = this.state.featureIndex === 0 ? featureMaxIndex : this.state.featureIndex - 1;
+        this.handleFeatureClick(newIndex);
     }
 
     render() {
         const { classes } = this.props;
-        console.log(this.state.aboutImage);
         return (
             <div className = {classes.root}>
                 <CssBaseline/>
@@ -130,18 +168,31 @@ class Home extends Component {
                         Login
                     </Button>
                 </div>
-                <div className={`${classes.aboutDiv} ${classes.centeredDiv}`}>
-                    <div className={classes.aboutImgDiv}>
-                        <img src={this.state.aboutImage} className={classes.fullSize} alt={`about ${this.state.aboutSection}`}></img>
+                <div className={`${classes.featuresDiv} ${classes.centeredDiv}`}>
+                    <Button onClick={this.handleFeaturePrev} className={`${classes.floating} ${classes.featureButtonLeft}`}>
+                        <FaChevronLeft/>
+                    </Button>
+                    <div className={classes.featureImgDiv}>
+                        <img src={this.state.featureImage} className={classes.fullSize} alt={`feature ${this.state.featureSection}`}></img>
                     </div>
-                    <div className={`${classes.aboutTextDiv} ${classes.centeredDiv}`}>
+                    <div className={`${classes.featureTextDiv} ${classes.centeredDiv}`}>
                         <Typography component="h2" variant="h2" color="inherit" noWrap className={classes.title}>
-                            {this.state.aboutTitle}
+                            {this.state.featureTitle}
                         </Typography>
                         <Typography component="h6" variant="h6" color="inherit" noWrap className={classes.title}>
-                            {this.state.aboutText}
+                            {this.state.featureText}
                         </Typography>
                     </div>
+                    <Button onClick={this.handleFeatureNext} className={`${classes.floating} ${classes.featureButtonRight}`}>
+                        <FaChevronRight/>
+                    </Button>
+                </div>
+                <div className={`${classes.faqDiv} ${classes.centeredDiv}`}>
+                    <List>
+                        <ListItem>
+                            {/*  */}
+                        </ListItem>
+                    </List>
                 </div>
             </div>
         )
