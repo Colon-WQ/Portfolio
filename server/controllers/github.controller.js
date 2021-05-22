@@ -48,4 +48,24 @@ export const createRepo = async (req, res) => {
     })
 }
 
+export const getRepoContent = async (req, res) => {
+    const gh_token = req.gh_token;
+    const username = req.username;
+    console.log("attempting to get " +  req.query.repo +" repository content")
+    await axios({
+        method: "GET",
+        url: "https://api.github.com/repos/" + username + "/" + req.query.repo + "/contents/",
+        headers: {
+            'Authorization': `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(response => {
+        console.log("successfully fetched contents of repository " + req.query.repo)
+        return res.status(200).json({ content: response.data })
+    }).catch(err => {
+        console.log(err.message)
+        return res.status(404).send("getting repository contents failed")
+    })
+}
+
 export default router;
