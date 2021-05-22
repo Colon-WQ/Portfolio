@@ -9,7 +9,7 @@ import {
     deletePortfolio 
 } from '../controllers/portfolio.controller.js';
 import { checkGitCreated } from '../controllers/github-api.controller.js'; 
-import { checkExistingRepos, createRepo } from '../controllers/github.controller.js';
+import { checkExistingRepos, createRepo, getRepoContent } from '../controllers/github.controller.js';
 import auth from '../middleware/auth.middleware.js';
 
 
@@ -23,6 +23,7 @@ router.get('/status', auth, checkGitCreated);
 //lists user's repos for checking
 router.get('/checkExistingRepos', auth, checkExistingRepos);
 router.post('/createRepo', auth, createRepo);
+router.get('/getRepoContent', auth, getRepoContent);
 
 router.post('/:id/publish', postPortfolio);
 router.patch('/:id/save', savePortfolio);

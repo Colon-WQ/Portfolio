@@ -53,6 +53,7 @@ class TemplateEditor extends Component {
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handleClearTemplate = this.handleClearTemplate.bind(this);
         this.handleUndo = this.handleUndo.bind(this);
+        this.handleGetRepoContent = this.handleGetRepoContent.bind(this);
     }
 
     componentDidMount() {
@@ -156,6 +157,23 @@ class TemplateEditor extends Component {
         })
     }
 
+    handleGetRepoContent() {
+        axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/getRepoContent",
+            withCredentials: true,
+            params: {
+                repo: "testShit"
+            }
+        }).then(res => {
+            console.log(res.data.content)
+        }).catch(err => {
+            console.log(err.response.data)
+        })
+    }
+
+    
+
 
     render() {
         const { classes } = this.props
@@ -240,6 +258,7 @@ class TemplateEditor extends Component {
                     <MenuItem onClick={this.handleFinalize}>Finalize and Push</MenuItem>
                     <MenuItem onClick={this.handleClearTemplate}>Clear Template</MenuItem>
                     <MenuItem onClick={this.handleUndo}>Undo Action</MenuItem>
+                    <MenuItem onClick={this.handleGetRepoContent}>Get Repo Content Testing</MenuItem>
                 </Menu>
                 
                 
