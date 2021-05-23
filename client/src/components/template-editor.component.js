@@ -2,18 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/login.action'
 import axios from 'axios'
-import Fab from '@material-ui/core/Fab';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles'
-import { Typography } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { Button, IconButton, TextField, Typography } from '@material-ui/core';
+import { GrFormClose } from "react-icons/gr";
 
 const styles = (theme) => ({
     root: {
@@ -34,60 +25,48 @@ const styles = (theme) => ({
     }
 })
 
+
+const fields = {
+    text: '',
+    img1: '',
+    img2: '',
+    img3: '',
+    img4: '',
+    primaryColour: '',
+    secondaryColour: '',
+    backgroundColour: '',
+    link1: '',
+    link2: '',
+    link3: '',
+    link4: '',
+    primaryFontFamily: '',
+    secondaryFontFamily: ''
+}
+
+const images = [ 'img1', 'img2', 'img3', 'img4' ];
+const colours = [ 'primaryColour', 'secondaryColour', 'backgroundColour' ];
+const fonts = [ 'primaryFontFamily', 'secondaryFontFamily' ];
+// TODO: populate array dynamically
+const availableFonts = [ 'Roboto', 'Comic sans' ];
+
+// ### params
+// onClose: function to update parent element on close. takes in state as input
+// fields: { text: { label: ..., }}
+// show: boolean, hides editor otherwise
 class TemplateEditor extends Component {
     constructor() {
         super();
         this.state = {
-            anchorEl: null,
-            finalizeDialogState: false,
-            overrideDialogState: false,
-            repo: ""
+            ...fields,
         }
-        this.handleMenuClick = this.handleMenuClick.bind(this);
-        this.handleMenuClose = this.handleMenuClose.bind(this);
-        this.handleFinalize = this.handleFinalize.bind(this);
-        this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
-        this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
-        this.handleRepoChange = this.handleRepoChange.bind(this);
-        this.handleOverrideDialogClose = this.handleOverrideDialogClose.bind(this);
-        this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
-        this.handleClearTemplate = this.handleClearTemplate.bind(this);
-        this.handleUndo = this.handleUndo.bind(this);
-        this.handleGetRepoContent = this.handleGetRepoContent.bind(this);
     }
 
     componentDidMount() {
+        // is this necessary if template is a widget
         if (!this.props.loggedIn) {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             this.props.repopulate_state(localStorageItem)
         }
-    }
-
-    handleMenuClick(event) {
-        this.setState({
-            anchorEl: event.currentTarget
-        })
-    }
-
-    handleMenuClose() {
-        this.setState({
-            anchorEl: null
-        })
-    }
-
-    handleFinalize() {
-        
-        this.setState({
-            anchorEl: null,
-            finalizeDialogState: true
-        })
-    }
-
-    handleFinalizeDialogClose() {
-        this.setState({
-            finalizeDialogState: false,
-            repo: ''
-        })
     }
 
     async handleFinalizeEdits() {
@@ -126,142 +105,70 @@ class TemplateEditor extends Component {
         })
     }
 
-    handleOverrideDialogClose() {
+    handleChange(event) {
         this.setState({
-            overrideDialogState: false
-        })
+            [event.target.name]: event.target.value
+        });
     }
 
-    handleOverrideAllowed() {
-        //TODO Push to repo OR recreate repository
+    handleImageUpload(event) {
+        // TODO: Open a upload dialog
+        const img = ""
         this.setState({
-            overrideDialogState: false
+            [event.target.name]: img
         })
     }
-
-    handleRepoChange(event) {
-        this.setState({
-            repo: event.target.value
-        })
-    }
-
-    handleClearTemplate() {
-        this.setState({
-            anchorEl: null
-        })
-    }
-
-    handleUndo() {
-        this.setState({
-            anchorEl: null
-        })
-    }
-
-    handleGetRepoContent() {
-        axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/getRepoContent",
-            withCredentials: true,
-            params: {
-                repo: "testShit"
-            }
-        }).then(res => {
-            console.log(res.data.content)
-        }).catch(err => {
-            console.log(err.response.data)
-        })
-    }
-
-    
-
 
     render() {
-        const { classes } = this.props
+        const { classes } = this.props;
 
         return (
-            <div className = {classes.root}>
+            <div className = { this.props.show ? classes.root : classes.hide}>
+                <IconButton onClick={() => this.props.onClose(this.state)}>
+                    <GrFormClose/>
+                </IconButton>
 
-                <Dialog 
-                    open = {this.state.finalizeDialogState}
-                    onClose = {this.handleFinalizeDialogClose}
-                    aria-labelledby = "repo name input"
-                >
-                    <DialogTitle id = "repo name input">
-                        Repository Name
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText color = 'primary'>
-                            Choose a Github repository name to save portfolio edits
-                        </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Repository Name"
-                            type="string"
-                            fullWidth
-                            onChange={this.handleRepoChange}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick = {this.handleFinalizeDialogClose} color = 'primary'>
-                            Cancel
-                        </Button>
-                        <Button onClick = {this.handleFinalizeEdits} color = 'primary'>
-                            Finalize
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                <div className = {classes.contentDiv}>
+                    <TextField id='text' variant='outlined' 
+                    label={ this.props.fields.text === undefined 
+                        || this.props.fields.text.label === undefined ? 'Component text' : this.props.fields.text.label } 
+                    className={ this.props.fields.text === undefined ? classes.hide : classes.textField }
+                    onChange={this.handleChange}/>
 
-                <Dialog
-                    open = {this.state.overrideDialogState}
-                    onClose = {this.handleOverrideDialogClose}
-                    aria-labelledby = "override permission input"
-                >
-                    <DialogTitle id = "override permission input">
-                        Warning!
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText color = 'primary'>
-                            Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
-                            Cancel
-                        </Button>
-                        <Button onClick = {this.handleOverrideAllowed} color = 'primary'>
-                            Allow Override
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                
-                <Fab
-                    variant = 'extended'
-                    className = {classes.floating}
-                    size = 'medium'
-                    color = 'primary'
-                    aria-label = 'editor panel'
-                    aria-controls = 'simple-menu'
-                    aria-haspopup = 'true'
-                    onClick = {this.handleMenuClick}
-                >
-                    <Typography variant = 'button'>Editor Panel</Typography>
-                </Fab>
-                <Menu
-                    id="simple-menu"
-                    anchorEl={this.state.anchorEl}
-                    keepMounted
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={this.handleMenuClose}
-                >
-                    <MenuItem onClick={this.handleFinalize}>Finalize and Push</MenuItem>
-                    <MenuItem onClick={this.handleClearTemplate}>Clear Template</MenuItem>
-                    <MenuItem onClick={this.handleUndo}>Undo Action</MenuItem>
-                    <MenuItem onClick={this.handleGetRepoContent}>Get Repo Content Testing</MenuItem>
-                </Menu>
-                
-                
+                    {images.map((img, index) => {
+                        if(this.props.fields[img] === undefined) return;
+                        // dynamic variable name
+                        return (<div>
+                                <Button variant="outlined" onClick={this.handleChange}>
+                                <img src={this.state.fields[img]} 
+                                alt={this.props.fields[img].label === undefined ? 'Upload image' : 
+                                "Upload " + this.props.fields[img].label}/>
+                                </Button>
+                            </div>);
+                    })}
+                </div>
+                <div className={classes.themeDiv}>
+                    {colours.map((col, index) => {
+                        if(this.props.fields[col] === undefined) return;
+                        return (<div>
+                            <Button style={`background-color: ${this.state[col]}`}>
+                                Should be changed to icon
+                            </Button>
+                            <TextField id={col} variant='outlined' 
+                            label={col} onChange={this.handleChange}/>
+                        </div>);
+                    })}
+                    {colours.map((font, index) => {
+                        if(this.props.fields[font] === undefined) return;
+                        return (<div>
+                            <Button style={`background-color: ${this.state[font]}`}>
+                                Should be changed to icon
+                            </Button>
+                            <TextField id={font} variant='outlined' 
+                            label={font} onChange={this.handleChange}/>
+                        </div>);
+                    })}
+                </div>
             </div>
         )
     }
