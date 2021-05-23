@@ -21,6 +21,7 @@
   },
   "scripts": {
     "localStart": "react-scripts start",
+    "doc": "jsdoc -c jsdoc.json",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -43,5 +44,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "better-docs": "^2.3.2",
+    "jsdoc": "^3.6.7"
   }
 }

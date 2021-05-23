@@ -14,6 +14,14 @@ import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-u
 
 
 // TODO: clean up unused styles
+
+/**
+ * styles function defines css elements to be overwritten to a given MUI theme.
+ *
+ * @param {Object} theme - an MUI theme.
+ * @return {Object} - an MUI theme with selected css elements overwritten.
+ * @memberof Navbar
+ */
 const styles = (theme) => ({
     root: {
       display: 'flex',
@@ -120,19 +128,44 @@ const styles = (theme) => ({
   });
 
 
-
+/**
+ * Component that shows the navigation bar.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ *
+ * @component
+ * @category Navbar
+ */
 class Navbar extends Component {
     
-    constructor() {
+  /**
+   * @constructor
+   */
+  constructor() {
         super();
         this.handleLogout = this.handleLogout.bind(this);
         this.handleUserMenu = this.handleUserMenu.bind(this);
+
+        /**
+         * @typedef state
+         * @property {boolean} menu_open - represents expanded state of menu
+         * @property {boolean} user_drawer_open - represents expanded state of drawer
+         * @memberof Navbar
+         */
         this.state = {
             menu_open: false,
             user_drawer_open: false
         }
     }
 
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @property {Function} componentDidMount
+     * @return void
+     * @memberof Navbar
+     */
     componentDidMount() {
       if (!this.props.loggedIn) {
         const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
@@ -140,6 +173,16 @@ class Navbar extends Component {
       }
     }
     
+    /**
+     * deletes user details and logged in status from localStorage and makes a GET request to
+     * backend server where the user's access token will be invalidated.
+     * 
+     * The cookie containing a JWT of the user's access token will also be deleted.
+     *
+     * @property {Function} handleLogout
+     * @return void
+     * @memberof Navbar
+     */
     handleLogout() {
         console.log("logging out")
         this.props.log_out_user()
@@ -156,6 +199,13 @@ class Navbar extends Component {
         })
     }
 
+    /**
+     * handles the opening and closing of drawer by setting boolean user_drawer_open in Navbar component's state.
+     *
+     * @property {Function} handleUserMenu
+     * @return void
+     * @memberof Navbar
+     */
     handleUserMenu() {
         console.log(this.state.user_drawer_open);
         this.setState({user_drawer_open: !this.state.user_drawer_open});
@@ -225,6 +275,12 @@ class Navbar extends Component {
     }
 }
 
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof Navbar
+ */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
     name: state.login.name,
@@ -234,6 +290,12 @@ const mapStateToProps = state => ({
     error: state.login.error
 })
 
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.<Function>} 
+ * @memberof Navbar
+ */
 const mapDispatchToProps = {
   log_out_user,
   repopulate_state

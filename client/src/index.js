@@ -14,6 +14,15 @@ import rootReducer from './reducers/root.reducer';
 import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
+/**
+ * @file index.js is the root file for this Portfol.io app
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @category Index
+ */
+
 
 const store = createStore(
   rootReducer,

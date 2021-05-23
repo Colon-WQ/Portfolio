@@ -7,14 +7,30 @@ import { fetchPortfolios } from '../actions/portfolio.action';
 import '../styles/login.css';
 import { BeatLoader } from 'react-spinners';
 
+/**
+ * Component that displays loading animation while Github authentication occurs.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @component
+ * @category LoginResult
+ */
 class LoginResult extends Component {
     
-
+    /**
+     * If user is logged in already, the user will be redirected to Dashboard. 
+     * 
+     * Otherwise, an attempt will be made to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * If user's logged in status is Undefined, an attempt will be made to authenticate the user. Otherwise, he will
+     * also be redirected to Dashboard.
+     *
+     * @property {Function} componentDidMount
+     * @return void
+     * @memberof LoginResult
+     */
     componentDidMount() {
-        /**If user is loggedIn already, <Redirect> below would already redirect the user to dashboard.
-         * Otherwise, we try to login the user, either by getting info from localStorage if user was loggedIn,
-         * or we make a request to authenticate a new user.
-         */
 
         //If user is not loggedIn already
         if (!this.props.loggedIn) {
@@ -56,8 +72,6 @@ class LoginResult extends Component {
                          * When user leaves the template editor, we save his current work to the mongodb database,
                          * then wipe the localStorage of the current portfolio's work.
                          */
-
-                        //NOTE: I'm not sure of the order in which the following two functions actually occur, so if undefined happens check here too
                         this.props.fetchPortfolios(data.id)
                         this.props.log_in_user(data)
                     }).catch(err => {
@@ -90,10 +104,22 @@ class LoginResult extends Component {
     }
 }
 
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof LoginResult
+ */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn
 })
 
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.<Function>} 
+ * @memberof LoginResult
+ */
 const mapDispatchToProps = {
     log_in_user,
     repopulate_state,
