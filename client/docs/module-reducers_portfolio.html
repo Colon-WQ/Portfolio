@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> reducers/login</title>
+  <title> reducers/portfolio</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -74,7 +74,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Module</p>
-                    <h1>reducers/login</h1>
+                    <h1>reducers/portfolio</h1>
                 </header>
                 
 
@@ -95,7 +95,7 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>login.reducer.js exports reducers which is a function that determines changes to an application's state.</p></div>
+            <div class="description"><p>portfolio.reducer.js exports reducers which is a function that determines changes to an application's state.</p></div>
         
 
         
@@ -154,9 +154,9 @@
 
     
         <p class="tag-source">
-            <a href="reducers_login.reducer.js.html" class="button">View Source</a>
+            <a href="reducers_portfolio.reducer.js.html" class="button">View Source</a>
             <span>
-                <a href="reducers_login.reducer.js.html">reducers/login.reducer.js</a>, <a href="reducers_login.reducer.js.html#line1">line 1</a>
+                <a href="reducers_portfolio.reducer.js.html">reducers/portfolio.reducer.js</a>, <a href="reducers_portfolio.reducer.js.html#line1">line 1</a>
             </span>
         </p>
     
@@ -206,87 +206,6 @@
             
                 <div class="member">
 
-    <span class="method-parameter is-pulled-right">
-        <label>Type:</label>
-        
-<span class="param-type">string</span>
-
-
-    </span>
-
-<h4 class="name" id="~GUEST">
-    <a class="href-link" href="#~GUEST">#</a>
-    
-        
-            <span class='tag'>inner</span>
-        
-    
-    <span class="code-name">
-        GUEST
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>string representing guest user.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="reducers_login.reducer.js.html" class="button">View Source</a>
-            <span>
-                <a href="reducers_login.reducer.js.html">reducers/login.reducer.js</a>, <a href="reducers_login.reducer.js.html#line15">line 15</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
 <h4 class="name" id="~initialState">
     <a class="href-link" href="#~initialState">#</a>
     
@@ -302,10 +221,6 @@
 
 
 
-
-<div class="description">
-    <p>state that the login reducer is initialized with.</p>
-</div>
 
 
 
@@ -337,7 +252,30 @@
             
 <tr class="deep-level-0">
     
-        <td class="name"><code>loggedIn</code></td>
+        <td class="name"><code>portfolios</code></td>
+    
+
+    <td class="type">
+    
+        
+<span class="param-type">Array.&lt;Object></span>
+
+
+    
+    </td>
+
+    
+
+    
+
+    <td class="description last"><p>Array containing objects containing details about user portfolios.</p></td>
+</tr>
+
+        
+            
+<tr class="deep-level-0">
+    
+        <td class="name"><code>loading</code></td>
     
 
     <td class="type">
@@ -353,99 +291,7 @@
 
     
 
-    <td class="description last"><p>logged in status of user.</p></td>
-</tr>
-
-        
-            
-<tr class="deep-level-0">
-    
-        <td class="name"><code>name</code></td>
-    
-
-    <td class="type">
-    
-        
-<span class="param-type">string</span>
-
-
-    
-    </td>
-
-    
-
-    
-
-    <td class="description last"><p>Github name of user.</p></td>
-</tr>
-
-        
-            
-<tr class="deep-level-0">
-    
-        <td class="name"><code>id</code></td>
-    
-
-    <td class="type">
-    
-        
-<span class="param-type">string</span>
-
-
-    
-    </td>
-
-    
-
-    
-
-    <td class="description last"><p>Unique Github id of user.</p></td>
-</tr>
-
-        
-            
-<tr class="deep-level-0">
-    
-        <td class="name"><code>avatar_url</code></td>
-    
-
-    <td class="type">
-    
-        
-<span class="param-type">string</span>
-
-
-    
-    </td>
-
-    
-
-    
-
-    <td class="description last"><p>url representing image of user's Github avatar</p></td>
-</tr>
-
-        
-            
-<tr class="deep-level-0">
-    
-        <td class="name"><code>gravatar_id</code></td>
-    
-
-    <td class="type">
-    
-        
-<span class="param-type">string</span>
-
-
-    
-    </td>
-
-    
-
-    
-
-    <td class="description last"><p>url representing user's globally recognized avatar</p></td>
+    <td class="description last"><p>boolean indicating loading status</p></td>
 </tr>
 
         
@@ -468,7 +314,30 @@
 
     
 
-    <td class="description last"><p>error response provided by requests.</p></td>
+    <td class="description last"><p>error object from a failed request</p></td>
+</tr>
+
+        
+            
+<tr class="deep-level-0">
+    
+        <td class="name"><code>currentWork</code></td>
+    
+
+    <td class="type">
+    
+        
+<span class="param-type">Object</span>
+
+
+    
+    </td>
+
+    
+
+    
+
+    <td class="description last"><p>object containing details about user's current portfolio work.</p></td>
 </tr>
 
         
@@ -511,90 +380,9 @@
 
     
         <p class="tag-source">
-            <a href="reducers_login.reducer.js.html" class="button">View Source</a>
+            <a href="reducers_portfolio.reducer.js.html" class="button">View Source</a>
             <span>
-                <a href="reducers_login.reducer.js.html">reducers/login.reducer.js</a>, <a href="reducers_login.reducer.js.html#line23">line 23</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-    <span class="method-parameter is-pulled-right">
-        <label>Type:</label>
-        
-<span class="param-type">string</span>
-
-
-    </span>
-
-<h4 class="name" id="~MISSING">
-    <a class="href-link" href="#~MISSING">#</a>
-    
-        
-            <span class='tag'>inner</span>
-        
-    
-    <span class="code-name">
-        MISSING
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>string representing absent user.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="reducers_login.reducer.js.html" class="button">View Source</a>
-            <span>
-                <a href="reducers_login.reducer.js.html">reducers/login.reducer.js</a>, <a href="reducers_login.reducer.js.html#line44">line 44</a>
+                <a href="reducers_portfolio.reducer.js.html">reducers/portfolio.reducer.js</a>, <a href="reducers_portfolio.reducer.js.html#line17">line 17</a>
             </span>
         </p>
     
@@ -619,8 +407,8 @@
 
 
     
-    <h4 class="name" id="~login">
-        <a class="href-link" href="#~login">#</a>
+    <h4 class="name" id="~portfolioReducer">
+        <a class="href-link" href="#~portfolioReducer">#</a>
         
             
                 <span class='tag'>inner</span>
@@ -628,7 +416,7 @@
         
         <span class="code-name">
             
-                login<span class="signature">(state<span class="signature-attributes">opt</span>, action)</span><span class="type-signature"></span>
+                portfolioReducer<span class="signature">(state<span class="signature-attributes">opt</span>, action)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -795,9 +583,9 @@ by processing actions dispatched to it.</p>
 
     
         <p class="tag-source">
-            <a href="reducers_login.reducer.js.html" class="button">View Source</a>
+            <a href="reducers_portfolio.reducer.js.html" class="button">View Source</a>
             <span>
-                <a href="reducers_login.reducer.js.html">reducers/login.reducer.js</a>, <a href="reducers_login.reducer.js.html#line54">line 54</a>
+                <a href="reducers_portfolio.reducer.js.html">reducers/portfolio.reducer.js</a>, <a href="reducers_portfolio.reducer.js.html#line32">line 32</a>
             </span>
         </p>
     
