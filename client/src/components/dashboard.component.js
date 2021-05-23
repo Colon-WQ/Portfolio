@@ -30,8 +30,24 @@ const styles = (theme) => ({
     }
 })
 
+/**
+ * Component that shows the dashboard of Portfol.io
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @component
+ * @category Dashboard
+ */
 class Dashboard extends Component {
 
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @property {Function} componentDidMount
+     * @return void
+     * @memberof dashboard
+     */
     componentDidMount() {
         if (!this.props.loggedIn) {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
@@ -76,12 +92,24 @@ class Dashboard extends Component {
     }
 }
 
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof Dashboard
+ */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
     name: state.login.name,
     portfolios: state.portfolios.portfolios
 });
 
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.<Function>} 
+ * @memberof Dashboard
+ */
 const mapDispatchToProps = {
     repopulate_state
 }
