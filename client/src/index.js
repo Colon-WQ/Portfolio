@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Navbar from './components/navbar.component';
 import Home from './components/home.component';
-import Login from './components/login.component';
 import LoginResult from './components/login-result.component';
 import Dashboard from './components/dashboard.component';
 import TemplateEditor from './components/template-editor.component';
@@ -38,7 +37,6 @@ ReactDOM.render(
             <Route exact path = '/' component = {Home}></Route>
             <>
               <Navbar/>
-              <Route exact path = '/login' component = {Login}></Route>
               <Route exact path = '/login/callback' component = {LoginResult}></Route>
               <Route exact path = '/dashboard' component = {Dashboard}></Route>
               <Route exact path = '/templateEditor' component = {TemplateEditor}></Route>
