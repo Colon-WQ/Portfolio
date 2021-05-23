@@ -6,6 +6,7 @@ const router = express.Router();
 
 const DESCRIPTION = "Portfolio website hosted by ghpages created by Portfolio.io"
 
+// TODO: merge this file with github-api
 export const checkExistingRepos = async (req, res) => {
     const gh_token = req.gh_token;
     const username = req.username;
@@ -15,6 +16,7 @@ export const checkExistingRepos = async (req, res) => {
         url: "https://api.github.com/repos/" + username + "/" + req.query.repo,
         headers: {
             'Authorization': `token ${gh_token}`,
+            // TODO: standardise ' vs "
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {

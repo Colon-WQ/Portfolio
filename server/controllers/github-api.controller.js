@@ -18,6 +18,7 @@ const cookieParams = {
     secure: true,
     SameSite: "strict",
     signed: true,
+    // TODO: discuss maxAge duration
     maxAge: 6 * 60 * 60 * 1000,
 }
 
@@ -88,7 +89,37 @@ export const checkGitCreated = async (req, res) => {
     })
 };
 
-// export const publishGithub = async (req, res) => {}
+// TODO: research updating multiple files at a time to make undo easier
+// TODO: deploy to ghpages if not a .io repo
+// TODO: handle pagination for extra large files
+// req.body must contain: route, content
+export const publishGithub = async (req, res) => {
+    const data = new FormData();
+    const gh_token = req.gh_token;
+    const sha = await axios({
+        method: "GET",
+        url: `https://api.github.com/repos/${req.body.username}/${route}`,
+        headers: {'Authorization': `token ${ghToken}`}
+    }).then(res => res.body.sha).catch(e => {
+        // TODO: error handling, stop publishing/undo all publishes.
+        if(res.status !== 404) console.log(`Unexpected error occured: ${e}`);
+        return "";
+    });
+    // content should be base64 encoded already
+    data.append('content', req.body.content);
+    
+    axios({
+        method: "PUT",
+        url: `https://api.github.com/repos/${req.body.username}/${route}`,
+        headers: {'Authorization': `token ${ghToken}`},
+        data:  data
+        // TODO: check possible responses from github and if they must be handled separately
+        // TODO: discuss what to do on conflict
+    }).then(response => res.status(200).json({published: true}))
+    // TODO: check correct code for status id
+    .catch(error => res.status(400).json(error));
+}
+
 
 
 export default router;
