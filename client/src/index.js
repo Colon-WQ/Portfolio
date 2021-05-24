@@ -1,26 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Navbar from './components/navbar.component';
-import Home from './components/home.component';
-import LoginResult from './components/login-result.component';
-import Dashboard from './components/dashboard.component';
-import TemplateEditor from './components/template-editor.component';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import LoginResult from './components/LoginResult';
+import Dashboard from './components/Dashboard';
+import EntryEditor from './components/EntryEditor';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import rootReducer from './reducers/root.reducer';
+import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
+
 /**
  * @file index.js is the root file for this Portfol.io app
  * 
  * @author Chen En
  * @author Chuan Hao
  */
-
-
 const store = createStore(
   rootReducer,
   applyMiddleware(thunk)
@@ -37,7 +36,7 @@ ReactDOM.render(
               <Navbar/>
               <Route exact path = '/login/callback' component = {LoginResult}></Route>
               <Route exact path = '/dashboard' component = {Dashboard}></Route>
-              <Route exact path = '/templateEditor' component = {TemplateEditor}></Route>
+              <Route exact path = '/templateEditor' component = {EntryEditor}></Route>
             </>
           </Switch>
         </Provider>

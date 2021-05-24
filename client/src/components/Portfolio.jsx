@@ -1,11 +1,20 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { repopulate_state } from '../actions/login.action'
+import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import { Button, IconButton, TextField, Typography } from '@material-ui/core';
 import { GrFormClose } from "react-icons/gr";
 import { Base64 } from 'js-base64';
+import PropTypes from 'prop-types';
+
+/**
+ * @file Portfolio component representing a user created portfolio page
+ * 
+ * @author Chuan Hao
+ * 
+ * @see Portfolio
+ */
 
 const styles = (theme) => ({
     root: {
@@ -26,12 +35,6 @@ const styles = (theme) => ({
     }
 })
 
-const images = [ 'img1', 'img2', 'img3', 'img4' ];
-const colours = [ 'primaryColour', 'secondaryColour', 'backgroundColour' ];
-const fonts = [ 'primaryFontFamily', 'secondaryFontFamily' ];
-// TODO: populate array dynamically
-const availableFonts = [ 'Roboto', 'Comic sans' ];
-
 const templateGenerators = {
     // TYPE: [style1, style2, ...], style == (dict) => <Component/>
     ENTRY: [],
@@ -39,11 +42,20 @@ const templateGenerators = {
     TIMELINE: []
 }
 
-// ### params
-// editMode: add edit button to components
-// onPublish: @param function that recieves js @return dictionary containing componentID: function to encode
-// TODO: discuss whether to store js string here or under main site
-class PortfolioGenerator extends Component {
+/**
+ * The portfolio component used for rendering previews and compiling for publishing.
+ * 
+ * @component
+ */
+class Portfolio extends Component {
+    static propTypes = {
+        editMode: PropTypes.bool,
+        onPublish: PropTypes.func.isRequired
+    };
+
+    /**
+     * @constructor
+     */
     constructor() {
         super();
         this.state = {
@@ -52,12 +64,20 @@ class PortfolioGenerator extends Component {
 
     }
 
+    /**
+     * Method to generate Entry components to be populated in Portfolio
+     * 
+     * @property {Function} handleImageUpload
+     * @param {*} event 
+     * @return void
+     * @memberof Portfolio
+     */
     renderElement(entry) {
         return templateGenerators[entry.type][entry.style](entry);
     }
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
 
         return (<div>
             {this.props.editMode ? <IconButton>edit icon</IconButton> : null}
@@ -68,13 +88,25 @@ class PortfolioGenerator extends Component {
     }
 }
 
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof EntryEditor
+ */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
     name: state.login.name
 })
 
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.<Function>} 
+ * @memberof EntryEditor
+ */
 const mapDispatchToProps = {
     repopulate_state
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(PortfolioGenerator))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))
