@@ -30,6 +30,7 @@ export const getToken = async (req, res) => {
         data.append("client_secret", client_secret);
         data.append("code", code);
         data.append("redirect_uri", redirect_uri);
+        console.log(data.getHeaders)
         axios({ 
                 method: 'POST',
                 url: 'https://github.com/login/oauth/access_token',
