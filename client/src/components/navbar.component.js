@@ -11,7 +11,15 @@ import List from '@material-ui/core/List';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
-
+/**
+ * @file Navbar component displays user details and also provides functionalities to allow quick access
+ * to other components and to log out.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @see Navbar
+ */
 
 // TODO: clean up unused styles
 
@@ -135,7 +143,6 @@ const styles = (theme) => ({
  * @author Chuan Hao
  *
  * @component
- * @category Navbar
  */
 class Navbar extends Component {
     

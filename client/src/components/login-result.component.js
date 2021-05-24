@@ -6,6 +6,15 @@ import { log_in_user, repopulate_state } from '../actions/login.action';
 import { fetchPortfolios } from '../actions/portfolio.action';
 import '../styles/login.css';
 import { BeatLoader } from 'react-spinners';
+/**
+ * @file LoginResult component serves as the endpoint of Github authorization request and also
+ * provides visual loading display when Github authorization is in progress.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @see LoginResult
+ */
 
 /**
  * Component that displays loading animation while Github authentication occurs.
@@ -14,7 +23,6 @@ import { BeatLoader } from 'react-spinners';
  * @author Chuan Hao
  * 
  * @component
- * @category LoginResult
  */
 class LoginResult extends Component {
     

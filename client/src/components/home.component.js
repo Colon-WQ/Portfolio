@@ -9,6 +9,15 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Button, Divider, Drawer, Hidden, IconButton, List, ListItem } from '@material-ui/core';
+/**
+ * @file Home component serves as a welcome page to users and provides functionalities that allow
+ * user's to login via Github Oauth.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @see Home
+ */
 
 /**
  * styles function defines css elements to be overwritten to a given MUI theme.
@@ -153,7 +162,6 @@ const faqAnswers=['yes\nof\ncourse', 'no', 'idk' ];
  * @author Chuan Hao
  * 
  * @component
- * @category Home
  */
 class Home extends Component {
 
