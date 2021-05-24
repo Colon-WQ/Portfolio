@@ -18,8 +18,6 @@ import { ThemeProvider } from '@material-ui/core/styles';
  * 
  * @author Chen En
  * @author Chuan Hao
- * 
- * @category Index
  */
 
 

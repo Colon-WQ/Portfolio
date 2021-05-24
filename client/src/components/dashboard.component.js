@@ -7,7 +7,24 @@ import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
+/**
+ * @file Dashboard component displays previews of the user's portfolios and offers 
+ * functionalities that allow creation of new user portfolios.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @see Dashboard
+ */
 
+
+/**
+ * styles function defines css elements to be overwritten to a given MUI theme.
+ *
+ * @param {Object} theme - an MUI theme.
+ * @return {Object} - an MUI theme with selected css elements overwritten.
+ * @memberof Dashboard
+ */
 const styles = (theme) => ({
     root: {
         display: 'flex',
@@ -37,7 +54,6 @@ const styles = (theme) => ({
  * @author Chuan Hao
  * 
  * @component
- * @category Dashboard
  */
 class Dashboard extends Component {
 
