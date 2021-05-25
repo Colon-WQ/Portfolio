@@ -14,6 +14,19 @@ const client_secret = CLIENT_SECRET;
 const redirect_uri = REDIRECT_URI;
 //Description that users' Github repositories will be created with.
 const DESCRIPTION = "Portfolio website hosted by ghpages created by Portfolio.io"
+
+/**
+ * cookieParams define the options that our cookies will be created with.
+ * httpOnly ensures that cookies are not accessible via javascript files.
+ *  mitigates XSS attacks.
+ * secure ensures cookies are only sent to the server when a request is made using https: scheme (with exception of localhost).
+ *  mitigates man-in-the-middle attacks.
+ * sameSite ensures that browser only sends cookies for same-site requests.
+ *  provides protection against CSRF attacks.
+ * signed: ensures that cookies are not tampered with.
+ *  ensures cookies can be trusted.
+ * maxAge: sets a relative time from cookie's creation to its expiry when it will be removed from browser.
+ */
 const cookieParams = {
     httpOnly: true,
     secure: true,
@@ -21,6 +34,7 @@ const cookieParams = {
     signed: true,
     maxAge: 6 * 60 * 60 * 1000,
 }
+
 
 export const getToken = async (req, res) => {
     try {
@@ -32,27 +46,39 @@ export const getToken = async (req, res) => {
         data.append("redirect_uri", redirect_uri);
         console.log(data.getHeaders)
         axios({ 
-                method: 'POST',
-                url: 'https://github.com/login/oauth/access_token',
+                method: "POST",
+                url: "https://github.com/login/oauth/access_token",
                 data: data,
-                responseType: 'text',
+                responseType: "text",
                 headers: data.getHeaders()
             }).then((response) => response.data)
             .then((paramsString) => {
                 let params = new URLSearchParams(paramsString);
                 return params.get("access_token");
             }).then(async (ghToken) => {
-                const { name, login, id, avatar_url, gravatar_id } = await axios.get('https://api.github.com/user', {
-                    headers: {'Authorization': `token ${ghToken}`}
+                const { login, id, avatar_url, gravatar_id } = await axios.get("https://api.github.com/user", {
+                    headers: {"Authorization": `token ${ghToken}`}
                 }).then((response) => {
                     return response.data;
                 })
 
+                /**
+                 * Using JWT encryption allows us to not store user sessions and enables us to freely expand our number
+                 * of servers if we choose to in the future, since only the secret is required for JWTs to work.
+                 * 
+                 * JWT encryption has been proven by industry experts to be sufficiently secure. However we have taken
+                 * caution to not store any sensitive data in JWT regardless.
+                 */
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
                     JWT_SECRET,
                     // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
+
+                /**
+                 * JWTs are stored in a HTTPonly cookie to mitigate token theft. Even in the case of stolen tokens, we
+                 * offer the logout option to invalidate the user's access token.
+                 */
                 res.cookie("authorization", jwtoken, cookieParams);
                 // TODO: check if name == null, replace login otherwise.
                 // TODO: update db if user not found/query db for userdata instead.
@@ -99,7 +125,7 @@ export const publishGithub = async (req, res) => {
     const sha = await axios({
         method: "GET",
         url: `https://api.github.com/repos/${req.body.username}/${route}`,
-        headers: {'Authorization': `token ${ghToken}`}
+        headers: {"Authorization": `token ${ghToken}`}
     }).then(res => res.body.sha).catch(e => {
         // TODO: error handling, stop publishing/undo all publishes.
         if(res.status !== 404) console.log(`Unexpected error occured: ${e}`);
@@ -131,8 +157,7 @@ export const checkExistingRepos = async (req, res) => {
         method: "GET",
         url: "https://api.github.com/repos/" + username + "/" + req.query.repo,
         headers: {
-            'Authorization': `token ${gh_token}`,
-            // TODO: standardise ' vs "
+            "Authorization": `token ${gh_token}`,
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
@@ -149,7 +174,7 @@ export const createRepo = async (req, res) => {
         method: "POST",
         url: "https://api.github.com/user/repos",
         headers: {
-            'Authorization': `token ${gh_token}`,
+            "Authorization": `token ${gh_token}`,
             "Accept": "application/vnd.github.v3+json"
         },
         data: {
@@ -174,7 +199,7 @@ export const getRepoContent = async (req, res) => {
         method: "GET",
         url: "https://api.github.com/repos/" + username + "/" + req.query.repo + "/contents/",
         headers: {
-            'Authorization': `token ${gh_token}`,
+            "Authorization": `token ${gh_token}`,
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
