@@ -1,0 +1,21 @@
+{
+  "name": "portfolio-dev",
+  "version": "1.0.0",
+  "description": "yea boi",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "(cd server && npm run start) & (cd client && npm run start)",
+    "dev": "(cd server && npm run localStart) & (cd client && npm run localStart)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chang-CH/portfolio-dev.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chang-CH/portfolio-dev/issues"
+  },
+  "homepage": "https://github.com/Chang-CH/portfolio-dev#readme"
+}
