@@ -14,7 +14,7 @@ const router = express.Router()
  *  get:
  *      summary: Authenticates user, then invalidates user's access token and deletes cookie.
  *      tags: [Logout]
- *      description: 1. Obtains and verifies JWT from user cookies and sends a POST request to github API to validate decrypted access token. <br /><br />
+ *      description: 1. Obtains and attempts to verify JWT from user cookies <br /><br />
  *                   2. Sends a DELETE request to github API to invalidate user's access token <br /><br />
  *                   3. The cookie containing user's access token will then be removed.
  *      parameters:
@@ -50,6 +50,6 @@ const router = express.Router()
  *                                  description: error message.            
  *              
  */
-router.get('/', auth, logout)
+router.get("/", auth, logout)
 
 export default router

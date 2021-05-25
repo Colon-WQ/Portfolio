@@ -5,12 +5,14 @@ import axios from 'axios';
 const router = express.Router()
 
 export const logout = async (req, res) => {
-    //Cookie path defaults to '/' and its domain defaults to domain name of the app
-    //Domain name subject to changes. Should add to .env
     try {
-        // domain changed from localhost:3000 to FRONT_END from .env
         console.log("attempting logout")
 
+        /**
+         * This Github API route requires basic authentication, which requires us to provide
+         * username （CLIENT ID) and password (CLIENT SECRET) in the header. Axios simplifies 
+         * this by allowing us to just place the username and password in an auth object.
+         */
         await axios({
             method: "DELETE",
             url: "https://api.github.com/applications/" + CLIENT_ID + "/token",
@@ -19,7 +21,7 @@ export const logout = async (req, res) => {
                 access_token: req.gh_token
             },
             headers: {
-                "Accept": 'application/vnd.github.v3+json',
+                "Accept": "application/vnd.github.v3+json",
             },
             auth: {
                 username: CLIENT_ID,
@@ -30,8 +32,8 @@ export const logout = async (req, res) => {
         }).catch(err => {
             console.log(err.message)
         })
-
-        res.clearCookie("authorization", { domain: 'localhost', path: '/'})
+        //Cookie path defaults to '/' and its domain defaults to domain name of the app
+        res.clearCookie("authorization", { domain: "localhost", path: "/"})
         console.log("logout successful")
         
         return res.status(200).json({ message: "logout successful"})

@@ -11,22 +11,6 @@ const router = express.Router();
  * 
  * components:
  *  schemas: 
- *      Login:
- *          type: object
- *          properties:
- *              client_id:
- *                  type: string
- *                  description: Client ID received from Github after registration.
- *              client_secret:
- *                  type: string
- *                  description: Client Secret received from Github after registration.
- *              code:
- *                  type: string
- *                  description: Code obtained from https://github.com/login/oauth/authorize?scope=repo&client_id=CLIENT_ID where CLIENT_ID is client id.
- *                               Obtained from request as a query parameter.
- *              redirect_uri:
- *                  type: string
- *                  description: url to redirect request response to.
  *      User:
  *          type: object
  *          properties:
@@ -101,6 +85,6 @@ const router = express.Router();
  *                                  description: error message.
  *              
  */
-router.post('/authenticate', getToken);
+router.post("/authenticate", getToken);
 
 export default router;

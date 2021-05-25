@@ -3,21 +3,20 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-
 import cookieParser from "cookie-parser";
 import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
 
+//swagger jsdocs imports
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 // route imports
 import loginRoutes from './routes/login-callback.route.js';
 import portfolioRoutes from './routes/portfolio.route.js';
 import logoutRoutes from './routes/logout.route.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const swaggerOptions = {
     definition: {
@@ -38,7 +37,7 @@ const swaggerOptions = {
       servers: [
         {
           url: "http://localhost:5000",
-          description: 'Development backend server'
+          description: "Development backend server"
         },
       ]
     },
@@ -55,25 +54,24 @@ app.use(cookieParser(SIGN_COOKIE_SECRET));
 // CORS setup
 const corsOptions = {
     origin: [ FRONT_END, BACK_END ],
-    methods: ['GET', 'PUT', 'POST', 'DELETE' ],
+    methods: ["GET", "PUT", "POST", "DELETE"],
     optionsSuccessStatus: 204,
     credentials: true
 }
 app.use(cors(corsOptions));
 
 // Append routes here
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-app.use('/login', loginRoutes);
-app.use('/portfolio', portfolioRoutes);
-app.use('/logout', logoutRoutes);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use("/login", loginRoutes);
+app.use("/portfolio", portfolioRoutes);
+app.use("/logout", logoutRoutes);
 
 
 const CONNECTION_URL = MONGO_URL;
 const PORT_CONFIG = PORT || 5000;
 
-// console.log(MONGO_URL)
-// console.log(FRONT_END);
 
+//Note this only works for on the production server. For testing purposes, this will lead to an error.
 app.use(express.static(path.join(__dirname, "..", "client/deploy")))
 
 app.get('*', function (req, res) {
