@@ -2,7 +2,7 @@
   "name": "portfolio-dev",
   "version": "1.0.0",
   "description": "yea boi",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "(cd server && npm run start) & (cd client && npm run start)",
@@ -17,5 +17,15 @@
   "bugs": {
     "url": "https://github.com/Chang-CH/portfolio-dev/issues"
   },
-  "homepage": "https://github.com/Chang-CH/portfolio-dev#readme"
+  "homepage": "https://github.com/Chang-CH/portfolio-dev#readme",
+  "dependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.3"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "2.3.0"
+  }
 }

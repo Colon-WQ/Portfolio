@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+//TODO: Add image to mongodb schema
 const PortfolioSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: { type: String, required: true},
