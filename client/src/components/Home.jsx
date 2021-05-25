@@ -109,8 +109,8 @@ const featureMaxIndex = 2;
  */
 const featureImage = [
     'https://media.edutopia.org/styles/responsive_2000px_original/s3/masters/d7_images/cover_media/robinson-169hero-portfolio-shutterstock.jpg', 
-    'https://www.streamscheme.com/wp-content/uploads/2020/09/ForsenCD-emote.jpg', 
-    'https://i.redd.it/93eeyq563wo11.png'
+    'https://assets-global.website-files.com/6009ec8cda7f305645c9d91b/603823eca4b46344229b30f8_portfolio_course.png', 
+    'https://cdn-japantimes.com/wp-content/uploads/2020/06/np_file_16250.jpeg'
 ];
 
 /** 
@@ -121,8 +121,8 @@ const featureImage = [
  */
 const featureTitle = [
     'Your Design. Your Website.',
-    'temporary text',
-    'third wheel'
+    'Visualize your personality',
+    'Stay Ahead'
 ];
 
 /** 
@@ -133,8 +133,8 @@ const featureTitle = [
  */
 const featureText=[
     'No watermarks, no restrictions — you own your website',
-    'subtext2',
-    'subtext3'
+    'Choose your style',
+    'Stay Relevant'
 ];
 
 /** 
@@ -252,11 +252,11 @@ class Home extends Component {
                     <img src={'https://blog.corp-site.envato.com/cdn-cgi/image/width=1200,quality=95,format=auto/uploads/2020/06/SOC101_Portfolio_Guide.png'} 
                     className={classes.portfolioIcon} alt={'Portfol.io icon'}></img>
                     <Typography component="h1" variant="h2" color="inherit" noWrap className={classes.title}>
-                        SAMPLE TEXT
+                        Welcome to Portfol.io
                     </Typography>
                     {/* must use \n to make multiline */}
                     <Typography component="h1" variant="h6" color="inherit" className={classes.multiline}>
-                        {"KAPPA OUTDATED\nPOGCHAMP OVERRATED\nLONG HAVE WE WAITED\nNOW WE JEBAITED"}
+                        {"Where dreams\nturn\ninto reality"}
                     </Typography>
                     {loggedIn 
                         ?
