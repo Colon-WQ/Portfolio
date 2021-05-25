@@ -5,7 +5,6 @@ import axios from 'axios';
 import jwt from "jsonwebtoken";
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, JWT_SECRET } from '../utils/config.js';
 
-// import fetch from 'node-fetch'
 
 // const User = require('../models/user.model.js');
 
@@ -13,12 +12,13 @@ const router = express.Router();
 const client_id = CLIENT_ID;
 const client_secret = CLIENT_SECRET;
 const redirect_uri = REDIRECT_URI;
+//Description that users' Github repositories will be created with.
+const DESCRIPTION = "Portfolio website hosted by ghpages created by Portfolio.io"
 const cookieParams = {
     httpOnly: true,
     secure: true,
     SameSite: "strict",
     signed: true,
-    // TODO: discuss maxAge duration
     maxAge: 6 * 60 * 60 * 1000,
 }
 
@@ -51,7 +51,6 @@ export const getToken = async (req, res) => {
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
                     JWT_SECRET,
-                    // TODO: discuss expiry duration
                     // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
                 res.cookie("authorization", jwtoken, cookieParams);
@@ -70,10 +69,10 @@ export const getToken = async (req, res) => {
 }
 
 export const checkGitCreated = async (req, res) => {
-    // fields gh_token and login should be populated from auth in middleware
+
     const gh_token = req.gh_token;
     const username = req.username;
-    //console.log(username)
+
     // Might need authorization for private repos.
     axios({
         method: "GET",
@@ -122,5 +121,69 @@ export const publishGithub = async (req, res) => {
 }
 
 
+
+// TODO: merge this file with github-api
+export const checkExistingRepos = async (req, res) => {
+    const gh_token = req.gh_token;
+    const username = req.username;
+    console.log("checking if " + req.query.repo + "exists")
+    await axios({
+        method: "GET",
+        url: "https://api.github.com/repos/" + username + "/" + req.query.repo,
+        headers: {
+            'Authorization': `token ${gh_token}`,
+            // TODO: standardise ' vs "
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(response => {
+        return res.status(404).send(response.data.name + " exists. Possible data loss. Requires user permission")
+    }).catch(err => {
+        return res.status(200).json({ message: "repository does not exist. Attempting to create new repository under name" + req.query.repo })
+    })
+}
+
+export const createRepo = async (req, res) => {
+    const gh_token = req.gh_token;
+    console.log("attempting to create repository under name " + req.body.repo)
+    await axios({
+        method: "POST",
+        url: "https://api.github.com/user/repos",
+        headers: {
+            'Authorization': `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        },
+        data: {
+            name: req.body.repo,
+            description: DESCRIPTION,
+            homepage: "",
+            private: false
+        }
+    }).then(response => {
+        return res.status(200).json({ message: "successfully created repository " + response.data.name})
+    }).catch(err => {
+        console.log(err.message)
+        return res.status(404).send("repository creation failed")
+    })
+}
+
+export const getRepoContent = async (req, res) => {
+    const gh_token = req.gh_token;
+    const username = req.username;
+    console.log("attempting to get " +  req.query.repo +" repository content")
+    await axios({
+        method: "GET",
+        url: "https://api.github.com/repos/" + username + "/" + req.query.repo + "/contents/",
+        headers: {
+            'Authorization': `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(response => {
+        console.log("successfully fetched contents of repository " + req.query.repo)
+        return res.status(200).json({ content: response.data })
+    }).catch(err => {
+        console.log(err.message)
+        return res.status(404).send("getting repository contents failed")
+    })
+}
 
 export default router;
