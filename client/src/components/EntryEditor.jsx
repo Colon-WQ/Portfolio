@@ -35,62 +35,94 @@ const styles = (theme) => ({
     }
 })
 
-
-/** 
- *  Array of key names for image inputs, represented as strings.
- * 
- * @type {Array.<string>} 
- * @memberof EntryEditor
- */
-const images = [ 'img1', 'img2', 'img3', 'img4' ];
-
-/** 
- * Array of key names for colour choices.
- * 
- * @type {Array.<string>} 
- * @memberof EntryEditor
- */
-const colours = [ 'primaryColour', 'secondaryColour', 'backgroundColour' ];
-
-/** 
- * Array of key names for font choices.
- * 
- * @type {Array.<string>} 
- * @memberof EntryEditor
- */
-const fonts = [ 'primaryFontFamily', 'secondaryFontFamily' ];
-// TODO: populate array dynamically
-const availableFonts = [ 'Roboto', 'Comic sans' ];
-
 /**
  * The dashboard logged in users will use to navigate the page.
  * 
  * @component
  * @example
- * return (<EntryEditor fields={text:'Your name here' img1:'Homepage image'} show=true/>)
+ * const fields = {
+ *   width: "50%", 
+ *   height: "50%", 
+ *   fonts: {titleFont: "title font"},
+ *   colours: {primary: "#FF0000", secondary: "#FFFF00"},
+ *   images: {dp: "",bg: ""},
+ *   texts: {name: "",status: ""},
+ *   entries: []
+ * }
+ * const info = {
+ *   fonts: {titleFont: {label: "title font"}},
+ *   colours: {primary: {label: "primary"},secondary: {label: "secondary"}},
+ *   images: {dp: {label: "Your portrait photo", allowColour: false}, bg: {label: "Entry background", allowColour: true}},
+ *   texts: {name: {label: "Your full name"}, status: {label: "your current position"}},
+ *   entries: {label: "Add a work experience", 
+ *     entryFormat: { 
+ *       images: {
+ *         picture:{label: "Add a photo"}}, 
+ *         texts: {title: {label: "Add a title"}, body: {label: "Describe your experience"}}
+ *     },
+ *     defaultEntry: {images: {picture:{value: ""}},texts: {title: {value: ""},body: {value: ""}}},
+ *     enabled: true
+ *   }
+ * }
+ * return (<EntryEditor fields={fields} info={info} onChange=true/>)
  */
 class EntryEditor extends Component {
-    static propTypes = {
-        fields: PropTypes.shape({
-            text: PropTypes.string,
-            img1: PropTypes.string,
-            img2: PropTypes.string,
-            img3: PropTypes.string,
-            img4: PropTypes.string,
-            primaryColour: PropTypes.string,
-            secondaryColour: PropTypes.string,
-            backgroundColour: PropTypes.string,
-            link1: PropTypes.string,
-            link2: PropTypes.string,
-            link3: PropTypes.string,
-            link4: PropTypes.string,
-            primaryFontFamily: PropTypes.string,
-            secondaryFontFamily: PropTypes.string
-        }),
-        show: PropTypes.bool
-    };
+    // static propTypes = {
+    //     fields: PropTypes.shape({
+    //         width: PropTypes.string,
+    //         height: PropTypes.string,
+    //         fonts: PropTypes.shape({
+    //             name: PropTypes.string
+    //         }),
+    //         colours: PropTypes.shape({
+    //             name: PropTypes.string
+    //         }),
+    //         images: PropTypes.shape({
+    //             name: PropTypes.string
+    //         }),
+    //         texts: PropTypes.shape({
+    //             name: PropTypes.string
+    //         }),
+    //         entries: PropTypes.array
+    //     }),
+    //     info: PropTypes.shape({
+    //         fonts: PropTypes.shape({
+    //             name: PropTypes.shape({
+    //                 label: PropTypes.string,
+    //                 default: PropTypes.string
+    //             })
+    //         }),
+    //         colours: PropTypes.shape({
+    //             name: PropTypes.shape({
+    //                 label: PropTypes.string,
+    //                 default: PropTypes.string
+    //             })
+    //         }),
+    //         images: PropTypes.shape({
+    //             name: PropTypes.shape({
+    //                 label: PropTypes.string,
+    //                 allowColour: PropTypes.bool,
+    //                 default: PropTypes.string
+    //             })
+    //         }),
+    //         texts: PropTypes.shape({
+    //             name: PropTypes.shape({
+    //                 label: PropTypes.string,
+    //                 maxRows: PropTypes.number,
+    //                 default: PropTypes.string
+    //             })
+    //         }),
+    //         entries: PropTypes.shape({
+    //             label: PropTypes.string,
+    //             entryFormat: PropTypes.shape({
+    //             })
+    //         })
+    //     }),
+    //     show: PropTypes.bool
+    // };
 
     // TODO: check if componenetDidMount can overwrite constructor
+    
     /**
      * Populates state with fields passed in as attribute fields.
      * @constructor
@@ -100,6 +132,10 @@ class EntryEditor extends Component {
         this.state = {
             ...this.props.fields,
         }
+        this.handleCreateEntry = this.handleCreateEntry.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleImageUpload = this.handleImageUpload.bind(this);
+        this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
     }
 
     // TODO: elements read from state instead of props
@@ -195,58 +231,158 @@ class EntryEditor extends Component {
         })
     }
 
+    /**
+     * Event handler for entry addition. 
+     * Entry will be given default fields specified in the info attribute.
+     * 
+     * @property {Function} handleCreateEntry
+     * @return void
+     * @memberof EntryEditor
+     */
+    handleCreateEntry() {
+        this.setState({entries: [...this.state.entries, this.props.info.entries.defaultEntry]});
+    }
+
     render() {
         const { classes } = this.props;
-        // TODO: read from state instead of props so edit retains options
+        // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
         return (
-            <div className = { classes.root }>
-                <IconButton onClick={() => this.props.onClose(this.state)}>
-                    <GrFormClose/>
-                </IconButton>
-                <div className = {classes.contentDiv}>
-                    <TextField name='text' id='text' variant='outlined' 
-                    label={ this.props.fields.text === undefined 
-                        || this.props.fields.text.label === undefined ? 'Component text' : this.props.fields.text.label } 
-                    className={ this.props.fields.text === undefined ? classes.hide : classes.textField }
-                    onChange={this.handleChange}/>
-
-                    {images.map((img, index) => {
-                        if(this.props.fields[img] === undefined) return;
-                        // dynamic variable name
-                        return (<div>
-                                <Button variant="outlined" onClick={this.handleChange}>
-                                <img src={this.state.fields[img]}
-                                alt={this.props.fields[img].label === undefined ? 'Upload image' : 
-                                "Upload " + this.props.fields[img].label}/>
-                                </Button>
-                            </div>);
-                    })}
-                </div>
-                <div className={classes.themeDiv}>
-                    {colours.map((col, index) => {
-                        // if(this.props.fields[col] === undefined) return;
-                        return (<div>
-                            <Button style={`background-color: ${this.state[col]}`}>
-                                Should be changed to icon
-                            </Button>
-                            <TextField id={col} variant='outlined' 
-                            label={col} onChange={this.handleChange}/>
-                        </div>);
-                    })}
-                    {colours.map((font, index) => {
-                        // if(this.props.fields[font] === undefined) return;
-                        return (<div>
-                            <Button style={`background-color: ${this.state[font]}`}>
-                                Should be changed to icon
-                            </Button>
-                            <TextField id={font} variant='outlined' 
-                            label={font} onChange={this.handleChange}/>
-                        </div>);
-                    })}
-                </div>
+          // populate state with default values
+            <div className = {classes.root}>
+              <CssBaseline/>
+              <div className={classes.dimensionDiv}>
+                <TextField 
+                  id="width"
+                  label="width"
+                  name="width"
+                  value={this.state.width}
+                  margin="normal"
+                  variant="outlined"
+                  onChange={this.handleChange}
+                  />
+                <TextField 
+                  id="height"
+                  label="height"
+                  name="height"
+                  value={this.state.height}
+                  margin="normal"
+                  variant="outlined"
+                  onChange={this.handleChange}
+                  />
+              </div>
+              <div className={classes.fontDiv}>
+                {Object.entries(this.state.fonts).map(([key, item]) => {
+                  return (<TextField
+                    name={key}
+                    id={key}
+                    label={this.props.info.fonts[key].label}
+                    value={item}
+                    margin="normal"
+                    variant="outlined"
+                    onChange={this.handleChange}/>)
+                })}
+              </div>
+              <div className={classes.colDiv}>
+                {Object.entries(this.state.colours).map(([key, item]) => {
+                  return (
+                    <div>
+                      {/* Preview icon that changes according to selected colour */}
+                      {/* <Button id="colourPreview"/> */}
+                      <TextField
+                        name={key}
+                        id={key}
+                        label={this.props.info.colours[key].label}
+                        defaultValue={item}
+                        margin="normal"
+                        variant="outlined"
+                        onChange={this.handleChange}
+                      />
+                    </div>
+                    )
+                })}
+              </div>
+              <div className={classes.imgDiv}>
+                {Object.entries(this.state.images).map(([key, item]) => {
+                  return (
+                    <div>
+                      <Button onClick={this.handleImageUpload}>
+                        <img src={item}/>
+                      </Button>
+                      <Typography>
+                        {this.props.info.images[key].label}
+                      </Typography>
+                    </div>
+                    );
+                })}
+              </div>
+              <div className={classes.textDiv}>
+                {Object.entries(this.state.texts).map(([key, item]) => {
+                  return (
+                    <div>
+                      {/* Preview icon that changes according to selected colour */}
+                      {/* <Button id="colourPreview"/> */}
+                      <TextField
+                        name={key}
+                        id={key}
+                        label={this.props.info.texts[key].label}
+                        defaultValue={item}
+                        margin="normal"
+                        variant="outlined"
+                        onChange={this.handleChange}
+                      />
+                    </div>
+                    )
+                })}
+              </div>
+              {this.props.info.entries.enabled 
+              ? <div className={classes.entryDiv}>
+                {this.state.entries.map((entryObj, index) => {
+                  return (
+                    <div>
+                      <div className={classes.imgDiv}>
+                        {Object.entries(entryObj.images).map(([key, item]) => {
+                          return (
+                            <div>
+                              {/* TODO: implement different logic */}
+                              <Button onClick={this.handleImageUpload}>
+                                <img src={item}/>
+                              </Button>
+                              <Typography>
+                                {this.props.info.entries.entryFormat.images[key].label}
+                              </Typography>
+                            </div>
+                            );
+                        })}
+                      </div>
+                      <div className={classes.textDiv}>
+                        {Object.entries(entryObj.texts).map(([key, item]) => {
+                          // TODO: make maxRow field in info?
+                          return (
+                            <div>
+                              <TextField
+                                name={key}
+                                id={key}
+                                label={this.props.info.entries.entryFormat.texts[key].label}
+                                defaultValue={item}
+                                margin="normal"
+                                variant="outlined"
+                                onChange={this.handleChange}
+                                multiline
+                                rowsMax={3}
+                              />
+                            </div>
+                            );
+                        })}
+                      </div>
+                    </div>
+                    )
+                })}
+                <IconButton onClick={this.handleCreateEntry}>+</IconButton>
+              </div>
+              : null}
             </div>
         )
-    }
+      }
 }
 
 
