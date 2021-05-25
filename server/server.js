@@ -61,15 +61,6 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-// app.use((req, res, next) => {
-//     const allowedOrigins = [ FRONT_END, BACK_END ];
-//     const origin = req.headers.origin;
-//     if (allowedOrigins.includes(origin)) {
-//         res.setHeader('Access-Control-Allow-Origin', origin);
-//     }
-//     next();
-// });
-
 // Append routes here
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 app.use('/login', loginRoutes);

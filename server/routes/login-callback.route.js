@@ -8,45 +8,46 @@ const router = express.Router();
  *  name: Login
  *  description: API to login user using Github Oauth API.
  * 
+ * 
  * components:
  *  schemas: 
  *      Login:
  *          type: object
  *          properties:
- *                          client_id:
- *                              type: string
- *                              description: Client ID received from Github after registration.
- *                          client_secret:
- *                              type: string
- *                              description: Client Secret received from Github after registration.
- *                          code:
- *                              type: string
- *                              description: Code obtained from https://github.com/login/oauth/authorize?scope=repo&client_id=CLIENT_ID where CLIENT_ID is client id.
- *                                           Obtained from request as a query parameter.
- *                          redirect_uri:
- *                              type: string
- *                              description: url to redirect request response to.
+ *              client_id:
+ *                  type: string
+ *                  description: Client ID received from Github after registration.
+ *              client_secret:
+ *                  type: string
+ *                  description: Client Secret received from Github after registration.
+ *              code:
+ *                  type: string
+ *                  description: Code obtained from https://github.com/login/oauth/authorize?scope=repo&client_id=CLIENT_ID where CLIENT_ID is client id.
+ *                               Obtained from request as a query parameter.
+ *              redirect_uri:
+ *                  type: string
+ *                  description: url to redirect request response to.
  *      User:
  *          type: object
  *          properties:
- *                              data:
- *                                  type: object
- *                                  properties:
- *                                      id: 
- *                                          type: integer
- *                                          description: User's unique Github account ID.
- *                                      login:
- *                                          type: string
- *                                          description: User's Github account username.
- *                                      name:
- *                                          type: string
- *                                          description: User's Github account name.
- *                                      avatar_url:
- *                                          type: string
- *                                          description: User's Github avatar image url.
- *                                      gravatar_id:
- *                                          type: string
- *                                          description: User's globally recognized avatar url.
+ *              data:
+ *                  type: object
+ *                  properties:
+ *                      id: 
+ *                          type: integer
+ *                          description: User's unique Github account ID.
+ *                      login:
+ *                          type: string
+ *                          description: User's Github account username.
+ *                      name:
+ *                          type: string
+ *                          description: User's Github account name.
+ *                      avatar_url:
+ *                          type: string
+ *                          description: User's Github avatar image url.
+ *                      gravatar_id:
+ *                          type: string
+ *                          description: User's globally recognized avatar url.
  *          
  * /login/authenticate:
  *  post:
@@ -59,15 +60,30 @@ const router = express.Router();
  *                   containing the access token to obtain user's Github account details, which are then returned
  *                   to the frontend.
  *      requestBody:
- *          description: Optional description in *Markdown*
+ *          description: Github will provide code to get access token.
  *          required: true
  *          content:
- *              multipart/form-data:
+ *              application/json:
  *                  schema: 
- *                      $ref: '#/components/schemas/Login'                   
+ *                      type: object
+ *                      properties:
+ *                          data:
+ *                              type: object
+ *                              properties:
+ *                                  code:
+ *                                      type: string
+ *                                      description: Github code provided to get access token from Github API.                   
  *      responses: 
  *          200:
- *              description: User Github account details.
+ *              description: 1. User authenticated using Github API <br /><br />
+ *                           2. User Github account details. <br /><br />
+ *                           3. The access token is returned in a signed cookie named 'authorization'. 
+ *                              You may need to include this cookie for other requests that require authorization
+ *              headers:
+ *                  Set-Cookie:
+ *                      schema:
+ *                          type: apiKey
+ *                          example: authorization=JWT; Path=/; HttpOnly; secure; signed; SameSite=Strict; maxAge:6 * 60 * 60 * 1000
  *              content: 
  *                  application/json:
  *                      schema: 
@@ -82,6 +98,7 @@ const router = express.Router();
  *                          properties:
  *                              message:
  *                                  type: string
+ *                                  description: error message.
  *              
  */
 router.post('/authenticate', getToken);
