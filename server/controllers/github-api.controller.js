@@ -133,6 +133,8 @@ export const publishGithub = async (req, res) => {
     });
     // content should be base64 encoded already
     data.append('content', req.body.content);
+    //encrypting the content with sha
+    data.append('sha', sha);
     
     axios({
         method: "PUT",
