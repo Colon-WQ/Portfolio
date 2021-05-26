@@ -108,14 +108,20 @@ class Portfolio extends Component {
     }
 
     componentDidMount() {
-        this.state.entries.length > 0 ?
+        if (this.state.entries.length > 0) {
             this.setState({
                 entryDisplayIndex: this.state.entries.length
             })
-        :
+        } else {
             this.setState({
                 entryDisplayIndex: -1
             })
+        }
+        
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+            this.props.repopulate_state(localStorageItem)
+        }
     }
 
     /**
