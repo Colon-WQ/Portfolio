@@ -105,6 +105,7 @@ class Portfolio extends Component {
         this.handleReleaseMenu = this.handleReleaseMenu.bind(this);
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
+        this.handlePushToGithub = this.handlePushToGithub.bind(this);
     }
 
     componentDidMount() {
@@ -205,14 +206,53 @@ class Portfolio extends Component {
         })
     }
 
-    //TODO push to exisiting repo
+    //TODO push to exisiting repo testing in progress
+    //routes set to nothing for now
+    //hardcoded name for now
+    //console.log is run but nothing happens. route is correct
     async handleOverrideAllowed() {
-        console.log("Override permission given")
+        console.log("Override permission given to push to " + "testShit")
+        await axios({
+            method: "PUT",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
+            withCredentials: true,
+            data: {
+                routes: "",
+                content: "content",
+                repo: "testShit"
+            }
+        }).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+
+        this.setState({
+            overrideDialogState: false,
+            repositoryName: ''
+        })
+    }
+
+    async handlePushToGithub() {
+        await axios({
+            method: "PUT",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
+            withCredentials: true,
+            data: {
+                routes: "",
+                content: "content",
+                repo: this.state.repositoryName
+            }
+        }).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     //checks for existing repo by name and creates new repo if no existing. Otherwise prompts user for override.
     async handleFinalizeEdits() {
-        console.log(this.state.repositoryName)
+        console.log("chosen repository name is " + this.state.repositoryName)
         await axios({
             method: "GET",
             url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
