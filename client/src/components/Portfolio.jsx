@@ -96,7 +96,7 @@ class Portfolio extends Component {
             entryDisplayIndex: -1
         }
         this.handleOnChange = this.handleOnChange.bind(this);
-        this.handleEditMode = this.handleEditMode.bind(this);
+        this.handleStateChange = this.handleStateChange.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
         this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
         this.handleOverrideDialogOpen = this.handleOverrideDialogOpen.bind(this);
@@ -117,7 +117,7 @@ class Portfolio extends Component {
                 entryDisplayIndex: -1
             })
         }
-        
+
         if (!this.props.loggedIn) {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             this.props.repopulate_state(localStorageItem)
@@ -143,15 +143,25 @@ class Portfolio extends Component {
         });
     }
 
-    handleEditMode(event) {
-        console.log(event);
+    // handle any form of state boolean changes.
+    // Note: Store it under separate custom attribute. id shld be saved for reference purposes and must be unique.
+    // Warning: eact does not recognize the `componentName` prop on a DOM element. 
+    // If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `componentname` instead.
+    // custom attributes must be lowercase.
+    handleStateChange(event) {
+        const customAttribute = event.currentTarget.getAttribute('componentname')
+        console.log(customAttribute)
+        console.log(this.state[customAttribute])
         this.setState({
-            editMode: !this.state.editMode
+            [customAttribute]: !this.state[customAttribute]
         })
     }
 
+    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
+    //Also needs to close menu after selection.
     handleFinalizeDialogOpen() {
         this.setState({
+            anchorEl: null,
             finalizeDialogState: true
         })
     }
@@ -163,6 +173,7 @@ class Portfolio extends Component {
         })
     }
 
+    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
     handleOverrideDialogOpen() {
         this.setState({
             overrideDialogState: true
@@ -176,18 +187,21 @@ class Portfolio extends Component {
         })
     }
 
-    //handle Anchoring menu to FAB
+    //handle any form of anchoring menu to FAB
     handleAnchorMenu(event) {
-        console.log(event)
+        const anchorEl = event.currentTarget.getAttribute("componentname")
+        console.log(anchorEl)
         this.setState({
-            anchorEl: event.currentTarget
+            [anchorEl]: event.currentTarget
         })
     }
 
-    //handles deAnchoring menu to FAB
-    handleReleaseMenu() {
+    //handles any form of deAnchoring menu from FAB
+    handleReleaseMenu(event) {
+        const anchorEl = event.currentTarget.getAttribute("componentname");
+        console.log(anchorEl)
         this.setState({
-            anchorEl: null
+            [anchorEl]: null
         })
     }
 
@@ -244,19 +258,19 @@ class Portfolio extends Component {
                 {this.state.editMode ? 
                 <div>
                     <Fab
-                        name="editMode"
+                        componentname="editMode"
                         variant="extended"
                         size="medium"
                         color="primary"
                         aria-label="mode selector"
                         className={classes.modeFAB}
-                        onClick={this.handleEditMode}
+                        onClick={this.handleStateChange}
                     >
                         <FaEdit/>
                         Edit Mode
                     </Fab>
                     <Fab
-                        name="anchorEl"
+                        componentname="anchorEl"
                         variant = 'extended'
                         size = 'medium'
                         color = 'primary'
@@ -269,7 +283,7 @@ class Portfolio extends Component {
                         <Typography variant = 'button'>Editor Panel</Typography>
                     </Fab>
                     <Menu
-                        name="anchorEl"
+                        componentname="anchorEl"
                         anchorEl={this.state.anchorEl}
                         keepMounted
                         open={Boolean(this.state.anchorEl)}
@@ -287,7 +301,6 @@ class Portfolio extends Component {
                     </Menu>
 
                     <Dialog
-                        name="finalizeDialogState"
                         open = {this.state.finalizeDialogState}
                         onClose = {this.handleFinalizeDialogClose}
                         aria-labelledby = "repo name input"
@@ -311,7 +324,7 @@ class Portfolio extends Component {
                             />
                         </DialogContent>
                         <DialogActions>
-                            <Button name="finalizeDialogState" onClick = {this.handleFinalizeDialogClose} color = 'primary'>
+                            <Button onClick = {this.handleFinalizeDialogClose} color = 'primary'>
                                 Cancel
                             </Button>
                             <Button onClick = {this.handleFinalizeEdits} color = 'primary'>
@@ -321,9 +334,8 @@ class Portfolio extends Component {
                     </Dialog>
 
                     <Dialog
-                    name="overrideDialogState"
                         open = {this.state.overrideDialogState}
-                        onClose = {this.handleOverrideDialogOpen}
+                        onClose = {this.handleOverrideDialogClose}
                         aria-labelledby = "override permission input"
                     >
                         <DialogTitle id = "override permission input">
@@ -335,7 +347,7 @@ class Portfolio extends Component {
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                            <Button name="overrideDialogState" onClick = {this.handleOverrideDialogClose} color = 'primary'>
+                            <Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
                                 Cancel
                             </Button>
                             <Button onClick = {this.handleOverrideAllowed} color = 'primary'>
@@ -348,13 +360,13 @@ class Portfolio extends Component {
                 : 
                 <div>
                     <Fab
-                        name="editMode"
+                        componentname="editMode"
                         variant="extended"
                         size="medium"
                         color="primary"
                         aria-label="mode selector"
                         className={classes.modeFAB}
-                        onClick={this.handleEditMode}
+                        onClick={this.handleStateChange}
                     >
                         <FaCheck />
                         Preview Mode
