@@ -93,7 +93,6 @@ export const getToken = async (req, res) => {
 }
 
 export const checkGitCreated = async (req, res) => {
-
     const gh_token = req.gh_token;
     const username = req.username;
 
@@ -119,6 +118,7 @@ export const checkGitCreated = async (req, res) => {
 // req.body must contain: route, content
 export const publishGithub = async (req, res) => {
     const data = new FormData();
+    const message = "Page updated with Portfol.io"
     const gh_token = req.gh_token;
     const sha = await axios({
         method: "GET",
@@ -133,6 +133,7 @@ export const publishGithub = async (req, res) => {
     data.append('content', req.body.content);
     //encrypting the content with sha
     data.append('sha', sha);
+    data.append('message', message);
     
     axios({
         method: "PUT",

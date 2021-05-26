@@ -5,7 +5,6 @@ import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
 import { Button, IconButton, TextField, Typography, CssBaseline } from '@material-ui/core';
 import { GrFormClose } from "react-icons/gr";
-import PropTypes from 'prop-types';
 
 
 /**
@@ -47,18 +46,17 @@ const styles = (theme) => ({
  *   colours: {primary: "#FF0000", secondary: "#FFFF00"},
  *   images: {dp: "",bg: ""},
  *   texts: {name: "",status: ""},
- *   entries: []
+ *   sections: []
  * }
  * const info = {
  *   fonts: {titleFont: {label: "title font"}},
  *   colours: {primary: {label: "primary"},secondary: {label: "secondary"}},
  *   images: {dp: {label: "Your portrait photo", allowColour: false}, bg: {label: "Entry background", allowColour: true}},
  *   texts: {name: {label: "Your full name"}, status: {label: "your current position"}},
- *   entries: {label: "Add a work experience", 
+ *   sections: {label: "Add a work experience", 
  *     entryFormat: { 
- *       images: {
- *         picture:{label: "Add a photo"}}, 
- *         texts: {title: {label: "Add a title"}, body: {label: "Describe your experience"}}
+ *       images: {picture:{label: "Add a photo"}}, 
+ *       texts: {title: {label: "Add a title"}, body: {label: "Describe your experience"}}
  *     },
  *     defaultEntry: {images: {picture:{value: ""}},texts: {title: {value: ""},body: {value: ""}}},
  *     enabled: true
@@ -67,60 +65,6 @@ const styles = (theme) => ({
  * return (<EntryEditor fields={fields} info={info} onChange=true/>)
  */
 class EntryEditor extends Component {
-    // static propTypes = {
-    //     fields: PropTypes.shape({
-    //         width: PropTypes.string,
-    //         height: PropTypes.string,
-    //         fonts: PropTypes.shape({
-    //             name: PropTypes.string
-    //         }),
-    //         colours: PropTypes.shape({
-    //             name: PropTypes.string
-    //         }),
-    //         images: PropTypes.shape({
-    //             name: PropTypes.string
-    //         }),
-    //         texts: PropTypes.shape({
-    //             name: PropTypes.string
-    //         }),
-    //         entries: PropTypes.array
-    //     }),
-    //     info: PropTypes.shape({
-    //         fonts: PropTypes.shape({
-    //             name: PropTypes.shape({
-    //                 label: PropTypes.string,
-    //                 default: PropTypes.string
-    //             })
-    //         }),
-    //         colours: PropTypes.shape({
-    //             name: PropTypes.shape({
-    //                 label: PropTypes.string,
-    //                 default: PropTypes.string
-    //             })
-    //         }),
-    //         images: PropTypes.shape({
-    //             name: PropTypes.shape({
-    //                 label: PropTypes.string,
-    //                 allowColour: PropTypes.bool,
-    //                 default: PropTypes.string
-    //             })
-    //         }),
-    //         texts: PropTypes.shape({
-    //             name: PropTypes.shape({
-    //                 label: PropTypes.string,
-    //                 maxRows: PropTypes.number,
-    //                 default: PropTypes.string
-    //             })
-    //         }),
-    //         entries: PropTypes.shape({
-    //             label: PropTypes.string,
-    //             entryFormat: PropTypes.shape({
-    //             })
-    //         })
-    //     }),
-    //     show: PropTypes.bool
-    // };
-
     // TODO: check if componenetDidMount can overwrite constructor
     
     /**
@@ -153,49 +97,6 @@ class EntryEditor extends Component {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             this.props.repopulate_state(localStorageItem)
         }
-    }
-
-    /**
-     * Autosave function that should save edits to the current portfolio into mongodb.
-     * 
-     * @property {Function} handleFinalizeEdits
-     * @return response received
-     * @memberof EntryEditor
-     */
-    async handleFinalizeEdits() {
-        // await axios({
-        //     method: "GET",
-        //     url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
-        //     withCredentials: true,
-        //     params: {
-        //         repo: this.state.repo
-        //     }
-        // }).then(async res => {
-        //     console.log(res.data.message)
-        //     await axios({
-        //         method: "POST",
-        //         url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
-        //         withCredentials: true,
-        //         data: {
-        //             repo: this.state.repo
-        //         }
-        //     }).then(response => {
-        //         console.log(response.data.message)
-        //     }).catch(err => {
-        //         console.log(err.message)
-        //         console.log("repository creation failed")
-        //     })
-        // }).catch(err => {
-        //     console.log(err.response.data)
-        //     this.setState({
-        //         overrideDialogState: true
-        //     })
-        // })
-
-        // this.setState({
-        //     finalizeDialogState: false,
-        //     repo: ''
-        // })
     }
 
     /**
@@ -240,7 +141,7 @@ class EntryEditor extends Component {
      * @memberof EntryEditor
      */
     handleCreateEntry() {
-        this.setState({entries: [...this.state.entries, this.props.info.entries.defaultEntry]});
+        this.setState({sections: [...this.state.sections, this.props.info.sections.defaultEntry]});
     }
 
     render() {
@@ -271,7 +172,7 @@ class EntryEditor extends Component {
                   />
               </div>
               <div className={classes.fontDiv}>
-                {Object.entries(this.state.fonts).map(([key, item]) => {
+                {Object.sections(this.state.fonts).map(([key, item]) => {
                   return (<TextField
                     name={key}
                     id={key}
@@ -283,7 +184,7 @@ class EntryEditor extends Component {
                 })}
               </div>
               <div className={classes.colDiv}>
-                {Object.entries(this.state.colours).map(([key, item]) => {
+                {Object.sections(this.state.colours).map(([key, item]) => {
                   return (
                     <div>
                       {/* Preview icon that changes according to selected colour */}
@@ -302,7 +203,7 @@ class EntryEditor extends Component {
                 })}
               </div>
               <div className={classes.imgDiv}>
-                {Object.entries(this.state.images).map(([key, item]) => {
+                {Object.sections(this.state.images).map(([key, item]) => {
                   return (
                     <div>
                       <Button onClick={this.handleImageUpload}>
@@ -316,7 +217,7 @@ class EntryEditor extends Component {
                 })}
               </div>
               <div className={classes.textDiv}>
-                {Object.entries(this.state.texts).map(([key, item]) => {
+                {Object.sections(this.state.texts).map(([key, item]) => {
                   return (
                     <div>
                       {/* Preview icon that changes according to selected colour */}
@@ -334,13 +235,13 @@ class EntryEditor extends Component {
                     )
                 })}
               </div>
-              {this.props.info.entries.enabled 
+              {this.props.info.sections.enabled 
               ? <div className={classes.entryDiv}>
-                {this.state.entries.map((entryObj, index) => {
+                {this.state.sections.map((entryObj, index) => {
                   return (
                     <div>
                       <div className={classes.imgDiv}>
-                        {Object.entries(entryObj.images).map(([key, item]) => {
+                        {Object.sections(entryObj.images).map(([key, item]) => {
                           return (
                             <div>
                               {/* TODO: implement different logic */}
@@ -348,21 +249,21 @@ class EntryEditor extends Component {
                                 <img src={item}/>
                               </Button>
                               <Typography>
-                                {this.props.info.entries.entryFormat.images[key].label}
+                                {this.props.info.sections.entryFormat.images[key].label}
                               </Typography>
                             </div>
                             );
                         })}
                       </div>
                       <div className={classes.textDiv}>
-                        {Object.entries(entryObj.texts).map(([key, item]) => {
+                        {Object.sections(entryObj.texts).map(([key, item]) => {
                           // TODO: make maxRow field in info?
                           return (
                             <div>
                               <TextField
                                 name={key}
                                 id={key}
-                                label={this.props.info.entries.entryFormat.texts[key].label}
+                                label={this.props.info.sections.entryFormat.texts[key].label}
                                 defaultValue={item}
                                 margin="normal"
                                 variant="outlined"
