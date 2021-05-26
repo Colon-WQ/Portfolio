@@ -12,7 +12,7 @@ import {
     FETCH_PORTFOLIOS_FAILURE,
     SAVE_CURRENT_WORK,
     CLEAR_CURRENT_WORK
-} from '../actions/portfolio.action'
+} from '../actions/PortfolioAction'
 
 /** 
  * @typedef initialState

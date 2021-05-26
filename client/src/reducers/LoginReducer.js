@@ -10,7 +10,7 @@ import {
     LOG_IN_USER,
     LOG_OUT_USER,
     REPOPULATE_STATE
-} from '../actions/login.action';
+} from '../actions/LoginAction';
 
 /** 
  * string representing guest user.

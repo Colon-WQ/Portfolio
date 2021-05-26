@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Button, IconButton, TextField, Typography } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, CssBaseline } from '@material-ui/core';
 import { GrFormClose } from "react-icons/gr";
 import PropTypes from 'prop-types';
 
@@ -250,6 +250,7 @@ class EntryEditor extends Component {
           // populate state with default values
             <div className = {classes.root}>
               <CssBaseline/>
+              {/* Input for entry width and height */}
               <div className={classes.dimensionDiv}>
                 <TextField 
                   id="width"
@@ -270,6 +271,7 @@ class EntryEditor extends Component {
                   onChange={this.handleChange}
                   />
               </div>
+              {/* Input for entry font type */}
               <div className={classes.fontDiv}>
                 {Object.entries(this.state.fonts).map(([key, item]) => {
                   return (<TextField
@@ -282,6 +284,7 @@ class EntryEditor extends Component {
                     onChange={this.handleChange}/>)
                 })}
               </div>
+              {/* Input for entry color */}
               <div className={classes.colDiv}>
                 {Object.entries(this.state.colours).map(([key, item]) => {
                   return (
@@ -301,6 +304,7 @@ class EntryEditor extends Component {
                     )
                 })}
               </div>
+              {/* Display for previously added Images and Addition of new Images */}
               <div className={classes.imgDiv}>
                 {Object.entries(this.state.images).map(([key, item]) => {
                   return (
@@ -315,6 +319,7 @@ class EntryEditor extends Component {
                     );
                 })}
               </div>
+              {/* Display and Edit for allowed TextFields*/}
               <div className={classes.textDiv}>
                 {Object.entries(this.state.texts).map(([key, item]) => {
                   return (
@@ -334,6 +339,7 @@ class EntryEditor extends Component {
                     )
                 })}
               </div>
+              {/* Preview of exisiting entries */}
               {this.props.info.entries.enabled 
               ? <div className={classes.entryDiv}>
                 {this.state.entries.map((entryObj, index) => {
@@ -377,6 +383,7 @@ class EntryEditor extends Component {
                     </div>
                     )
                 })}
+                {/* Finalizes entry */}
                 <IconButton onClick={this.handleCreateEntry}>+</IconButton>
               </div>
               : null}

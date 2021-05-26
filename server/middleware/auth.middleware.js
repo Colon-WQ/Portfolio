@@ -46,6 +46,7 @@ const auth = async (req, res, next) => {
         //     console.log("token was invalidated before")
         //     return res.status(401).send("Invalid Token")
         // })
+        next();
     });
 }
 
