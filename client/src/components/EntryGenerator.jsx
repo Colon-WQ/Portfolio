@@ -3,7 +3,7 @@
  import EntryEditor from './EntryEditor';
  import IntroTemplateMinimalist from '../templates/introduction/IntroTemplateMinimalist';
 
- 
+//  TODO: rename to templates?
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
  * 
@@ -14,7 +14,7 @@
 export const templates = {
   introduction: [
     {
-      name: IntroTemplateMinimalist.name, 
+      name: IntroTemplateMinimalist.templateName, 
       component: (fields) => (<IntroTemplateMinimalist fields={fields}/>),
       info: IntroTemplateMinimalist.info,
       defaultField: IntroTemplateMinimalist.defaultField

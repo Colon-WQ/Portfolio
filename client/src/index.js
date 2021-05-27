@@ -5,7 +5,6 @@ import Home from './components/Home';
 import LoginResult from './components/LoginResult';
 import Dashboard from './components/Dashboard';
 import Portfolio from './components/Portfolio';
-import EntryEditor from './components/EntryEditor';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -45,7 +44,7 @@ ReactDOM.render(
               <Navbar/>
               <Route exact path = '/login/callback' component = {LoginResult}></Route>
               <Route exact path = '/dashboard' component = {Dashboard}></Route>
-              <Route exact path = '/templateEditor' component = {() => <Portfolio fields={portfolioFields}/>}></Route>
+              <Route exact path = '/edit' component = {Portfolio}></Route>
             </>
           </Switch>
         </Provider>

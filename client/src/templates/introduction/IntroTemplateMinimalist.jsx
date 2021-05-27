@@ -26,7 +26,7 @@ class IntroTemplateMinimalist extends Component {
     super();
   }
 
-  static name = "Minimalist";
+  static templateName = "Minimalist";
 
   static info = {
     fonts: {titleFont: {label: "title font"}},

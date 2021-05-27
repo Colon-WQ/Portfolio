@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Button, IconButton, TextField, Typography, CssBaseline } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, CssBaseline, Modal } from '@material-ui/core';
 import { GrFormClose } from "react-icons/gr";
 
 
@@ -19,9 +19,12 @@ const styles = (theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'start',
+        justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: '7%'
+        padding: '5%',
+        textAlign: 'center',
+        backgroundColor: '#444444',
+        opacity: '90%'
     },
     floating: {
         margin: 0,
@@ -31,6 +34,20 @@ const styles = (theme) => ({
         right: '5%',
         position: 'fixed',
         textAlign: 'center'
+    },
+    categoryDiv: {
+      margin: '1vw'
+    },
+    imgPreview: {
+      width: '5vw',
+      height: '5vw'
+    },
+    sectionDiv: {
+      display: 'flex',
+      flexDirection: 'row'
+    },
+    div: {
+      padding: '10px'
     }
 })
 
@@ -71,15 +88,15 @@ class EntryEditor extends Component {
      * Populates state with fields passed in as attribute fields.
      * @constructor
      */
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             ...this.props.fields,
         }
         this.handleCreateEntry = this.handleCreateEntry.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleImageUpload = this.handleImageUpload.bind(this);
-        this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
+        this.handleEditSection = this.handleEditSection.bind(this);
     }
 
     // TODO: elements read from state instead of props
@@ -108,10 +125,18 @@ class EntryEditor extends Component {
      * @return void
      * @memberof EntryEditor
      */
-    handleChange(event) {
+    handleChange(event, category) {
+      if (category === "") {
         this.setState({
-            [event.target.name]: event.target.value
+          [event.target.name]: event.target.value
         });
+      } else {
+        const originalCat = {...this.state[category]};
+        originalCat[event.target.name] = event.target.value;
+        this.setState({
+          [category]: originalCat
+        });
+      }
     }
 
     // TODO: implement file upload logic. possibly save disk reference/localStorage for efficiency
@@ -144,151 +169,165 @@ class EntryEditor extends Component {
         this.setState({sections: [...this.state.sections, this.props.info.sections.defaultEntry]});
     }
 
+    handleEditSection(event, index) {
+      const newSections = [...this.state.sections];
+      newSections[index][event.target.name] = event.target.value;
+      this.setState({
+        sections: newSections
+      });
+    }
+
     render() {
         const { classes } = this.props;
         // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
         return (
           // populate state with default values
-            <div className = {classes.root}>
-              <CssBaseline/>
-              {/* Input for entry width and height */}
-              <div className={classes.dimensionDiv}>
-                <TextField 
-                  id="width"
-                  label="width"
-                  name="width"
-                  value={this.state.width}
-                  margin="normal"
-                  variant="outlined"
-                  onChange={this.handleChange}
-                  />
-                <TextField 
-                  id="height"
-                  label="height"
-                  name="height"
-                  value={this.state.height}
-                  margin="normal"
-                  variant="outlined"
-                  onChange={this.handleChange}
-                  />
-              </div>
-              {/* Input for entry font type */}
-              <div className={classes.fontDiv}>
-                {Object.sections(this.state.fonts).map(([key, item]) => {
-                  return (<TextField
-                    name={key}
-                    id={key}
-                    label={this.props.info.fonts[key].label}
-                    value={item}
-                    margin="normal"
-                    variant="outlined"
-                    onChange={this.handleChange}/>)
-                })}
-              </div>
-              {/* Input for entry color */}
-              <div className={classes.colDiv}>
-                {Object.sections(this.state.colours).map(([key, item]) => {
-                  return (
-                    <div>
-                      {/* Preview icon that changes according to selected colour */}
-                      {/* <Button id="colourPreview"/> */}
-                      <TextField
+            <Modal className = {classes.root}
+            // open always set to true, open/close logic handled by portfolio
+              open={true}
+              // TODO: add onClose save logic
+              onClose={() => this.props.onClose(this.state, true)}
+              aria-labelledby="Entry editor"
+              aria-describedby="Edit your entry fields here"
+            >
+              <div className={classes.root}>
+                <Typography component="h3" variant="h3">Entry editor</Typography>
+                <div className={classes.sectionDiv}>
+                  <div className={classes.categoryDiv}>
+                    <TextField 
+                      id="width"
+                      label="width"
+                      name="width"
+                      value={this.state.width}
+                      margin="normal"
+                      variant="outlined"
+                      onChange={(event) => this.handleChange(event, "")}
+                      />
+                    <TextField 
+                      id="height"
+                      label="height"
+                      name="height"
+                      value={this.state.height}
+                      margin="normal"
+                      variant="outlined"
+                      onChange={(event) => this.handleChange(event, "")}
+                      />
+                  </div>
+                  <div className={classes.categoryDiv}>
+                    {Object.entries(this.state.fonts).map(([key, item]) => {
+                      return (<TextField
                         name={key}
                         id={key}
-                        label={this.props.info.colours[key].label}
-                        defaultValue={item}
+                        label={this.props.info.fonts[key].label}
+                        value={item}
                         margin="normal"
                         variant="outlined"
-                        onChange={this.handleChange}
-                      />
-                    </div>
-                    )
-                })}
-              </div>
-              {/* Display for previously added Images and Addition of new Images */}
-              <div className={classes.imgDiv}>
-                {Object.sections(this.state.images).map(([key, item]) => {
-                  return (
-                    <div>
-                      <Button onClick={this.handleImageUpload}>
-                        <img src={item}/>
-                      </Button>
-                      <Typography>
-                        {this.props.info.images[key].label}
-                      </Typography>
-                    </div>
-                    );
-                })}
-              </div>
-              {/* Display and Edit for allowed TextFields*/}
-              <div className={classes.textDiv}>
-                {Object.sections(this.state.texts).map(([key, item]) => {
-                  return (
-                    <div>
-                      {/* Preview icon that changes according to selected colour */}
-                      {/* <Button id="colourPreview"/> */}
-                      <TextField
-                        name={key}
-                        id={key}
-                        label={this.props.info.texts[key].label}
-                        defaultValue={item}
-                        margin="normal"
-                        variant="outlined"
-                        onChange={this.handleChange}
-                      />
-                    </div>
-                    )
-                })}
-              </div>
-              {/* Preview of exisiting entries */}
-              {this.props.info.entries.enabled 
-              ? <div className={classes.entryDiv}>
-                {this.state.sections.map((entryObj, index) => {
-                  return (
-                    <div>
-                      <div className={classes.imgDiv}>
-                        {Object.sections(entryObj.images).map(([key, item]) => {
-                          return (
-                            <div>
-                              {/* TODO: implement different logic */}
-                              <Button onClick={this.handleImageUpload}>
-                                <img src={item}/>
-                              </Button>
-                              <Typography>
-                                {this.props.info.sections.entryFormat.images[key].label}
-                              </Typography>
-                            </div>
-                            );
-                        })}
+                        onChange={(event) => this.handleChange(event, "fonts")}/>)
+                    })}
+                  </div>
+                  <div className={classes.categoryDiv}>
+                    {Object.entries(this.state.colours).map(([key, item]) => {
+                      return (
+                        <div>
+                          {/* Preview icon that changes according to selected colour */}
+                          {/* <Button id="colourPreview"/> */}
+                          <TextField
+                            name={key}
+                            id={key}
+                            label={this.props.info.colours[key].label}
+                            defaultValue={item}
+                            margin="normal"
+                            variant="outlined"
+                            onChange={(event) => this.handleChange(event, "colours")}
+                          />
+                        </div>
+                        )
+                    })}
+                  </div>
+                </div>
+                <div className={classes.sectionDiv}>
+                  <div className={classes.categoryDiv}>
+                    {Object.entries(this.state.images).map(([key, item]) => {
+                      return (
+                        <div>
+                          <Button onClick={this.handleImageUpload}>
+                            <img src={item} className={classes.imgPreview}/>
+                          </Button>
+                          <Typography>
+                            {this.props.info.images[key].label}
+                          </Typography>
+                        </div>
+                        );
+                    })}
+                  </div>
+                  <div className={classes.categoryDiv}>
+                    {Object.entries(this.state.texts).map(([key, item]) => {
+                      return (
+                        <div>
+                          {/* Preview icon that changes according to selected colour */}
+                          {/* <Button id="colourPreview"/> */}
+                          <TextField
+                            name={key}
+                            id={key}
+                            label={this.props.info.texts[key].label}
+                            defaultValue={item}
+                            margin="normal"
+                            variant="outlined"
+                            onChange={(event) => this.handleChange(event, "texts")}
+                          />
+                        </div>
+                        )
+                    })}
+                  </div>
+                </div>
+                {this.props.info.sections.enabled 
+                ? <div className={classes.entryDiv}>
+                  {this.state.sections.map((entryObj, index) => {
+                    return (
+                      <div>
+                        <div className={classes.imgDiv}>
+                          {Object.entries(entryObj.images).map(([key, item]) => {
+                            return (
+                              <div>
+                                {/* TODO: implement different logic */}
+                                <Button onClick={this.handleImageUpload}>
+                                  <img src={item} className={classes.imgPreview}/>
+                                </Button>
+                                <Typography>
+                                  {this.props.info.sections.entryFormat.images[key].label}
+                                </Typography>
+                              </div>
+                              );
+                          })}
+                        </div>
+                        <div className={classes.textDiv}>
+                          {Object.entries(entryObj.texts).map(([key, item]) => {
+                            // TODO: make maxRow field in info?
+                            return (
+                              <div>
+                                <TextField
+                                  name={key}
+                                  id={key}
+                                  label={this.props.info.sections.entryFormat.texts[key].label}
+                                  defaultValue={item}
+                                  margin="normal"
+                                  variant="outlined"
+                                  onChange={(event) => this.handleEditSection(event, "")}
+                                  multiline
+                                  rowsMax={3}
+                                />
+                              </div>
+                              );
+                          })}
+                        </div>
                       </div>
-                      <div className={classes.textDiv}>
-                        {Object.sections(entryObj.texts).map(([key, item]) => {
-                          // TODO: make maxRow field in info?
-                          return (
-                            <div>
-                              <TextField
-                                name={key}
-                                id={key}
-                                label={this.props.info.sections.entryFormat.texts[key].label}
-                                defaultValue={item}
-                                margin="normal"
-                                variant="outlined"
-                                onChange={this.handleChange}
-                                multiline
-                                rowsMax={3}
-                              />
-                            </div>
-                            );
-                        })}
-                      </div>
-                    </div>
-                    )
-                })}
-                {/* Finalizes entry */}
-                <IconButton onClick={this.handleCreateEntry}>+</IconButton>
+                      )
+                  })}
+                  <IconButton onClick={this.handleCreateEntry}>+</IconButton>
+                </div>
+                : null}
               </div>
-              : null}
-            </div>
+            </Modal>
         )
       }
 }
