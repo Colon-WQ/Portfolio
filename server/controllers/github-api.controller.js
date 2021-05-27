@@ -5,6 +5,8 @@ import axios from 'axios';
 import jwt from "jsonwebtoken";
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, JWT_SECRET } from '../utils/config.js';
 
+
+
 // const User = require('../models/user.model.js');
 
 const router = express.Router();
@@ -118,42 +120,67 @@ export const checkGitCreated = async (req, res) => {
 // req.body must contain: route, content. 
 export const publishGithub = async (req, res) => {
     console.log("pushing to repository " + req.body.repo)
-    const data = new FormData();
+
+    //Set up request body's content for push later.
+    const files = req.body.content;
+
     const message = "Page updated with Portfol.io"
+
     const gh_token = req.gh_token;
     //Changed the url for getting content to this.
-    const sha = await axios({
+    const fetchedContent = await axios({
         method: "GET",
-        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${route}`,
-        headers: {"Authorization": `token ${ghToken}`}
-    }).then(res => res.body.sha).catch(e => {
+        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${req.body.route}`,
+        headers: {
+            "Authorization": `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(res => {
+        console.log(res)
+        const fetchedContentObject = {};
+        for (let obj of res.data) {
+            fetchedContentObject[obj.path] = {
+                sha: obj.sha
+            }
+        }
+        return fetchedContentObject;
+    }).catch(err => {
         // TODO: error handling, stop publishing/undo all publishes.
-        console.log(err.message)
-        if(res.status !== 404) console.log(`Unexpected error occured: ${e}`);
-        return "";
+        console.log(err.message);
+        return res.status(404).send("error checking repository");
     });
-    // content should be base64 encoded already
-    data.append('content', req.body.content);
-    //message is required
-    data.append('message', "test push by Portfol.io")
-    //encrypting the content with sha
-    data.append('sha', sha);
+
     //TODO: committer object might be required
     console.log("sha obtained preparing to push")
     
-    axios({
-        method: "PUT",
-        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/${route}`,
-        headers: {
-            "Authorization": `token ${ghToken}`,
-            "Accept": "application/vnd.github.v3+json"
-        },
-        data:  data
-        // TODO: check possible responses from github and if they must be handled separately
-        // TODO: discuss what to do on conflict
-    }).then(response => res.status(200).json({published: true}))
-    // TODO: check correct code for status id
-    .catch(error => res.status(400).json(error));
+    for (let obj of files) {
+        console.log(obj.fileName + obj.fileType + " is being pushed")
+        const data = {
+            message: message,
+            content: obj.fileContent
+        }
+        if (fetchedContent[obj.fileName + obj.fileType] != undefined) {
+            data['sha'] = fetchedContent[obj.fileName + obj.fileType].sha;
+        }
+        await axios({
+            method: "PUT",
+            url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${obj.fileName + obj.fileType}`,
+            headers: {
+                "Authorization": `token ${gh_token}`,
+                "Accept": "application/vnd.github.v3+json"
+            },
+            data: data
+            // TODO: check possible responses from github and if they must be handled separately
+            // TODO: discuss what to do on conflict
+        }).then(response => {
+            console.log("successfully pushed " + obj.fileName + obj.fileType)
+        }).catch(err => {
+            console.log(err.message)
+            return res.status(400).json(err)
+        });
+    }
+    
+    return res.status(200).json({ message: "successfully pushed all files"});
 }
 
 
