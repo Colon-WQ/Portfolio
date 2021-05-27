@@ -138,7 +138,7 @@ router.get('/checkExistingRepos', auth, checkExistingRepos);
  */  
 router.post("/createRepo", auth, createRepo);
 router.get("/getRepoContent", auth, getRepoContent);
-router.put("/pushToGithub", auth, publishGithub);
+router.put("/publishGithub", auth, publishGithub);
 
 router.post("/:id/publish", postPortfolio);
 router.patch("/:id/save", savePortfolio);
