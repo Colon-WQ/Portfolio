@@ -3,11 +3,12 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Button, IconButton, TextField, Typography } from '@material-ui/core';
-import { GrFormClose } from "react-icons/gr";
+import { Button, Fab, IconButton, TextField, Typography } from '@material-ui/core';
+import { FaEdit } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
-import EntryEditor from './EntryEditor'
+import EntryEditor from './EntryEditor';
+import {templates} from './EntryGenerator';
 
 /**
  * @file Portfolio component representing a user created portfolio page
@@ -24,6 +25,11 @@ const styles = (theme) => ({
         justifyContent: 'start',
         alignItems: 'center',
         paddingTop: '7%'
+    },
+    fab: {
+        position: 'absolute',
+        marginTop: '5%',
+        marginLeft: '5%'
     }
 })
 
@@ -41,29 +47,78 @@ class Portfolio extends Component {
         this.state = {
             entries: [],
             editMode: true,
-            currentEntry: {},
+            currentEntry: 0,
+            maxEntry: 0,
             showEditor: false
         }
+        this.createEntry = this.createEntry.bind(this);
+        this.handleEditorClose = this.handleEditorClose.bind(this);
     }
 
-    renderElement(entry) {
-        return templateGenerators[entry.type][entry.style](entry);
+    renderElement(entryFields) {
+        return templates[entryFields.type][entryFields.style].component(entryFields);
+    }
+
+    createEntry() {
+        // TODO: Add logic for a template chooser
+        const entryType = "introduction";
+        const entryStyle = 0;
+        const newEntry = {
+            type: entryType,
+            style: entryStyle,
+            ...templates[entryType][entryStyle].defaultField
+        };
+        this.setState({
+            entries:  [...this.state.entries, newEntry]
+        })
+    }
+
+    handleEditorClose(fields, changed) {
+        if(changed) {
+            // Make copy of entries
+            const entries = [...this.state.entries];
+            entries[this.state.currentEntry] = fields;
+            this.setState({
+                showEditor: !this.state.showEditor,
+                entries: entries
+            })
+        } else {
+            this.setState({
+                showEditor: !this.state.showEditor
+            })
+        }
     }
 
     render() {
         const {classes} = this.props;
+        let entry = undefined;
+        if (this.state.entries != []) {
+            entry = this.state.entries[this.state.currentEntry];
+        }
 
-        return (<div>
-            {this.state.editMode ? <EntryEditor fields={this.state.currentEntry}/> : null}
-            {this.state.entries.map((entry, index) => {
-                if (this.state.editMode) {
-                    return (<div>
-                        <IconButton onClick={() => this.setState({currentEntry: entries[index], showEditor: !this.state.showEditor})}>Edit</IconButton>
-                        {this.renderElement(entry)}
-                    </div>);
-                }
-                return (this.renderElement(entry));
-            })}
+        return (
+        <div style={{display: "flex", flexDirection: "column", marginTop: "100px"}}>
+                {this.state.entries.map((entry, index) => {
+                    if (this.state.editMode) {
+                        return (<div style={{display: "flex", flexDirection: "row"}}>
+                            <Fab 
+                                className={classes.fab}
+                                onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
+                                <FaEdit/>
+                            </Fab>
+                            {this.renderElement(entry)}
+                        </div>);
+                    }
+                    return (this.renderElement(entry));
+                })}
+                {this.state.editMode && this.state.showEditor && entry != undefined
+                    ? <EntryEditor 
+                        fields={entry} 
+                        info={templates[entry.type][entry.style].info}
+                        onClose={this.handleEditorClose}
+                    /> 
+                    : null}
+            <Button onClick={this.createEntry}> Add an entry </Button>
         </div>);
     }
 }

@@ -13,6 +13,7 @@ import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
+import Portfolio from './components/Portfolio';
 
 /**
  * @file index.js is the root file for this Portfol.io app
@@ -36,7 +37,7 @@ ReactDOM.render(
               <Navbar/>
               <Route exact path = '/login/callback' component = {LoginResult}></Route>
               <Route exact path = '/dashboard' component = {Dashboard}></Route>
-              <Route exact path = '/templateEditor' component = {EntryEditor}></Route>
+              <Route exact path = '/edit' component = {Portfolio}></Route>
             </>
           </Switch>
         </Provider>
