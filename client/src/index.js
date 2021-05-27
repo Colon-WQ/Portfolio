@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import LoginResult from './components/LoginResult';
 import Dashboard from './components/Dashboard';
-import EntryEditor from './components/EntryEditor';
+import Portfolio from './components/Portfolio';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -25,6 +25,12 @@ const store = createStore(
   rootReducer,
   applyMiddleware(thunk)
 )
+
+const portfolioFields = {
+  finalizeDialogState: false,
+  overrideDialogState: false,
+  repositoryName: ""
+}
 
 ReactDOM.render(
   <React.StrictMode>

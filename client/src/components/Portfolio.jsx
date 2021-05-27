@@ -10,6 +10,24 @@ import PropTypes from 'prop-types';
 import EntryEditor from './EntryEditor';
 import {templates} from './EntryGenerator';
 
+//MUI component imports
+import Fab from '@material-ui/core/Fab';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { withStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+import { FaEdit, FaCheck } from 'react-icons/fa';
+
+
+
 /**
  * @file Portfolio component representing a user created portfolio page
  * 
@@ -39,12 +57,23 @@ const styles = (theme) => ({
  * @component
  */
 class Portfolio extends Component {
+    // static propTypes = {
+    //     onPublish: PropTypes.func.isRequired,
+    //     fields: PropTypes.shape({
+    //         finalizeDialogState: Proptypes.bool,
+    //         overwriteDialogState: Proptypes.bool,
+    //         entryDisplayIndex: Proptypes.number,
+    //         repositoryName: Proptypes.string
+    //     })
+    // };
+
     /**
      * @constructor
      */
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
+            editMode: false,
             entries: [],
             editMode: true,
             currentEntry: 0,
@@ -88,6 +117,158 @@ class Portfolio extends Component {
             })
         }
     }
+
+    //handle all case of OnChange
+    handleOnChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
+    }
+
+    // handle any form of state boolean changes.
+    // Note: Store it under separate custom attribute. id shld be saved for reference purposes and must be unique.
+    // Warning: eact does not recognize the `componentName` prop on a DOM element. 
+    // If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `componentname` instead.
+    // custom attributes must be lowercase.
+    handleStateChange(event) {
+        const customAttribute = event.currentTarget.getAttribute('componentname')
+        console.log(customAttribute)
+        console.log(this.state[customAttribute])
+        this.setState({
+            [customAttribute]: !this.state[customAttribute]
+        })
+    }
+
+    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
+    //Also needs to close menu after selection.
+    handleFinalizeDialogOpen() {
+        this.setState({
+            anchorEl: null,
+            finalizeDialogState: true
+        })
+    }
+
+    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
+    handleFinalizeDialogClose() {
+        this.setState({
+            finalizeDialogState: false
+        })
+    }
+
+    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
+    handleOverrideDialogOpen() {
+        this.setState({
+            overrideDialogState: true
+        })
+    }
+
+    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
+    handleOverrideDialogClose() {
+        this.setState({
+            overrideDialogState: false
+        })
+    }
+
+    //handle any form of anchoring menu to FAB
+    handleAnchorMenu(event) {
+        const anchorEl = event.currentTarget.getAttribute("componentname")
+        console.log(anchorEl)
+        this.setState({
+            [anchorEl]: event.currentTarget
+        })
+    }
+
+    //handles any form of deAnchoring menu from FAB
+    handleReleaseMenu(event) {
+        const anchorEl = event.currentTarget.getAttribute("componentname");
+        console.log(anchorEl)
+        this.setState({
+            [anchorEl]: null
+        })
+    }
+
+    //TODO push to exisiting repo testing in progress
+    //routes set to nothing for now
+    //hardcoded name for now
+    //console.log is run but nothing happens. route is correct
+    async handleOverrideAllowed() {
+        console.log("Override permission given to push to " + "testShit")
+        await axios({
+            method: "PUT",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
+            withCredentials: true,
+            data: {
+                routes: "",
+                content: "content",
+                repo: "testShit"
+            }
+        }).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+
+        this.setState({
+            overrideDialogState: false,
+            repositoryName: ''
+        })
+    }
+
+    async handlePushToGithub() {
+        await axios({
+            method: "PUT",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
+            withCredentials: true,
+            data: {
+                routes: "",
+                content: "content",
+                repo: this.state.repositoryName
+            }
+        }).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    //checks for existing repo by name and creates new repo if no existing. Otherwise prompts user for override.
+    async handleFinalizeEdits() {
+        console.log("chosen repository name is " + this.state.repositoryName)
+        await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
+            withCredentials: true,
+            params: {
+                repo: this.state.repositoryName
+            }
+        }).then(async res => {
+            console.log(res.data.message)
+            await axios({
+                method: "POST",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
+                withCredentials: true,
+                data: {
+                    repo: this.state.repositoryName
+                }
+            }).then(response => {
+                console.log(response.data.message)
+            }).catch(err => {
+                console.log(err.message)
+                console.log("repository creation failed")
+            })
+        }).catch(err => {
+            console.log(err.response.data)
+            this.setState({
+                overrideDialogState: true
+            })
+        })
+
+        this.setState({
+            finalizeDialogState: false,
+            repositoryName: ''
+        })
+    }
+
 
     render() {
         const {classes} = this.props;
