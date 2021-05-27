@@ -115,30 +115,39 @@ export const checkGitCreated = async (req, res) => {
 // TODO: research updating multiple files at a time to make undo easier
 // TODO: deploy to ghpages if not a .io repo
 // TODO: handle pagination for extra large files
-// req.body must contain: route, content
+// req.body must contain: route, content. 
 export const publishGithub = async (req, res) => {
+    console.log("pushing to repository " + req.body.repo)
     const data = new FormData();
     const message = "Page updated with Portfol.io"
     const gh_token = req.gh_token;
+    //Changed the url for getting content to this.
     const sha = await axios({
         method: "GET",
-        url: `https://api.github.com/repos/${req.body.username}/${route}`,
+        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${route}`,
         headers: {"Authorization": `token ${ghToken}`}
     }).then(res => res.body.sha).catch(e => {
         // TODO: error handling, stop publishing/undo all publishes.
+        console.log(err.message)
         if(res.status !== 404) console.log(`Unexpected error occured: ${e}`);
         return "";
     });
     // content should be base64 encoded already
     data.append('content', req.body.content);
+    //message is required
+    data.append('message', "test push by Portfol.io")
     //encrypting the content with sha
     data.append('sha', sha);
-    data.append('message', message);
+    //TODO: committer object might be required
+    console.log("sha obtained preparing to push")
     
     axios({
         method: "PUT",
-        url: `https://api.github.com/repos/${req.body.username}/${route}`,
-        headers: {'Authorization': `token ${ghToken}`},
+        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/${route}`,
+        headers: {
+            "Authorization": `token ${ghToken}`,
+            "Accept": "application/vnd.github.v3+json"
+        },
         data:  data
         // TODO: check possible responses from github and if they must be handled separately
         // TODO: discuss what to do on conflict
