@@ -204,7 +204,7 @@ class Portfolio extends Component {
     //hardcoded name for now
     //console.log is run but nothing happens. route is correct
     async handleOverrideAllowed() {
-        console.log("Override permission given to push to " + this.state.repositoryName)
+        console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
         await this.handlePushToGithub();
         this.setState({
             overrideDialogState: false
@@ -215,10 +215,10 @@ class Portfolio extends Component {
     //Note: For testing purposes, all files will be named "index".
     //Note: For testing purposes, there will only be two files, a HTML and CSS file in root directory.
     async handlePushToGithub() {
-        console.log("pushing begins")
+        console.log(`files are being pushed to ${this.state.repositoryName}`)
         await axios({
             method: "PUT",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/publishGithub",
             withCredentials: true,
             data: {
                 route: "",
@@ -237,9 +237,13 @@ class Portfolio extends Component {
                 repo: this.state.repositoryName
             }
         }).then(res => {
-            console.log(res)
+            console.log(res.data.message);
         }).catch(err => {
-            console.log(err)
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
         })
     }
 
@@ -267,14 +271,22 @@ class Portfolio extends Component {
             }).then(response => {
                 console.log(response.data.message)
             }).catch(err => {
-                console.log(err.message)
-                console.log("repository creation failed")
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
             })
 
             //Waits for push to go through
             await this.handlePushToGithub();
         }).catch(err => {
-            console.log(err.response.data)
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+            
             this.setState({
                 overrideDialogState: true
             })

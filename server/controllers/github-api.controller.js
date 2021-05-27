@@ -121,7 +121,6 @@ export const checkGitCreated = async (req, res) => {
 export const publishGithub = async (req, res) => {
     console.log("pushing to repository " + req.body.repo)
 
-    //Set up request body's content for push later.
     const files = req.body.content;
 
     const message = "Page updated with Portfol.io"
@@ -136,8 +135,8 @@ export const publishGithub = async (req, res) => {
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(res => {
-        console.log(res)
         const fetchedContentObject = {};
+        //Set up request body's content for easy reference during push later.
         for (let obj of res.data) {
             fetchedContentObject[obj.path] = {
                 sha: obj.sha
@@ -147,21 +146,25 @@ export const publishGithub = async (req, res) => {
     }).catch(err => {
         // TODO: error handling, stop publishing/undo all publishes.
         console.log(err.message);
-        return res.status(404).send("error checking repository");
+        return res.status(404).send("error encountered when checking repository");
     });
 
     //TODO: committer object might be required
     console.log("sha obtained preparing to push")
     
     for (let obj of files) {
+        //filename and filetype combined give the full path of the file.
+        //fileContent was base64 encoded in the frontend
         console.log(obj.fileName + obj.fileType + " is being pushed")
         const data = {
             message: message,
             content: obj.fileContent
         }
+        //If file exists, append sha field to the data object in order to update the existing file.
         if (fetchedContent[obj.fileName + obj.fileType] != undefined) {
             data['sha'] = fetchedContent[obj.fileName + obj.fileType].sha;
         }
+        //wait for push to succeed. Push has to completely succeed, otherwise pages deployment shldn't be run.
         await axios({
             method: "PUT",
             url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${obj.fileName + obj.fileType}`,
@@ -173,14 +176,55 @@ export const publishGithub = async (req, res) => {
             // TODO: check possible responses from github and if they must be handled separately
             // TODO: discuss what to do on conflict
         }).then(response => {
-            console.log("successfully pushed " + obj.fileName + obj.fileType)
+            console.log(`successfully pushed ${obj.fileName + obj.fileType}`)
         }).catch(err => {
             console.log(err.message)
-            return res.status(400).json(err)
+            return res.status(400).send(err.message)
         });
     }
+
+    console.log("all files successfully pushed")
+
+    //TODO Could show some kind of progress indicator. Github Pages does allow us to check when page is being built or built.
+    axios({
+        method: "GET",
+        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/pages`,
+        headers: {
+            "Authorization": `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(response => {
+        console.log("ghpages already exists")
+        return res.status(200).json({ message: `successfully pushed all files and deployed to ghpages at ${response.data.html_url}
+            Please wait for ghpages to load and refresh your browser after loading is completed for changes to take place` });
+    }).catch(err => {
+        console.log("ghpages does not exist. Need to create a new ghpages site")
+        //functionality to toggle ghpages is under preview and requires a custom media type in the Accept header. See docs for more information"
+        //TODO: Need to update when Github finalizes the preview.
+        axios({
+            method: "POST",
+            url: `https://api.github.com/repos/${req.username}/${req.body.repo}/pages`,
+            headers: {
+                "Authorization": `token ${gh_token}`,
+                "Accept": "application/vnd.github.switcheroo-preview+json"
+            },
+            data: {
+                //TODO need to actually check if main branch is the correct one. Some older repos do use master.
+                source: {
+                    branch: "main"
+                }
+            }
+        }).then(responses => {
+            console.log("ghpages successfully created")
+            return res.status(200).json({ message: `successfully pushed all files and deployed to ghpages at ${responses.data.html_url}
+                Please wait for ghpages to load and refresh your browser after loading is completed for changes to take place` });
+        }).catch(err => {
+            console.log(err)
+            return res.status(400).send("ghpages deployment failed");
+        })
+    })
     
-    return res.status(200).json({ message: "successfully pushed all files"});
+    
 }
 
 
