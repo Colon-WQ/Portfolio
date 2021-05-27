@@ -13,7 +13,6 @@ import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
-import Portfolio from './components/Portfolio';
 
 /**
  * @file index.js is the root file for this Portfol.io app
