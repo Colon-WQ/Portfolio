@@ -7,7 +7,7 @@ import {
     getPortfolios,
     deletePortfolio
 } from '../controllers/portfolio.controller.js';
-import { checkGitCreated, checkExistingRepos, createRepo, getRepoContent } from '../controllers/github-api.controller.js';
+import { checkGitCreated, checkExistingRepos, createRepo, getRepoContent, publishGithub } from '../controllers/github-api.controller.js';
 import auth from '../middleware/auth.middleware.js';
 /**
  * @openapi
@@ -138,6 +138,7 @@ router.get('/checkExistingRepos', auth, checkExistingRepos);
  */  
 router.post("/createRepo", auth, createRepo);
 router.get("/getRepoContent", auth, getRepoContent);
+router.put("/pushToGithub", auth, publishGithub);
 
 router.post("/:id/publish", postPortfolio);
 router.patch("/:id/save", savePortfolio);
