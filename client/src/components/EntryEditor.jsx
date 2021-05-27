@@ -151,6 +151,7 @@ class EntryEditor extends Component {
           // populate state with default values
             <div className = {classes.root}>
               <CssBaseline/>
+              {/* Input for entry width and height */}
               <div className={classes.dimensionDiv}>
                 <TextField 
                   id="width"
@@ -171,6 +172,7 @@ class EntryEditor extends Component {
                   onChange={this.handleChange}
                   />
               </div>
+              {/* Input for entry font type */}
               <div className={classes.fontDiv}>
                 {Object.sections(this.state.fonts).map(([key, item]) => {
                   return (<TextField
@@ -183,6 +185,7 @@ class EntryEditor extends Component {
                     onChange={this.handleChange}/>)
                 })}
               </div>
+              {/* Input for entry color */}
               <div className={classes.colDiv}>
                 {Object.sections(this.state.colours).map(([key, item]) => {
                   return (
@@ -202,6 +205,7 @@ class EntryEditor extends Component {
                     )
                 })}
               </div>
+              {/* Display for previously added Images and Addition of new Images */}
               <div className={classes.imgDiv}>
                 {Object.sections(this.state.images).map(([key, item]) => {
                   return (
@@ -216,6 +220,7 @@ class EntryEditor extends Component {
                     );
                 })}
               </div>
+              {/* Display and Edit for allowed TextFields*/}
               <div className={classes.textDiv}>
                 {Object.sections(this.state.texts).map(([key, item]) => {
                   return (
@@ -235,7 +240,8 @@ class EntryEditor extends Component {
                     )
                 })}
               </div>
-              {this.props.info.sections.enabled 
+              {/* Preview of exisiting entries */}
+              {this.props.info.entries.enabled 
               ? <div className={classes.entryDiv}>
                 {this.state.sections.map((entryObj, index) => {
                   return (
@@ -278,6 +284,7 @@ class EntryEditor extends Component {
                     </div>
                     )
                 })}
+                {/* Finalizes entry */}
                 <IconButton onClick={this.handleCreateEntry}>+</IconButton>
               </div>
               : null}

@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import LoginResult from './components/LoginResult';
 import Dashboard from './components/Dashboard';
+import Portfolio from './components/Portfolio';
 import EntryEditor from './components/EntryEditor';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
@@ -25,6 +26,12 @@ const store = createStore(
   applyMiddleware(thunk)
 )
 
+const portfolioFields = {
+  finalizeDialogState: false,
+  overrideDialogState: false,
+  repositoryName: ""
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme = {theme}>
@@ -36,7 +43,7 @@ ReactDOM.render(
               <Navbar/>
               <Route exact path = '/login/callback' component = {LoginResult}></Route>
               <Route exact path = '/dashboard' component = {Dashboard}></Route>
-              <Route exact path = '/templateEditor' component = {EntryEditor}></Route>
+              <Route exact path = '/templateEditor' component = {() => <Portfolio fields={portfolioFields}/>}></Route>
             </>
           </Switch>
         </Provider>
