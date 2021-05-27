@@ -28,7 +28,9 @@ const store = createStore(
 const portfolioFields = {
   finalizeDialogState: false,
   overrideDialogState: false,
-  repositoryName: ""
+  repositoryName: "",
+  repositoryHTML: "",
+  repositoryCSS: ""
 }
 
 ReactDOM.render(

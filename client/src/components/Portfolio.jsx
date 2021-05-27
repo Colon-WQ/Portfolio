@@ -34,6 +34,13 @@ const styles = (theme) => ({
     }
 })
 
+const templateGenerators = {
+    // TYPE: [style1, style2, ...], style == (dict) => <Component/>
+    ENTRY: [],
+    ABOUT: [],
+    TIMELINE: []
+}
+
 /**
  * The portfolio component used for rendering previews and compiling for publishing.
  * 
@@ -115,8 +122,8 @@ class Portfolio extends Component {
     // custom attributes must be lowercase.
     handleStateChange(event) {
         const customAttribute = event.currentTarget.getAttribute('componentname')
-        console.log(customAttribute)
-        console.log(this.state[customAttribute])
+        //console.log(customAttribute)
+        //console.log(this.state[customAttribute])
         this.setState({
             [customAttribute]: !this.state[customAttribute]
         })
@@ -155,7 +162,7 @@ class Portfolio extends Component {
     //handle any form of anchoring menu to FAB
     handleAnchorMenu(event) {
         const anchorEl = event.currentTarget.getAttribute("componentname")
-        console.log(anchorEl)
+        //console.log(anchorEl)
         this.setState({
             [anchorEl]: event.currentTarget
         })
@@ -164,7 +171,7 @@ class Portfolio extends Component {
     //handles any form of deAnchoring menu from FAB
     handleReleaseMenu(event) {
         const anchorEl = event.currentTarget.getAttribute("componentname");
-        console.log(anchorEl)
+        //console.log(anchorEl)
         this.setState({
             [anchorEl]: null
         })
@@ -175,46 +182,51 @@ class Portfolio extends Component {
     //hardcoded name for now
     //console.log is run but nothing happens. route is correct
     async handleOverrideAllowed() {
-        console.log("Override permission given to push to " + "testShit")
-        await axios({
-            method: "PUT",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
-            withCredentials: true,
-            data: {
-                routes: "",
-                content: "content",
-                repo: "testShit"
-            }
-        }).then(res => {
-            console.log(res)
-        }).catch(err => {
-            console.log(err)
-        })
-
+        console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
+        await this.handlePushToGithub();
         this.setState({
-            overrideDialogState: false,
-            repositoryName: ''
+            overrideDialogState: false
         })
     }
 
+    //Note: If you wish to create a file under a folder. Under fileName, add "/folder/{filename}"
+    //Note: For testing purposes, all files will be named "index".
+    //Note: For testing purposes, there will only be two files, a HTML and CSS file in root directory.
     async handlePushToGithub() {
+        console.log(`files are being pushed to ${this.state.repositoryName}`)
         await axios({
             method: "PUT",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/pushToGithub",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/publishGithub",
             withCredentials: true,
             data: {
-                routes: "",
-                content: "content",
+                route: "",
+                content: [
+                    {
+                        fileType: ".html",
+                        fileName: "index",
+                        fileContent: Base64.encode(this.state.repositoryHTML)
+                    },
+                    {
+                        fileType: ".css",
+                        fileName: "index",
+                        fileContent: Base64.encode(this.state.repositoryCSS)
+                    }
+                ],
                 repo: this.state.repositoryName
             }
         }).then(res => {
-            console.log(res)
+            console.log(res.data.message);
         }).catch(err => {
-            console.log(err)
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
         })
     }
 
     //checks for existing repo by name and creates new repo if no existing. Otherwise prompts user for override.
+    //Once new repo is created, inputs will be automatically pushed.
     async handleFinalizeEdits() {
         console.log("chosen repository name is " + this.state.repositoryName)
         await axios({
@@ -226,6 +238,7 @@ class Portfolio extends Component {
             }
         }).then(async res => {
             console.log(res.data.message)
+            //waits for repository to be created
             await axios({
                 method: "POST",
                 url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
@@ -236,19 +249,31 @@ class Portfolio extends Component {
             }).then(response => {
                 console.log(response.data.message)
             }).catch(err => {
-                console.log(err.message)
-                console.log("repository creation failed")
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
             })
+
+            //Waits for push to go through
+            await this.handlePushToGithub();
         }).catch(err => {
-            console.log(err.response.data)
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+            
             this.setState({
                 overrideDialogState: true
             })
         })
 
+        //closes finalizeDialog but doesn't remove repository name.
+        //TODO: Repository name should not be set in dialog, but in some easily visible spot.
         this.setState({
-            finalizeDialogState: false,
-            repositoryName: ''
+            finalizeDialogState: false
         })
     }
 
