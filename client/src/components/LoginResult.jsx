@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { log_in_user, repopulate_state } from '../actions/LoginAction';
 import { fetchPortfolios } from '../actions/PortfolioAction';
-import '../styles/login.css';
+import { withStyles } from '@material-ui/core/styles';
 import { BeatLoader } from 'react-spinners';
 /**
  * @file LoginResult component serves as the endpoint of Github authorization request and also
@@ -15,6 +15,16 @@ import { BeatLoader } from 'react-spinners';
  * 
  * @see LoginResult
  */
+
+ const styles = (theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'start',
+        alignItems: 'center'
+    },
+    appBarSpacer: theme.mixins.toolbar
+});
 
 /**
  * Component that displays loading animation while Github authentication occurs.
@@ -96,14 +106,15 @@ class LoginResult extends Component {
     }
 
     render() {
-        const { loggedIn } = this.props
+        const { loggedIn, classes } = this.props
         if (loggedIn) {
             return (
                 <Redirect to = '/dashboard'></Redirect>
             )
         } else {
             return (
-                <div className = 'login-container'>
+                <div className={classes.root}>
+                    <div className={classes.appBarSpacer}/>
                     <BeatLoader></BeatLoader>
                 </div>
             )
@@ -134,4 +145,4 @@ const mapDispatchToProps = {
     fetchPortfolios
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginResult)
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(LoginResult))

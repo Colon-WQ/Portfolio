@@ -18,13 +18,14 @@ import Typography from '@material-ui/core/Typography';
  * 
  * @see Dashboard
  */
+
+
 const styles = (theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'start',
-        alignItems: 'center',
-        paddingTop: '7%'
+        alignItems: 'center'
     },
     gridHorizontal: {
         container: true,
@@ -37,7 +38,8 @@ const styles = (theme) => ({
         variant: 'contained',
         size: 'large',
         color: 'primary'
-    }
+    },
+    appBarSpacer: theme.mixins.toolbar
 });
 
 /**
@@ -90,6 +92,7 @@ class Dashboard extends Component {
         const {loggedIn, name, portfolios, classes } = this.props
         return (
             <div className={classes.root}>
+                <div className={classes.appBarSpacer}/>
                 <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
                 <Grid className={classes.gridHorizontal}>
                     {portfolios.map((element, idx) => {
