@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { repopulate_state } from '../actions/LoginAction'
-import axios from 'axios'
-import { withStyles } from '@material-ui/core/styles'
-import { Button, Fab, IconButton, TextField, Typography } from '@material-ui/core';
-import { FaEdit } from "react-icons/fa";
-import { Base64 } from 'js-base64';
-import PropTypes from 'prop-types';
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {repopulate_state} from '../actions/LoginAction'
+import {withStyles} from '@material-ui/core/styles'
+import {Button, Fab, IconButton, TextField, Typography} from '@material-ui/core';
+import {FaEdit, FaPlus, FaSave} from "react-icons/fa";
+import {Base64} from 'js-base64';
+import ReactDOMServer from 'react-dom/server';
+import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
 import {templates} from './EntryGenerator';
 
@@ -25,21 +25,27 @@ const styles = (theme) => ({
         flexDirection: 'column',
         justifyContent: 'start',
         alignItems: 'center',
-        paddingTop: '7%'
+        paddingTop: '7%',
     },
-    fab: {
+    entryDiv: {
+        position: 'relative'
+    },
+    editFAB: {
         position: 'absolute',
-        marginTop: '5%',
-        marginLeft: '5%'
+        marginTop: '2vw',
+        marginLeft: '2vw'
+    },
+    controlFAB: {
+        position: 'static',
+        marginRight: '0.5vw',
+        marginBottom: '0.5vw'
+    },
+    staticDiv: {
+        position: 'fixed',
+        bottom: 0,
+        right: 0
     }
 })
-
-const templateGenerators = {
-    // TYPE: [style1, style2, ...], style == (dict) => <Component/>
-    ENTRY: [],
-    ABOUT: [],
-    TIMELINE: []
-}
 
 /**
  * The portfolio component used for rendering previews and compiling for publishing.
@@ -47,35 +53,29 @@ const templateGenerators = {
  * @component
  */
 class Portfolio extends Component {
-    // static propTypes = {
-    //     onPublish: PropTypes.func.isRequired,
-    //     fields: PropTypes.shape({
-    //         finalizeDialogState: Proptypes.bool,
-    //         overwriteDialogState: Proptypes.bool,
-    //         entryDisplayIndex: Proptypes.number,
-    //         repositoryName: Proptypes.string
-    //     })
-    // };
-
     /**
      * @constructor
      */
     constructor(props) {
         super(props);
         this.state = {
-            editMode: false,
-            entries: [],
             editMode: true,
+            pages: [{
+                directory: "",
+                entries: [],
+            }],
+            currentPage: 0,
             currentEntry: 0,
-            maxEntry: 0,
             showEditor: false
         }
         this.createEntry = this.createEntry.bind(this);
         this.handleEditorClose = this.handleEditorClose.bind(this);
+        this.handleCreateFile = this.handleCreateFile.bind(this);
+        this.handleProduction = this.handleProduction.bind(this);
     }
 
-    renderElement(entryFields) {
-        return templates[entryFields.type][entryFields.style].component(entryFields);
+    renderEntry(entryFields, index) {
+        return templates[entryFields.type][entryFields.style].component(entryFields, index);
     }
 
     createEntry() {
@@ -87,19 +87,22 @@ class Portfolio extends Component {
             style: entryStyle,
             ...templates[entryType][entryStyle].defaultField
         };
-        this.setState({
-            entries:  [...this.state.entries, newEntry]
-        })
+        const newPages = [...this.state.pages];
+        newPages[this.state.currentPage].entries = 
+            [...this.state.pages[this.state.currentPage].entries, newEntry];
+        this.setState({pages: newPages});
     }
 
     handleEditorClose(fields, changed) {
         if(changed) {
-            // Make copy of entries
-            const entries = [...this.state.entries];
+            const newPages = [...this.state.pages];
+            const entries = [...this.state.pages[this.state.currentPage].entries];
             entries[this.state.currentEntry] = fields;
+            newPages[this.state.currentPage].entries = entries;
+
             this.setState({
                 showEditor: !this.state.showEditor,
-                entries: entries
+                pages: newPages
             })
         } else {
             this.setState({
@@ -108,206 +111,104 @@ class Portfolio extends Component {
         }
     }
 
-    //handle all case of OnChange
-    handleOnChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    }
+    // TODO: publish component check file empty before load?
+    handleCreateFile(entries, directory) {
+        console.log(entries);
+        const sheets = new ServerStyleSheets();
+        // TODO: test renderToStaticMarkup
+        const rawHTML = ReactDOMServer.renderToString(sheets.collect(
+            <div style={{display: "flex", flexDirection: "column"}}>
+                {entries.map((entry, index) => this.renderEntry(entry))}
+            </div>),);
+        // TODO: add title
+        const html = Base64.encode(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                <link href="styles.css" rel="stylesheet">
+                <script defer src="script.js"></script>
+                <title>Welcome</title>
+            </head>
+            <body>
+            ${rawHTML}
+            </body>`);
+        const css = Base64.encode(sheets.toString());
+        const js = Base64.encode(entries
+            .map((entry, index) => templates[entry.type][entry.style].script(index))
+            .filter(Boolean).join('\n'));
 
-    // handle any form of state boolean changes.
-    // Note: Store it under separate custom attribute. id shld be saved for reference purposes and must be unique.
-    // Warning: eact does not recognize the `componentName` prop on a DOM element. 
-    // If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `componentname` instead.
-    // custom attributes must be lowercase.
-    handleStateChange(event) {
-        const customAttribute = event.currentTarget.getAttribute('componentname')
-        //console.log(customAttribute)
-        //console.log(this.state[customAttribute])
-        this.setState({
-            [customAttribute]: !this.state[customAttribute]
-        })
-    }
-
-    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
-    //Also needs to close menu after selection.
-    handleFinalizeDialogOpen() {
-        this.setState({
-            anchorEl: null,
-            finalizeDialogState: true
-        })
-    }
-
-    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
-    handleFinalizeDialogClose() {
-        this.setState({
-            finalizeDialogState: false
-        })
-    }
-
-    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
-    handleOverrideDialogOpen() {
-        this.setState({
-            overrideDialogState: true
-        })
-    }
-
-    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
-    handleOverrideDialogClose() {
-        this.setState({
-            overrideDialogState: false
-        })
-    }
-
-    //handle any form of anchoring menu to FAB
-    handleAnchorMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname")
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: event.currentTarget
-        })
-    }
-
-    //handles any form of deAnchoring menu from FAB
-    handleReleaseMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname");
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: null
-        })
-    }
-
-    //TODO push to exisiting repo testing in progress
-    //routes set to nothing for now
-    //hardcoded name for now
-    //console.log is run but nothing happens. route is correct
-    async handleOverrideAllowed() {
-        console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
-        await this.handlePushToGithub();
-        this.setState({
-            overrideDialogState: false
-        })
-    }
-
-    //Note: If you wish to create a file under a folder. Under fileName, add "/folder/{filename}"
-    //Note: For testing purposes, all files will be named "index".
-    //Note: For testing purposes, there will only be two files, a HTML and CSS file in root directory.
-    async handlePushToGithub() {
-        console.log(`files are being pushed to ${this.state.repositoryName}`)
-        await axios({
-            method: "PUT",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/publishGithub",
-            withCredentials: true,
-            data: {
-                route: "",
-                content: [
-                    {
-                        fileType: ".html",
-                        fileName: "index",
-                        fileContent: Base64.encode(this.state.repositoryHTML)
-                    },
-                    {
-                        fileType: ".css",
-                        fileName: "index",
-                        fileContent: Base64.encode(this.state.repositoryCSS)
-                    }
-                ],
-                repo: this.state.repositoryName
+        const files = [
+            {
+                file: `${directory}scripts.js`,
+                contents: js
+            },
+            {
+                file: `${directory}index.html`,
+                contents: html
+            },
+            {
+                file: `${directory}styles.css`,
+                contents: css
             }
-        }).then(res => {
-            console.log(res.data.message);
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
-        })
+        ]
+        return files;
     }
 
-    //checks for existing repo by name and creates new repo if no existing. Otherwise prompts user for override.
-    //Once new repo is created, inputs will be automatically pushed.
-    async handleFinalizeEdits() {
-        console.log("chosen repository name is " + this.state.repositoryName)
-        await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
-            withCredentials: true,
-            params: {
-                repo: this.state.repositoryName
-            }
-        }).then(async res => {
-            console.log(res.data.message)
-            //waits for repository to be created
-            await axios({
-                method: "POST",
-                url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
-                withCredentials: true,
-                data: {
-                    repo: this.state.repositoryName
-                }
-            }).then(response => {
-                console.log(response.data.message)
-            }).catch(err => {
-                if (err.response) {
-                    console.log(err.response.data);
-                } else {
-                    console.log(err.message);
-                }
-            })
-
-            //Waits for push to go through
-            await this.handlePushToGithub();
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
-            
-            this.setState({
-                overrideDialogState: true
-            })
-        })
-
-        //closes finalizeDialog but doesn't remove repository name.
-        //TODO: Repository name should not be set in dialog, but in some easily visible spot.
-        this.setState({
-            finalizeDialogState: false
-        })
+    handleProduction() {
+        let index = 0;
+        const resArray = [];
+        for (const page of this.state.pages) {
+            const fileArray = this.handleCreateFile(page.entries, page.directory);
+            console.log(fileArray);
+            resArray[index] = fileArray[0];
+            resArray[index + 1] = fileArray[1];
+            resArray[index + 2] = fileArray[2];
+            index += 3;
+        }
+        return resArray;
     }
-
 
     render() {
         const {classes} = this.props;
         let entry = undefined;
-        if (this.state.entries != []) {
-            entry = this.state.entries[this.state.currentEntry];
+        if (this.state.pages[this.state.currentPage].entries != []) {
+            entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
         }
 
         return (
-        <div style={{display: "flex", flexDirection: "column", marginTop: "100px"}}>
-                {this.state.entries.map((entry, index) => {
-                    if (this.state.editMode) {
-                        return (<div style={{display: "flex", flexDirection: "row"}}>
-                            <Fab 
-                                className={classes.fab}
-                                onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
-                                <FaEdit/>
-                            </Fab>
-                            {this.renderElement(entry)}
-                        </div>);
-                    }
-                    return (this.renderElement(entry));
-                })}
-                {this.state.editMode && this.state.showEditor && entry != undefined
-                    ? <EntryEditor 
-                        fields={entry} 
-                        info={templates[entry.type][entry.style].info}
-                        onClose={this.handleEditorClose}
-                    /> 
-                    : null}
-            <Button onClick={this.createEntry}> Add an entry </Button>
+        <div style={{display: "flex", flexDirection: "column"}}>
+            {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
+                return (<div style={{display: "flex", flexDirection: "row"}}>
+                    <Fab 
+                        className={classes.editFAB}
+                        onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
+                        <FaEdit/>
+                    </Fab>
+                    {this.renderEntry(entry)}
+                </div>);
+            })}
+            {this.state.showEditor && entry != undefined
+                ? <EntryEditor 
+                    fields={entry} 
+                    info={templates[entry.type][entry.style].info} 
+                    onClose={this.handleEditorClose} 
+                /> 
+                : null}
+            <div className={classes.staticDiv}>
+                <Fab 
+                    className={classes.controlFAB}
+                    onClick={this.createEntry}>
+                    <FaPlus/>
+                </Fab>
+                <Fab 
+                    className={classes.controlFAB}
+                    onClick={() => console.log(this.handleProduction())}>
+                    <FaSave/>
+                </Fab>
+            </div>
         </div>);
     }
 }
