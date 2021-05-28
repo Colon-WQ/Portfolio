@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {repopulate_state} from '../actions/LoginAction'
 import {withStyles} from '@material-ui/core/styles'
 import {Button, Fab, IconButton, TextField, Typography} from '@material-ui/core';
-import {FaEdit} from "react-icons/fa";
+import {FaEdit, FaPlus, FaSave} from "react-icons/fa";
 import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
@@ -25,21 +25,27 @@ const styles = (theme) => ({
         flexDirection: 'column',
         justifyContent: 'start',
         alignItems: 'center',
-        paddingTop: '7%'
+        paddingTop: '7%',
     },
-    fab: {
+    entryDiv: {
+        position: 'relative'
+    },
+    editFAB: {
         position: 'absolute',
-        marginTop: '5%',
-        marginLeft: '5%'
+        marginTop: '2vw',
+        marginLeft: '2vw'
+    },
+    controlFAB: {
+        position: 'static',
+        marginRight: '0.5vw',
+        marginBottom: '0.5vw'
+    },
+    staticDiv: {
+        position: 'fixed',
+        bottom: 0,
+        right: 0
     }
 })
-
-const templateGenerators = {
-    // TYPE: [style1, style2, ...], style == (dict) => <Component/>
-    ENTRY: [],
-    ABOUT: [],
-    TIMELINE: []
-}
 
 /**
  * The portfolio component used for rendering previews and compiling for publishing.
@@ -53,15 +59,19 @@ class Portfolio extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            editMode: false,
-            entries: [],
             editMode: true,
+            pages: [{
+                directory: "",
+                entries: [],
+            }],
+            currentPage: 0,
             currentEntry: 0,
-            maxEntry: 0,
             showEditor: false
         }
         this.createEntry = this.createEntry.bind(this);
         this.handleEditorClose = this.handleEditorClose.bind(this);
+        this.handleCreateFile = this.handleCreateFile.bind(this);
+        this.handleProduction = this.handleProduction.bind(this);
     }
 
     renderEntry(entryFields, index) {
@@ -77,19 +87,22 @@ class Portfolio extends Component {
             style: entryStyle,
             ...templates[entryType][entryStyle].defaultField
         };
-        this.setState({
-            entries:  [...this.state.entries, newEntry]
-        })
+        const newPages = [...this.state.pages];
+        newPages[this.state.currentPage].entries = 
+            [...this.state.pages[this.state.currentPage].entries, newEntry];
+        this.setState({pages: newPages});
     }
 
     handleEditorClose(fields, changed) {
         if(changed) {
-            // Make copy of entries
-            const entries = [...this.state.entries];
+            const newPages = [...this.state.pages];
+            const entries = [...this.state.pages[this.state.currentPage].entries];
             entries[this.state.currentEntry] = fields;
+            newPages[this.state.currentPage].entries = entries;
+
             this.setState({
                 showEditor: !this.state.showEditor,
-                entries: entries
+                pages: newPages
             })
         } else {
             this.setState({
@@ -99,14 +112,14 @@ class Portfolio extends Component {
     }
 
     // TODO: publish component check file empty before load?
-    handleCreateFiles() {
+    handleCreateFile(entries, directory) {
+        console.log(entries);
         const sheets = new ServerStyleSheets();
-        const component = (
-            <div style={{display: "flex", flexDirection: "column"}}>
-                {this.state.entries.map((entry, index) => this.renderEntry(entry))}
-            </div>);
         // TODO: test renderToStaticMarkup
-        const rawHTML = ReactDOMServer.renderToString(sheets.collect({component}),);
+        const rawHTML = ReactDOMServer.renderToString(sheets.collect(
+            <div style={{display: "flex", flexDirection: "column"}}>
+                {entries.map((entry, index) => this.renderEntry(entry))}
+            </div>),);
         // TODO: add title
         const html = Base64.encode(`
             <!DOCTYPE html>
@@ -116,61 +129,86 @@ class Portfolio extends Component {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="X-UA-Compatible" content="ie=edge">
                 <link href="styles.css" rel="stylesheet">
-                <script defer src="script.js"/>
+                <script defer src="script.js"></script>
                 <title>Welcome</title>
             </head>
             <body>
             ${rawHTML}
             </body>`);
         const css = Base64.encode(sheets.toString());
-        const js = Base64.encode(this.state.entries
+        const js = Base64.encode(entries
             .map((entry, index) => templates[entry.type][entry.style].script(index))
             .filter(Boolean).join('\n'));
 
         const files = [
             {
-                name: 'scripts.js',
+                file: `${directory}scripts.js`,
                 contents: js
             },
             {
-                name: 'index.html',
+                file: `${directory}index.html`,
                 contents: html
             },
             {
-                name: 'styles.css',
+                file: `${directory}styles.css`,
                 contents: css
             }
         ]
         return files;
     }
 
+    handleProduction() {
+        let index = 0;
+        const resArray = [];
+        for (const page of this.state.pages) {
+            const fileArray = this.handleCreateFile(page.entries, page.directory);
+            console.log(fileArray);
+            resArray[index] = fileArray[0];
+            resArray[index + 1] = fileArray[1];
+            resArray[index + 2] = fileArray[2];
+            index += 3;
+        }
+        return resArray;
+    }
+
     render() {
         const {classes} = this.props;
         let entry = undefined;
-        if (this.state.entries != []) {
-            entry = this.state.entries[this.state.currentEntry];
+        if (this.state.pages[this.state.currentPage].entries != []) {
+            entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
         }
 
         return (
-            // TODO: remove marginTop for production
         <div style={{display: "flex", flexDirection: "column"}}>
-            {this.state.entries.map((entry, index) => {
-                if (this.state.editMode) {
-                    return (<div style={{display: "flex", flexDirection: "row"}}>
-                        <Fab 
-                            className={classes.fab}
-                            onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
-                            <FaEdit/>
-                        </Fab>
-                        {this.renderEntry(entry)}
-                    </div>);
-                }
-                return (this.renderEntry(entry));
+            {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
+                return (<div style={{display: "flex", flexDirection: "row"}}>
+                    <Fab 
+                        className={classes.editFAB}
+                        onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
+                        <FaEdit/>
+                    </Fab>
+                    {this.renderEntry(entry)}
+                </div>);
             })}
-            {this.state.editMode && this.state.showEditor && entry != undefined
-                ? <EntryEditor fields={entry} info={templates[entry.type][entry.style].info} onClose={this.handleEditorClose} /> 
+            {this.state.showEditor && entry != undefined
+                ? <EntryEditor 
+                    fields={entry} 
+                    info={templates[entry.type][entry.style].info} 
+                    onClose={this.handleEditorClose} 
+                /> 
                 : null}
-            {this.state.editMode ? <Button onClick={this.createEntry}> Add an entry </Button> : null}
+            <div className={classes.staticDiv}>
+                <Fab 
+                    className={classes.controlFAB}
+                    onClick={this.createEntry}>
+                    <FaPlus/>
+                </Fab>
+                <Fab 
+                    className={classes.controlFAB}
+                    onClick={() => console.log(this.handleProduction())}>
+                    <FaSave/>
+                </Fab>
+            </div>
         </div>);
     }
 }
