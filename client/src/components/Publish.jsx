@@ -128,6 +128,7 @@ class Publish extends Component {
         for (let obj of temp) {
             if (obj.fileName === this.state.fileName) {
                 duplicate = true;
+                obj.fileContent = this.state.fileContent
                 break;
             }
         }
@@ -153,6 +154,7 @@ class Publish extends Component {
             for (let obj of temp) {
                 if (file.name === obj.fileName) {
                     duplicate = true;
+                    obj.fileContent = file.contents
                     break;
                 }
             }
