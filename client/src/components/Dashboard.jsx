@@ -82,6 +82,10 @@ class Dashboard extends Component {
         window.location.pathname = '/templateEditor'
     }
 
+    testPublish() {
+        window.location.pathname = '/publish'
+    }
+
     render() {
         const {loggedIn, name, portfolios, classes } = this.props
         return (
@@ -96,6 +100,7 @@ class Dashboard extends Component {
                     <Button onClick={this.openTemplateEditor} className={classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
                 <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
+                <Button onClick={this.testPublish} className={classes.portfolioButton}>Test Publish Panel</Button>
             </div>
 
         )
