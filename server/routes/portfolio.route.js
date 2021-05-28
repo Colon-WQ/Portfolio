@@ -76,7 +76,7 @@ router.get('/status', auth, checkGitCreated);
  *                      schema:
  *                          type: object
  *                          properties:
- *                              message:
+ *                              data:
  *                                  type: string
  *                                  description: error message.
  */
@@ -132,12 +132,85 @@ router.get('/checkExistingRepos', auth, checkExistingRepos);
  *            schema:
  *              type: object
  *              properties:
- *                message:
+ *                data:
  *                  type: string
  *                  description: error message.
  */  
 router.post("/createRepo", auth, createRepo);
+
+//TODO shld remove since not being used.
 router.get("/getRepoContent", auth, getRepoContent);
+
+/**
+ * @openapi
+ * portfolio/publishGithub:
+ *  put:
+ *      summary: Authenticates the user, creates a Github repository if not existing, then pushes files to Github and deploys the Github Repository to ghpages.
+ *      tags: [Portfolio]
+ *      description: 1. Obtains and attempts to verify JWT from user cookies<br /><br />
+ *                   2. Gets repo name, content and route from user request. Files from the user's Github repository under the obtained repo name will be fetched
+ *                      via a GET request sent to Github API.<br /><br />
+ *                   3. The repository's content will be checked against the request body's content to determine if a SHA key is required to send a PUT request to
+ *                      Github API to either create or update a file.
+ *      parameters:
+ *          - in: cookie
+ *            name: authorization
+ *            schema:
+ *              type: apiKey
+ *            required: true
+ *            description: Signed Cookie containing JWT encrypted access token.
+ *      requestBody:
+ *          description: Request body takes in the Github Repositories name to be pushed to, the content to be pushed and the route relative to the Github repository root.
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          data:
+ *                              type: object
+ *                              properties:
+ *                                  route:
+ *                                      type: string
+ *                                      description: Path within the Github repository where file content is either to be pulled from or pushed to.
+ *                                  content:
+ *                                      type: array
+ *                                      items:
+ *                                          type: object
+ *                                          properties:
+ *                                              fileName:
+ *                                                  type: string
+ *                                                  description: Name of file to be created. Path to file must be prepended to it.
+ *                                              fileContent:
+ *                                                  type: string
+ *                                                  description: Content of the file to be created. Must be base64 encoded.
+ *                                  repo:
+ *                                      type: string
+ *                                      description: Name of Github repository to be either pulled from or pushed to.
+ *      responses:
+ *          200:
+ *              description: Files are successfully pushed to specified Github repository and the repository is deployed to ghpages is necessary.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              data:
+ *                                  type: object
+ *                                  properties:
+ *                                      message:
+ *                                          type: string
+ *                                          description: Successful push to and deployment of Github repository.
+ *          400:
+ *              description: Either Github repository does not exist, push to Github failed or deployment to ghpages failed.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              data:
+ *                                  type: string
+ *                                  description: error message.
+ */
 router.put("/publishGithub", auth, publishGithub);
 
 router.post("/:id/publish", postPortfolio);
