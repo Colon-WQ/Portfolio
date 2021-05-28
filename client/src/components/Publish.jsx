@@ -88,12 +88,12 @@ class Publish extends Component {
             repositoryName: "",
             repositoryContent: [],
             anchorEl: null,
-            fileType: "",
             fileName: "",
             fileContent: ""
         }
         this.handleOnChange = this.handleOnChange.bind(this);
         this.handleAddFileContent = this.handleAddFileContent.bind(this);
+        this.handleAddToFileContent = this.handleAddToFileContent.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
         this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
         this.handleOverrideDialogOpen = this.handleOverrideDialogOpen.bind(this);
@@ -123,16 +123,16 @@ class Publish extends Component {
     handleAddFileContent(event) {
         event.preventDefault();
         const temp = this.state.repositoryContent;
-        const fullPath = this.state.fileName + this.state.fileType;
+        
         let duplicate = false;
         for (let obj of temp) {
-            if (obj.fileName + obj.fileType === fullPath) {
+            if (obj.fileName === this.state.fileName) {
                 duplicate = true;
+                break;
             }
         }
         if (!duplicate) {
             temp.push({
-                fileType: this.state.fileType,
                 fileName: this.state.fileName,
                 fileContent: Base64.encode(this.state.fileContent)
             });
@@ -142,7 +142,33 @@ class Publish extends Component {
         } else {
             console.log("duplicate file not added")
         }
-        
+    }
+
+    //function to be passed down as props.
+    handleAddToFileContent(files) {
+        const temp = this.state.repositoryContent;
+
+        for (let file of files) {
+            let duplicate = false;
+            for (let obj of temp) {
+                if (file.name === obj.fileName) {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (!duplicate) {
+                temp.push({
+                    fileName: file.name,
+                    fileContent: file.contents
+                })
+            } else {
+                console.log(`duplicate file ${file.name} not added`)
+            }
+        }
+
+        this.setState({
+            repositoryContent: temp
+        })
     }
 
     //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
@@ -209,9 +235,8 @@ class Publish extends Component {
         })
     }
 
-    //Note: If you wish to create a file under a folder. Under fileName, add "/folder/{filename}"
-    //Note: For testing purposes, all files will be named "index".
-    //Note: For testing purposes, there will only be two files, a HTML and CSS file in root directory.
+    //Note: If you wish to create a file under a folder. Under fileName, add "folder/{filename}.{fileType}"
+    //This clears out the array to push after pushing as well as the fileName and fileContent, which are for testing.
     async handlePushToGithub() {
         console.log(`files are being pushed to ${this.state.repositoryName}`)
         await axios({
@@ -231,6 +256,11 @@ class Publish extends Component {
             } else {
                 console.log(err.message);
             }
+        })
+
+        this.setState({
+            repositoryContent: [],
+            fileName: "",
         })
     }
 
@@ -350,9 +380,6 @@ class Publish extends Component {
                             Add a file to Push (for testing purposes)
                         </DialogContentText>
                         <form >
-                            <label for="fileType">File Type</label>
-                            <input type="text" id="fileType" name="fileType" placeholder="your file type" onChange={this.handleOnChange}></input>
-                            <br />
                             <label for="fileName">File Name</label>
                             <input type="text" id="fileName" name="fileName" placeholder="file name including repository path" onChange={this.handleOnChange}></input>
                             <br />
