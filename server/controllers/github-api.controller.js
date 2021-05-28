@@ -117,7 +117,7 @@ export const checkGitCreated = async (req, res) => {
 // TODO: research updating multiple files at a time to make undo easier
 // TODO: deploy to ghpages if not a .io repo
 // TODO: handle pagination for extra large files
-// req.body must contain: route, content. 
+// req.body must contain: route, content, repo. 
 export const publishGithub = async (req, res) => {
     console.log("pushing to repository " + req.body.repo)
 
@@ -229,7 +229,10 @@ export const publishGithub = async (req, res) => {
 
 
 
-// TODO: merge this file with github-api
+/**
+ * 
+ * 
+ */
 export const checkExistingRepos = async (req, res) => {
     const gh_token = req.gh_token;
     const username = req.username;
