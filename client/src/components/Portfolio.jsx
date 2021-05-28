@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { repopulate_state } from '../actions/LoginAction'
-import axios from 'axios'
-import { withStyles } from '@material-ui/core/styles'
-import { Button, Fab, IconButton, TextField, Typography } from '@material-ui/core';
-import { FaEdit } from "react-icons/fa";
-import { Base64 } from 'js-base64';
-import PropTypes from 'prop-types';
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {repopulate_state} from '../actions/LoginAction'
+import {withStyles} from '@material-ui/core/styles'
+import {Button, Fab, IconButton, TextField, Typography} from '@material-ui/core';
+import {FaEdit} from "react-icons/fa";
+import {Base64} from 'js-base64';
+import ReactDOMServer from 'react-dom/server';
+import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
 import {templates} from './EntryGenerator';
 
@@ -47,16 +47,6 @@ const templateGenerators = {
  * @component
  */
 class Portfolio extends Component {
-    // static propTypes = {
-    //     onPublish: PropTypes.func.isRequired,
-    //     fields: PropTypes.shape({
-    //         finalizeDialogState: Proptypes.bool,
-    //         overwriteDialogState: Proptypes.bool,
-    //         entryDisplayIndex: Proptypes.number,
-    //         repositoryName: Proptypes.string
-    //     })
-    // };
-
     /**
      * @constructor
      */
@@ -74,8 +64,8 @@ class Portfolio extends Component {
         this.handleEditorClose = this.handleEditorClose.bind(this);
     }
 
-    renderElement(entryFields) {
-        return templates[entryFields.type][entryFields.style].component(entryFields);
+    renderEntry(entryFields, index) {
+        return templates[entryFields.type][entryFields.style].component(entryFields, index);
     }
 
     createEntry() {
@@ -108,175 +98,51 @@ class Portfolio extends Component {
         }
     }
 
-    //handle all case of OnChange
-    handleOnChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    }
+    // TODO: publish component check file empty before load?
+    handleCreateFiles() {
+        const sheets = new ServerStyleSheets();
+        const component = (
+            <div style={{display: "flex", flexDirection: "column"}}>
+                {this.state.entries.map((entry, index) => this.renderEntry(entry))}
+            </div>);
+        // TODO: test renderToStaticMarkup
+        const rawHTML = ReactDOMServer.renderToString(sheets.collect({component}),);
+        // TODO: add title
+        const html = Base64.encode(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                <link href="styles.css" rel="stylesheet">
+                <script defer src="script.js"/>
+                <title>Welcome</title>
+            </head>
+            <body>
+            ${rawHTML}
+            </body>`);
+        const css = Base64.encode(sheets.toString());
+        const js = Base64.encode(this.state.entries
+            .map((entry, index) => templates[entry.type][entry.style].script(index))
+            .filter(Boolean).join('\n'));
 
-    // handle any form of state boolean changes.
-    // Note: Store it under separate custom attribute. id shld be saved for reference purposes and must be unique.
-    // Warning: eact does not recognize the `componentName` prop on a DOM element. 
-    // If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `componentname` instead.
-    // custom attributes must be lowercase.
-    handleStateChange(event) {
-        const customAttribute = event.currentTarget.getAttribute('componentname')
-        //console.log(customAttribute)
-        //console.log(this.state[customAttribute])
-        this.setState({
-            [customAttribute]: !this.state[customAttribute]
-        })
-    }
-
-    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
-    //Also needs to close menu after selection.
-    handleFinalizeDialogOpen() {
-        this.setState({
-            anchorEl: null,
-            finalizeDialogState: true
-        })
-    }
-
-    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
-    handleFinalizeDialogClose() {
-        this.setState({
-            finalizeDialogState: false
-        })
-    }
-
-    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
-    handleOverrideDialogOpen() {
-        this.setState({
-            overrideDialogState: true
-        })
-    }
-
-    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
-    handleOverrideDialogClose() {
-        this.setState({
-            overrideDialogState: false
-        })
-    }
-
-    //handle any form of anchoring menu to FAB
-    handleAnchorMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname")
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: event.currentTarget
-        })
-    }
-
-    //handles any form of deAnchoring menu from FAB
-    handleReleaseMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname");
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: null
-        })
-    }
-
-    //TODO push to exisiting repo testing in progress
-    //routes set to nothing for now
-    //hardcoded name for now
-    //console.log is run but nothing happens. route is correct
-    async handleOverrideAllowed() {
-        console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
-        await this.handlePushToGithub();
-        this.setState({
-            overrideDialogState: false
-        })
-    }
-
-    //Note: If you wish to create a file under a folder. Under fileName, add "/folder/{filename}"
-    //Note: For testing purposes, all files will be named "index".
-    //Note: For testing purposes, there will only be two files, a HTML and CSS file in root directory.
-    async handlePushToGithub() {
-        console.log(`files are being pushed to ${this.state.repositoryName}`)
-        await axios({
-            method: "PUT",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/publishGithub",
-            withCredentials: true,
-            data: {
-                route: "",
-                content: [
-                    {
-                        fileType: ".html",
-                        fileName: "index",
-                        fileContent: Base64.encode(this.state.repositoryHTML)
-                    },
-                    {
-                        fileType: ".css",
-                        fileName: "index",
-                        fileContent: Base64.encode(this.state.repositoryCSS)
-                    }
-                ],
-                repo: this.state.repositoryName
+        const files = [
+            {
+                name: 'scripts.js',
+                contents: js
+            },
+            {
+                name: 'index.html',
+                contents: html
+            },
+            {
+                name: 'styles.css',
+                contents: css
             }
-        }).then(res => {
-            console.log(res.data.message);
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
-        })
+        ]
+        return files;
     }
-
-    //checks for existing repo by name and creates new repo if no existing. Otherwise prompts user for override.
-    //Once new repo is created, inputs will be automatically pushed.
-    async handleFinalizeEdits() {
-        console.log("chosen repository name is " + this.state.repositoryName)
-        await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
-            withCredentials: true,
-            params: {
-                repo: this.state.repositoryName
-            }
-        }).then(async res => {
-            console.log(res.data.message)
-            //waits for repository to be created
-            await axios({
-                method: "POST",
-                url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
-                withCredentials: true,
-                data: {
-                    repo: this.state.repositoryName
-                }
-            }).then(response => {
-                console.log(response.data.message)
-            }).catch(err => {
-                if (err.response) {
-                    console.log(err.response.data);
-                } else {
-                    console.log(err.message);
-                }
-            })
-
-            //Waits for push to go through
-            await this.handlePushToGithub();
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
-            
-            this.setState({
-                overrideDialogState: true
-            })
-        })
-
-        //closes finalizeDialog but doesn't remove repository name.
-        //TODO: Repository name should not be set in dialog, but in some easily visible spot.
-        this.setState({
-            finalizeDialogState: false
-        })
-    }
-
 
     render() {
         const {classes} = this.props;
@@ -286,28 +152,25 @@ class Portfolio extends Component {
         }
 
         return (
-        <div style={{display: "flex", flexDirection: "column", marginTop: "100px"}}>
-                {this.state.entries.map((entry, index) => {
-                    if (this.state.editMode) {
-                        return (<div style={{display: "flex", flexDirection: "row"}}>
-                            <Fab 
-                                className={classes.fab}
-                                onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
-                                <FaEdit/>
-                            </Fab>
-                            {this.renderElement(entry)}
-                        </div>);
-                    }
-                    return (this.renderElement(entry));
-                })}
-                {this.state.editMode && this.state.showEditor && entry != undefined
-                    ? <EntryEditor 
-                        fields={entry} 
-                        info={templates[entry.type][entry.style].info}
-                        onClose={this.handleEditorClose}
-                    /> 
-                    : null}
-            <Button onClick={this.createEntry}> Add an entry </Button>
+            // TODO: remove marginTop for production
+        <div style={{display: "flex", flexDirection: "column"}}>
+            {this.state.entries.map((entry, index) => {
+                if (this.state.editMode) {
+                    return (<div style={{display: "flex", flexDirection: "row"}}>
+                        <Fab 
+                            className={classes.fab}
+                            onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
+                            <FaEdit/>
+                        </Fab>
+                        {this.renderEntry(entry)}
+                    </div>);
+                }
+                return (this.renderEntry(entry));
+            })}
+            {this.state.editMode && this.state.showEditor && entry != undefined
+                ? <EntryEditor fields={entry} info={templates[entry.type][entry.style].info} onClose={this.handleEditorClose} /> 
+                : null}
+            {this.state.editMode ? <Button onClick={this.createEntry}> Add an entry </Button> : null}
         </div>);
     }
 }

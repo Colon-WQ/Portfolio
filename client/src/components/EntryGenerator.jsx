@@ -15,7 +15,8 @@ export const templates = {
   introduction: [
     {
       name: IntroTemplateMinimalist.templateName, 
-      component: (fields) => (<IntroTemplateMinimalist fields={fields}/>),
+      component: (fields, id) => (<IntroTemplateMinimalist fields={fields} id={id}/>),
+      script: (index) => "",
       info: IntroTemplateMinimalist.info,
       defaultField: IntroTemplateMinimalist.defaultField
     }
