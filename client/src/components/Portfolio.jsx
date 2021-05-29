@@ -12,13 +12,18 @@ import {templates} from './EntryGenerator';
 
 
 /**
- * @file Portfolio component representing a user created portfolio page
+ * @file Portfolio component representing a user created portfolio
  * 
  * @author Chuan Hao
  * 
  * @see Portfolio
  */
 
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * @param theme 
+ * @returns classes passed as props to the component, with values provided by parameter theme
+ */
 const styles = (theme) => ({
     root: {
         display: 'flex',
@@ -75,12 +80,25 @@ class Portfolio extends Component {
         this.handleProduction = this.handleProduction.bind(this);
     }
 
+    /**
+     * Function to enter entries based on the entry's type and template style.
+     * 
+     * @param {*} entryFields 
+     * @param {number} index 
+     * @returns void
+     * @memberof Portfolio
+     */
     renderEntry(entryFields, index) {
         return templates[entryFields.type][entryFields.style].component(entryFields, index);
     }
 
+    // TODO: Add logic for a template chooser
+    /**
+     * Function to create a new entry.
+     * 
+     * @returns void
+     */
     createEntry() {
-        // TODO: Add logic for a template chooser
         const entryType = "timeline";
         const entryStyle = 0;
         const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
@@ -95,6 +113,12 @@ class Portfolio extends Component {
         this.setState({pages: newPages});
     }
 
+    /**
+     * Function to update the entry based on the styles provided by the user.
+     * 
+     * @param {*} fields
+     * @param {boolean} changed - Whether the fields have been changed/ if the user intends to save the changes.
+     */
     handleEditorClose(fields, changed) {
         if(changed) {
             console.log(fields);
@@ -114,6 +138,14 @@ class Portfolio extends Component {
     }
 
     // TODO: publish component check file empty before load?
+    /**
+     * A function to generate the necessary html/css/js files for a single page.
+     * 
+     * @param {*} entries 
+     * @param {string} directory - The directory/route to the page as defined by the user.
+     * @returns {(Map|Array)} An array of maps containing the relative paths to each file and their contents.
+     * 
+     */
     handleCreateFile(entries, directory) {
         console.log(entries);
         const sheets = new ServerStyleSheets();
@@ -159,6 +191,10 @@ class Portfolio extends Component {
         return files;
     }
 
+    /**
+     * A function to generate all files needed to be pushed to github.
+     * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+     */
     handleProduction() {
         let index = 0;
         const resArray = [];
