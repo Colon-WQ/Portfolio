@@ -80,7 +80,7 @@ class Portfolio extends Component {
 
     createEntry() {
         // TODO: Add logic for a template chooser
-        const entryType = "introduction";
+        const entryType = "timeline";
         const entryStyle = 0;
         const newEntry = {
             type: entryType,
@@ -95,11 +95,11 @@ class Portfolio extends Component {
 
     handleEditorClose(fields, changed) {
         if(changed) {
+            console.log(fields);
             const newPages = [...this.state.pages];
             const entries = [...this.state.pages[this.state.currentPage].entries];
             entries[this.state.currentEntry] = fields;
             newPages[this.state.currentPage].entries = entries;
-
             this.setState({
                 showEditor: !this.state.showEditor,
                 pages: newPages

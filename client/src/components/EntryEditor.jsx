@@ -26,6 +26,12 @@ const styles = (theme) => ({
         backgroundColor: '#444444',
         opacity: '90%'
     },
+    modal: {
+      overflow: 'scroll',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '5%',
+    },
     floating: {
         margin: 0,
         top: 'auto',
@@ -96,7 +102,7 @@ class EntryEditor extends Component {
         this.handleCreateEntry = this.handleCreateEntry.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleImageUpload = this.handleImageUpload.bind(this);
-        this.handleEditSection = this.handleEditSection.bind(this);
+        this.handleEditSectionText = this.handleEditSectionText.bind(this);
     }
 
     // TODO: elements read from state instead of props
@@ -169,9 +175,9 @@ class EntryEditor extends Component {
         this.setState({sections: [...this.state.sections, this.props.info.sections.defaultEntry]});
     }
 
-    handleEditSection(event, index) {
+    handleEditSectionText(event, index) {
       const newSections = [...this.state.sections];
-      newSections[index][event.target.name] = event.target.value;
+      newSections[index].texts[event.target.name] = event.target.value;
       this.setState({
         sections: newSections
       });
@@ -182,7 +188,7 @@ class EntryEditor extends Component {
         // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
         return (
           // populate state with default values
-            <Modal className = {classes.root}
+            <Modal className = {classes.modal}
             // open always set to true, open/close logic handled by portfolio
               open={true}
               // TODO: add onClose save logic
@@ -312,7 +318,7 @@ class EntryEditor extends Component {
                                   defaultValue={item}
                                   margin="normal"
                                   variant="outlined"
-                                  onChange={(event) => this.handleEditSection(event, "")}
+                                  onChange={(event) => this.handleEditSectionText(event, index)}
                                   multiline
                                   rowsMax={3}
                                 />
