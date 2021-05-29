@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> components/Home.jsx</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/Home.jsx</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import axios from 'axios';
+import { connect } from 'react-redux';
+import { repopulate_state } from '../actions/LoginAction'
+import Typography from '@material-ui/core/Typography';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { Link } from 'react-router-dom';
+import { withStyles } from '@material-ui/core/styles';
+import { Avatar, Button, Divider, Drawer, Hidden, IconButton, List, ListItem } from '@material-ui/core';
+import { theme } from '../styles/styles';
+
+
+/**
+ * @file Home component serves as a welcome page to users and provides functionalities that allow
+ * user's to login via Github Oauth.
+ * 
+ * @author Chuan Hao
+ * 
+ * @see Home
+ */
+
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * 
+ * @memberof Home
+ * @param {Object} theme 
+ */
+const styles = (theme) => ({
+    root: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    centeredDiv: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+    },
+    welcomeDiv: {
+        width: '100%',
+        height: '100vh',
+        backgroundImage: `url("${"https://miro.medium.com/max/1100/1*OlgqUIhvl5-9dZISlZ2-yQ.jpeg"}")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+    },
+    welcomeText: {
+        flexGrow: 1,
+
+    },
+    multiline: {
+        whiteSpace: 'pre-line',
+    },
+    portfolioIcon: {
+        width: '40vh',
+        height: '40vh',
+        borderRadius: '20vh',
+    },
+    featuresDiv: {
+        position: 'relative',
+        width: '100%',
+        height: '60vh',
+        flexDirection: 'row',
+    },
+    featureTextDiv: {
+        position: 'absolute',
+        top: 0,
+        right : 0,
+        width: '55vw',
+        height: '100%',
+        padding: '10%',
+    },
+    featureImgDiv: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '45vw',
+        height: '100%'
+    },
+    fullSize: {
+        width: '100%',
+        height: '100%',
+    },
+    floating: {
+        zIndex: 1,
+    },
+    featureButtonLeft: {
+        height: '100%',
+        position: 'absolute',
+        left: 0,
+    },
+    featureButtonRight: {
+        height: '100%',
+        position: 'absolute',
+        right: 0,
+    }
+});
+
+/** 
+ * Integer representing size of feature elements.
+ * 
+ * @type {number} 
+ * @memberof Home
+ */
+const featureMaxIndex = 2;
+
+/** 
+ * Array of strings containing links/paths to images to be used in the features section.
+ * 
+ * @type {Array.&lt;string>} 
+ * @memberof Home
+ */
+const featureImage = [
+    'https://media.edutopia.org/styles/responsive_2000px_original/s3/masters/d7_images/cover_media/robinson-169hero-portfolio-shutterstock.jpg', 
+    'https://assets-global.website-files.com/6009ec8cda7f305645c9d91b/603823eca4b46344229b30f8_portfolio_course.png', 
+    'https://cdn-japantimes.com/wp-content/uploads/2020/06/np_file_16250.jpeg'
+];
+
+/** 
+ * Array of strings representing feature titles.
+ * 
+ * @type {Array.&lt;string>} 
+ * @memberof Home
+ */
+const featureTitle = [
+    'Your Design. Your Website.',
+    'Visualize your personality',
+    'Stay Ahead'
+];
+
+/** 
+ * Array of strings representing feature texts.
+ * 
+ * @type {Array.&lt;string>} 
+ * @memberof Home
+ */
+const featureText=[
+    'No watermarks, no restrictions — you own your website',
+    'Choose your style',
+    'Stay Relevant'
+];
+
+/** 
+ * Array of FAQ's represented as strings.
+ * 
+ * @type {Array.&lt;string>} 
+ * @memberof Home
+ */
+const faqQuestions=['FAQ1?', 'FAQ2?', 'FAQ3?'];
+
+/** 
+ * Array of FAQ answers corresponding to the questions represented as strings.
+ * 
+ * @type {Array.&lt;string>} 
+ * @memberof Home
+ */
+const faqAnswers=['yes\nof\ncourse', 'no', 'yes' ];
+
+/**
+ * Home component of Portfolio.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @component
+ */
+class Home extends Component {
+
+    /**
+     * @constructor
+     */
+    constructor() {
+        super();
+        this.handleFeatureClick = this.handleFeatureClick.bind(this);
+        this.handleFeatureNext = this.handleFeatureNext.bind(this);
+        this.handleFeaturePrev = this.handleFeaturePrev.bind(this);
+
+        /**
+         * @typedef {Object} state
+         * @property {number} featureIndex - index of feature elements to be rendered.
+         * @property {number} featureTitle - string representing feature title.
+         * @property {string} featureText - string representing feature text.
+         * @property {string} featureImage - string representing url of feature image to be rendered.
+         * @memberof Home
+         */
+        this.state = {
+            featureIndex: 0,
+            featureText: featureText[0],
+            featureTitle: featureTitle[0],
+            featureImage: featureImage[0]
+        }
+    }
+
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @returns void
+     * @memberof Home
+     */
+    componentDidMount() {
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+            this.props.repopulate_state(localStorageItem)
+        }
+    }
+
+    /**
+     * Changes feature title, text and image in state to be rendered on button click.
+     * 
+     * @param {number} newIndex -Index of array elements to be rendered.
+     * @returns void
+     * @memberof Home
+     */
+    handleFeatureClick(newIndex) {
+        this.setState({
+            featureIndex: newIndex,
+            featureTitle: featureTitle[newIndex],
+            featureText: featureText[newIndex],
+            featureImage: featureImage[newIndex]
+        })
+    }
+
+    // TODO: merge handlers
+    /**
+     * Increments featureIndex by 1 or wraps around to 0 if featureIndex is equals to featureMaxIndex before increment.
+     * 
+     * @returns void
+     * @memberof Home
+     */
+    handleFeatureNext() {
+        const newIndex = this.state.featureIndex === featureMaxIndex ? 0 : this.state.featureIndex + 1;
+        this.handleFeatureClick(newIndex);
+    }
+
+    /**
+     * Decrements featureIndex by 1 or wraps around to featureMaxIndex if featureIndex is equals to 0 before decrement.
+     * 
+     * @returns void
+     * @memberof Home
+     */
+    handleFeaturePrev() {
+        const newIndex = this.state.featureIndex === 0 ? featureMaxIndex : this.state.featureIndex - 1;
+        this.handleFeatureClick(newIndex);
+    }
+
+    render() {
+        const { loggedIn, classes } = this.props;
+        return (
+            &lt;div className = {classes.root}>
+                &lt;CssBaseline/>
+                &lt;div className={`${classes.welcomeDiv} ${classes.centeredDiv}`}>
+                    &lt;img src={'https://blog.corp-site.envato.com/cdn-cgi/image/width=1200,quality=95,format=auto/uploads/2020/06/SOC101_Portfolio_Guide.png'} 
+                    className={classes.portfolioIcon} alt={'Portfol.io icon'}>&lt;/img>
+                    &lt;Typography component="h1" variant="h2" color="inherit" noWrap className={classes.title}>
+                        Welcome to Portfol.io
+                    &lt;/Typography>
+                    {/* must use \n to make multiline */}
+                    &lt;Typography component="h1" variant="h6" color="inherit" className={classes.multiline}>
+                        {"Where dreams\nturn\ninto reality"}
+                    &lt;/Typography>
+                    {loggedIn 
+                        ?
+                        &lt;Link to = '/dashboard'>You're logged in already! Lets go to dashboard&lt;/Link>
+                        :
+                        &lt;Button 
+                            href={`https://github.com/login/oauth/authorize?scope=repo&amp;client_id=` + process.env.REACT_APP_CLIENT_ID} 
+                            color="primary" 
+                            variant="contained"
+                        >
+                            Login with Github
+                        &lt;/Button>
+                    }
+                    
+                &lt;/div>
+                &lt;div className={`${classes.featuresDiv} ${classes.centeredDiv}`}>
+                    &lt;Button onClick={this.handleFeaturePrev} className={`${classes.floating} ${classes.featureButtonLeft}`}>
+                        &lt;FaChevronLeft/>
+                    &lt;/Button>
+                    &lt;div className={classes.featureImgDiv}>
+                        &lt;img src={this.state.featureImage} className={classes.fullSize} alt={`feature ${this.state.featureSection}`}>&lt;/img>
+                    &lt;/div>
+                    &lt;div className={`${classes.featureTextDiv} ${classes.centeredDiv}`}>
+                        &lt;Typography component="h2" variant="h2" color="inherit" noWrap className={classes.title}>
+                            {this.state.featureTitle}
+                        &lt;/Typography>
+                        &lt;Typography component="h6" variant="h6" color="inherit" noWrap className={classes.title}>
+                            {this.state.featureText}
+                        &lt;/Typography>
+                    &lt;/div>
+                    &lt;Button onClick={this.handleFeatureNext} className={`${classes.floating} ${classes.featureButtonRight}`}>
+                        &lt;FaChevronRight/>
+                    &lt;/Button>
+                &lt;/div>
+                &lt;div className={`${classes.faqDiv} ${classes.centeredDiv}`}>
+                    &lt;List>
+                        &lt;ListItem>
+                            {/*  */}
+                        &lt;/ListItem>
+                    &lt;/List>
+                &lt;/div>
+            &lt;/div>
+        )
+    }
+}
+
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof Home
+ */
+const mapStateToProps = state => ({
+    loggedIn: state.login.loggedIn,
+    name: state.login.name,
+    id: state.login.id,
+    avatar_url: state.login.avatar_url,
+    gravatar_id: state.login.gravatar_id,
+    error: state.login.error
+})
+
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.&lt;Function>} 
+ * @memberof Home
+ */
+const mapDispatchToProps = {
+    repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Home));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

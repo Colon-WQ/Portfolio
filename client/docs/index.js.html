@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-actions_login.html">actions/login</a></li><li><a href="module-actions_portfolio.html">actions/portfolio</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-reducers_login.html">reducers/login</a></li><li><a href="module-reducers_portfolio.html">reducers/portfolio</a></li><li><a href="module-reducers_root.html">reducers/root</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -87,31 +87,39 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import ReactDOM from 'react-dom';
-import Navbar from './components/navbar.component';
-import Home from './components/home.component';
-import LoginResult from './components/login-result.component';
-import Dashboard from './components/dashboard.component';
-import TemplateEditor from './components/template-editor.component';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import LoginResult from './components/LoginResult';
+import Dashboard from './components/Dashboard';
+import Portfolio from './components/Portfolio';
+import Publish from './components/Publish';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import rootReducer from './reducers/root.reducer';
+import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
+
 /**
  * @file index.js is the root file for this Portfol.io app
  * 
  * @author Chen En
  * @author Chuan Hao
  */
-
-
 const store = createStore(
   rootReducer,
   applyMiddleware(thunk)
 )
+
+const portfolioFields = {
+  finalizeDialogState: false,
+  overrideDialogState: false,
+  repositoryName: "",
+  repositoryHTML: "",
+  repositoryCSS: ""
+}
 
 ReactDOM.render(
   &lt;React.StrictMode>
@@ -122,9 +130,10 @@ ReactDOM.render(
             &lt;Route exact path = '/' component = {Home}>&lt;/Route>
             &lt;>
               &lt;Navbar/>
-              &lt;Route exact path = '/login/callback' component = {LoginResult}>&lt;/Route>
-              &lt;Route exact path = '/dashboard' component = {Dashboard}>&lt;/Route>
-              &lt;Route exact path = '/templateEditor' component = {TemplateEditor}>&lt;/Route>
+                &lt;Route exact path = '/login/callback' component = {LoginResult}>&lt;/Route>
+                &lt;Route exact path = '/dashboard' component = {Dashboard}>&lt;/Route>
+                &lt;Route exact path = '/edit' component = {Portfolio}>&lt;/Route>
+                &lt;Route exact path = '/publish' component = {Publish}>&lt;/Route>
             &lt;/>
           &lt;/Switch>
         &lt;/Provider>

@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> components/Dashboard.jsx</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/Dashboard.jsx</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {Component} from 'react';
+import axios from 'axios';
+import {connect} from 'react-redux';
+import {repopulate_state} from '../actions/LoginAction';
+import {withStyles} from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+
+
+/**
+ * @file Dashboard component displays previews of the user's portfolios and offers 
+ * functionalities that allow creation of new user portfolios.
+ * 
+ * @author Chen En
+ * @author Chuan Hao
+ * 
+ * @see Dashboard
+ */
+
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * 
+ * @memberof Dashboard
+ * @param {Object} theme 
+ */
+const styles = (theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'start',
+        alignItems: 'center'
+    },
+    gridHorizontal: {
+        container: true,
+        direction: 'row',
+        justify: 'space-evenly',
+        alignItems: 'center',
+    },
+    portfolioButton: {
+        margin: theme.spacing(1),
+        variant: 'contained',
+        size: 'large',
+        color: 'primary'
+    },
+    appBarSpacer: theme.mixins.toolbar
+});
+
+/**
+ * The dashboard logged in users will use to navigate the page
+ * 
+ * @component
+ */
+class Dashboard extends Component {
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @return void
+     * @memberof Dashboard
+     */
+    componentDidMount() {
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+            this.props.repopulate_state(localStorageItem);
+        }
+    }
+
+    /**
+     * Testing purposes only
+     * 
+     * @param {*} e unused
+     * @ignore
+     */
+    checkCookie(e) {
+        console.log('testing cookie')
+        axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + '/portfolio/status',
+            withCredentials: true
+        }).then(res => {
+            console.log("authorized")
+            console.log(res.data)
+        });
+    }
+
+    /**
+     * Testing purposes only. Changes route to /publish.
+     *
+     * @return void
+     * @memberof Dashboard
+     */
+    testPublish() {
+        window.location.pathname = '/publish'
+    }
+
+    render() {
+        const {loggedIn, name, portfolios, classes } = this.props
+        return (
+            &lt;div className={classes.root}>
+                &lt;div className={classes.appBarSpacer}/>
+                &lt;Typography variant="h2" component="h3">Here is your dashboard {name}!&lt;/Typography>
+                &lt;Grid className={classes.gridHorizontal}>
+                    {portfolios.map((element, idx) => {
+                        return (&lt;Button key={idx} className={classes.portfolioButton}>
+                            {element.title}
+                        &lt;/Button>);
+                    })}
+                    &lt;Button onClick={this.openTemplateEditor} className={classes.portfolioButton}>Add a Portfolio&lt;/Button>
+                &lt;/Grid>
+                &lt;Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie&lt;/Button>
+                &lt;Button onClick={this.testPublish} className={classes.portfolioButton}>Test Publish Panel&lt;/Button>
+            &lt;/div>
+
+        )
+    }
+}
+
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof Dashboard
+ */
+const mapStateToProps = state => ({
+    loggedIn: state.login.loggedIn,
+    name: state.login.name,
+    portfolios: state.portfolios.portfolios
+});
+
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.&lt;Function>} 
+ * @memberof Dashboard
+ */
+const mapDispatchToProps = {
+    repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Dashboard));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

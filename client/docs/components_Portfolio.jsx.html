@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> components/Portfolio.jsx</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/Portfolio.jsx</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {repopulate_state} from '../actions/LoginAction'
+import {withStyles} from '@material-ui/core/styles'
+import {Button, Fab, IconButton, TextField, Typography} from '@material-ui/core';
+import {FaEdit, FaPlus, FaSave} from "react-icons/fa";
+import {Base64} from 'js-base64';
+import ReactDOMServer from 'react-dom/server';
+import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
+import EntryEditor from './EntryEditor';
+import {templates} from './EntryGenerator';
+
+
+/**
+ * @file Portfolio component representing a user created portfolio
+ * 
+ * @author Chuan Hao
+ * 
+ * @see Portfolio
+ */
+
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * 
+ * @memberof Portfolio
+ * @param {Object} theme 
+ */
+const styles = (theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'start',
+        alignItems: 'center',
+        paddingTop: '7%',
+    },
+    entryDiv: {
+        position: 'relative'
+    },
+    editFAB: {
+        position: 'absolute',
+        marginTop: '2vw',
+        marginLeft: '2vw'
+    },
+    controlFAB: {
+        position: 'static',
+        marginRight: '0.5vw',
+        marginBottom: '0.5vw'
+    },
+    staticDiv: {
+        position: 'fixed',
+        bottom: 0,
+        right: 0
+    }
+})
+
+/**
+ * The portfolio component used for rendering previews and compiling for publishing.
+ * 
+ * 
+ * @component
+ */
+class Portfolio extends Component {
+    /**
+     * @constructor
+     */
+    constructor(props) {
+        super(props);
+        this.state = {
+            editMode: true,
+            pages: [{
+                directory: "",
+                entries: [],
+            }],
+            currentPage: 0,
+            currentEntry: 0,
+            showEditor: false
+        }
+        this.createEntry = this.createEntry.bind(this);
+        this.handleEditorClose = this.handleEditorClose.bind(this);
+        this.handleCreateFile = this.handleCreateFile.bind(this);
+        this.handleProduction = this.handleProduction.bind(this);
+    }
+
+    /**
+     * Function to enter entries based on the entry's type and template style.
+     * 
+     * @param {*} entryFields 
+     * @param {number} index 
+     * @returns void
+     * @memberof Portfolio
+     */
+    renderEntry(entryFields, index) {
+        return templates[entryFields.type][entryFields.style].component(entryFields, index);
+    }
+
+    // TODO: Add logic for a template chooser
+    /**
+     * Function to create a new entry.
+     * 
+     * @returns void
+     */
+    createEntry() {
+        const entryType = "timeline";
+        const entryStyle = 0;
+        const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
+        const newEntry = {
+            type: entryType,
+            style: entryStyle,
+            ...fieldsCopy
+        };
+        const newPages = [...this.state.pages];
+        newPages[this.state.currentPage].entries = 
+            [...this.state.pages[this.state.currentPage].entries, newEntry];
+        this.setState({pages: newPages});
+    }
+
+    /**
+     * Function to update the entry based on the styles provided by the user.
+     * 
+     * @param {*} fields
+     * @param {boolean} changed - Whether the fields have been changed/ if the user intends to save the changes.
+     */
+    handleEditorClose(fields, changed) {
+        if(changed) {
+            console.log(fields);
+            const newPages = [...this.state.pages];
+            const entries = [...this.state.pages[this.state.currentPage].entries];
+            entries[this.state.currentEntry] = fields;
+            newPages[this.state.currentPage].entries = entries;
+            this.setState({
+                showEditor: !this.state.showEditor,
+                pages: newPages
+            })
+        } else {
+            this.setState({
+                showEditor: !this.state.showEditor
+            })
+        }
+    }
+
+    // TODO: publish component check file empty before load?
+    /**
+     * A function to generate the necessary html/css/js files for a single page.
+     * 
+     * @param {*} entries 
+     * @param {string} directory - The directory/route to the page as defined by the user.
+     * @returns {(Map|Array)} An array of maps containing the relative paths to each file and their contents.
+     * 
+     */
+    handleCreateFile(entries, directory) {
+        console.log(entries);
+        const sheets = new ServerStyleSheets();
+        // TODO: test renderToStaticMarkup
+        const rawHTML = ReactDOMServer.renderToString(sheets.collect(
+            &lt;div style={{display: "flex", flexDirection: "column"}}>
+                {entries.map((entry, index) => this.renderEntry(entry))}
+            &lt;/div>),);
+        // TODO: add title
+        const html = Base64.encode(`
+            &lt;!DOCTYPE html>
+            &lt;html lang="en">
+            &lt;head>
+                &lt;meta charset="UTF-8">
+                &lt;meta name="viewport" content="width=device-width, initial-scale=1.0">
+                &lt;meta http-equiv="X-UA-Compatible" content="ie=edge">
+                &lt;link href="styles.css" rel="stylesheet">
+                &lt;script defer src="script.js">&lt;/script>
+                &lt;title>Welcome&lt;/title>
+            &lt;/head>
+            &lt;body>
+            ${rawHTML}
+            &lt;/body>`);
+        const css = Base64.encode(sheets.toString());
+        const js = Base64.encode(entries
+            .map((entry, index) => templates[entry.type][entry.style].script(index))
+            .filter(Boolean).join('\n'));
+
+        const files = [
+            {
+                file: `${directory}scripts.js`,
+                contents: js
+            },
+            {
+                file: `${directory}index.html`,
+                contents: html
+            },
+            {
+                file: `${directory}styles.css`,
+                contents: css
+            }
+        ]
+        return files;
+    }
+
+    /**
+     * A function to generate all files needed to be pushed to github.
+     * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+     */
+    handleProduction() {
+        let index = 0;
+        const resArray = [];
+        for (const page of this.state.pages) {
+            const fileArray = this.handleCreateFile(page.entries, page.directory);
+            console.log(fileArray);
+            resArray[index] = fileArray[0];
+            resArray[index + 1] = fileArray[1];
+            resArray[index + 2] = fileArray[2];
+            index += 3;
+        }
+        return resArray;
+    }
+
+    render() {
+        const {classes} = this.props;
+        let entry = undefined;
+        if (this.state.pages[this.state.currentPage].entries != []) {
+            entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
+        }
+
+        return (
+        &lt;div style={{display: "flex", flexDirection: "column"}}>
+            {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
+                return (&lt;div style={{display: "flex", flexDirection: "row"}}>
+                    &lt;Fab 
+                        className={classes.editFAB}
+                        onClick={() => this.setState({currentEntry: index, showEditor: !this.state.showEditor})}>
+                        &lt;FaEdit/>
+                    &lt;/Fab>
+                    {this.renderEntry(entry)}
+                &lt;/div>);
+            })}
+            {this.state.showEditor &amp;&amp; entry != undefined
+                ? &lt;EntryEditor 
+                    fields={entry} 
+                    info={templates[entry.type][entry.style].info} 
+                    onClose={this.handleEditorClose} 
+                /> 
+                : null}
+            &lt;div className={classes.staticDiv}>
+                &lt;Fab 
+                    className={classes.controlFAB}
+                    onClick={this.createEntry}>
+                    &lt;FaPlus/>
+                &lt;/Fab>
+                &lt;Fab 
+                    className={classes.controlFAB}
+                    onClick={() => console.log(this.handleProduction())}>
+                    &lt;FaSave/>
+                &lt;/Fab>
+            &lt;/div>
+        &lt;/div>);
+    }
+}
+
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof EntryEditor
+ */
+const mapStateToProps = state => ({
+    loggedIn: state.login.loggedIn,
+    name: state.login.name
+})
+
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.&lt;Function>} 
+ * @memberof EntryEditor
+ */
+const mapDispatchToProps = {
+    repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

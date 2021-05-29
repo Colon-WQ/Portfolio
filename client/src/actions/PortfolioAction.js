@@ -1,7 +1,7 @@
 /**
- * portfolio.action.js exports actions and their respective action creators.
+ * PortfolioAction exports actions and their respective action creators.
  * 
- * @module actions/portfolio
+ * @module PortfolioAction
  * @author Chen En
  * @category Action
  */

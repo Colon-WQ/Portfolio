@@ -1,7 +1,7 @@
 /**
- * portfolio.reducer.js exports reducers which is a function that determines changes to an application's state.
+ * PortfolioReducer exports reducers which is a function that determines changes to an application's state.
  * 
- * @module reducers/portfolio
+ * @module PortfolioReducer
  * @author Chen En
  * @category Reducer
  */

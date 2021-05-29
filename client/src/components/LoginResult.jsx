@@ -16,6 +16,12 @@ import { BeatLoader } from 'react-spinners';
  * @see LoginResult
  */
 
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * 
+ * @memberof LoginResult
+ * @param {Object} theme 
+ */
  const styles = (theme) => ({
     root: {
         display: 'flex',
@@ -44,7 +50,6 @@ class LoginResult extends Component {
      * If user's logged in status is Undefined, an attempt will be made to authenticate the user. Otherwise, he will
      * also be redirected to Dashboard.
      *
-     * @property {Function} componentDidMount
      * @return void
      * @memberof LoginResult
      */

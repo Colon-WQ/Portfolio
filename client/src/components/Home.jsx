@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction'
-import '../styles/login.css';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -23,8 +22,9 @@ import { theme } from '../styles/styles';
 
 /**
  * Style generator to dynamically adjust styles based on theme provided
- * @param theme 
- * @returns classes passed as props to the component, with values provided by parameter theme
+ * 
+ * @memberof Home
+ * @param {Object} theme 
  */
 const styles = (theme) => ({
     root: {
@@ -197,7 +197,6 @@ class Home extends Component {
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
      * 
-     * @property {Function} componentDidMount
      * @returns void
      * @memberof Home
      */
@@ -211,7 +210,6 @@ class Home extends Component {
     /**
      * Changes feature title, text and image in state to be rendered on button click.
      * 
-     * @property {Function} handleFeatureClick
      * @param {number} newIndex -Index of array elements to be rendered.
      * @returns void
      * @memberof Home
@@ -229,7 +227,6 @@ class Home extends Component {
     /**
      * Increments featureIndex by 1 or wraps around to 0 if featureIndex is equals to featureMaxIndex before increment.
      * 
-     * @property {Function} handleFeatureNext
      * @returns void
      * @memberof Home
      */
@@ -241,7 +238,7 @@ class Home extends Component {
     /**
      * Decrements featureIndex by 1 or wraps around to featureMaxIndex if featureIndex is equals to 0 before decrement.
      * 
-     * @property {Function} handleFeaturePrev
+     * @returns void
      * @memberof Home
      */
     handleFeaturePrev() {

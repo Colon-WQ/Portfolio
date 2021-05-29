@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { log_out_user, repopulate_state } from '../actions/LoginAction';
-import '../styles/navbar.css';
 import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
@@ -24,8 +23,9 @@ import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-u
 // TODO: clean up unused styles
 /**
  * Style generator to dynamically adjust styles based on theme provided
- * @param theme 
- * @returns classes passed as props to the component, with values provided by parameter theme
+ * 
+ * @memberof Navbar
+ * @param {Object} theme 
  */
 const styles = (theme) => ({
     root: {
@@ -159,7 +159,6 @@ class Navbar extends Component {
     /**
      * Attempts to fetch user info to display in the component.
      * 
-     * @property {Function} componentDidMount
      * @return void
      * @memberof Navbar
      */
@@ -173,7 +172,6 @@ class Navbar extends Component {
     /**
      * Logout function to clear cookies and invalidate the github authorization.
      * 
-     * @property {Function} handleLogout
      * @return void
      * @memberof Navbar
      */
@@ -196,7 +194,6 @@ class Navbar extends Component {
     /**
      * Logout function to clear cookies and invalidate the github authorization.
      * 
-     * @property {Function} handleLogout
      * @return void
      * @memberof Navbar
      */
