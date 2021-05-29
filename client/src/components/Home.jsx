@@ -21,6 +21,11 @@ import { theme } from '../styles/styles';
  * @see Home
  */
 
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * @param theme 
+ * @returns classes passed as props to the component, with values provided by parameter theme
+ */
 const styles = (theme) => ({
     root: {
         display: 'flex',

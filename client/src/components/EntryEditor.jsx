@@ -15,6 +15,11 @@ import { FaPlus, FaTrashAlt } from "react-icons/fa";
  * @see EntryEditor
  */
 
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * @param theme 
+ * @returns classes passed as props to the component, with values provided by parameter theme
+ */
 const styles = (theme) => ({
     root: {
         display: 'flex',
@@ -105,22 +110,22 @@ class EntryEditor extends Component {
         this.handleEditSectionText = this.handleEditSectionText.bind(this);
     }
 
-    // // TODO: elements read from state instead of props
-    // // TODO: unbounded mongo models
-    // /**
-    //  * Attempts to fetch entry details where possible so settings are saved.
-    //  * 
-    //  * @property {Function} componentDidMount
-    //  * @return void
-    //  * @memberof EntryEditor
-    //  */
-    // componentDidMount() {
-    //     // is this necessary if template is a widget
-    //     if (!this.props.loggedIn) {
-    //         const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-    //         this.props.repopulate_state(localStorageItem)
-    //     }
-    // }
+    // TODO: elements read from state instead of props
+    // TODO: unbounded mongo models
+    /**
+     * Attempts to fetch entry details where possible so settings are saved.
+     * 
+     * @property {Function} componentDidMount
+     * @return void
+     * @memberof EntryEditor
+     */
+    componentDidMount() {
+        // is this necessary if template is a widget
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+            this.props.repopulate_state(localStorageItem)
+        }
+    }
 
     /**
      * Event handler for text fields. 
@@ -163,6 +168,15 @@ class EntryEditor extends Component {
         })
     }
 
+    /**
+     * Event handler for deletion of sub sections.
+     * 
+     * @property {Function} handleDeleteSection
+     * @param {*} event 
+     * @param {Number} index - the index of the section to be edited
+     * @return void
+     * @memberof EntryEditor
+     */
     handleDeleteSection(event, index) {
       const spliced = this.state.sections.filter((item, filterIndex) => filterIndex !== index);
       this.setState({
@@ -184,6 +198,15 @@ class EntryEditor extends Component {
       this.setState({sections: [...this.state.sections, copy]});
     }
 
+    /**
+     * Event handler for editing sub sections.
+     * 
+     * @property {Function} handleEditSectionText
+     * @param {*} event
+     * @param {Number} index - the index of the section to be edited
+     * @return void
+     * @memberof EntryEditor
+     */
     handleEditSectionText(event, index) {
       const newSections = [...this.state.sections];
       newSections[index].texts[event.target.name] = event.target.value;
@@ -196,7 +219,6 @@ class EntryEditor extends Component {
         const { classes } = this.props;
         // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
         return (
-          // populate state with default values
             <Modal className = {classes.modal}
             // open always set to true, open/close logic handled by portfolio
               open={true}
@@ -350,24 +372,24 @@ class EntryEditor extends Component {
 }
 
 
-// /**
-//  * Function that maps variables from Redux Store to Home component's props.
-//  *
-//  * @param {Object} state - Redux Store
-//  * @memberof EntryEditor
-//  */
-// const mapStateToProps = state => ({
-//     loggedIn: state.login.loggedIn
-// })
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof EntryEditor
+ */
+const mapStateToProps = state => ({
+    loggedIn: state.login.loggedIn
+})
 
-// /** 
-//  * Provides action creators to Home component's props.
-//  * 
-//  * @type {Object.<Function>} 
-//  * @memberof EntryEditor
-//  */
-// const mapDispatchToProps = {
-//     repopulate_state
-// }
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.<Function>} 
+ * @memberof EntryEditor
+ */
+const mapDispatchToProps = {
+    repopulate_state
+}
 
 export default (withStyles(styles)(EntryEditor))

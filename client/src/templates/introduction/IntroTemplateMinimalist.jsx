@@ -3,14 +3,6 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 
-/**
- * @file Minimalist Intro template
- * 
- * @author Chuan Hao
- * 
- * @see IntroTemplateMinimalist
- */
-
 const styles = (theme) => ({
   root: {
     display: 'flex',
