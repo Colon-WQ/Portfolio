@@ -15,6 +15,6 @@ const EntrySchema = mongoose.Schema({
     }]
 })
 
-let Page = mongoose.model('page', PageSchema);
+let Entry = mongoose.model('entry', EntrySchema);
 
-export default Page;
+export default Entry;

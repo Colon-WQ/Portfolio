@@ -105,21 +105,44 @@ class Publish extends Component {
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
     }
 
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @property {Function} componentDidMount
+     * @return void
+     * @memberof Publish
+     */
     componentDidMount() {
-
         if (!this.props.loggedIn) {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             this.props.repopulate_state(localStorageItem)
         }
     }
 
-    //handle all case of OnChange
+    /**
+     * Handles onChange events. Changes a state variable under the name of the event target to value provided by user.
+     *
+     * @property {Function} handleOnChange
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
     handleOnChange(event) {
         this.setState({
             [event.target.name]: event.target.value
         });
     }
 
+    /**
+     * Handles addition of files in the form of objects to the state variable repositoryContent. If file to be added
+     * share the same name as an existing file in repositoryContent, the fileContent of the exisitng file will be
+     * overwritten by the new file's contents.
+     *
+     * @property {Function} handleAddFileContent
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
     handleAddFileContent(event) {
         event.preventDefault();
         const temp = this.state.repositoryContent;
@@ -145,7 +168,13 @@ class Publish extends Component {
         }
     }
 
-    //function to be passed down as props.
+    
+    /**
+     * Test function to be passed down as props to child components.
+     *
+     * @param {Array.<Object>} files
+     * @memberof Publish
+     */
     handleAddToFileContent(files) {
         const temp = this.state.repositoryContent;
 
@@ -173,8 +202,13 @@ class Publish extends Component {
         })
     }
 
-    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
-    //Also needs to close menu after selection.
+    /**
+     * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.
+     * 
+     * @property {Function} handleFinalizeDialogOpen
+     * @return void
+     * @memberof Publish
+     */
     handleFinalizeDialogOpen() {
         this.setState({
             anchorEl: null,
@@ -182,21 +216,39 @@ class Publish extends Component {
         })
     }
 
-    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
+    /**
+     * Handles the closing of finalize dialog by setting state boolean finalizeDialogState to false.
+     * 
+     * @property {Function} handleFinalizeDialogClose
+     * @return void
+     * @memberof Publish
+     */
     handleFinalizeDialogClose() {
         this.setState({
             finalizeDialogState: false
         })
     }
 
-    //Dialog Open & Close handler functions are necessary because MUI Dialog requires it.
+    /**
+     * Handles the opening of override dialog by setting state boolean overrideDialogState to true.
+     * 
+     * @property {Function} handleOverrideDialogOpen
+     * @return void
+     * @memberof Publish
+     */
     handleOverrideDialogOpen() {
         this.setState({
             overrideDialogState: true
         })
     }
 
-    //Dialog API requires an onClose() possibly closure by other means other than clicking cancel.
+    /**
+     * Handles the closing of override dialog by setting state boolean overrideDialogState to false.
+     * 
+     * @property {Function} handleOverrideDialogClose
+     * @return void
+     * @memberof Publish
+     */
     handleOverrideDialogClose() {
         this.setState({
             overrideDialogState: false
@@ -208,6 +260,16 @@ class Publish extends Component {
     // Warning: eact does not recognize the `componentName` prop on a DOM element. 
     // If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `componentname` instead.
     // custom attributes must be lowercase.
+
+    /**
+     * Handles the expanding of menu by setting state variable with name matching component prop 'componentname' of the component
+     * which fired the event to the component itself.
+     * Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.
+     * 
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
     handleAnchorMenu(event) {
         const anchorEl = event.currentTarget.getAttribute("componentname")
         //console.log(anchorEl)
@@ -216,7 +278,14 @@ class Publish extends Component {
         })
     }
 
-    //handles any form of deAnchoring menu from FAB
+    /**
+     * Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
+     * which fired the event to null.
+     *
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
     handleReleaseMenu(event) {
         const anchorEl = event.currentTarget.getAttribute("componentname");
         //console.log(anchorEl)
@@ -225,10 +294,12 @@ class Publish extends Component {
         })
     }
 
-    //TODO push to exisiting repo testing in progress
-    //routes set to nothing for now
-    //hardcoded name for now
-    //console.log is run but nothing happens. route is correct
+    
+    /**
+     * Handles 
+     *
+     * @memberof Publish
+     */
     async handleOverrideAllowed() {
         console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
         await this.handlePushToGithub();

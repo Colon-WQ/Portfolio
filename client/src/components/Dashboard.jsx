@@ -80,10 +80,13 @@ class Dashboard extends Component {
         });
     }
 
-    openTemplateEditor() {
-        window.location.pathname = '/templateEditor'
-    }
-
+    /**
+     * Testing purposes only. Changes route to /publish.
+     *
+     * @property {Function} testPublish
+     * @return void
+     * @memberof Dashboard
+     */
     testPublish() {
         window.location.pathname = '/publish'
     }

@@ -212,11 +212,11 @@ router.get("/getRepoContent", auth, getRepoContent);
  *                                  description: error message.
  */
 router.put("/publishGithub", auth, publishGithub);
-
+router.get("/create", createPortfolio);
 router.post("/:id/publish", postPortfolio);
 router.patch("/:id/save", savePortfolio);
 router.get("/:id", getPortfolio);
-router.get("/create", createPortfolio);
+
 router.delete("/:id", deletePortfolio);
 router.get("/", getPortfolios);
 
