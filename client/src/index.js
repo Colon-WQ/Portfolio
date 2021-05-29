@@ -43,10 +43,10 @@ ReactDOM.render(
             <Route exact path = '/' component = {Home}></Route>
             <>
               <Navbar/>
-              <Route exact path = '/login/callback' component = {LoginResult}></Route>
-              <Route exact path = '/dashboard' component = {Dashboard}></Route>
-              <Route exact path = '/edit' component = {Portfolio}></Route>
-              <Route exact path = '/publish' component = {Publish}></Route>
+                <Route exact path = '/login/callback' component = {LoginResult}></Route>
+                <Route exact path = '/dashboard' component = {Dashboard}></Route>
+                <Route exact path = '/edit' component = {Portfolio}></Route>
+                <Route exact path = '/publish' component = {Publish}></Route>
             </>
           </Switch>
         </Provider>

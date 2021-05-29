@@ -117,7 +117,7 @@ export const checkGitCreated = async (req, res) => {
 // TODO: research updating multiple files at a time to make undo easier
 // TODO: deploy to ghpages if not a .io repo
 // TODO: handle pagination for extra large files
-// req.body must contain: route, content. 
+// req.body must contain: route, content, repo. 
 export const publishGithub = async (req, res) => {
     console.log("pushing to repository " + req.body.repo)
 
@@ -155,19 +155,19 @@ export const publishGithub = async (req, res) => {
     for (let obj of files) {
         //filename and filetype combined give the full path of the file.
         //fileContent was base64 encoded in the frontend
-        console.log(obj.fileName + obj.fileType + " is being pushed")
+        console.log(obj.fileName + " is being pushed")
         const data = {
             message: message,
             content: obj.fileContent
         }
         //If file exists, append sha field to the data object in order to update the existing file.
-        if (fetchedContent[obj.fileName + obj.fileType] != undefined) {
-            data['sha'] = fetchedContent[obj.fileName + obj.fileType].sha;
+        if (fetchedContent[obj.fileName] != undefined) {
+            data['sha'] = fetchedContent[obj.fileName].sha;
         }
         //wait for push to succeed. Push has to completely succeed, otherwise pages deployment shldn't be run.
         await axios({
             method: "PUT",
-            url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${obj.fileName + obj.fileType}`,
+            url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${obj.fileName}`,
             headers: {
                 "Authorization": `token ${gh_token}`,
                 "Accept": "application/vnd.github.v3+json"
@@ -176,7 +176,7 @@ export const publishGithub = async (req, res) => {
             // TODO: check possible responses from github and if they must be handled separately
             // TODO: discuss what to do on conflict
         }).then(response => {
-            console.log(`successfully pushed ${obj.fileName + obj.fileType}`)
+            console.log(`successfully pushed ${obj.fileName}`)
         }).catch(err => {
             console.log(err.message)
             return res.status(400).send(err.message)
@@ -229,7 +229,10 @@ export const publishGithub = async (req, res) => {
 
 
 
-// TODO: merge this file with github-api
+/**
+ * 
+ * 
+ */
 export const checkExistingRepos = async (req, res) => {
     const gh_token = req.gh_token;
     const username = req.username;

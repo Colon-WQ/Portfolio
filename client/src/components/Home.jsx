@@ -9,6 +9,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Button, Divider, Drawer, Hidden, IconButton, List, ListItem } from '@material-ui/core';
+import { theme } from '../styles/styles';
 
 
 /**
