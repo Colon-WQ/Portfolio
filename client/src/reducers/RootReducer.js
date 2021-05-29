@@ -6,7 +6,7 @@ import portfolios from "./PortfolioReducer"
 /**
  * @file Combines reducers into one using combineReducers function.
  * 
- * @module reducers/root
+ * @module RootReducer
  * @author Chen En
  * @category Reducer
  */

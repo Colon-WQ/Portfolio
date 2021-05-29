@@ -1,7 +1,7 @@
 /**
  * LoginAction exports actions and their respective action creators.
  * 
- * @module actions/LoginActions
+ * @module LoginAction
  * @author Chen En
  * @category Action
  */

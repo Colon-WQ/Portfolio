@@ -29,8 +29,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 /**
  * Style generator to dynamically adjust styles based on theme provided
- * @param theme 
- * @returns classes passed as props to the component, with values provided by parameter theme
+ * 
+ * @memberof Publish
+ * @param {Object} theme 
  */
 const styles = (theme) => ({
     root: {
@@ -110,7 +111,6 @@ class Publish extends Component {
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
      * 
-     * @property {Function} componentDidMount
      * @return void
      * @memberof Publish
      */
@@ -124,7 +124,6 @@ class Publish extends Component {
     /**
      * Handles onChange events. Changes a state variable under the name of the event target to value provided by user.
      *
-     * @property {Function} handleOnChange
      * @param {Object} event
      * @return void
      * @memberof Publish
@@ -140,7 +139,6 @@ class Publish extends Component {
      * share the same name as an existing file in repositoryContent, the fileContent of the exisitng file will be
      * overwritten by the new file's contents.
      *
-     * @property {Function} handleAddFileContent
      * @param {Object} event
      * @return void
      * @memberof Publish
@@ -174,7 +172,6 @@ class Publish extends Component {
     /**
      * Test function to be passed down as props to child components.
      *
-     * @property {Function} handleAddToFileContent
      * @param {Array.<Object>} files
      * @memberof Publish
      */
@@ -208,7 +205,6 @@ class Publish extends Component {
     /**
      * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.
      * 
-     * @property {Function} handleFinalizeDialogOpen
      * @return void
      * @memberof Publish
      */
@@ -222,7 +218,6 @@ class Publish extends Component {
     /**
      * Handles the closing of finalize dialog by setting state boolean finalizeDialogState to false.
      * 
-     * @property {Function} handleFinalizeDialogClose
      * @return void
      * @memberof Publish
      */
@@ -235,7 +230,6 @@ class Publish extends Component {
     /**
      * Handles the opening of override dialog by setting state boolean overrideDialogState to true.
      * 
-     * @property {Function} handleOverrideDialogOpen
      * @return void
      * @memberof Publish
      */
@@ -248,7 +242,6 @@ class Publish extends Component {
     /**
      * Handles the closing of override dialog by setting state boolean overrideDialogState to false.
      * 
-     * @property {Function} handleOverrideDialogClose
      * @return void
      * @memberof Publish
      */
@@ -258,18 +251,11 @@ class Publish extends Component {
         })
     }
 
-    //handle any form of anchoring menu to FAB
-    // Note: Store it under separate custom attribute. id shld be saved for reference purposes and must be unique.
-    // Warning: eact does not recognize the `componentName` prop on a DOM element. 
-    // If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `componentname` instead.
-    // custom attributes must be lowercase.
-
     /**
      * Handles the expanding of menu by setting state variable with name matching component prop 'componentname' of the component
      * which fired the event to the component itself.
      * Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.
      * 
-     * @property {Function} handleAnchorMenu
      * @param {Object} event
      * @return void
      * @memberof Publish
@@ -286,7 +272,6 @@ class Publish extends Component {
      * Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
      * which fired the event to null.
      *
-     * @property {Function} handleReleaseMenu
      * @param {Object} event
      * @return void
      * @memberof Publish
@@ -304,7 +289,6 @@ class Publish extends Component {
      * This handles the event whereby override button in override dialog is clicked. It calls and
      * wait for handlePushToGithub() to complete before closing the override dialog.
      *
-     * @property {Function} handleOverrideAllowed
      * @return void
      * @memberof Publish
      */
@@ -331,7 +315,6 @@ class Publish extends Component {
      * 
      * Note: This clears out the repositoryContent after the PUT request is completed.
      * 
-     * @property {Function} handlePushToGithub
      * @return void
      * @memberof Publish
      */
@@ -373,7 +356,6 @@ class Publish extends Component {
      * If a Github repository exists, this then opens an override dialog to warn and ask user for permission to overwrite the
      * exisiting Github repository's content.
      *
-     * @property {Function} handleFinalizeEdits
      * @return void
      * @memberof Publish
      */
@@ -420,7 +402,7 @@ class Publish extends Component {
             })
         })
 
-        //closes finalizeDialog but doesn't remove repository name.
+        //Intentional: closes finalizeDialog but doesn't remove repository name.
         //TODO: Repository name should not be set in dialog, but in some easily visible spot.
         this.setState({
             finalizeDialogState: false

@@ -1,7 +1,7 @@
 /**
- * login.reducer.js exports reducers which is a function that determines changes to an application's state.
+ * LoginReducer exports reducers which is a function that determines changes to an application's state.
  * 
- * @module reducers/login
+ * @module LoginReducer
  * @author Chen En
  * @category Reducer
  */

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {repopulate_state} from '../actions/LoginAction';
-import '../styles/login.css';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -21,8 +20,9 @@ import Typography from '@material-ui/core/Typography';
 
 /**
  * Style generator to dynamically adjust styles based on theme provided
- * @param theme 
- * @returns classes passed as props to the component, with values provided by parameter theme
+ * 
+ * @memberof Dashboard
+ * @param {Object} theme 
  */
 const styles = (theme) => ({
     root: {
@@ -55,7 +55,6 @@ class Dashboard extends Component {
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
      * 
-     * @property {Function} componentDidMount
      * @return void
      * @memberof Dashboard
      */
@@ -87,7 +86,6 @@ class Dashboard extends Component {
     /**
      * Testing purposes only. Changes route to /publish.
      *
-     * @property {Function} testPublish
      * @return void
      * @memberof Dashboard
      */

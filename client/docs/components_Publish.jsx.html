@@ -1,0 +1,657 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> components/Publish.jsx</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/Publish.jsx</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { repopulate_state } from '../actions/LoginAction'
+import axios from 'axios'
+import { Base64 } from 'js-base64';
+
+//MUI component imports
+import Fab from '@material-ui/core/Fab';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { withStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+
+/**
+ * @file Publish component representing user interface for publishing portfolios to ghpages.
+ * 
+ * @author Chen En
+ * 
+ * @see Publish
+ */
+
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * 
+ * @memberof Publish
+ * @param {Object} theme 
+ */
+const styles = (theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'start',
+        alignItems: 'center',
+        paddingTop: '7%'
+    },
+    actionFAB: {
+        margin: 0,
+        top: 'auto',
+        left: 'auto',
+        bottom: '8%',
+        right: '5%',
+        position: 'fixed',
+        textAlign: 'center'
+    },
+    modeFAB: {
+        margin: 0,
+        top: '10%',
+        left: 'auto',
+        right: 'auto',
+        bottom: 'auto',
+        position: 'fixed',
+        textAlign: 'center'
+    }
+})
+
+/**
+ * The publish component renders functionalities to allow user to publish their
+ * portfolio to ghpages.
+ * 
+ * The component contains state variables repositoryHTML, repositoryCSS, repositoryJS.
+ * 
+ * @component
+ */
+class Publish extends Component {
+    // static propTypes = {
+    //     onPublish: PropTypes.func.isRequired,
+    //     fields: PropTypes.shape({
+    //         finalizeDialogState: Proptypes.bool,
+    //         overwriteDialogState: Proptypes.bool,
+    //         entryDisplayIndex: Proptypes.number,
+    //         repositoryName: Proptypes.string
+    //     })
+    // };
+
+    /**
+     * @constructor
+     */
+    constructor(props) {
+        super(props);
+        this.state = {
+            finalizeDialogState: false,
+            overrideDialogState: false,
+            repositoryName: "",
+            repositoryContent: [],
+            anchorEl: null,
+            fileName: "",
+            fileContent: ""
+        }
+        this.handleOnChange = this.handleOnChange.bind(this);
+        this.handleAddFileContent = this.handleAddFileContent.bind(this);
+        this.handleAddToFileContent = this.handleAddToFileContent.bind(this);
+        this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
+        this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
+        this.handleOverrideDialogOpen = this.handleOverrideDialogOpen.bind(this);
+        this.handleOverrideDialogClose = this.handleOverrideDialogClose.bind(this);
+        this.handleAnchorMenu = this.handleAnchorMenu.bind(this);
+        this.handleReleaseMenu = this.handleReleaseMenu.bind(this);
+        this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
+        this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
+        this.handlePushToGithub = this.handlePushToGithub.bind(this);
+    }
+
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @return void
+     * @memberof Publish
+     */
+    componentDidMount() {
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+            this.props.repopulate_state(localStorageItem)
+        }
+    }
+
+    /**
+     * Handles onChange events. Changes a state variable under the name of the event target to value provided by user.
+     *
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
+    handleOnChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
+    }
+
+    /**
+     * Handles addition of files in the form of objects to the state variable repositoryContent. If file to be added
+     * share the same name as an existing file in repositoryContent, the fileContent of the exisitng file will be
+     * overwritten by the new file's contents.
+     *
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
+    handleAddFileContent(event) {
+        event.preventDefault();
+        const temp = this.state.repositoryContent;
+        
+        let duplicate = false;
+        for (let obj of temp) {
+            if (obj.fileName === this.state.fileName) {
+                duplicate = true;
+                obj.fileContent = this.state.fileContent
+                break;
+            }
+        }
+        if (!duplicate) {
+            temp.push({
+                fileName: this.state.fileName,
+                fileContent: Base64.encode(this.state.fileContent)
+            });
+            this.setState({
+                repositoryContent: temp
+            })
+        } else {
+            console.log("duplicate file not added")
+        }
+    }
+
+    
+    /**
+     * Test function to be passed down as props to child components.
+     *
+     * @param {Array.&lt;Object>} files
+     * @memberof Publish
+     */
+    handleAddToFileContent(files) {
+        const temp = this.state.repositoryContent;
+
+        for (let file of files) {
+            let duplicate = false;
+            for (let obj of temp) {
+                if (file.name === obj.fileName) {
+                    duplicate = true;
+                    obj.fileContent = file.contents
+                    break;
+                }
+            }
+            if (!duplicate) {
+                temp.push({
+                    fileName: file.name,
+                    fileContent: file.contents
+                })
+            } else {
+                console.log(`duplicate file ${file.name} not added`)
+            }
+        }
+
+        this.setState({
+            repositoryContent: temp
+        })
+    }
+
+    /**
+     * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.
+     * 
+     * @return void
+     * @memberof Publish
+     */
+    handleFinalizeDialogOpen() {
+        this.setState({
+            anchorEl: null,
+            finalizeDialogState: true
+        })
+    }
+
+    /**
+     * Handles the closing of finalize dialog by setting state boolean finalizeDialogState to false.
+     * 
+     * @return void
+     * @memberof Publish
+     */
+    handleFinalizeDialogClose() {
+        this.setState({
+            finalizeDialogState: false
+        })
+    }
+
+    /**
+     * Handles the opening of override dialog by setting state boolean overrideDialogState to true.
+     * 
+     * @return void
+     * @memberof Publish
+     */
+    handleOverrideDialogOpen() {
+        this.setState({
+            overrideDialogState: true
+        })
+    }
+
+    /**
+     * Handles the closing of override dialog by setting state boolean overrideDialogState to false.
+     * 
+     * @return void
+     * @memberof Publish
+     */
+    handleOverrideDialogClose() {
+        this.setState({
+            overrideDialogState: false
+        })
+    }
+
+    /**
+     * Handles the expanding of menu by setting state variable with name matching component prop 'componentname' of the component
+     * which fired the event to the component itself.
+     * Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.
+     * 
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
+    handleAnchorMenu(event) {
+        const anchorEl = event.currentTarget.getAttribute("componentname")
+        //console.log(anchorEl)
+        this.setState({
+            [anchorEl]: event.currentTarget
+        })
+    }
+
+    /**
+     * Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
+     * which fired the event to null.
+     *
+     * @param {Object} event
+     * @return void
+     * @memberof Publish
+     */
+    handleReleaseMenu(event) {
+        const anchorEl = event.currentTarget.getAttribute("componentname");
+        //console.log(anchorEl)
+        this.setState({
+            [anchorEl]: null
+        })
+    }
+
+    
+    /**
+     * This handles the event whereby override button in override dialog is clicked. It calls and
+     * wait for handlePushToGithub() to complete before closing the override dialog.
+     *
+     * @return void
+     * @memberof Publish
+     */
+    async handleOverrideAllowed() {
+        console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
+        await this.handlePushToGithub();
+        this.setState({
+            overrideDialogState: false
+        })
+    }
+
+
+    /**
+     * Sends a PUT request to backend API which will take over and handle the pushing to specified Github
+     * repository and its deployment to ghpages if not already done so. 
+     * 
+     * The PUT request requires route (The path relative to Github repository root to push to), repo (The
+     * name of Github repository to push to) and content (An array of objects representing files to be pushed).
+     * 
+     * For testing purposes, route is fixed to "" for now so that pushing will be done to the root of specified 
+     * Github repository.
+     * 
+     * Note: For files within sub directories, the path can be prepended to the filename like so "folder/index.html"
+     * 
+     * Note: This clears out the repositoryContent after the PUT request is completed.
+     * 
+     * @return void
+     * @memberof Publish
+     */
+    async handlePushToGithub() {
+        console.log(`files are being pushed to ${this.state.repositoryName}`)
+        await axios({
+            method: "PUT",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/publishGithub",
+            withCredentials: true,
+            data: {
+                route: "",
+                content: this.state.repositoryContent,
+                repo: this.state.repositoryName
+            }
+        }).then(res => {
+            console.log(res.data.message);
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+        })
+
+        this.setState({
+            repositoryContent: [],
+            fileName: "",
+        })
+    }
+
+    /**
+     * This handles the event whereby the finalize button in finalize dialog is clicked. A GET request is sent to
+     * backend API to check for existing Github repository of specified name under the user's Github account and sends a POST
+     * request to create a new Github repository if there are none.
+     * 
+     * If a new repository is created, this then calls and waits for handlePushToGithub() to complete before closing
+     * the finalize dialog.
+     * 
+     * If a Github repository exists, this then opens an override dialog to warn and ask user for permission to overwrite the
+     * exisiting Github repository's content.
+     *
+     * @return void
+     * @memberof Publish
+     */
+    async handleFinalizeEdits() {
+        console.log("chosen repository name is " + this.state.repositoryName)
+        await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
+            withCredentials: true,
+            params: {
+                repo: this.state.repositoryName
+            }
+        }).then(async res => {
+            console.log(res.data.message)
+            //waits for repository to be created
+            await axios({
+                method: "POST",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
+                withCredentials: true,
+                data: {
+                    repo: this.state.repositoryName
+                }
+            }).then(response => {
+                console.log(response.data.message)
+            }).catch(err => {
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
+            })
+
+            //Waits for push to go through
+            await this.handlePushToGithub();
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+            
+            this.setState({
+                overrideDialogState: true
+            })
+        })
+
+        //Intentional: closes finalizeDialog but doesn't remove repository name.
+        //TODO: Repository name should not be set in dialog, but in some easily visible spot.
+        this.setState({
+            finalizeDialogState: false
+        })
+    }
+
+
+    render() {
+        const {classes} = this.props;
+
+        return (
+            &lt;div className={classes.root}>
+                &lt;Fab
+                    componentname="anchorEl"
+                    variant = 'extended'
+                    size = 'medium'
+                    color = 'primary'
+                    aria-label = 'publish panel'
+                    aria-controls = 'simple-menu'
+                    aria-haspopup = 'true'
+                    className = {classes.actionFAB}
+                    onClick = {this.handleAnchorMenu}
+                >
+                    &lt;Typography variant = 'button'>Publish&lt;/Typography>
+                &lt;/Fab>
+                &lt;Menu
+                    componentname="anchorEl"
+                    anchorEl={this.state.anchorEl}
+                    keepMounted
+                    open={Boolean(this.state.anchorEl)}
+                    onClose={this.handleReleaseMenu}
+                >
+                    &lt;MenuItem 
+                        name="finalizeDialogState" 
+                        onClick={this.handleFinalizeDialogOpen}
+                    >
+                        Finalize and Push
+                    &lt;/MenuItem>
+                    &lt;MenuItem>Clear Template&lt;/MenuItem>
+                    &lt;MenuItem>Undo Action&lt;/MenuItem>
+                    {/* &lt;MenuItem onClick={this.handleChange}>Get Repo Content Testing&lt;/MenuItem> */}
+                &lt;/Menu>
+
+                &lt;Dialog
+                    open = {this.state.finalizeDialogState}
+                    onClose = {this.handleFinalizeDialogClose}
+                    aria-labelledby = "repo name input"
+                >
+                    &lt;DialogTitle id = "repo name input">
+                        Repository Name
+                    &lt;/DialogTitle>
+                    &lt;DialogContent>
+                        &lt;DialogContentText color = 'primary'>
+                            Choose a Github repository name to save portfolio edits
+                        &lt;/DialogContentText>
+                        &lt;TextField
+                            name="repositoryName"
+                            autoFocus
+                            margin="dense"
+                            label="Repository Name"
+                            type="string"
+                            defaultValue={this.state.repositoryName}
+                            fullWidth
+                            onChange={this.handleOnChange}
+                        />
+                        {/* Likely NOT needed for actual publishing. However, here for testing purposes */}
+                        &lt;DialogContentText color = 'primary'>
+                            Add a file to Push (for testing purposes)
+                        &lt;/DialogContentText>
+                        &lt;form >
+                            &lt;label for="fileName">File Name&lt;/label>
+                            &lt;input type="text" id="fileName" name="fileName" placeholder="file name including repository path" onChange={this.handleOnChange}>&lt;/input>
+                            &lt;br />
+                            &lt;label for="fileContent">File Content&lt;/label>
+                            &lt;input type="text" id="fileContent" name="fileContent" placeholder="your file content" onChange={this.handleOnChange}>&lt;/input>
+                            &lt;br />
+                            &lt;button onClick={this.handleAddFileContent}>Add&lt;/button>
+                        &lt;/form>
+                    &lt;/DialogContent>
+                    &lt;DialogActions>
+                        &lt;Button onClick = {this.handleFinalizeDialogClose} color = 'primary'>
+                            Cancel
+                        &lt;/Button>
+                        &lt;Button onClick = {this.handleFinalizeEdits} color = 'primary'>
+                            Finalize
+                        &lt;/Button>
+                    &lt;/DialogActions>
+                &lt;/Dialog>
+
+                &lt;Dialog
+                    open = {this.state.overrideDialogState}
+                    onClose = {this.handleOverrideDialogClose}
+                    aria-labelledby = "override permission input"
+                >
+                    &lt;DialogTitle id = "override permission input">
+                        Warning!
+                    &lt;/DialogTitle>
+                    &lt;DialogContent>
+                        &lt;DialogContentText color = 'primary'>
+                            Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
+                        &lt;/DialogContentText>
+                    &lt;/DialogContent>
+                    &lt;DialogActions>
+                        &lt;Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
+                            Cancel
+                        &lt;/Button>
+                        &lt;Button onClick = {this.handleOverrideAllowed} color = 'primary'>
+                            Allow Override
+                        &lt;/Button>
+                    &lt;/DialogActions>
+                &lt;/Dialog>          
+            &lt;/div>
+        );
+    }
+}
+
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof EntryEditor
+ */
+const mapStateToProps = state => ({
+    loggedIn: state.login.loggedIn
+})
+
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.&lt;Function>} 
+ * @memberof EntryEditor
+ */
+const mapDispatchToProps = {
+    repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Publish))</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
