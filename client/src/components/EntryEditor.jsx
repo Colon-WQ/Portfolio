@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Button, IconButton, TextField, Typography, CssBaseline, Modal } from '@material-ui/core';
-import { GrFormClose } from "react-icons/gr";
+import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon } from '@material-ui/core';
+import { FaPlus, FaTrashAlt } from "react-icons/fa";
 
 
 /**
@@ -105,22 +105,22 @@ class EntryEditor extends Component {
         this.handleEditSectionText = this.handleEditSectionText.bind(this);
     }
 
-    // TODO: elements read from state instead of props
-    // TODO: unbounded mongo models
-    /**
-     * Attempts to fetch entry details where possible so settings are saved.
-     * 
-     * @property {Function} componentDidMount
-     * @return void
-     * @memberof EntryEditor
-     */
-    componentDidMount() {
-        // is this necessary if template is a widget
-        if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            this.props.repopulate_state(localStorageItem)
-        }
-    }
+    // // TODO: elements read from state instead of props
+    // // TODO: unbounded mongo models
+    // /**
+    //  * Attempts to fetch entry details where possible so settings are saved.
+    //  * 
+    //  * @property {Function} componentDidMount
+    //  * @return void
+    //  * @memberof EntryEditor
+    //  */
+    // componentDidMount() {
+    //     // is this necessary if template is a widget
+    //     if (!this.props.loggedIn) {
+    //         const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+    //         this.props.repopulate_state(localStorageItem)
+    //     }
+    // }
 
     /**
      * Event handler for text fields. 
@@ -163,6 +163,13 @@ class EntryEditor extends Component {
         })
     }
 
+    handleDeleteSection(event, index) {
+      const spliced = this.state.sections.filter((item, filterIndex) => filterIndex !== index);
+      this.setState({
+        sections: spliced
+      })
+    }
+
     /**
      * Event handler for entry addition. 
      * Entry will be given default fields specified in the info attribute.
@@ -172,7 +179,9 @@ class EntryEditor extends Component {
      * @memberof EntryEditor
      */
     handleCreateEntry() {
-        this.setState({sections: [...this.state.sections, this.props.info.sections.defaultEntry]});
+      // JSON used for deep copy
+      const copy = JSON.parse(JSON.stringify(this.props.info.sections.defaultEntry));
+      this.setState({sections: [...this.state.sections, copy]});
     }
 
     handleEditSectionText(event, index) {
@@ -241,7 +250,7 @@ class EntryEditor extends Component {
                             name={key}
                             id={key}
                             label={this.props.info.colours[key].label}
-                            defaultValue={item}
+                            value={item}
                             margin="normal"
                             variant="outlined"
                             onChange={(event) => this.handleChange(event, "colours")}
@@ -276,7 +285,7 @@ class EntryEditor extends Component {
                             name={key}
                             id={key}
                             label={this.props.info.texts[key].label}
-                            defaultValue={item}
+                            value={item}
                             margin="normal"
                             variant="outlined"
                             onChange={(event) => this.handleChange(event, "texts")}
@@ -291,6 +300,7 @@ class EntryEditor extends Component {
                   {this.state.sections.map((entryObj, index) => {
                     return (
                       <div>
+                        <IconButton onClick={(event) => this.handleDeleteSection(event, index)}><FaTrashAlt/></IconButton>
                         <div className={classes.imgDiv}>
                           {Object.entries(entryObj.images).map(([key, item]) => {
                             return (
@@ -308,6 +318,7 @@ class EntryEditor extends Component {
                         </div>
                         <div className={classes.textDiv}>
                           {Object.entries(entryObj.texts).map(([key, item]) => {
+                            console.log(item);
                             // TODO: make maxRow field in info?
                             return (
                               <div>
@@ -315,7 +326,7 @@ class EntryEditor extends Component {
                                   name={key}
                                   id={key}
                                   label={this.props.info.sections.entryFormat.texts[key].label}
-                                  defaultValue={item}
+                                  value={item}
                                   margin="normal"
                                   variant="outlined"
                                   onChange={(event) => this.handleEditSectionText(event, index)}
@@ -329,7 +340,7 @@ class EntryEditor extends Component {
                       </div>
                       )
                   })}
-                  <IconButton onClick={this.handleCreateEntry}>+</IconButton>
+                  <IconButton onClick={this.handleCreateEntry}><FaPlus/></IconButton>
                 </div>
                 : null}
               </div>
@@ -339,24 +350,24 @@ class EntryEditor extends Component {
 }
 
 
-/**
- * Function that maps variables from Redux Store to Home component's props.
- *
- * @param {Object} state - Redux Store
- * @memberof EntryEditor
- */
-const mapStateToProps = state => ({
-    loggedIn: state.login.loggedIn
-})
+// /**
+//  * Function that maps variables from Redux Store to Home component's props.
+//  *
+//  * @param {Object} state - Redux Store
+//  * @memberof EntryEditor
+//  */
+// const mapStateToProps = state => ({
+//     loggedIn: state.login.loggedIn
+// })
 
-/** 
- * Provides action creators to Home component's props.
- * 
- * @type {Object.<Function>} 
- * @memberof EntryEditor
- */
-const mapDispatchToProps = {
-    repopulate_state
-}
+// /** 
+//  * Provides action creators to Home component's props.
+//  * 
+//  * @type {Object.<Function>} 
+//  * @memberof EntryEditor
+//  */
+// const mapDispatchToProps = {
+//     repopulate_state
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(EntryEditor))
+export default (withStyles(styles)(EntryEditor))
