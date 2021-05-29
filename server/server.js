@@ -79,12 +79,14 @@ app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, "..", 'client/deploy/index.html'));
 });
 
+// connects mongoose + express
+mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+  .then(() => console.log("Mongoose server started."))
+  .catch((error) => console.log(error));
+
+
 app.listen(PORT_CONFIG, () => console.log("server up and running at " + PORT_CONFIG));
 
-// connects mongoose + express
-// mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log("Mongoose server started."))
-//   .catch((error) => console.log(`${error} did not connect`));
-// mongoose.set('useFindAndModify', false);
+
 
 

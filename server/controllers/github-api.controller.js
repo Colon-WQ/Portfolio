@@ -229,10 +229,6 @@ export const publishGithub = async (req, res) => {
 
 
 
-/**
- * 
- * 
- */
 export const checkExistingRepos = async (req, res) => {
     const gh_token = req.gh_token;
     const username = req.username;
