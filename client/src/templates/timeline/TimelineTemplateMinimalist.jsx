@@ -40,6 +40,10 @@ class TimelineTemplateMinimalist extends Component {
     texts: {title: {label: "Timeline title"}},
     sections: {
       enabled: true,
+      defaultEntry: {
+        images: {timelineImage: "https://bit.ly/3c3wsNL"},
+        texts: {timelineTitle: "New section", timelineDate: "2077"}
+      },
       entryFormat: {
         images: {timelineImage: {label: "Event Image", allowColour: true}},
         texts: {timelineTitle: {label: "Event name"}, timelineDate: {label: "Event date"}}
@@ -60,7 +64,7 @@ class TimelineTemplateMinimalist extends Component {
     },
     {
       images: {timelineImage: "https://bit.ly/3c3wsNL"},
-      texts: {timelineTitle: "Portfolio added to resume", timelineDate: "2021"}
+      texts: {timelineTitle: "Portfolio added to resume", timelineDate: "2022"}
     }]
   };
 
