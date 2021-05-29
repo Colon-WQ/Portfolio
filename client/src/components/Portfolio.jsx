@@ -82,10 +82,11 @@ class Portfolio extends Component {
         // TODO: Add logic for a template chooser
         const entryType = "timeline";
         const entryStyle = 0;
+        const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
         const newEntry = {
             type: entryType,
             style: entryStyle,
-            ...templates[entryType][entryStyle].defaultField
+            ...fieldsCopy
         };
         const newPages = [...this.state.pages];
         newPages[this.state.currentPage].entries = 
