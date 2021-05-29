@@ -50,6 +50,7 @@ const styles = (theme) => ({
 /**
  * The portfolio component used for rendering previews and compiling for publishing.
  * 
+ * 
  * @component
  */
 class Portfolio extends Component {

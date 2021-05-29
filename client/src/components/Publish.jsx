@@ -19,9 +19,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 
-
-
-
 /**
  * @file Publish component representing user interface for publishing portfolios to ghpages.
  * 
@@ -172,6 +169,7 @@ class Publish extends Component {
     /**
      * Test function to be passed down as props to child components.
      *
+     * @property {Function} handleAddToFileContent
      * @param {Array.<Object>} files
      * @memberof Publish
      */
@@ -266,6 +264,7 @@ class Publish extends Component {
      * which fired the event to the component itself.
      * Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.
      * 
+     * @property {Function} handleAnchorMenu
      * @param {Object} event
      * @return void
      * @memberof Publish
@@ -282,6 +281,7 @@ class Publish extends Component {
      * Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
      * which fired the event to null.
      *
+     * @property {Function} handleReleaseMenu
      * @param {Object} event
      * @return void
      * @memberof Publish
@@ -296,8 +296,11 @@ class Publish extends Component {
 
     
     /**
-     * Handles 
+     * This handles the event whereby override button in override dialog is clicked. It calls and
+     * wait for handlePushToGithub() to complete before closing the override dialog.
      *
+     * @property {Function} handleOverrideAllowed
+     * @return void
      * @memberof Publish
      */
     async handleOverrideAllowed() {
@@ -308,8 +311,25 @@ class Publish extends Component {
         })
     }
 
-    //Note: If you wish to create a file under a folder. Under fileName, add "folder/{filename}.{fileType}"
-    //This clears out the array to push after pushing as well as the fileName and fileContent, which are for testing.
+
+    /**
+     * Sends a PUT request to backend API which will take over and handle the pushing to specified Github
+     * repository and its deployment to ghpages if not already done so. 
+     * 
+     * The PUT request requires route (The path relative to Github repository root to push to), repo (The
+     * name of Github repository to push to) and content (An array of objects representing files to be pushed).
+     * 
+     * For testing purposes, route is fixed to "" for now so that pushing will be done to the root of specified 
+     * Github repository.
+     * 
+     * Note: For files within sub directories, the path can be prepended to the filename like so "folder/index.html"
+     * 
+     * Note: This clears out the repositoryContent after the PUT request is completed.
+     * 
+     * @property {Function} handlePushToGithub
+     * @return void
+     * @memberof Publish
+     */
     async handlePushToGithub() {
         console.log(`files are being pushed to ${this.state.repositoryName}`)
         await axios({
@@ -337,8 +357,21 @@ class Publish extends Component {
         })
     }
 
-    //checks for existing repo by name and creates new repo if no existing. Otherwise prompts user for override.
-    //Once new repo is created, inputs will be automatically pushed.
+    /**
+     * This handles the event whereby the finalize button in finalize dialog is clicked. A GET request is sent to
+     * backend API to check for existing Github repository of specified name under the user's Github account and sends a POST
+     * request to create a new Github repository if there are none.
+     * 
+     * If a new repository is created, this then calls and waits for handlePushToGithub() to complete before closing
+     * the finalize dialog.
+     * 
+     * If a Github repository exists, this then opens an override dialog to warn and ask user for permission to overwrite the
+     * exisiting Github repository's content.
+     *
+     * @property {Function} handleFinalizeEdits
+     * @return void
+     * @memberof Publish
+     */
     async handleFinalizeEdits() {
         console.log("chosen repository name is " + this.state.repositoryName)
         await axios({
