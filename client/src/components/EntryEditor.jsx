@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon } from '@material-ui/core';
-import { FaPlus, FaTrashAlt } from "react-icons/fa";
+import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon, Input, InputLabel } from '@material-ui/core';
+import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 
 /**
@@ -103,12 +103,14 @@ class EntryEditor extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ...this.props.fields,
+            data: {...this.props.fields},
+            currentSection: 0
         }
         this.handleCreateEntry = this.handleCreateEntry.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleImageUpload = this.handleImageUpload.bind(this);
         this.handleEditSectionText = this.handleEditSectionText.bind(this);
+        this.handleSectionView = this.handleSectionView.bind(this);
     }
 
     // TODO: elements read from state instead of props
@@ -141,7 +143,7 @@ class EntryEditor extends Component {
           [event.target.name]: event.target.value
         });
       } else {
-        const originalCat = {...this.state[category]};
+        const originalCat = {...this.state.data[category]};
         originalCat[event.target.name] = event.target.value;
         this.setState({
           [category]: originalCat
@@ -170,15 +172,18 @@ class EntryEditor extends Component {
      * Event handler for deletion of sub sections.
      * 
      * @param {*} event 
-     * @param {Number} index - the index of the section to be edited
      * @return void
      * @memberof EntryEditor
      */
-    handleDeleteSection(event, index) {
-      const spliced = this.state.sections.filter((item, filterIndex) => filterIndex !== index);
+    handleDeleteSection(event) {
+      const spliced = this.state.data.sections.filter((item, filterIndex) => filterIndex !== this.state.currentSection);
       this.setState({
-        sections: spliced
+        data: {
+          ...this.state.data,
+          sections: spliced
+        }
       })
+      console.log(spliced)
     }
 
     /**
@@ -191,7 +196,10 @@ class EntryEditor extends Component {
     handleCreateEntry() {
       // JSON used for deep copy
       const copy = JSON.parse(JSON.stringify(this.props.info.sections.defaultEntry));
-      this.setState({sections: [...this.state.sections, copy]});
+      this.setState({data: {
+        ...this.state.data,
+        sections: [...this.state.data.sections, copy]
+      }});
     }
 
     /**
@@ -202,12 +210,28 @@ class EntryEditor extends Component {
      * @return void
      * @memberof EntryEditor
      */
-    handleEditSectionText(event, index) {
-      const newSections = [...this.state.sections];
-      newSections[index].texts[event.target.name] = event.target.value;
+    handleEditSectionText(event) {
+      const newSections = [...this.state.data.sections];
+      newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
       this.setState({
         sections: newSections
       });
+    }
+
+    /**
+     * Event handler to cycle through sub sections
+     * @param {*} event 
+     */
+    handleSectionView(modifier) {
+      let nextSection = this.state.currentSection + modifier;
+      if (nextSection < 0) {
+        nextSection = this.state.data.sections.length;
+      } else if (nextSection > this.state.data.sections.length) {
+        nextSection = 0;
+      }
+      this.setState({
+        currentSection: nextSection
+      })
     }
 
     render() {
@@ -218,7 +242,7 @@ class EntryEditor extends Component {
             // open always set to true, open/close logic handled by portfolio
               open={true}
               // TODO: add onClose save logic
-              onClose={() => this.props.onClose(this.state, true)}
+              onClose={() => this.props.onClose(this.state.data, true)}
               aria-labelledby="Entry editor"
               aria-describedby="Edit your entry fields here"
             >
@@ -230,7 +254,7 @@ class EntryEditor extends Component {
                       id="width"
                       label="width"
                       name="width"
-                      value={this.state.width}
+                      value={this.state.data.width}
                       margin="normal"
                       variant="outlined"
                       onChange={(event) => this.handleChange(event, "")}
@@ -239,14 +263,14 @@ class EntryEditor extends Component {
                       id="height"
                       label="height"
                       name="height"
-                      value={this.state.height}
+                      value={this.state.data.height}
                       margin="normal"
                       variant="outlined"
                       onChange={(event) => this.handleChange(event, "")}
                       />
                   </div>
                   <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.fonts).map(([key, item]) => {
+                    {Object.entries(this.state.data.fonts).map(([key, item]) => {
                       return (<TextField
                         name={key}
                         id={key}
@@ -258,20 +282,26 @@ class EntryEditor extends Component {
                     })}
                   </div>
                   <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.colours).map(([key, item]) => {
+                    {Object.entries(this.state.data.colours).map(([key, item]) => {
                       return (
                         <div>
-                          {/* Preview icon that changes according to selected colour */}
-                          {/* <Button id="colourPreview"/> */}
+                          <Input 
+                            type="color" 
+                            value={item} 
+                            onChange={(event) => this.handleChange(event, "colours")}
+                            style={{width: "100%"}}
+                          />
                           <TextField
                             name={key}
                             id={key}
-                            label={this.props.info.colours[key].label}
                             value={item}
                             margin="normal"
                             variant="outlined"
                             onChange={(event) => this.handleChange(event, "colours")}
                           />
+                          <Typography component="h6" variant="h6">
+                            {this.props.info.colours[key].label}
+                          </Typography>
                         </div>
                         )
                     })}
@@ -279,7 +309,7 @@ class EntryEditor extends Component {
                 </div>
                 <div className={classes.sectionDiv}>
                   <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.images).map(([key, item]) => {
+                    {Object.entries(this.state.data.images).map(([key, item]) => {
                       return (
                         <div>
                           <Button onClick={this.handleImageUpload}>
@@ -293,7 +323,7 @@ class EntryEditor extends Component {
                     })}
                   </div>
                   <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.texts).map(([key, item]) => {
+                    {Object.entries(this.state.data.texts).map(([key, item]) => {
                       return (
                         <div>
                           {/* Preview icon that changes according to selected colour */}
@@ -314,50 +344,54 @@ class EntryEditor extends Component {
                 </div>
                 {this.props.info.sections.enabled 
                 ? <div className={classes.entryDiv}>
-                  {this.state.sections.map((entryObj, index) => {
-                    return (
-                      <div>
-                        <IconButton onClick={(event) => this.handleDeleteSection(event, index)}><FaTrashAlt/></IconButton>
-                        <div className={classes.imgDiv}>
-                          {Object.entries(entryObj.images).map(([key, item]) => {
-                            return (
-                              <div>
-                                {/* TODO: implement different logic */}
-                                <Button onClick={this.handleImageUpload}>
-                                  <img src={item} className={classes.imgPreview}/>
-                                </Button>
-                                <Typography>
-                                  {this.props.info.sections.entryFormat.images[key].label}
-                                </Typography>
-                              </div>
-                              );
-                          })}
+                  <IconButton id="left" onClick={() => this.handleSectionView(-1)}>
+                    <FaChevronLeft/>
+                  </IconButton>
+                  {
+                    this.state.currentSection === this.state.data.sections.length 
+                      ? <IconButton onClick={this.handleCreateEntry}><FaPlus/></IconButton>
+                      : <div>
+                          <IconButton onClick={(event) => this.handleDeleteSection(event)}><FaTrashAlt/></IconButton>
+                          <div className={classes.imgDiv}>
+                            {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
+                              return (
+                                <div>
+                                  {/* TODO: implement different logic */}
+                                  <Button onClick={this.handleImageUpload}>
+                                    <img src={item} className={classes.imgPreview}/>
+                                  </Button>
+                                  <Typography>
+                                    {this.props.info.sections.entryFormat.images[key].label}
+                                  </Typography>
+                                </div>
+                                );
+                            })}
+                          </div>
+                          <div className={classes.textDiv}>
+                            {Object.entries(this.state.data.sections[this.state.currentSection].texts).map(([key, item]) => {
+                              // TODO: make maxRow field in info?
+                              return (
+                                <div>
+                                  <TextField
+                                    name={key}
+                                    id={key}
+                                    label={this.props.info.sections.entryFormat.texts[key].label}
+                                    value={item}
+                                    margin="normal"
+                                    variant="outlined"
+                                    onChange={(event) => this.handleEditSectionText(event)}
+                                    multiline
+                                    rowsMax={3}
+                                  />
+                                </div>
+                                );
+                            })}
+                          </div>
                         </div>
-                        <div className={classes.textDiv}>
-                          {Object.entries(entryObj.texts).map(([key, item]) => {
-                            console.log(item);
-                            // TODO: make maxRow field in info?
-                            return (
-                              <div>
-                                <TextField
-                                  name={key}
-                                  id={key}
-                                  label={this.props.info.sections.entryFormat.texts[key].label}
-                                  value={item}
-                                  margin="normal"
-                                  variant="outlined"
-                                  onChange={(event) => this.handleEditSectionText(event, index)}
-                                  multiline
-                                  rowsMax={3}
-                                />
-                              </div>
-                              );
-                          })}
-                        </div>
-                      </div>
-                      )
-                  })}
-                  <IconButton onClick={this.handleCreateEntry}><FaPlus/></IconButton>
+                  }
+                  <IconButton id="right" onClick={() => this.handleSectionView(1)}>
+                    <FaChevronRight/>
+                  </IconButton>
                 </div>
                 : null}
               </div>

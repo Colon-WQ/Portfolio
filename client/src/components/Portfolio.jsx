@@ -132,7 +132,6 @@ class Portfolio extends Component {
      */
     handleEditorClose(fields, changed) {
         if(changed) {
-            console.log(fields);
             const newPages = [...this.state.pages];
             const entries = [...this.state.pages[this.state.currentPage].entries];
             entries[this.state.currentEntry] = fields;
@@ -271,7 +270,7 @@ class Portfolio extends Component {
  * Function that maps variables from Redux Store to Home component's props.
  *
  * @param {Object} state - Redux Store
- * @memberof EntryEditor
+ * @memberof Portfolio
  */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
@@ -282,7 +281,7 @@ const mapStateToProps = state => ({
  * Provides action creators to Home component's props.
  * 
  * @type {Object.<Function>} 
- * @memberof EntryEditor
+ * @memberof Portfolio
  */
 const mapDispatchToProps = {
     repopulate_state
