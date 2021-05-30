@@ -17,8 +17,9 @@ import { FaPlus, FaTrashAlt } from "react-icons/fa";
 
 /**
  * Style generator to dynamically adjust styles based on theme provided
- * @param theme 
- * @returns classes passed as props to the component, with values provided by parameter theme
+ * 
+ * @memberof EntryEditor
+ * @param {Object} theme 
  */
 const styles = (theme) => ({
     root: {
@@ -115,7 +116,6 @@ class EntryEditor extends Component {
     /**
      * Attempts to fetch entry details where possible so settings are saved.
      * 
-     * @property {Function} componentDidMount
      * @return void
      * @memberof EntryEditor
      */
@@ -131,7 +131,6 @@ class EntryEditor extends Component {
      * Event handler for text fields. 
      * Text fields should be named after their keys in the state.
      * 
-     * @property {Function} handleChange
      * @param {*} event 
      * @return void
      * @memberof EntryEditor
@@ -155,7 +154,6 @@ class EntryEditor extends Component {
      * Event handler for text fields. 
      * Text fields should be named after their keys in the state.
      * 
-     * @property {Function} handleImageUpload
      * @param {*} event 
      * @return void
      * @memberof EntryEditor
@@ -171,7 +169,6 @@ class EntryEditor extends Component {
     /**
      * Event handler for deletion of sub sections.
      * 
-     * @property {Function} handleDeleteSection
      * @param {*} event 
      * @param {Number} index - the index of the section to be edited
      * @return void
@@ -188,7 +185,6 @@ class EntryEditor extends Component {
      * Event handler for entry addition. 
      * Entry will be given default fields specified in the info attribute.
      * 
-     * @property {Function} handleCreateEntry
      * @return void
      * @memberof EntryEditor
      */
@@ -201,7 +197,6 @@ class EntryEditor extends Component {
     /**
      * Event handler for editing sub sections.
      * 
-     * @property {Function} handleEditSectionText
      * @param {*} event
      * @param {Number} index - the index of the section to be edited
      * @return void
