@@ -34,7 +34,7 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
-[Program Flow for Portfol.io](Orbital/ProgramFlow.jpg)
+![ScreenShot](Orbital/ProgramFlow.jpg)
 
 The user's Portfolio component can be rendered into HTML and CSS files. We will build the Javascript file to enable the same functionality that the user's Portfolio
 site has as well as to define routing.
