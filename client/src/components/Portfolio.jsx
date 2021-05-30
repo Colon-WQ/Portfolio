@@ -9,6 +9,7 @@ import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
 import {templates} from './EntryGenerator';
+import TemplateSelector from './TemplateSelector';
 
 
 /**
@@ -73,12 +74,13 @@ class Portfolio extends Component {
             }],
             currentPage: 0,
             currentEntry: 0,
-            showEditor: false
+            showEditor: false,
+            showSelector: false
         }
-        this.createEntry = this.createEntry.bind(this);
         this.handleEditorClose = this.handleEditorClose.bind(this);
         this.handleCreateFile = this.handleCreateFile.bind(this);
         this.handleProduction = this.handleProduction.bind(this);
+        this.handleSelector = this.handleSelector.bind(this);
     }
 
     /**
@@ -93,25 +95,33 @@ class Portfolio extends Component {
         return templates[entryFields.type][entryFields.style].component(entryFields, index);
     }
 
-    // TODO: Add logic for a template chooser
     /**
-     * Function to create a new entry.
+     * Event handler to open/close the template selector and update states if necessary
      * 
-     * @returns void
+     * @param {*} selection - the fields to update, or null if no changes are needed
      */
-    createEntry() {
-        const entryType = "timeline";
-        const entryStyle = 0;
-        const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
-        const newEntry = {
-            type: entryType,
-            style: entryStyle,
-            ...fieldsCopy
-        };
-        const newPages = [...this.state.pages];
-        newPages[this.state.currentPage].entries = 
-            [...this.state.pages[this.state.currentPage].entries, newEntry];
-        this.setState({pages: newPages});
+    handleSelector(selection) {
+        if(selection === null) {
+            this.setState({
+                showSelector: !this.state.showSelector
+            })
+        } else {
+            const entryType = selection.type;
+            const entryStyle = selection.style;
+            const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
+            const newEntry = {
+                type: entryType,
+                style: entryStyle,
+                ...fieldsCopy
+            };
+            const newPages = [...this.state.pages];
+            newPages[this.state.currentPage].entries = 
+                [...this.state.pages[this.state.currentPage].entries, newEntry];
+            this.setState({
+                pages: newPages,
+                showSelector: !this.state.showSelector
+            })
+        }
     }
 
     /**
@@ -236,10 +246,15 @@ class Portfolio extends Component {
                     onClose={this.handleEditorClose} 
                 /> 
                 : null}
+            {this.state.showSelector
+                ? <TemplateSelector
+                    onClose={this.handleSelector} 
+                /> 
+                : null}
             <div className={classes.staticDiv}>
                 <Fab 
                     className={classes.controlFAB}
-                    onClick={this.createEntry}>
+                    onClick={() => this.handleSelector(null)}>
                     <FaPlus/>
                 </Fab>
                 <Fab 
