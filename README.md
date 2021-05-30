@@ -1,78 +1,69 @@
-# portfolio-dev
+# Portfol.io
 
-This is a MERN application to simplify development of personal portfolio website.
+This is a MERN application that aims to simplify the creation of Portfolio websites for users.
 
-- - - -
+## Proposed level of achievement
 
-## Create PRs via own fork
+Artemis
 
-Enabled forking of private repository under org -> settings -> member privileges
+## Motivation
 
-Fork this repository to your own Github account by clicking the fork button on the top right
+Building a **personal website** can seem daunting, and many people are put off from the fact that it requires **programming experience** and design know how. 
+However, having personal portfolio websites can really make individuals **stand out** from the crowd, giving them the attention they deserve. 
+Our project aims to act as a middleman, helping job seekers convert their resumes into interactive, appealing personal portfolio websites that will impress their hopeful employers. 
 
-Create a branch named `add-{your name}-info` e.g. `add-John-info` in your local repository
+## Aim
 
-Add a file `yourName.md` into the members directory containing some info about you into that branch
+We hope to make a website portfolio generator to **convert** resumes into **customizable** web pages that we will also facilitate in **bringing online**. 
+Themes and pre-sets will be further provided to give the website a professional look and feel.
 
-Push that branch to your fork
+## User Stories
 
-Create a PR *Pull Request* from the `add-{your name}-info` to the main branch of the *forked repository* first. Then create another PR from the main branch of the *forked repository* to a branch in the *team repository*
+1. As a student who has little experience in web development and programming, I want to have a personal website so I can better showcase my skills and track record.
 
-Creating a PR is simple, just go to Pull Requests in Github. Then, specify the repository and branch name of the two branches that you wish to merge.
+2. As a graduate I want to be able to easily update my personal websites to reflect what I have done recently.
 
-Any Team members would be able to review the PR and merge PR after resolving conflicts.
+3. As a job seeker I want to better impress my employers and stand out from the other applicants.
 
-- - - -
+## Scope of project
 
-## For each PR: review, update & merge
+The Portfol.io web application provides an interface for users to login via Github and grant us permissions to make changes to their Github repositories. We
+aim to leverage on Github Pages to help users build their very own Portfolio website, which will be hosted for free via Github Pages.
 
-[A team member (not the PR author)] Review the PR by adding comments.
+## What separates us from similar platforms?
 
-[PR author] Update the PR by pushing more commits to it, to simulate updating the PR based on review comments.
+## Program flow
 
-[Another team member] Approve and merge the PR using the GitHub interface.
+[Program Flow for Portfol.io](Orbital/ProgramFlow.jpg)
 
-[All members] After merging PR, remember to sync your local repo (and your fork) with upstream repo. In this case, your upstream repo is the repo in your team org.
+The user's Portfolio component can be rendered into HTML and CSS files. We will build the Javascript file to enable the same functionality that the user's Portfolio
+site has as well as to define routing.
 
-- - - -
+This can then be pushed to a Github repository of the user's choice. The Github repository can then be deployed to Github Pages as a functioning website.
 
-## Merging Conflicting PRs
+With the help of Github API and OAuth, the above process can be done automatically, leaving only design to be done by the user.
 
-[Optional] A member can inform the PR author (by posting a comment) that there is a conflict in the PR.
+## Showcase
 
-[PR author] Resolve the conflict locally:
+To view the site in progress, you can visit https://54.169.10.179/
 
-* Pull the master branch from the repo in your team org.
+In the Home page, you will see the **Login with Github** button. Click that to be redirected to Github to login.
 
-* Merge the pulled master branch to your PR branch.
+You will then have to grant the OAuth application permission to make changes to your repositories.
 
-* Resolve the merge conflict that crops up during the merge.
+Once done, you will be redirected to DashBoard.
 
-* Push the updated PR branch to your fork.
+Click on test Publish to be taken to the Publish Overlay, where you will see a Publish button on the bottom right.
 
-[Another member or the PR author]: Merge the de-conflicted PR: When GitHub does not indicate a conflict anymore, you can go ahead and merge the PR.
+Click on it to expand the menu. Click on **Finalize and Push** to spawn a dialog prompting you to input a Github repository name.
 
-- - - -
+You will also be prompted to add a file. For example, input `index.html` for file name and `<h1>hello world!</h1>` for file content
 
-## Creating local clone of fork
+If you choose to input a repository name that you do not have and click on **Finalize**, a new Github repository will be created for you. The index.txt file
+will be pushed to the Github repository and that repository will be deployed to Pages. 
 
-cd to a directory where you want the forked repository to be cloned. Then run:
+Visit https://`USERNAME`.github.io/`REPOSITORYNAME`/ where USERNAME and REPOSITORYNAME should be replaced by your Github username and Github repository name respectively.
 
-```
-git clone https://github.com/YOUR-USERNAME/REPO-NAME
-```
+## Documentation
 
-- - - -
-
-## Configure Git to sync your fork with the team repository
-
-run: `git remote -v` to see the currently configured remote repositories for your fork
-
-run: `git remote add upstream TEAM-REPO-URL`, then verify by running `git remote -v` again
-
-You may then pull from team repository, then push to forked repository in your own github account to sync your fork
-
-**Note**: Pulling from repository is essentially `git fetch` and `git merge`. However, there may be conflicts that have to be resolved.
-
-- - - -
-
+Visit https://colon-wq.github.io/Portfolio/ to view documentation for Frontend React application.
