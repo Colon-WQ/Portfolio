@@ -387,4 +387,4 @@ const mapDispatchToProps = {
     repopulate_state
 }
 
-export default (withStyles(styles)(EntryEditor))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(EntryEditor))

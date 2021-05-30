@@ -25,6 +25,10 @@ class TimelineTemplateMinimalist extends Component {
 
   static templateName = "Minimalist";
 
+  static script = (index) => "";
+
+  static preview = "https://bit.ly/3fwsFKX";
+
   static info = {
     fonts: {titleFont: {label: "title font"}},
     colours: {primary: {label: "primary"},secondary: {label: "secondary"}},

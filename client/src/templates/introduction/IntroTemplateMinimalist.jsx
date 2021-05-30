@@ -20,6 +20,8 @@ class IntroTemplateMinimalist extends Component {
 
   static templateName = "Minimalist";
 
+  static preview = "https://bit.ly/3yRuEkH";
+
   static info = {
     fonts: {titleFont: {label: "title font"}},
     colours: {primary: {label: "primary"},secondary: {label: "secondary"}},
@@ -27,6 +29,8 @@ class IntroTemplateMinimalist extends Component {
     texts: {name: {label: "Your full name"}, status: {label: "your current position"}},
     sections: {}
   };
+
+  static script = (index) => "";
 
   static defaultField = {
     width: "100%", 
