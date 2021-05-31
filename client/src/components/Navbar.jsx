@@ -9,7 +9,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
+import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -129,7 +129,13 @@ const styles = (theme) => ({
     flexDown: {
       display: 'flex',
       flexDirection: 'column',
-    }
+    },
+    logoutButton: {
+      color: theme.palette.error.main,
+      '&:hover': {
+        backgroundColor: theme.palette.error.dark
+      }
+    },
 });
 
 
@@ -198,7 +204,6 @@ class Navbar extends Component {
      * @memberof Navbar
      */
     handleUserMenu() {
-        console.log(this.state.user_drawer_open);
         this.setState({user_drawer_open: !this.state.user_drawer_open});
     }
 
@@ -220,11 +225,11 @@ class Navbar extends Component {
                     ? `${classes.appBar} ${classes.appBarShift}` 
                     : classes.appBar}>
                     <ToolBar className={classes.toolbar}>
-                        <IconButton className={classes.homeButton}>
-                          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                              Portfol.io
+                        <Button className={classes.homeButton} href="/">
+                          <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
+                              <Box fontWeight="bold">Portfol.<span style={{color: "#FF0000"}}>io</span></Box>
                           </Typography>
-                        </IconButton>
+                        </Button>
                         <Button startIcon={<Avatar src={avatar_url}/>} 
                         onClick={this.handleUserMenu} 
                         className={loggedIn && !this.state.user_drawer_open ? "" : classes.hide }>
@@ -252,15 +257,13 @@ class Navbar extends Component {
                         </Typography>
                         <Divider/>
                           <List className={classes.flexDown}>
-                            <Button color="primary" fullWidth={true} >
-                                PLACEHOLDER
-                            </Button>
-                            <Button onClick={this.handleLogout} fullWidth={true} color="secondary" >
-                                LOGOUT
+                            <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
+                              LOGOUT
                             </Button>
                         </List>
                     </div>
                 </Drawer>
+                <div className={classes.appBarSpacer}/>
             </div>
         )
     }
