@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
+import preview from '../../res/preview/timeline/TimelineMinimalist.JPG'
 
 const styles = (theme) => ({
   root: {
@@ -15,6 +16,23 @@ const styles = (theme) => ({
     borderRadius: '50%',
     height: '5vw',
     width: '5vw'
+  },
+  title: {
+    margin: '5%'
+  },
+  section: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'left',
+    textAlign: 'left',
+    width: '50%',
+    margin: '1%'
+  },
+  sectionTextDiv: {
+    marginLeft: '3%',
+    display: 'flex',
+    flexDirection: 'column'
   }
 });
 
@@ -27,7 +45,7 @@ class TimelineTemplateMinimalist extends Component {
 
   static script = (index) => "";
 
-  static preview = "https://bit.ly/3fwsFKX";
+  static preview = preview;
 
   static info = {
     fonts: {titleFont: {label: "title font"}},
@@ -51,16 +69,16 @@ class TimelineTemplateMinimalist extends Component {
     width: "100%", 
     height: "fit-content", 
     fonts: {titleFont: "roboto"},
-    colours: {primary: "#ff0000", secondary: "#00ff00"},
-    images: {bg: "https://bit.ly/3ut83ry"},
-    texts: {title: "A stroll through time"},
+    colours: {primary: "#d19a19", secondary: "#000000"},
+    images: {bg: "https://bit.ly/3i3I9I2"},
+    texts: {title: "My past experiences"},
     sections: [{
       images: {timelineImage: "https://bit.ly/3hXPM2R"},
       texts: {timelineTitle: "Portfolio Deployed on Github!", timelineDate: "2021"}
     },
     {
       images: {timelineImage: "https://bit.ly/3c3wsNL"},
-      texts: {timelineTitle: "Portfolio added to resume", timelineDate: "2022"}
+      texts: {timelineTitle: "Portfolio added to resume", timelineDate: "2021"}
     }]
   };
 
@@ -79,22 +97,40 @@ class TimelineTemplateMinimalist extends Component {
         textAlign: "center"
       }}>
         <CssBaseline/>
-        <div>
-          <Typography component="h2" variant="h2" style={{color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`}}>
+          <Typography 
+            component="h2" 
+            variant="h2" 
+            style={{
+              color: fields.colours.primary, 
+              fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`
+              }}
+            className={classes.title}
+          >
             {fields.texts.title}
           </Typography>
           {fields.sections.map((section, index) => {
             return (
-              <div style={{display: "flex", flexDirection: "row"}}>
+              <div className={classes.section}>
                 <img src={section.images.timelineImage} className={classes.timelineImg}/>
-                <div style={{display: "flex", flexDirection: "column"}}>
-                  <Typography>{section.texts.timelineDate}</Typography>
-                  <Typography>{section.texts.timelineTitle}</Typography>
+                <div className={classes.sectionTextDiv}>
+                  <Typography 
+                    style={{color: fields.colours.secondary}}
+                    component="h5"
+                    variant="h5"
+                  >
+                      {section.texts.timelineDate}
+                  </Typography>
+                  <Typography 
+                    style={{color: fields.colours.secondary}}
+                    component="h5"
+                    variant="h5"
+                  >
+                    {section.texts.timelineTitle}
+                  </Typography>
                 </div>
               </div>
             );
           })}
-        </div>
         <img src={fields.images.dp} alt="my portrait" style={{height: "100%", width: "auto", marginRight: "auto"}}/>
       </div>);
   }

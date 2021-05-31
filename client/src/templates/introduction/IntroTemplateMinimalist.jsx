@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import preview from '../../res/preview/introduction/IntroMinimalist.JPG'
 
 const styles = (theme) => ({
   root: {
@@ -10,7 +12,13 @@ const styles = (theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  std: {display: 'block'}
+  std: {display: 'block'},
+  textBox: {
+    backgroundColor: '#FFFFFF',
+    opacity: '75%',
+    padding: '15%',
+    width: 'max-content'
+  }
 });
 
 class IntroTemplateMinimalist extends Component {
@@ -20,7 +28,7 @@ class IntroTemplateMinimalist extends Component {
 
   static templateName = "Minimalist";
 
-  static preview = "https://bit.ly/3yRuEkH";
+  static preview = preview;
 
   static info = {
     fonts: {titleFont: {label: "title font"}},
@@ -36,9 +44,9 @@ class IntroTemplateMinimalist extends Component {
     width: "100%", 
     height: "80vh", 
     fonts: {titleFont: "title font"},
-    colours: {primary: "#f2d38a", secondary: "#fff8e8"},
-    images: {dp: "https://bit.ly/3fRv2Y2",bg: "https://bit.ly/3ut83ry"},
-    texts: {name: "Jane Doe",status: "Web developer"},
+    colours: {primary: "#d19a19", secondary: "#000000"},
+    images: {dp: "https://bit.ly/3fRv2Y2",bg: "https://bit.ly/2RWO4Ei"},
+    texts: {name: "Port Folio",status: "UI/UX developer"},
     sections: []
   };
 
@@ -58,15 +66,17 @@ class IntroTemplateMinimalist extends Component {
       }}>
         <CssBaseline/>
         <div style={{marginLeft: "auto", marginRight: "10%"}}>
-          <Typography component="h2" variant="h2" style={{color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif"}}>
-            Hello! my name is
-          </Typography>
-          <Typography component="h1" variant="h1" style={{color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}>
-            {fields.texts.name}
-          </Typography>
-          <Typography component="h1" variant="h1" style={{color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif"}}>
-            {fields.texts.status}
-          </Typography>
+          <Box className={classes.textBox}>
+            <Typography component="h2" variant="h2" style={{color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif"}}>
+              Hello! my name is
+            </Typography>
+            <Typography component="h1" variant="h1" style={{color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}>
+              {fields.texts.name}
+            </Typography>
+            <Typography component="h2" variant="h2" style={{color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif"}}>
+              {fields.texts.status}
+            </Typography>
+          </Box>
         </div>
         <img src={fields.images.dp} alt="my portrait" style={{height: "100%", width: "auto", marginRight: "auto"}}/>
       </div>);

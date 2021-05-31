@@ -60,6 +60,18 @@ const styles = (theme) => ({
     },
     div: {
       padding: '10px'
+    },
+    columnDiv: {
+      display: 'flex',
+      flexDirection: 'row',
+      width: '100%',
+      overflow: 'auto'
+    },
+    styleDiv: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      overflow: 'auto'
     }
 })
 
@@ -138,15 +150,22 @@ class EntryEditor extends Component {
      * @memberof EntryEditor
      */
     handleChange(event, category) {
+      console.log(event);
       if (category === "") {
         this.setState({
-          [event.target.name]: event.target.value
+          data: {
+            ...this.state.data,
+            [event.target.name]: event.target.value
+          }
         });
       } else {
         const originalCat = {...this.state.data[category]};
         originalCat[event.target.name] = event.target.value;
         this.setState({
-          [category]: originalCat
+          data: {
+            ...this.state.data,
+            [category]: originalCat
+          }
         });
       }
     }
@@ -248,8 +267,8 @@ class EntryEditor extends Component {
             >
               <div className={classes.root}>
                 <Typography component="h3" variant="h3">Entry editor</Typography>
-                <div className={classes.sectionDiv}>
-                  <div className={classes.categoryDiv}>
+                <div className={classes.columnDiv}>
+                  <div className={classes.styleDiv}>
                     <TextField 
                       id="width"
                       label="width"
@@ -258,6 +277,7 @@ class EntryEditor extends Component {
                       margin="normal"
                       variant="outlined"
                       onChange={(event) => this.handleChange(event, "")}
+                      className={classes.styleInput}
                       />
                     <TextField 
                       id="height"
@@ -267,133 +287,131 @@ class EntryEditor extends Component {
                       margin="normal"
                       variant="outlined"
                       onChange={(event) => this.handleChange(event, "")}
+                      className={classes.styleInput}
                       />
-                  </div>
-                  <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.data.fonts).map(([key, item]) => {
-                      return (<TextField
-                        name={key}
-                        id={key}
-                        label={this.props.info.fonts[key].label}
-                        value={item}
-                        margin="normal"
-                        variant="outlined"
-                        onChange={(event) => this.handleChange(event, "fonts")}/>)
-                    })}
-                  </div>
-                  <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.data.colours).map(([key, item]) => {
-                      return (
-                        <div>
-                          <Input 
-                            type="color" 
-                            value={item} 
-                            onChange={(event) => this.handleChange(event, "colours")}
-                            style={{width: "100%"}}
-                          />
-                          <TextField
-                            name={key}
-                            id={key}
-                            value={item}
-                            margin="normal"
-                            variant="outlined"
-                            onChange={(event) => this.handleChange(event, "colours")}
-                          />
-                          <Typography component="h6" variant="h6">
-                            {this.props.info.colours[key].label}
-                          </Typography>
-                        </div>
-                        )
-                    })}
-                  </div>
-                </div>
-                <div className={classes.sectionDiv}>
-                  <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.data.images).map(([key, item]) => {
-                      return (
-                        <div>
-                          <Button onClick={this.handleImageUpload}>
-                            <img src={item} className={classes.imgPreview}/>
-                          </Button>
-                          <Typography>
-                            {this.props.info.images[key].label}
-                          </Typography>
-                        </div>
-                        );
-                    })}
-                  </div>
-                  <div className={classes.categoryDiv}>
-                    {Object.entries(this.state.data.texts).map(([key, item]) => {
-                      return (
-                        <div>
-                          {/* Preview icon that changes according to selected colour */}
-                          {/* <Button id="colourPreview"/> */}
-                          <TextField
-                            name={key}
-                            id={key}
-                            label={this.props.info.texts[key].label}
-                            value={item}
-                            margin="normal"
-                            variant="outlined"
-                            onChange={(event) => this.handleChange(event, "texts")}
-                          />
-                        </div>
-                        )
-                    })}
-                  </div>
-                </div>
-                {this.props.info.sections.enabled 
-                ? <div className={classes.entryDiv}>
-                  <IconButton id="left" onClick={() => this.handleSectionView(-1)}>
-                    <FaChevronLeft/>
-                  </IconButton>
-                  {
-                    this.state.currentSection === this.state.data.sections.length 
-                      ? <IconButton onClick={this.handleCreateEntry}><FaPlus/></IconButton>
-                      : <div>
-                          <IconButton onClick={(event) => this.handleDeleteSection(event)}><FaTrashAlt/></IconButton>
-                          <div className={classes.imgDiv}>
-                            {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
-                              return (
-                                <div>
-                                  {/* TODO: implement different logic */}
-                                  <Button onClick={this.handleImageUpload}>
-                                    <img src={item} className={classes.imgPreview}/>
-                                  </Button>
-                                  <Typography>
-                                    {this.props.info.sections.entryFormat.images[key].label}
-                                  </Typography>
-                                </div>
-                                );
-                            })}
+                      {Object.entries(this.state.data.fonts).map(([key, item]) => {
+                        return (<TextField
+                          name={key}
+                          id={key}
+                          label={this.props.info.fonts[key].label}
+                          value={item}
+                          margin="normal"
+                          variant="outlined"
+                          onChange={(event) => this.handleChange(event, "fonts")}
+                          className={classes.styleInput}/>)
+                      })}
+                      {Object.entries(this.state.data.colours).map(([key, item]) => {
+                        return (
+                          <div>
+                            <Input 
+                              type="color" 
+                              value={item} 
+                              onChange={(event) => this.handleChange(event, "colours")}
+                              style={{width: "100%"}}
+                            />
+                            <TextField
+                              name={key}
+                              id={key}
+                              value={item}
+                              margin="normal"
+                              variant="outlined"
+                              onChange={(event) => this.handleChange(event, "colours")}
+                            />
+                            <Typography component="h6" variant="h6">
+                              {this.props.info.colours[key].label}
+                            </Typography>
                           </div>
-                          <div className={classes.textDiv}>
-                            {Object.entries(this.state.data.sections[this.state.currentSection].texts).map(([key, item]) => {
-                              // TODO: make maxRow field in info?
-                              return (
-                                <div>
-                                  <TextField
-                                    name={key}
-                                    id={key}
-                                    label={this.props.info.sections.entryFormat.texts[key].label}
-                                    value={item}
-                                    margin="normal"
-                                    variant="outlined"
-                                    onChange={(event) => this.handleEditSectionText(event)}
-                                    multiline
-                                    rowsMax={3}
-                                  />
-                                </div>
-                                );
-                            })}
+                          )
+                      })}
+                  </div>
+                  <div className={classes.sectionDiv}>
+                    <div className={classes.categoryDiv}>
+                      {Object.entries(this.state.data.images).map(([key, item]) => {
+                        return (
+                          <div>
+                            <Button onClick={this.handleImageUpload}>
+                              <img src={item} className={classes.imgPreview}/>
+                            </Button>
+                            <Typography>
+                              {this.props.info.images[key].label}
+                            </Typography>
                           </div>
-                        </div>
-                  }
-                  <IconButton id="right" onClick={() => this.handleSectionView(1)}>
-                    <FaChevronRight/>
-                  </IconButton>
+                          );
+                      })}
+                    </div>
+                    <div className={classes.categoryDiv}>
+                      {Object.entries(this.state.data.texts).map(([key, item]) => {
+                        return (
+                          <div>
+                            {/* Preview icon that changes according to selected colour */}
+                            {/* <Button id="colourPreview"/> */}
+                            <TextField
+                              name={key}
+                              id={key}
+                              label={this.props.info.texts[key].label}
+                              value={item}
+                              margin="normal"
+                              variant="outlined"
+                              onChange={(event) => this.handleChange(event, "texts")}
+                            />
+                          </div>
+                          )
+                      })}
+                    </div>
+                  </div>
+                  {this.props.info.sections.enabled 
+                  ? <div className={classes.entryDiv}>
+                    <IconButton id="left" onClick={() => this.handleSectionView(-1)}>
+                      <FaChevronLeft/>
+                    </IconButton>
+                    {
+                      this.state.currentSection === this.state.data.sections.length 
+                        ? <IconButton onClick={this.handleCreateEntry}><FaPlus/></IconButton>
+                        : <div>
+                            <IconButton onClick={(event) => this.handleDeleteSection(event)}><FaTrashAlt/></IconButton>
+                            <div className={classes.imgDiv}>
+                              {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
+                                return (
+                                  <div>
+                                    {/* TODO: implement different logic */}
+                                    <Button onClick={this.handleImageUpload}>
+                                      <img src={item} className={classes.imgPreview}/>
+                                    </Button>
+                                    <Typography>
+                                      {this.props.info.sections.entryFormat.images[key].label}
+                                    </Typography>
+                                  </div>
+                                  );
+                              })}
+                            </div>
+                            <div className={classes.textDiv}>
+                              {Object.entries(this.state.data.sections[this.state.currentSection].texts).map(([key, item]) => {
+                                // TODO: make maxRow field in info?
+                                return (
+                                  <div>
+                                    <TextField
+                                      name={key}
+                                      id={key}
+                                      label={this.props.info.sections.entryFormat.texts[key].label}
+                                      value={item}
+                                      margin="normal"
+                                      variant="outlined"
+                                      onChange={(event) => this.handleEditSectionText(event)}
+                                      multiline
+                                      rowsMax={3}
+                                    />
+                                  </div>
+                                  );
+                              })}
+                            </div>
+                          </div>
+                    }
+                    <IconButton id="right" onClick={() => this.handleSectionView(1)}>
+                      <FaChevronRight/>
+                    </IconButton>
+                  </div>
+                  : null}
                 </div>
-                : null}
               </div>
             </Modal>
         )

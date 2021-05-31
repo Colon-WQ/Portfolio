@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import { withStyles } from '@material-ui/core/styles'
 import {Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab} from '@material-ui/core';
-import {templates} from './templates';
+import {templates} from './Templates';
 import {FaSave, FaTimes} from 'react-icons/fa';
 
 
@@ -26,16 +26,18 @@ const styles = (theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '5%',
+        padding: '2%',
         textAlign: 'center',
         backgroundColor: '#444444',
-        opacity: '90%'
+        opacity: '90%',
+        height: '100%'
     },
     modal: {
       overflow: 'scroll',
       display: 'flex',
       flexDirection: 'column',
       padding: '5%',
+      height: '100%'
     },
     buttonBase: {
       width: '100%',
@@ -49,6 +51,15 @@ const styles = (theme) => ({
     },
     cardMedia: {
       height: 200,
+    }, 
+    fab: {
+      marginTop: 'auto',
+      marginLeft: 'auto'
+    },
+    cardDiv: {
+      display: 'grid',
+      width: '100%',
+      gridTemplateColumns: 'repeat(auto-fill, 400px)'
     }
 })
 
@@ -132,32 +143,34 @@ class TemplateSelector extends Component {
                     return (<Tab label={type} value={type}/>)
                   })}
                 </Tabs>
-                {
-                  templates[this.state.type].map((entry, index) => {
-                    return (<Card className={classes.card}>
-                      <ButtonBase
-                        focusRipple
-                        key={index}
-                        className={classes.buttonBase}
-                        // focusVisibleClassName={}
-                        onClick={() => this.handleSelect(index)}
-                        name={index}
-                      >
-                        <CardMedia 
-                          component="img"
-                          alt={entry.name}
-                          image={entry.preview}
-                          title={entry.name}
-                          className={classes.cardMedia}
-                        />
-                        <CardContent>
-                          <Typography>{entry.name}</Typography>
-                        </CardContent>
-                      </ButtonBase>
-                    </Card>)
-                  })
-                }
-                <Fab variant="extended" onClick={() => this.props.onClose(null)}>
+                <div className={classes.cardDiv}>
+                  {
+                    templates[this.state.type].map((entry, index) => {
+                      return (<Card className={classes.card}>
+                        <ButtonBase
+                          focusRipple
+                          key={index}
+                          className={classes.buttonBase}
+                          // focusVisibleClassName={}
+                          onClick={() => this.handleSelect(index)}
+                          name={index}
+                        >
+                          <CardMedia 
+                            component="img"
+                            alt={entry.name}
+                            image={entry.preview}
+                            title={entry.name}
+                            className={classes.cardMedia}
+                          />
+                          <CardContent>
+                            <Typography>{entry.name}</Typography>
+                          </CardContent>
+                        </ButtonBase>
+                      </Card>)
+                    })
+                  }
+                </div>
+                <Fab variant="extended" onClick={() => this.props.onClose(null)} className={classes.fab}>
                   <FaTimes/>
                   CANCEL
                 </Fab>

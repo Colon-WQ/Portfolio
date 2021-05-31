@@ -8,7 +8,7 @@ import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import {templates} from './templates';
+import {templates} from './Templates';
 import TemplateSelector from './TemplateSelector';
 
 
@@ -198,6 +198,8 @@ class Portfolio extends Component {
                 contents: css
             }
         ]
+        // TODO: remove for deployment
+        files.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
         return files;
     }
 
