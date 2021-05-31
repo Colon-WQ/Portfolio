@@ -82,7 +82,9 @@ will be pushed to the Github repository and that repository will be deployed to 
 10. Once done, remember to click the profile on the top right of the navbar, then click the **logout** button to invalidate your access token and delete the cookie containing
 the access token.
 
-### Seeing the Editor in testing.
+- - - -
+
+### See the Editor in testing.
 
 1. To view the site in progress, you can visit http://13.228.174.76/
 
@@ -111,7 +113,7 @@ the access token.
 
 * Upgrade http to https to ensure secure connection between server and browser.
 
-* Domain name would have to be acquired to obtain an SSL certificate. The current SSL certificate is self-signed and would be recognized by Google as insecure.
+* Domain name would have to be acquired to obtain an SSL certificate.
 
 * Development of more entry templates for the user to customize and add to their portfolio websites.
 
