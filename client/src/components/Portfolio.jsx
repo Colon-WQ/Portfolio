@@ -8,7 +8,7 @@ import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import {templates} from './Templates';
+import {templates} from './templates';
 import TemplateSelector from './TemplateSelector';
 
 
