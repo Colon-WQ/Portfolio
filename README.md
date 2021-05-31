@@ -6,6 +6,8 @@ This is a MERN application that aims to simplify the creation of Portfolio websi
 
 Artemis
 
+![ScreenShot](Orbital/intro2.png)
+
 ## Motivation
 
 Building a **personal website** can seem daunting, and many people are put off from the fact that it requires **programming experience** and design know how. 
