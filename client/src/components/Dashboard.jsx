@@ -93,19 +93,30 @@ class Dashboard extends Component {
         window.location.pathname = '/publish'
     }
 
+    /**
+     * Testing purposes only. Changes route to /edit.
+     * 
+     * @return void
+     * @memberof Dashboard
+     */
+     testEdit() {
+        window.location.pathname = '/edit'
+    }
+
     render() {
         const {loggedIn, name, portfolios, classes } = this.props
+        console.log(portfolios)
         return (
             <div className={classes.root}>
                 <div className={classes.appBarSpacer}/>
                 <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
                 <Grid className={classes.gridHorizontal}>
-                    {portfolios.map((element, idx) => {
+                    {/* {portfolios.map((element, idx) => {
                         return (<Button key={idx} className={classes.portfolioButton}>
                             {element.title}
                         </Button>);
-                    })}
-                    <Button onClick={this.openTemplateEditor} className={classes.portfolioButton}>Add a Portfolio</Button>
+                    })} */}
+                    <Button onClick={this.testEdit} className={classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
                 <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
                 <Button onClick={this.testPublish} className={classes.portfolioButton}>Test Publish Panel</Button>
