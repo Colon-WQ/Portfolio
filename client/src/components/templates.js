@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import EntryEditor from './EntryEditor';
 import IntroTemplateMinimalist from '../templates/introduction/IntroTemplateMinimalist';
-import TimelineTemplateMinimalist from '../templates/timeline//TimelineTemplateMinimalist';
+import TimelineTemplateMinimalist from '../templates/timeline/TimelineTemplateMinimalist';
 import AboutTemplateMinimalist from '../templates/about/AboutTemplateMinimalist';
 //  TODO: rename to templates?
 /**
@@ -10,7 +8,7 @@ import AboutTemplateMinimalist from '../templates/about/AboutTemplateMinimalist'
  * 
  * @author Chuan Hao
  * 
- * @see EntryGenerator
+ * @see templates
  */
 export const templates = {
   introduction: [

@@ -34,7 +34,7 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
-![ScreenShot](Orbital/Program Flow.png)
+![ScreenShot](Orbital/ProgramFlow.png)
 
 ## Features
 
