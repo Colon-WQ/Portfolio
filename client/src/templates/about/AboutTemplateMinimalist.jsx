@@ -10,8 +10,11 @@ const styles = (theme) => ({
         flexDirection: "column",
         justifyContent: "start",
         padding: "1rem",
-        alignItems: "center"
-    }
+        alignItems: "center",
+        height: "100%",
+        width: "100%"
+    },
+    appBarSpacer: theme.mixins.toolbar
 })
 
 class AboutTemplateMinimalist extends Component {
@@ -44,28 +47,33 @@ class AboutTemplateMinimalist extends Component {
     render() {
         const {classes, fields} = this.props
         return (
-            <Card
+            <div 
                 className={classes.root}
-                variant="outlined"
             >
-                 <CardContent>
-                    <Typography 
-                        variant="h1"
-                        component="h2" 
-                        style={{color: fields.colours.header, backgroundColor: fields.colours.header, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}
-                    >
-                        About Me
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        component="body2"
-                        style={{color:fields.colours.secondary, backgroundColor: "white", fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`}}
-                    >
-                        {fields.text.about}
-                    </Typography>
-                 </CardContent>
+                <div className={classes.appBarSpacer}/>
+                <Card
+                    style={{ textAlign: "center" }}
+                    variant="outlined"
+                >
+                        <CardContent>
+                        <Typography 
+                            variant="h1"
+                            component="h2" 
+                            style={{color: fields.colours.primary, backgroundColor: fields.colours.header, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}
+                        >
+                            About Me
+                        </Typography>
+                        <Typography
+                            variant="h3"
+                            component="h4"
+                            style={{color: fields.colours.secondary, backgroundColor: "white", fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`}}
+                        >
+                            {fields.texts.about}
+                        </Typography>
+                        </CardContent>
 
-            </Card>
+                </Card>
+            </div>
         )
     }
 }
