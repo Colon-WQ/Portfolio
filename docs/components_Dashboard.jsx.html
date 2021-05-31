@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -180,19 +180,30 @@ class Dashboard extends Component {
         window.location.pathname = '/publish'
     }
 
+    /**
+     * Testing purposes only. Changes route to /edit.
+     * 
+     * @return void
+     * @memberof Dashboard
+     */
+     testEdit() {
+        window.location.pathname = '/edit'
+    }
+
     render() {
         const {loggedIn, name, portfolios, classes } = this.props
+        console.log(portfolios)
         return (
             &lt;div className={classes.root}>
                 &lt;div className={classes.appBarSpacer}/>
                 &lt;Typography variant="h2" component="h3">Here is your dashboard {name}!&lt;/Typography>
                 &lt;Grid className={classes.gridHorizontal}>
-                    {portfolios.map((element, idx) => {
+                    {/* {portfolios.map((element, idx) => {
                         return (&lt;Button key={idx} className={classes.portfolioButton}>
                             {element.title}
                         &lt;/Button>);
-                    })}
-                    &lt;Button onClick={this.openTemplateEditor} className={classes.portfolioButton}>Add a Portfolio&lt;/Button>
+                    })} */}
+                    &lt;Button onClick={this.testEdit} className={classes.portfolioButton}>Add a Portfolio&lt;/Button>
                 &lt;/Grid>
                 &lt;Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie&lt;/Button>
                 &lt;Button onClick={this.testPublish} className={classes.portfolioButton}>Test Publish Panel&lt;/Button>
