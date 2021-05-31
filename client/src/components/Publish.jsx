@@ -455,7 +455,7 @@ class Publish extends Component {
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText color = 'primary'>
+                        <DialogContentText color = 'white'>
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -467,9 +467,10 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
+                            color="white"
                         />
                         {/* Likely NOT needed for actual publishing. However, here for testing purposes */}
-                        <DialogContentText color = 'primary'>
+                        <DialogContentText color = 'white'>
                             Add a file to Push (for testing purposes)
                         </DialogContentText>
                         <form >
@@ -483,10 +484,10 @@ class Publish extends Component {
                         </form>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleFinalizeDialogClose} color = 'primary'>
+                        <Button onClick = {this.handleFinalizeDialogClose} color = 'white'>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleFinalizeEdits} color = 'primary'>
+                        <Button onClick = {this.handleFinalizeEdits} color = 'white'>
                             Finalize
                         </Button>
                     </DialogActions>
@@ -501,15 +502,15 @@ class Publish extends Component {
                         Warning!
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText color = 'primary'>
+                        <DialogContentText color = 'white'>
                             Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
+                        <Button onClick = {this.handleOverrideDialogClose} color = 'white'>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleOverrideAllowed} color = 'primary'>
+                        <Button onClick = {this.handleOverrideAllowed} color = 'white'>
                             Allow Override
                         </Button>
                     </DialogActions>
