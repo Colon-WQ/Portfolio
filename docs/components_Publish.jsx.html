@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -542,7 +542,7 @@ class Publish extends Component {
                         Repository Name
                     &lt;/DialogTitle>
                     &lt;DialogContent>
-                        &lt;DialogContentText color = 'primary'>
+                        &lt;DialogContentText color = 'white'>
                             Choose a Github repository name to save portfolio edits
                         &lt;/DialogContentText>
                         &lt;TextField
@@ -554,9 +554,10 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
+                            color="white"
                         />
                         {/* Likely NOT needed for actual publishing. However, here for testing purposes */}
-                        &lt;DialogContentText color = 'primary'>
+                        &lt;DialogContentText color = 'white'>
                             Add a file to Push (for testing purposes)
                         &lt;/DialogContentText>
                         &lt;form >
@@ -570,10 +571,10 @@ class Publish extends Component {
                         &lt;/form>
                     &lt;/DialogContent>
                     &lt;DialogActions>
-                        &lt;Button onClick = {this.handleFinalizeDialogClose} color = 'primary'>
+                        &lt;Button onClick = {this.handleFinalizeDialogClose} color = 'white'>
                             Cancel
                         &lt;/Button>
-                        &lt;Button onClick = {this.handleFinalizeEdits} color = 'primary'>
+                        &lt;Button onClick = {this.handleFinalizeEdits} color = 'white'>
                             Finalize
                         &lt;/Button>
                     &lt;/DialogActions>
@@ -588,15 +589,15 @@ class Publish extends Component {
                         Warning!
                     &lt;/DialogTitle>
                     &lt;DialogContent>
-                        &lt;DialogContentText color = 'primary'>
+                        &lt;DialogContentText color = 'white'>
                             Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
                         &lt;/DialogContentText>
                     &lt;/DialogContent>
                     &lt;DialogActions>
-                        &lt;Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
+                        &lt;Button onClick = {this.handleOverrideDialogClose} color = 'white'>
                             Cancel
                         &lt;/Button>
-                        &lt;Button onClick = {this.handleOverrideAllowed} color = 'primary'>
+                        &lt;Button onClick = {this.handleOverrideAllowed} color = 'white'>
                             Allow Override
                         &lt;/Button>
                     &lt;/DialogActions>

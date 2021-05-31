@@ -60,7 +60,7 @@ change in browser tabs.
 
 ### Pushing to Github repository and deploying the repository to Github Pages.
 
-1. To view the site in progress, you can visit https://54.169.10.179/
+1. To view the site in progress, you can visit http://13.228.174.76/
 
 2. In the Home page, you will see the **Login with Github** button. Click that to be redirected to Github to login.
 

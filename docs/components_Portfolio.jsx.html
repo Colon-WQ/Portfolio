@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -95,7 +95,8 @@ import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import {templates} from './EntryGenerator';
+import {templates} from './templates';
+import TemplateSelector from './TemplateSelector';
 
 
 /**
@@ -160,12 +161,13 @@ class Portfolio extends Component {
             }],
             currentPage: 0,
             currentEntry: 0,
-            showEditor: false
+            showEditor: false,
+            showSelector: false
         }
-        this.createEntry = this.createEntry.bind(this);
         this.handleEditorClose = this.handleEditorClose.bind(this);
         this.handleCreateFile = this.handleCreateFile.bind(this);
         this.handleProduction = this.handleProduction.bind(this);
+        this.handleSelector = this.handleSelector.bind(this);
     }
 
     /**
@@ -180,25 +182,33 @@ class Portfolio extends Component {
         return templates[entryFields.type][entryFields.style].component(entryFields, index);
     }
 
-    // TODO: Add logic for a template chooser
     /**
-     * Function to create a new entry.
+     * Event handler to open/close the template selector and update states if necessary
      * 
-     * @returns void
+     * @param {*} selection - the fields to update, or null if no changes are needed
      */
-    createEntry() {
-        const entryType = "timeline";
-        const entryStyle = 0;
-        const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
-        const newEntry = {
-            type: entryType,
-            style: entryStyle,
-            ...fieldsCopy
-        };
-        const newPages = [...this.state.pages];
-        newPages[this.state.currentPage].entries = 
-            [...this.state.pages[this.state.currentPage].entries, newEntry];
-        this.setState({pages: newPages});
+    handleSelector(selection) {
+        if(selection === null) {
+            this.setState({
+                showSelector: !this.state.showSelector
+            })
+        } else {
+            const entryType = selection.type;
+            const entryStyle = selection.style;
+            const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
+            const newEntry = {
+                type: entryType,
+                style: entryStyle,
+                ...fieldsCopy
+            };
+            const newPages = [...this.state.pages];
+            newPages[this.state.currentPage].entries = 
+                [...this.state.pages[this.state.currentPage].entries, newEntry];
+            this.setState({
+                pages: newPages,
+                showSelector: !this.state.showSelector
+            })
+        }
     }
 
     /**
@@ -209,7 +219,6 @@ class Portfolio extends Component {
      */
     handleEditorClose(fields, changed) {
         if(changed) {
-            console.log(fields);
             const newPages = [...this.state.pages];
             const entries = [...this.state.pages[this.state.currentPage].entries];
             entries[this.state.currentEntry] = fields;
@@ -276,6 +285,8 @@ class Portfolio extends Component {
                 contents: css
             }
         ]
+        // TODO: remove for deployment
+        files.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
         return files;
     }
 
@@ -323,10 +334,15 @@ class Portfolio extends Component {
                     onClose={this.handleEditorClose} 
                 /> 
                 : null}
+            {this.state.showSelector
+                ? &lt;TemplateSelector
+                    onClose={this.handleSelector} 
+                /> 
+                : null}
             &lt;div className={classes.staticDiv}>
                 &lt;Fab 
                     className={classes.controlFAB}
-                    onClick={this.createEntry}>
+                    onClick={() => this.handleSelector(null)}>
                     &lt;FaPlus/>
                 &lt;/Fab>
                 &lt;Fab 
@@ -343,7 +359,7 @@ class Portfolio extends Component {
  * Function that maps variables from Redux Store to Home component's props.
  *
  * @param {Object} state - Redux Store
- * @memberof EntryEditor
+ * @memberof Portfolio
  */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
@@ -354,7 +370,7 @@ const mapStateToProps = state => ({
  * Provides action creators to Home component's props.
  * 
  * @type {Object.&lt;Function>} 
- * @memberof EntryEditor
+ * @memberof Portfolio
  */
 const mapDispatchToProps = {
     repopulate_state

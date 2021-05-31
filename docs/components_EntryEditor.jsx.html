@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -90,8 +90,8 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
 import { withStyles } from '@material-ui/core/styles'
-import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon } from '@material-ui/core';
-import { FaPlus, FaTrashAlt } from "react-icons/fa";
+import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon, Input, InputLabel } from '@material-ui/core';
+import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 
 /**
@@ -147,6 +147,18 @@ const styles = (theme) => ({
     },
     div: {
       padding: '10px'
+    },
+    columnDiv: {
+      display: 'flex',
+      flexDirection: 'row',
+      width: '100%',
+      overflow: 'auto'
+    },
+    styleDiv: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      overflow: 'auto'
     }
 })
 
@@ -190,12 +202,14 @@ class EntryEditor extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ...this.props.fields,
+            data: {...this.props.fields},
+            currentSection: 0
         }
         this.handleCreateEntry = this.handleCreateEntry.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleImageUpload = this.handleImageUpload.bind(this);
         this.handleEditSectionText = this.handleEditSectionText.bind(this);
+        this.handleSectionView = this.handleSectionView.bind(this);
     }
 
     // TODO: elements read from state instead of props
@@ -223,15 +237,22 @@ class EntryEditor extends Component {
      * @memberof EntryEditor
      */
     handleChange(event, category) {
+      console.log(event);
       if (category === "") {
         this.setState({
-          [event.target.name]: event.target.value
+          data: {
+            ...this.state.data,
+            [event.target.name]: event.target.value
+          }
         });
       } else {
-        const originalCat = {...this.state[category]};
+        const originalCat = {...this.state.data[category]};
         originalCat[event.target.name] = event.target.value;
         this.setState({
-          [category]: originalCat
+          data: {
+            ...this.state.data,
+            [category]: originalCat
+          }
         });
       }
     }
@@ -257,15 +278,18 @@ class EntryEditor extends Component {
      * Event handler for deletion of sub sections.
      * 
      * @param {*} event 
-     * @param {Number} index - the index of the section to be edited
      * @return void
      * @memberof EntryEditor
      */
-    handleDeleteSection(event, index) {
-      const spliced = this.state.sections.filter((item, filterIndex) => filterIndex !== index);
+    handleDeleteSection(event) {
+      const spliced = this.state.data.sections.filter((item, filterIndex) => filterIndex !== this.state.currentSection);
       this.setState({
-        sections: spliced
+        data: {
+          ...this.state.data,
+          sections: spliced
+        }
       })
+      console.log(spliced)
     }
 
     /**
@@ -278,7 +302,10 @@ class EntryEditor extends Component {
     handleCreateEntry() {
       // JSON used for deep copy
       const copy = JSON.parse(JSON.stringify(this.props.info.sections.defaultEntry));
-      this.setState({sections: [...this.state.sections, copy]});
+      this.setState({data: {
+        ...this.state.data,
+        sections: [...this.state.data.sections, copy]
+      }});
     }
 
     /**
@@ -289,12 +316,28 @@ class EntryEditor extends Component {
      * @return void
      * @memberof EntryEditor
      */
-    handleEditSectionText(event, index) {
-      const newSections = [...this.state.sections];
-      newSections[index].texts[event.target.name] = event.target.value;
+    handleEditSectionText(event) {
+      const newSections = [...this.state.data.sections];
+      newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
       this.setState({
         sections: newSections
       });
+    }
+
+    /**
+     * Event handler to cycle through sub sections
+     * @param {*} event 
+     */
+    handleSectionView(modifier) {
+      let nextSection = this.state.currentSection + modifier;
+      if (nextSection &lt; 0) {
+        nextSection = this.state.data.sections.length;
+      } else if (nextSection > this.state.data.sections.length) {
+        nextSection = 0;
+      }
+      this.setState({
+        currentSection: nextSection
+      })
     }
 
     render() {
@@ -305,148 +348,157 @@ class EntryEditor extends Component {
             // open always set to true, open/close logic handled by portfolio
               open={true}
               // TODO: add onClose save logic
-              onClose={() => this.props.onClose(this.state, true)}
+              onClose={() => this.props.onClose(this.state.data, true)}
               aria-labelledby="Entry editor"
               aria-describedby="Edit your entry fields here"
             >
               &lt;div className={classes.root}>
                 &lt;Typography component="h3" variant="h3">Entry editor&lt;/Typography>
-                &lt;div className={classes.sectionDiv}>
-                  &lt;div className={classes.categoryDiv}>
+                &lt;div className={classes.columnDiv}>
+                  &lt;div className={classes.styleDiv}>
                     &lt;TextField 
                       id="width"
                       label="width"
                       name="width"
-                      value={this.state.width}
+                      value={this.state.data.width}
                       margin="normal"
                       variant="outlined"
                       onChange={(event) => this.handleChange(event, "")}
+                      className={classes.styleInput}
                       />
                     &lt;TextField 
                       id="height"
                       label="height"
                       name="height"
-                      value={this.state.height}
+                      value={this.state.data.height}
                       margin="normal"
                       variant="outlined"
                       onChange={(event) => this.handleChange(event, "")}
+                      className={classes.styleInput}
                       />
+                      {Object.entries(this.state.data.fonts).map(([key, item]) => {
+                        return (&lt;TextField
+                          name={key}
+                          id={key}
+                          label={this.props.info.fonts[key].label}
+                          value={item}
+                          margin="normal"
+                          variant="outlined"
+                          onChange={(event) => this.handleChange(event, "fonts")}
+                          className={classes.styleInput}/>)
+                      })}
+                      {Object.entries(this.state.data.colours).map(([key, item]) => {
+                        return (
+                          &lt;div>
+                            &lt;Input 
+                              type="color" 
+                              value={item} 
+                              onChange={(event) => this.handleChange(event, "colours")}
+                              style={{width: "100%"}}
+                            />
+                            &lt;TextField
+                              name={key}
+                              id={key}
+                              value={item}
+                              margin="normal"
+                              variant="outlined"
+                              onChange={(event) => this.handleChange(event, "colours")}
+                            />
+                            &lt;Typography component="h6" variant="h6">
+                              {this.props.info.colours[key].label}
+                            &lt;/Typography>
+                          &lt;/div>
+                          )
+                      })}
                   &lt;/div>
-                  &lt;div className={classes.categoryDiv}>
-                    {Object.entries(this.state.fonts).map(([key, item]) => {
-                      return (&lt;TextField
-                        name={key}
-                        id={key}
-                        label={this.props.info.fonts[key].label}
-                        value={item}
-                        margin="normal"
-                        variant="outlined"
-                        onChange={(event) => this.handleChange(event, "fonts")}/>)
-                    })}
+                  &lt;div className={classes.sectionDiv}>
+                    &lt;div className={classes.categoryDiv}>
+                      {Object.entries(this.state.data.images).map(([key, item]) => {
+                        return (
+                          &lt;div>
+                            &lt;Button onClick={this.handleImageUpload}>
+                              &lt;img src={item} className={classes.imgPreview}/>
+                            &lt;/Button>
+                            &lt;Typography>
+                              {this.props.info.images[key].label}
+                            &lt;/Typography>
+                          &lt;/div>
+                          );
+                      })}
+                    &lt;/div>
+                    &lt;div className={classes.categoryDiv}>
+                      {Object.entries(this.state.data.texts).map(([key, item]) => {
+                        return (
+                          &lt;div>
+                            {/* Preview icon that changes according to selected colour */}
+                            {/* &lt;Button id="colourPreview"/> */}
+                            &lt;TextField
+                              name={key}
+                              id={key}
+                              label={this.props.info.texts[key].label}
+                              value={item}
+                              margin="normal"
+                              variant="outlined"
+                              onChange={(event) => this.handleChange(event, "texts")}
+                            />
+                          &lt;/div>
+                          )
+                      })}
+                    &lt;/div>
                   &lt;/div>
-                  &lt;div className={classes.categoryDiv}>
-                    {Object.entries(this.state.colours).map(([key, item]) => {
-                      return (
-                        &lt;div>
-                          {/* Preview icon that changes according to selected colour */}
-                          {/* &lt;Button id="colourPreview"/> */}
-                          &lt;TextField
-                            name={key}
-                            id={key}
-                            label={this.props.info.colours[key].label}
-                            value={item}
-                            margin="normal"
-                            variant="outlined"
-                            onChange={(event) => this.handleChange(event, "colours")}
-                          />
-                        &lt;/div>
-                        )
-                    })}
+                  {this.props.info.sections.enabled 
+                  ? &lt;div className={classes.entryDiv}>
+                    &lt;IconButton id="left" onClick={() => this.handleSectionView(-1)}>
+                      &lt;FaChevronLeft/>
+                    &lt;/IconButton>
+                    {
+                      this.state.currentSection === this.state.data.sections.length 
+                        ? &lt;IconButton onClick={this.handleCreateEntry}>&lt;FaPlus/>&lt;/IconButton>
+                        : &lt;div>
+                            &lt;IconButton onClick={(event) => this.handleDeleteSection(event)}>&lt;FaTrashAlt/>&lt;/IconButton>
+                            &lt;div className={classes.imgDiv}>
+                              {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
+                                return (
+                                  &lt;div>
+                                    {/* TODO: implement different logic */}
+                                    &lt;Button onClick={this.handleImageUpload}>
+                                      &lt;img src={item} className={classes.imgPreview}/>
+                                    &lt;/Button>
+                                    &lt;Typography>
+                                      {this.props.info.sections.entryFormat.images[key].label}
+                                    &lt;/Typography>
+                                  &lt;/div>
+                                  );
+                              })}
+                            &lt;/div>
+                            &lt;div className={classes.textDiv}>
+                              {Object.entries(this.state.data.sections[this.state.currentSection].texts).map(([key, item]) => {
+                                // TODO: make maxRow field in info?
+                                return (
+                                  &lt;div>
+                                    &lt;TextField
+                                      name={key}
+                                      id={key}
+                                      label={this.props.info.sections.entryFormat.texts[key].label}
+                                      value={item}
+                                      margin="normal"
+                                      variant="outlined"
+                                      onChange={(event) => this.handleEditSectionText(event)}
+                                      multiline
+                                      rowsMax={3}
+                                    />
+                                  &lt;/div>
+                                  );
+                              })}
+                            &lt;/div>
+                          &lt;/div>
+                    }
+                    &lt;IconButton id="right" onClick={() => this.handleSectionView(1)}>
+                      &lt;FaChevronRight/>
+                    &lt;/IconButton>
                   &lt;/div>
+                  : null}
                 &lt;/div>
-                &lt;div className={classes.sectionDiv}>
-                  &lt;div className={classes.categoryDiv}>
-                    {Object.entries(this.state.images).map(([key, item]) => {
-                      return (
-                        &lt;div>
-                          &lt;Button onClick={this.handleImageUpload}>
-                            &lt;img src={item} className={classes.imgPreview}/>
-                          &lt;/Button>
-                          &lt;Typography>
-                            {this.props.info.images[key].label}
-                          &lt;/Typography>
-                        &lt;/div>
-                        );
-                    })}
-                  &lt;/div>
-                  &lt;div className={classes.categoryDiv}>
-                    {Object.entries(this.state.texts).map(([key, item]) => {
-                      return (
-                        &lt;div>
-                          {/* Preview icon that changes according to selected colour */}
-                          {/* &lt;Button id="colourPreview"/> */}
-                          &lt;TextField
-                            name={key}
-                            id={key}
-                            label={this.props.info.texts[key].label}
-                            value={item}
-                            margin="normal"
-                            variant="outlined"
-                            onChange={(event) => this.handleChange(event, "texts")}
-                          />
-                        &lt;/div>
-                        )
-                    })}
-                  &lt;/div>
-                &lt;/div>
-                {this.props.info.sections.enabled 
-                ? &lt;div className={classes.entryDiv}>
-                  {this.state.sections.map((entryObj, index) => {
-                    return (
-                      &lt;div>
-                        &lt;IconButton onClick={(event) => this.handleDeleteSection(event, index)}>&lt;FaTrashAlt/>&lt;/IconButton>
-                        &lt;div className={classes.imgDiv}>
-                          {Object.entries(entryObj.images).map(([key, item]) => {
-                            return (
-                              &lt;div>
-                                {/* TODO: implement different logic */}
-                                &lt;Button onClick={this.handleImageUpload}>
-                                  &lt;img src={item} className={classes.imgPreview}/>
-                                &lt;/Button>
-                                &lt;Typography>
-                                  {this.props.info.sections.entryFormat.images[key].label}
-                                &lt;/Typography>
-                              &lt;/div>
-                              );
-                          })}
-                        &lt;/div>
-                        &lt;div className={classes.textDiv}>
-                          {Object.entries(entryObj.texts).map(([key, item]) => {
-                            console.log(item);
-                            // TODO: make maxRow field in info?
-                            return (
-                              &lt;div>
-                                &lt;TextField
-                                  name={key}
-                                  id={key}
-                                  label={this.props.info.sections.entryFormat.texts[key].label}
-                                  value={item}
-                                  margin="normal"
-                                  variant="outlined"
-                                  onChange={(event) => this.handleEditSectionText(event, index)}
-                                  multiline
-                                  rowsMax={3}
-                                />
-                              &lt;/div>
-                              );
-                          })}
-                        &lt;/div>
-                      &lt;/div>
-                      )
-                  })}
-                  &lt;IconButton onClick={this.handleCreateEntry}>&lt;FaPlus/>&lt;/IconButton>
-                &lt;/div>
-                : null}
               &lt;/div>
             &lt;/Modal>
         )
@@ -474,7 +526,7 @@ const mapDispatchToProps = {
     repopulate_state
 }
 
-export default (withStyles(styles)(EntryEditor))</code></pre>
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(EntryEditor))</code></pre>
         </article>
     </section>
 

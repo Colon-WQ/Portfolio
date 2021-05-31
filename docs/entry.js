@@ -9,7 +9,7 @@
       import ReactDOM from "react-dom";
 
 
-      import ReactWrapper from '../client/node_modules/better-docs/lib/react-wrapper.js';
+      import ReactWrapper from '../node_modules/better-docs/lib/react-wrapper.js';
 
       window.React = React;
 
@@ -22,23 +22,26 @@
 
     import './styles/iframe.css';
 
-  import Component0 from '../client/src/components/Dashboard.jsx';
+  import Component0 from '../src/components/Dashboard.jsx';
 reactComponents['Dashboard'] = Component0;
 
-import Component1 from '../client/src/components/EntryEditor.jsx';
+import Component1 from '../src/components/EntryEditor.jsx';
 reactComponents['EntryEditor'] = Component1;
 
-import Component2 from '../client/src/components/Home.jsx';
+import Component2 from '../src/components/Home.jsx';
 reactComponents['Home'] = Component2;
 
-import Component3 from '../client/src/components/LoginResult.jsx';
+import Component3 from '../src/components/LoginResult.jsx';
 reactComponents['LoginResult'] = Component3;
 
-import Component4 from '../client/src/components/Navbar.jsx';
+import Component4 from '../src/components/Navbar.jsx';
 reactComponents['Navbar'] = Component4;
 
-import Component5 from '../client/src/components/Portfolio.jsx';
+import Component5 from '../src/components/Portfolio.jsx';
 reactComponents['Portfolio'] = Component5;
 
-import Component6 from '../client/src/components/Publish.jsx';
+import Component6 from '../src/components/Publish.jsx';
 reactComponents['Publish'] = Component6;
+
+import Component7 from '../src/components/TemplateSelector.jsx';
+reactComponents['TemplateSelector'] = Component7;
