@@ -52,14 +52,14 @@ class AboutTemplateMinimalist extends Component {
                     <Typography 
                         variant="h1"
                         component="h2" 
-                        style={{color: fields.colors.header, backgroundColor: fields.colours.header, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}
+                        style={{color: fields.colours.header, backgroundColor: fields.colours.header, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}
                     >
                         About Me
                     </Typography>
                     <Typography
                         variant="body1"
                         component="body2"
-                        style={{color:fields.colors.secondary, backgroundColor: "white", fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`}}
+                        style={{color:fields.colours.secondary, backgroundColor: "white", fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`}}
                     >
                         {fields.text.about}
                     </Typography>

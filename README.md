@@ -34,16 +34,28 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
-![ScreenShot](Orbital/ProgramFlow.jpg)
+![ScreenShot](Orbital/Program Flow.png)
 
-The user's Portfolio component can be rendered into HTML and CSS files. We will build the Javascript file to enable the same functionality that the user's Portfolio
-site has as well as to define routing.
+## Features
 
-This can then be pushed to a Github repository of the user's choice. The Github repository can then be deployed to Github Pages as a functioning website.
+1. The user's Portfolio component can be rendered into HTML and CSS files. We will build the Javascript file to enable the same functionality that the user's Portfolio
+site has as well as to define routing. This can then be pushed to a Github repository of the user's choice. The Github repository can then be deployed to Github Pages as 
+a functioning website. With the help of Github API and OAuth, the above process can be done automatically, leaving only design to be done by the user.
 
-With the help of Github API and OAuth, the above process can be done automatically, leaving only design to be done by the user.
+2. Using Amazon EC2 instance to host our MERN application allows us to handle a decent number of requests simultaneously and ensures faster application load times compared
+to Heroku.
+
+3. All HTTP traffic are redirected to HTTPS to ensure secure connections between our server and the browser. Furthermore, user access codes are encrypted with JWT and stored
+in signed cookies. The signed cookies have HTTPonly and secure enabled, as well as same-site set to strict to mitigate main-in-the-middle, XSS and CSRF attacks.
+
+4. No sensitive data, such as the user's Github account password is stored or passed around.
+
+5. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
+change in browser tabs.
 
 ## Showcase
+
+### Pushing to Github repository and deploying the repository to Github Pages.
 
 To view the site in progress, you can visit https://54.169.10.179/
 
@@ -63,6 +75,18 @@ If you choose to input a repository name that you do not have and click on **Fin
 will be pushed to the Github repository and that repository will be deployed to Pages. 
 
 Visit https://`USERNAME`.github.io/`REPOSITORYNAME`/ where USERNAME and REPOSITORYNAME should be replaced by your Github username and Github repository name respectively.
+
+## Further Development
+
+* Work on backend API routes to handle functionality that involves mongoDB.
+
+* Portfolio creation flow is currently being tested in separate components and need to be combined together.
+
+* User Interface has to be improved to provide a more professional look.
+
+* Domain name would have to be acquired to obtain an SSL certificate. The current SSL certificate is self-signed and would be recognized by Google as insecure.
+
+* Development of more entry templates for the user to customize and add to their portfolio websites.
 
 ## Documentation
 
