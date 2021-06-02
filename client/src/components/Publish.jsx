@@ -2,12 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
-import { Base64 } from 'js-base64';
 
 //MUI component imports
 import Fab from '@material-ui/core/Fab';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -16,7 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FaUpload } from 'react-icons/fa'
+import { FaUpload } from 'react-icons/fa';
 
 
 /**
@@ -77,19 +74,13 @@ class Publish extends Component {
             overrideDialogState: false,
             repositoryName: "",
             repositoryContent: [],
-            anchorEl: null,
-            fileName: "",
-            fileContent: "",
-            portfolios: this.props.portfolios
+            anchorEl: null
         }
         this.handleOnChange = this.handleOnChange.bind(this);
-        this.handleAddToFileContent = this.handleAddToFileContent.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
         this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
         this.handleOverrideDialogOpen = this.handleOverrideDialogOpen.bind(this);
         this.handleOverrideDialogClose = this.handleOverrideDialogClose.bind(this);
-        this.handleAnchorMenu = this.handleAnchorMenu.bind(this);
-        this.handleReleaseMenu = this.handleReleaseMenu.bind(this);
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
@@ -109,35 +100,6 @@ class Publish extends Component {
         });
     }
 
-    
-    /**
-     * Converts Portfolios into an array of files that is suitable for backend API route to process and push.
-     *
-     * @param {Array.<Object>} portfolios
-     * @memberof Publish
-     */
-    handleAddToFileContent(portfolios) {
-        const temp = [];
-
-        for (let page of portfolios) {
-            const files = page.files;
-
-            for (let obj of files) {
-                console.log(obj.file + " added for push")
-                temp.push({
-                    fileName: obj.file,
-                    fileContent: obj.contents
-                })
-            }
-        }
-
-        this.setState({
-            repositoryContent: temp
-        })
-
-        console.log("portfolios converted to pushable format")
-    }
-
     /**
      * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.
      * 
@@ -147,11 +109,15 @@ class Publish extends Component {
     handleFinalizeDialogOpen() {
         console.log("portfolios are: ");
 
-        for (let obj of this.state.portfolios) {
-            console.log(obj.files)
+        for (let obj of this.props.pushables) {
+            console.log(obj.fileName)
         }
 
-        this.handleAddToFileContent(this.state.portfolios);
+        this.setState({
+            repositoryContent: this.props.pushables
+        })
+
+        console.log("pushables set")
 
         this.setState({
             anchorEl: null,
@@ -195,38 +161,6 @@ class Publish extends Component {
         })
     }
 
-    /**
-     * Handles the expanding of menu by setting state variable with name matching component prop 'componentname' of the component
-     * which fired the event to the component itself.
-     * Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.
-     * 
-     * @param {Object} event
-     * @return void
-     * @memberof Publish
-     */
-    handleAnchorMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname")
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: event.currentTarget
-        })
-    }
-
-    /**
-     * Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
-     * which fired the event to null.
-     *
-     * @param {Object} event
-     * @return void
-     * @memberof Publish
-     */
-    handleReleaseMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname");
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: null
-        })
-    }
 
     
     /**
@@ -360,33 +294,15 @@ class Publish extends Component {
         return (
             <div className={classes.root}>
                 <Fab
-                    componentname="anchorEl"
                     size = 'large'
                     aria-label = 'publish panel'
                     aria-controls = 'simple-menu'
                     aria-haspopup = 'true'
                     className = {classes.actionFAB}
-                    onClick = {this.handleAnchorMenu}
+                    onClick={this.handleFinalizeDialogOpen}
                 >
                     <FaUpload />
                 </Fab>
-                <Menu
-                    componentname="anchorEl"
-                    anchorEl={this.state.anchorEl}
-                    keepMounted
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={this.handleReleaseMenu}
-                >
-                    <MenuItem 
-                        name="finalizeDialogState" 
-                        onClick={this.handleFinalizeDialogOpen}
-                    >
-                        Finalize and Push
-                    </MenuItem>
-                    <MenuItem>Clear Template</MenuItem>
-                    <MenuItem>Undo Action</MenuItem>
-                    {/* <MenuItem onClick={this.handleChange}>Get Repo Content Testing</MenuItem> */}
-                </Menu>
 
                 <Dialog
                     open = {this.state.finalizeDialogState}
@@ -397,7 +313,7 @@ class Publish extends Component {
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText>
+                        <DialogContentText style={{color: "white"}}>
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -409,6 +325,12 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
+                            InputLabelProps={{
+                                style: {color: "whitesmoke"},
+                            }}
+                            InputProps={{
+                                color: 'secondary'
+                            }}
                         />
                     </DialogContent>
                     <DialogActions>
