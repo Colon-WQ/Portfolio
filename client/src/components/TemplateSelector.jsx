@@ -121,7 +121,7 @@ class TemplateSelector extends Component {
       })
     }
 
-    // NOTE: MODAL TAKE IN A SINGLE JSX ELEMENT
+    // MODAL TAKES IN A SINGLE JSX ELEMENT
     render() {
         const {classes} = this.props;
         // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
