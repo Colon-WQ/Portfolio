@@ -84,22 +84,12 @@ class Dashboard extends Component {
     }
 
     /**
-     * Testing purposes only. Changes route to /publish.
-     *
-     * @return void
-     * @memberof Dashboard
-     */
-    testPublish() {
-        window.location.pathname = '/publish'
-    }
-
-    /**
      * Testing purposes only. Changes route to /edit.
      * 
      * @return void
      * @memberof Dashboard
      */
-     testEdit() {
+     handleAddPortfolio() {
         window.location.pathname = '/edit'
     }
 
@@ -116,10 +106,9 @@ class Dashboard extends Component {
                             {element.title}
                         </Button>);
                     })} */}
-                    <Button onClick={this.testEdit} className={classes.portfolioButton}>Add a Portfolio</Button>
+                    <Button onClick={this.handleAddPortfolio} className={classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
                 <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
-                <Button onClick={this.testPublish} className={classes.portfolioButton}>Test Publish Panel</Button>
             </div>
 
         )

@@ -83,7 +83,8 @@ class Portfolio extends Component {
             currentPage: 0,
             currentEntry: 0,
             showEditor: false,
-            showSelector: false
+            showSelector: false,
+            pushables: []
         }
         this.handleEditorClose = this.handleEditorClose.bind(this);
         this.handleCreateFile = this.handleCreateFile.bind(this);
@@ -230,16 +231,21 @@ class Portfolio extends Component {
      * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
      */
     handleProduction() {
-        let tempPages = this.state.pages;
-        for (const page of tempPages) {
-            const fileArray = this.handleCreateFile(page.entries, page.directory);
+        let pushableArray = [];
 
-            page.files = fileArray;
+        for (const page of this.state.pages) {
+            const fileArray = this.handleCreateFile(page.entries, page.directory);
             console.log("fileArray is: ")
             console.log(fileArray);
+            for (let obj of fileArray) {
+                pushableArray.push({
+                    fileName: obj.file,
+                    fileContent: obj.contents
+                })
+            }     
         }
         this.setState({
-            pages: tempPages
+            pushables: pushableArray
         })
     }
 
@@ -286,7 +292,7 @@ class Portfolio extends Component {
                     onClick={() => console.log(this.handleProduction())}>
                     <FaSave/>
                 </Fab>
-                <Publish portfolios={this.state.pages}/>
+                <Publish pushables={this.state.pushables}/>
             </div>
         </div>);
     }
