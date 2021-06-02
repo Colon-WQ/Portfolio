@@ -9,7 +9,6 @@ import Fab from '@material-ui/core/Fab';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,6 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { FaUpload } from 'react-icons/fa'
 
 
 /**
@@ -38,25 +38,12 @@ const styles = (theme) => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'start',
-        alignItems: 'center',
-        paddingTop: '7%'
+        alignItems: 'center'
     },
     actionFAB: {
-        margin: 0,
-        top: 'auto',
-        left: 'auto',
-        bottom: '8%',
-        right: '5%',
-        position: 'fixed',
-        textAlign: 'center'
-    },
-    modeFAB: {
-        margin: 0,
-        top: '10%',
-        left: 'auto',
-        right: 'auto',
-        bottom: 'auto',
-        position: 'fixed',
+        position: 'static',
+        marginRight: '0.5vw',
+        marginBottom: '0.5vw',
         textAlign: 'center'
     }
 })
@@ -92,10 +79,10 @@ class Publish extends Component {
             repositoryContent: [],
             anchorEl: null,
             fileName: "",
-            fileContent: ""
+            fileContent: "",
+            portfolios: this.props.portfolios
         }
         this.handleOnChange = this.handleOnChange.bind(this);
-        this.handleAddFileContent = this.handleAddFileContent.bind(this);
         this.handleAddToFileContent = this.handleAddToFileContent.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
         this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
@@ -108,18 +95,6 @@ class Publish extends Component {
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
     }
 
-    /**
-     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
-     * 
-     * @return void
-     * @memberof Publish
-     */
-    componentDidMount() {
-        if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            this.props.repopulate_state(localStorageItem)
-        }
-    }
 
     /**
      * Handles onChange events. Changes a state variable under the name of the event target to value provided by user.
@@ -134,72 +109,33 @@ class Publish extends Component {
         });
     }
 
-    /**
-     * Handles addition of files in the form of objects to the state variable repositoryContent. If file to be added
-     * share the same name as an existing file in repositoryContent, the fileContent of the exisitng file will be
-     * overwritten by the new file's contents.
-     *
-     * @param {Object} event
-     * @return void
-     * @memberof Publish
-     */
-    handleAddFileContent(event) {
-        event.preventDefault();
-        const temp = this.state.repositoryContent;
-        
-        let duplicate = false;
-        for (let obj of temp) {
-            if (obj.fileName === this.state.fileName) {
-                duplicate = true;
-                obj.fileContent = this.state.fileContent
-                break;
-            }
-        }
-        if (!duplicate) {
-            temp.push({
-                fileName: this.state.fileName,
-                fileContent: Base64.encode(this.state.fileContent)
-            });
-            this.setState({
-                repositoryContent: temp
-            })
-        } else {
-            console.log("duplicate file not added")
-        }
-    }
-
     
     /**
-     * Test function to be passed down as props to child components.
+     * Converts Portfolios into an array of files that is suitable for backend API route to process and push.
      *
-     * @param {Array.<Object>} files
+     * @param {Array.<Object>} portfolios
      * @memberof Publish
      */
-    handleAddToFileContent(files) {
-        const temp = this.state.repositoryContent;
+    handleAddToFileContent(portfolios) {
+        const temp = [];
 
-        for (let file of files) {
-            let duplicate = false;
-            for (let obj of temp) {
-                if (file.name === obj.fileName) {
-                    duplicate = true;
-                    obj.fileContent = file.contents
-                    break;
-                }
-            }
-            if (!duplicate) {
+        for (let page of portfolios) {
+            const files = page.files;
+
+            for (let obj of files) {
+                console.log(obj.file + " added for push")
                 temp.push({
-                    fileName: file.name,
-                    fileContent: file.contents
+                    fileName: obj.file,
+                    fileContent: obj.contents
                 })
-            } else {
-                console.log(`duplicate file ${file.name} not added`)
             }
         }
 
         this.setState({
             repositoryContent: temp
         })
+
+        console.log("portfolios converted to pushable format")
     }
 
     /**
@@ -209,6 +145,14 @@ class Publish extends Component {
      * @memberof Publish
      */
     handleFinalizeDialogOpen() {
+        console.log("portfolios are: ");
+
+        for (let obj of this.state.portfolios) {
+            console.log(obj.files)
+        }
+
+        this.handleAddToFileContent(this.state.portfolios);
+
         this.setState({
             anchorEl: null,
             finalizeDialogState: true
@@ -417,16 +361,14 @@ class Publish extends Component {
             <div className={classes.root}>
                 <Fab
                     componentname="anchorEl"
-                    variant = 'extended'
-                    size = 'medium'
-                    color = 'primary'
+                    size = 'large'
                     aria-label = 'publish panel'
                     aria-controls = 'simple-menu'
                     aria-haspopup = 'true'
                     className = {classes.actionFAB}
                     onClick = {this.handleAnchorMenu}
                 >
-                    <Typography variant = 'button'>Publish</Typography>
+                    <FaUpload />
                 </Fab>
                 <Menu
                     componentname="anchorEl"
@@ -455,7 +397,7 @@ class Publish extends Component {
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText color = 'white'>
+                        <DialogContentText>
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -467,27 +409,13 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
-                            color="white"
                         />
-                        {/* Likely NOT needed for actual publishing. However, here for testing purposes */}
-                        <DialogContentText color = 'white'>
-                            Add a file to Push (for testing purposes)
-                        </DialogContentText>
-                        <form >
-                            <label for="fileName">File Name</label>
-                            <input type="text" id="fileName" name="fileName" placeholder="file name including repository path" onChange={this.handleOnChange}></input>
-                            <br />
-                            <label for="fileContent">File Content</label>
-                            <input type="text" id="fileContent" name="fileContent" placeholder="your file content" onChange={this.handleOnChange}></input>
-                            <br />
-                            <button onClick={this.handleAddFileContent}>Add</button>
-                        </form>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleFinalizeDialogClose} color = 'white'>
+                        <Button onClick = {this.handleFinalizeDialogClose}>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleFinalizeEdits} color = 'white'>
+                        <Button onClick = {this.handleFinalizeEdits}>
                             Finalize
                         </Button>
                     </DialogActions>
@@ -502,19 +430,19 @@ class Publish extends Component {
                         Warning!
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText color = 'white'>
+                        <DialogContentText>
                             Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleOverrideDialogClose} color = 'white'>
+                        <Button onClick = {this.handleOverrideDialogClose}>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleOverrideAllowed} color = 'white'>
+                        <Button onClick = {this.handleOverrideAllowed}>
                             Allow Override
                         </Button>
                     </DialogActions>
-                </Dialog>          
+                </Dialog>     
             </div>
         );
     }
