@@ -77,8 +77,7 @@ class Portfolio extends Component {
             editMode: true,
             pages: [{
                 directory: "",
-                entries: [],
-                files: []
+                entries: []
             }],
             currentPage: 0,
             currentEntry: 0,
