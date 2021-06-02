@@ -2,14 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import axios from 'axios'
-import { Base64 } from 'js-base64';
 
 //MUI component imports
 import Fab from '@material-ui/core/Fab';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,6 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { FaUpload } from 'react-icons/fa';
 
 
 /**
@@ -38,25 +35,12 @@ const styles = (theme) => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'start',
-        alignItems: 'center',
-        paddingTop: '7%'
+        alignItems: 'center'
     },
     actionFAB: {
-        margin: 0,
-        top: 'auto',
-        left: 'auto',
-        bottom: '8%',
-        right: '5%',
-        position: 'fixed',
-        textAlign: 'center'
-    },
-    modeFAB: {
-        margin: 0,
-        top: '10%',
-        left: 'auto',
-        right: 'auto',
-        bottom: 'auto',
-        position: 'fixed',
+        position: 'static',
+        marginRight: '0.5vw',
+        marginBottom: '0.5vw',
         textAlign: 'center'
     }
 })
@@ -90,36 +74,18 @@ class Publish extends Component {
             overrideDialogState: false,
             repositoryName: "",
             repositoryContent: [],
-            anchorEl: null,
-            fileName: "",
-            fileContent: ""
+            anchorEl: null
         }
         this.handleOnChange = this.handleOnChange.bind(this);
-        this.handleAddFileContent = this.handleAddFileContent.bind(this);
-        this.handleAddToFileContent = this.handleAddToFileContent.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
         this.handleFinalizeDialogClose = this.handleFinalizeDialogClose.bind(this);
         this.handleOverrideDialogOpen = this.handleOverrideDialogOpen.bind(this);
         this.handleOverrideDialogClose = this.handleOverrideDialogClose.bind(this);
-        this.handleAnchorMenu = this.handleAnchorMenu.bind(this);
-        this.handleReleaseMenu = this.handleReleaseMenu.bind(this);
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
     }
 
-    /**
-     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
-     * 
-     * @return void
-     * @memberof Publish
-     */
-    componentDidMount() {
-        if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            this.props.repopulate_state(localStorageItem)
-        }
-    }
 
     /**
      * Handles onChange events. Changes a state variable under the name of the event target to value provided by user.
@@ -135,80 +101,24 @@ class Publish extends Component {
     }
 
     /**
-     * Handles addition of files in the form of objects to the state variable repositoryContent. If file to be added
-     * share the same name as an existing file in repositoryContent, the fileContent of the exisitng file will be
-     * overwritten by the new file's contents.
-     *
-     * @param {Object} event
-     * @return void
-     * @memberof Publish
-     */
-    handleAddFileContent(event) {
-        event.preventDefault();
-        const temp = this.state.repositoryContent;
-        
-        let duplicate = false;
-        for (let obj of temp) {
-            if (obj.fileName === this.state.fileName) {
-                duplicate = true;
-                obj.fileContent = this.state.fileContent
-                break;
-            }
-        }
-        if (!duplicate) {
-            temp.push({
-                fileName: this.state.fileName,
-                fileContent: Base64.encode(this.state.fileContent)
-            });
-            this.setState({
-                repositoryContent: temp
-            })
-        } else {
-            console.log("duplicate file not added")
-        }
-    }
-
-    
-    /**
-     * Test function to be passed down as props to child components.
-     *
-     * @param {Array.<Object>} files
-     * @memberof Publish
-     */
-    handleAddToFileContent(files) {
-        const temp = this.state.repositoryContent;
-
-        for (let file of files) {
-            let duplicate = false;
-            for (let obj of temp) {
-                if (file.name === obj.fileName) {
-                    duplicate = true;
-                    obj.fileContent = file.contents
-                    break;
-                }
-            }
-            if (!duplicate) {
-                temp.push({
-                    fileName: file.name,
-                    fileContent: file.contents
-                })
-            } else {
-                console.log(`duplicate file ${file.name} not added`)
-            }
-        }
-
-        this.setState({
-            repositoryContent: temp
-        })
-    }
-
-    /**
      * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.
      * 
      * @return void
      * @memberof Publish
      */
     handleFinalizeDialogOpen() {
+        console.log("portfolios are: ");
+
+        for (let obj of this.props.pushables) {
+            console.log(obj.fileName)
+        }
+
+        this.setState({
+            repositoryContent: this.props.pushables
+        })
+
+        console.log("pushables set")
+
         this.setState({
             anchorEl: null,
             finalizeDialogState: true
@@ -251,38 +161,6 @@ class Publish extends Component {
         })
     }
 
-    /**
-     * Handles the expanding of menu by setting state variable with name matching component prop 'componentname' of the component
-     * which fired the event to the component itself.
-     * Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.
-     * 
-     * @param {Object} event
-     * @return void
-     * @memberof Publish
-     */
-    handleAnchorMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname")
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: event.currentTarget
-        })
-    }
-
-    /**
-     * Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
-     * which fired the event to null.
-     *
-     * @param {Object} event
-     * @return void
-     * @memberof Publish
-     */
-    handleReleaseMenu(event) {
-        const anchorEl = event.currentTarget.getAttribute("componentname");
-        //console.log(anchorEl)
-        this.setState({
-            [anchorEl]: null
-        })
-    }
 
     
     /**
@@ -416,35 +294,15 @@ class Publish extends Component {
         return (
             <div className={classes.root}>
                 <Fab
-                    componentname="anchorEl"
-                    variant = 'extended'
-                    size = 'medium'
-                    color = 'primary'
+                    size = 'large'
                     aria-label = 'publish panel'
                     aria-controls = 'simple-menu'
                     aria-haspopup = 'true'
                     className = {classes.actionFAB}
-                    onClick = {this.handleAnchorMenu}
+                    onClick={this.handleFinalizeDialogOpen}
                 >
-                    <Typography variant = 'button'>Publish</Typography>
+                    <FaUpload />
                 </Fab>
-                <Menu
-                    componentname="anchorEl"
-                    anchorEl={this.state.anchorEl}
-                    keepMounted
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={this.handleReleaseMenu}
-                >
-                    <MenuItem 
-                        name="finalizeDialogState" 
-                        onClick={this.handleFinalizeDialogOpen}
-                    >
-                        Finalize and Push
-                    </MenuItem>
-                    <MenuItem>Clear Template</MenuItem>
-                    <MenuItem>Undo Action</MenuItem>
-                    {/* <MenuItem onClick={this.handleChange}>Get Repo Content Testing</MenuItem> */}
-                </Menu>
 
                 <Dialog
                     open = {this.state.finalizeDialogState}
@@ -455,7 +313,7 @@ class Publish extends Component {
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText color = 'primary'>
+                        <DialogContentText style={{color: "white"}}>
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -467,26 +325,19 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
+                            InputLabelProps={{
+                                style: {color: "whitesmoke"},
+                            }}
+                            InputProps={{
+                                color: 'secondary'
+                            }}
                         />
-                        {/* Likely NOT needed for actual publishing. However, here for testing purposes */}
-                        <DialogContentText color = 'primary'>
-                            Add a file to Push (for testing purposes)
-                        </DialogContentText>
-                        <form >
-                            <label for="fileName">File Name</label>
-                            <input type="text" id="fileName" name="fileName" placeholder="file name including repository path" onChange={this.handleOnChange}></input>
-                            <br />
-                            <label for="fileContent">File Content</label>
-                            <input type="text" id="fileContent" name="fileContent" placeholder="your file content" onChange={this.handleOnChange}></input>
-                            <br />
-                            <button onClick={this.handleAddFileContent}>Add</button>
-                        </form>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleFinalizeDialogClose} color = 'primary'>
+                        <Button onClick = {this.handleFinalizeDialogClose}>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleFinalizeEdits} color = 'primary'>
+                        <Button onClick = {this.handleFinalizeEdits}>
                             Finalize
                         </Button>
                     </DialogActions>
@@ -501,19 +352,19 @@ class Publish extends Component {
                         Warning!
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText color = 'primary'>
+                        <DialogContentText>
                             Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleOverrideDialogClose} color = 'primary'>
+                        <Button onClick = {this.handleOverrideDialogClose}>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleOverrideAllowed} color = 'primary'>
+                        <Button onClick = {this.handleOverrideAllowed}>
                             Allow Override
                         </Button>
                     </DialogActions>
-                </Dialog>          
+                </Dialog>     
             </div>
         );
     }

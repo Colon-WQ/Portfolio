@@ -8,8 +8,9 @@ import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import {templates} from './Templates';
+import {templates} from './templates';
 import TemplateSelector from './TemplateSelector';
+import Publish from './Publish';
 
 
 /**
@@ -49,8 +50,14 @@ const styles = (theme) => ({
     },
     staticDiv: {
         position: 'fixed',
-        bottom: 0,
-        right: 0
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bottom: "5%",
+        right: "5%",
+        top: "auto",
+        left: "auto"
     }
 })
 
@@ -70,17 +77,31 @@ class Portfolio extends Component {
             editMode: true,
             pages: [{
                 directory: "",
-                entries: [],
+                entries: []
             }],
             currentPage: 0,
             currentEntry: 0,
             showEditor: false,
-            showSelector: false
+            showSelector: false,
+            pushables: []
         }
         this.handleEditorClose = this.handleEditorClose.bind(this);
         this.handleCreateFile = this.handleCreateFile.bind(this);
         this.handleProduction = this.handleProduction.bind(this);
         this.handleSelector = this.handleSelector.bind(this);
+    }
+
+    /**
+     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+     * 
+     * @return void
+     * @memberof Portfolio
+     */
+     componentDidMount() {
+        if (!this.props.loggedIn) {
+            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+            this.props.repopulate_state(localStorageItem)
+        }
     }
 
     /**
@@ -157,6 +178,7 @@ class Portfolio extends Component {
      * 
      */
     handleCreateFile(entries, directory) {
+        console.log("entries are");
         console.log(entries);
         const sheets = new ServerStyleSheets();
         // TODO: test renderToStaticMarkup
@@ -208,18 +230,24 @@ class Portfolio extends Component {
      * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
      */
     handleProduction() {
-        let index = 0;
-        const resArray = [];
+        let pushableArray = [];
+
         for (const page of this.state.pages) {
             const fileArray = this.handleCreateFile(page.entries, page.directory);
+            console.log("fileArray is: ")
             console.log(fileArray);
-            resArray[index] = fileArray[0];
-            resArray[index + 1] = fileArray[1];
-            resArray[index + 2] = fileArray[2];
-            index += 3;
+            for (let obj of fileArray) {
+                pushableArray.push({
+                    fileName: obj.file,
+                    fileContent: obj.contents
+                })
+            }     
         }
-        return resArray;
+        this.setState({
+            pushables: pushableArray
+        })
     }
+
 
     render() {
         const {classes} = this.props;
@@ -263,6 +291,7 @@ class Portfolio extends Component {
                     onClick={() => console.log(this.handleProduction())}>
                     <FaSave/>
                 </Fab>
+                <Publish pushables={this.state.pushables}/>
             </div>
         </div>);
     }
