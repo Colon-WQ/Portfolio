@@ -211,13 +211,13 @@ router.get("/getRepoContent", auth, getRepoContent);
  */
 router.put("/publishGithub", auth, publishGithub);
 
-router.put("/create", upsertPortfolio);
+router.put("/upsert", auth, upsertPortfolio);
 
-router.delete("/delete/:id", deletePortfolio);
+router.delete("/delete/:id", auth, deletePortfolio);
 
-router.get("/:id", getPortfolio);
+router.get("/:id", auth, getPortfolio);
 
-router.get("/", getPortfolios);
+router.get("/", auth, getPortfolios);
 
 
 export default router;

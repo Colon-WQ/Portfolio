@@ -33,10 +33,10 @@ export const getPortfolio = async (req, res) => {
 /**
  * THIS IS IDEALLY FOR THE SAVE BUTTON WITHIN EACH PORTFOLIO.
  * req object should take user and portfolio object
- * user object requires id, name, login, avatar, gravatar_id variables.
+ * user object requires id, name, avatar, gravatar_id variables.
  * portfolio object requires name, pages (pages is an array)
  * 
- * Each element (object) of pages array must be of form { route: string, entries: [entry, entry, ... ] }
+ * Each element (object) of pages array must be of form { directory: string, entries: [entry, entry, ... ] }
  * 
  * Each element (object) of entries array must be of form 
  * { width: string, height: string, fonts: obj, colours: obj, images: obj, texts: obj, sections: array of obj }
@@ -48,10 +48,11 @@ export const upsertPortfolio = async (req, res) => {
     const requestUser = req.body.user;
     const requestPortfolio = req.body.portfolio;
 
+
+
     const user = new User({
         _id: requestUser.id,
         name: requestUser.name,
-        login: requestUser.login,
         avatar: requestUser.avatar,
         gravatar_id: requestUser.gravatar_id
     })
@@ -75,7 +76,7 @@ export const upsertPortfolio = async (req, res) => {
 
         const page = new Page({
             _id: new mongoose.Types.ObjectId(),
-            route: pageObj.route,
+            directory: pageObj.directory,
             portfolio: portfolio._id
         });
 
@@ -104,21 +105,21 @@ export const upsertPortfolio = async (req, res) => {
     
     portfolio.pages = pages_id;
     
-    user.setOptions({ upsert: true }).update((err) => {
+    user.save((err) => {
         if (err) return res.status(400).send("error encountered");
             
-        portfolio.setOptions({ upsert: true }).update((err) => {
+        portfolio.save((err) => {
             if (err) return res.status(400).send("error encountered");
 
             for (let page of pages) {
                 //first element will be the page to be saved, second element is the entries to be saved for that page
-                page[0].setOptions({ upsert: true }).update((err) => {
+                page[0].save((err) => {
                     if (err) return res.status(400).send("error encountered");
 
                     for (let entry of page[1]) {
-                        entry.setOptions({ upsert: true }).update((err) => {
+                        entry.save((err) => {
                             if (err) return res.status(400).send("error encountered");
-                            continue;
+                            console.log("entry saved/updated")
                         });
                     }
                 })
@@ -136,7 +137,7 @@ export const upsertPortfolio = async (req, res) => {
  */
 export const getPortfolios = async (req, res) => {
     const gh_id = req.query.id;
-    User.findOne({ _id: gh_id }).exec((err, user) => {
+    User.findOne({ _id: gh_id }).populate("portfolios").exec((err, user) => {
         if (err) {
             console.log(err);
             return res.status(400).send("error encountered");

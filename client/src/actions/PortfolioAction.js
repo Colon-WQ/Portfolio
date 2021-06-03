@@ -167,7 +167,7 @@ export const fetchPortfoliosFailure = err => ({
  * a user's portfolio by its id. If the request succeeds, the function then dispatches a
  * FETCH_PORTFOLIOS_SUCCESS action. Otherwise, it dispatches a FETCH_PORTFOLIOS_FAILURE action.
  *
- * @param {string} id - id of specific portfolio to be fetched from mongoDB.
+ * @param {string} id - id of user whose portfolios are to be fetched from mongoDB.
  * @return {Function} - a function that receives the store's dispatch method.
  * @member fetchPortfolios
  * @function
@@ -178,12 +178,15 @@ export function fetchPortfolios(id) {
         dispatch(fetchPortfoliosBegin());
         return axios({
             method: 'GET',
-            url: process.env.REACT_APP_REACT_APP_BACKEND + "/portfolio" + id,
-            withCredentials: true
+            url: process.env.REACT_APP_BACKEND + "/portfolio",
+            withCredentials: true,
+            params: {
+                id: id
+            }
         }).then(res => res.data)
         .then(data => {
             //TODO PROBABLY HAVE TO CONVERT DATA INTO AN ARRAY DEPENDING ON THE RESULT
-            dispatch(fetchPortfoliosSuccess(data))
+            dispatch(fetchPortfoliosSuccess(data.portfolios))
         }).catch(err => dispatch(fetchPortfoliosFailure(err)))
     }
 }
