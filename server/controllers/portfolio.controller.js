@@ -9,7 +9,7 @@ import Entry from '../models/entry.model.js';
 const router = express.Router();
 
 /**
- * You can place the object id as a string or as the objectId object itself in the params. Both will work.
+ * String of objectId of portfolio required. Get using objectId.valueOf()
  */
 export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
@@ -153,11 +153,11 @@ export const getPortfolios = async (req, res) => {
 }
 
 /**
- * The request body should contain _id of portfolio to be deleted as id
+ * The request params should contain _id of portfolio to be deleted as id
  */
 export const deletePortfolio = async (req, res) => {
     
-    const id = req.body.id;
+    const id = req.params.id;
 
     Portfolio.findByIdAndDelete(id, (err, deleted) => {
         if (err) {
