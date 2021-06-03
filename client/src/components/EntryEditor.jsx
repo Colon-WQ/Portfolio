@@ -205,12 +205,33 @@ class EntryEditor extends Component {
      * @return void
      * @memberof EntryEditor
      */
-    handleImageUpload(event) {
+    handleImageUpload(event, sectionIndex) {
         // TODO: Open a upload dialog
-        const img = ""
-        this.setState({
-            [event.target.name]: img
-        })
+        const freader = new FileReader();
+        freader.readAsDataURL(event.target.files[0]);
+        freader.onloadend = (e) => {
+          console.log(e);
+          if (sectionIndex === undefined) {
+            this.setState({
+              data: {
+                ...this.state.data,
+                images: {
+                  ...this.state.data.images,
+                  [event.target.name]: e.target.result
+                }
+              }
+            })
+          } else {
+            const newSections = [...this.state.data.sections];
+            newSections[this.state.currentSection].images[event.target.name] = e.target.result;
+            this.setState({
+              data: {
+                ...this.state.data,
+                sections: newSections
+              }
+            });
+          }
+        }
     }
 
     /**
@@ -259,7 +280,10 @@ class EntryEditor extends Component {
       const newSections = [...this.state.data.sections];
       newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
       this.setState({
-        sections: newSections
+        data: {
+          ...this.state.data,
+          sections: newSections
+        }
       });
     }
 
@@ -358,14 +382,27 @@ class EntryEditor extends Component {
                     <div className={classes.rowDiv}>
                       <div className={classes.imgGrid}>
                         {Object.entries(this.state.data.images).map(([key, item]) => {
+                          console.log(item);
                           return (
                             <div>
-                              <Button onClick={this.handleImageUpload}>
-                                <img src={item} className={classes.imgPreview}/>
-                              </Button>
-                              <Typography>
-                                {this.props.info.images[key].label}
-                              </Typography>
+                              <input
+                                accept="image/*"
+                                className={classes.imgInput}
+                                style={{display: "none"}}
+                                id={key}
+                                name={key}
+                                type="file"
+                                onChange={this.handleImageUpload}
+                                // value={item}
+                              />
+                              <label htmlFor={key}>
+                                <Button component="span">
+                                  <img src={item} className={classes.imgPreview}/>
+                                </Button>
+                                <Typography>
+                                  {this.props.info.images[key].label}
+                                </Typography>
+                              </label>
                             </div>
                             );
                         })}
@@ -412,13 +449,24 @@ class EntryEditor extends Component {
                                 {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
                                   return (
                                     <div>
-                                      {/* TODO: implement different logic */}
-                                      <Button onClick={this.handleImageUpload}>
-                                        <img src={item} className={classes.imgPreview}/>
-                                      </Button>
-                                      <Typography>
-                                        {this.props.info.sections.entryFormat.images[key].label}
-                                      </Typography>
+                                      <input
+                                        accept="image/*"
+                                        className={classes.imgInput}
+                                        style={{display: "none"}}
+                                        id={key}
+                                        name={key}
+                                        type="file"
+                                        onChange={(event) => this.handleImageUpload(event, this.state.currentSection)}
+                                        // value={item}
+                                      />
+                                      <label htmlFor={key}>
+                                        <Button component="span">
+                                          <img src={item} className={classes.imgPreview}/>
+                                        </Button>
+                                        <Typography>
+                                          {this.props.info.sections.entryFormat.images[key].label}
+                                        </Typography>
+                                      </label>
                                     </div>
                                     );
                                 })}
@@ -465,7 +513,7 @@ class EntryEditor extends Component {
               </div>
             </Modal>
         )
-      }
+    }
 }
 
 
