@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { repopulate_state } from '../actions/LoginAction'
 import { withStyles } from '@material-ui/core/styles'
 import {Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab} from '@material-ui/core';
-import {templates} from './templates';
+import {templates} from './Templates';
 import {FaSave, FaTimes} from 'react-icons/fa';
 
 
