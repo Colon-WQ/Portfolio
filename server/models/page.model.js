@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const PageSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    route: { type: String, default: "/"},
+    directory: { type: String, default: "/"},
     portfolio: {type: mongoose.Schema.Types.ObjectId, ref: 'portfolio'},
     entries: [{type: mongoose.Schema.Types.ObjectId, ref: 'entry'}]
 })

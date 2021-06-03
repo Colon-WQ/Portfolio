@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {repopulate_state} from '../actions/LoginAction';
+import {fetchPortfolios} from '../actions/PortfolioAction';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -55,14 +56,17 @@ class Dashboard extends Component {
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
      * 
+     * repopulateState takes a while to run, so it is necessary to await it, then fetchPortfolios again.
+     * 
      * @return void
      * @memberof Dashboard
      */
-    componentDidMount() {
+    async componentDidMount() {
         if (!this.props.loggedIn) {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-            this.props.repopulate_state(localStorageItem);
+            await this.props.repopulate_state(localStorageItem);
         }
+        this.props.fetchPortfolios(this.props.id);
     }
 
     /**
@@ -101,11 +105,11 @@ class Dashboard extends Component {
                 <div className={classes.appBarSpacer}/>
                 <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
                 <Grid className={classes.gridHorizontal}>
-                    {/* {portfolios.map((element, idx) => {
+                    {portfolios.map((element, idx) => {
                         return (<Button key={idx} className={classes.portfolioButton}>
-                            {element.title}
+                            {element.name}
                         </Button>);
-                    })} */}
+                    })}
                     <Button onClick={this.handleAddPortfolio} className={classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
                 <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
@@ -124,7 +128,8 @@ class Dashboard extends Component {
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
     name: state.login.name,
-    portfolios: state.portfolios.portfolios
+    id: state.login.id,
+    portfolios: state.portfolio.portfolios
 });
 
 /** 
@@ -134,7 +139,8 @@ const mapStateToProps = state => ({
  * @memberof Dashboard
  */
 const mapDispatchToProps = {
-    repopulate_state
+    repopulate_state,
+    fetchPortfolios
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Dashboard));

@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const UserSchema = mongoose.Schema({
     _id: Number,
     name: String,
-    login: String,
     avatar: String,
     gravatar_id: String,
     portfolios: [{type: mongoose.Schema.Types.ObjectId, ref: 'portfolio'}]

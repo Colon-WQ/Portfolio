@@ -11,6 +11,7 @@ import EntryEditor from './EntryEditor';
 import {templates} from './templates';
 import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
+import axios from 'axios';
 
 
 /**
@@ -228,8 +229,37 @@ class Portfolio extends Component {
     /**
      * A function to generate all files needed to be pushed to github.
      * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+     * 
+     * TODO: Add a name setter for Portfolio, currently set to Test
      */
-    handleProduction() {
+    async handleProduction() {
+        //this saves the portfolio to mongoDB
+        await axios({
+            method: "PUT",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
+            withCredentials: true,
+            data: {
+                user: {
+                    id: this.props.id,
+                    name: this.props.name,
+                    avatar: this.props.avatar_url,
+                    gravatar_id: this.props.gravatar_id
+                },
+                portfolio: {
+                    name: "test",
+                    pages: this.state.pages
+                }
+            }
+        }).then(res => {
+            console.log(res.data.message);
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+        })
+
         let pushableArray = [];
 
         for (const page of this.state.pages) {
@@ -250,7 +280,8 @@ class Portfolio extends Component {
 
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
+
         let entry = undefined;
         if (this.state.pages[this.state.currentPage].entries != []) {
             entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
@@ -305,7 +336,10 @@ class Portfolio extends Component {
  */
 const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
-    name: state.login.name
+    name: state.login.name,
+    id: state.login.id,
+    avatar_url: state.login.avatar_url,
+    gravatar_id: state.login.gravatar_id
 })
 
 /** 
