@@ -36,10 +36,10 @@ const initialState = {
  * @param {Object} [state=initialState] - initialState is fixed.
  * @param {Object} action - Action object.
  * @return void 
- * @member portfolioReducer
+ * @member portfolio
  * @function
  */
-export default function portfolioReducer(state = initialState, action) {
+export default function portfolio(state = initialState, action) {
     switch(action.type) {
         case FETCH_PORTFOLIOS_BEGIN:
             return {

@@ -1,9 +1,7 @@
 import express from 'express';
 import {
-    postPortfolio,
-    savePortfolio,
     getPortfolio,
-    createPortfolio,
+    upsertPortfolio,
     getPortfolios,
     deletePortfolio
 } from '../controllers/portfolio.controller.js';
@@ -212,13 +210,14 @@ router.get("/getRepoContent", auth, getRepoContent);
  *                                  description: error message.
  */
 router.put("/publishGithub", auth, publishGithub);
-router.get("/create", createPortfolio);
-router.post("/:id/publish", postPortfolio);
-router.patch("/:id/save", savePortfolio);
-router.get("/:id", getPortfolio);
 
-router.delete("/:id", deletePortfolio);
-router.get("/", getPortfolios);
+router.put("/upsert", auth, upsertPortfolio);
+
+router.delete("/delete/:id", auth, deletePortfolio);
+
+router.get("/:id", auth, getPortfolio);
+
+router.get("/", auth, getPortfolios);
 
 
 export default router;
