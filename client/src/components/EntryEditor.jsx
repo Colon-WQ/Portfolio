@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { repopulate_state } from '../actions/LoginAction'
-import axios from 'axios'
-import { withStyles } from '@material-ui/core/styles'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { repopulate_state } from '../actions/LoginAction';
+import axios from 'axios';
+import { withStyles } from '@material-ui/core/styles';
 import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon, Input, InputLabel, Fab } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes } from "react-icons/fa";
 
@@ -210,7 +210,6 @@ class EntryEditor extends Component {
         const freader = new FileReader();
         freader.readAsDataURL(event.target.files[0]);
         freader.onloadend = (e) => {
-          console.log(e);
           if (sectionIndex === undefined) {
             this.setState({
               data: {

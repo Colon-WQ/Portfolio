@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { repopulate_state } from '../actions/LoginAction'
-import axios from 'axios'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { repopulate_state } from '../actions/LoginAction';
+import axios from 'axios';
 
 //MUI component imports
 import Fab from '@material-ui/core/Fab';

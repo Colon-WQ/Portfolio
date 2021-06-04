@@ -8,11 +8,11 @@ import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import {templates} from './Templates';
+import {templates} from '../templates/Templates';
 import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
-
+import DirectoryManager from './DirectoryManager';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -205,6 +205,7 @@ class Portfolio extends Component {
                         const split=item.split(',');
                         const fileType=split[0].substring(11, split[0].indexOf(';'));
                         const baseContent=split[1];
+                        const size = baseContent.length * 3 / 4 - baseContent.split('=')
                         console.log(baseContent);
                         const imgDir=`assets/${key}${idx}_section${s_idx}.${fileType}`;
                         images.push({
@@ -340,16 +341,23 @@ class Portfolio extends Component {
             })}
             {this.state.showEditor && entry != undefined
                 ? <EntryEditor 
-                    fields={entry} 
-                    info={templates[entry.type][entry.style].info} 
-                    onClose={this.handleEditorClose} 
-                /> 
+                        fields={entry} 
+                        info={templates[entry.type][entry.style].info} 
+                        onClose={this.handleEditorClose} 
+                    /> 
                 : null}
             {this.state.showSelector
                 ? <TemplateSelector
                     onClose={this.handleSelector} 
                 /> 
                 : null}
+            {false
+                ? <DirectoryManager
+                        onClose={console.log}
+                        dirTree={{directory:"", id:0, pages:[{directory:"sub", id:1, pages:[]}]}}
+                    />
+                : null
+            }
             <div className={classes.staticDiv}>
                 <Fab 
                     className={classes.controlFAB}

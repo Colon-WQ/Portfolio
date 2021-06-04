@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import IntroTemplateMinimalist from '../templates/introduction/IntroTemplateMinimalist';
-import TimelineTemplateMinimalist from '../templates/timeline/TimelineTemplateMinimalist';
-import AboutTemplateMinimalist from '../templates/about/AboutTemplateMinimalist';
+import IntroTemplateMinimalist from './introduction/IntroTemplateMinimalist';
+import TimelineTemplateMinimalist from './timeline/TimelineTemplateMinimalist';
+import AboutTemplateMinimalist from './about/AboutTemplateMinimalist';
 //  TODO: rename to templates?
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
