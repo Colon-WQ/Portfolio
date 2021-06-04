@@ -19,14 +19,14 @@ import {
  * @property {Array.<Object>} portfolios - Array containing objects containing details about user portfolios.
  * @property {boolean} loading - boolean indicating loading status
  * @property {Object} error - error object from a failed request
- * @property {Object} currentWork - object containing details about user's current portfolio work.
+ * @property {Object} currentPortfolio - object containing details about user's current portfolio work.
  * @member initialState
  */
 const initialState = {
     portfolios: [],
     loading: false,
     error: null,
-    currentWork: null
+    currentPortfolio: null
 }
 
 /**
@@ -58,18 +58,18 @@ export default function portfolio(state = initialState, action) {
                 ...state,
                 loading: false,
                 portfolios: [],
-                currentWork: null,
+                currentPortfolio: null,
                 error: action.payload.err
             }
         case SAVE_CURRENT_WORK:
             return {
                 ...state,
-                currentWork: action.payload.curr
+                currentPortfolio: action.payload.curr
             }
         case CLEAR_CURRENT_WORK:
             return {
                 ...state,
-                currentWork: null
+                currentPortfolio: null
             }
         default:
             return state;

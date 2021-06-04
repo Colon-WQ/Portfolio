@@ -33,8 +33,8 @@ export const getPortfolio = async (req, res) => {
 /**
  * THIS IS IDEALLY FOR THE SAVE BUTTON WITHIN EACH PORTFOLIO.
  * req object should take user and portfolio object
- * user object requires id, name, avatar, gravatar_id variables.
- * portfolio object requires name, pages (pages is an array)
+ * user object requires _id, name, avatar, gravatar_id variables.
+ * portfolio object requires id, name, pages (pages is an array)
  * 
  * Each element (object) of pages array must be of form { directory: string, entries: [entry, entry, ... ] }
  * 
@@ -48,8 +48,6 @@ export const upsertPortfolio = async (req, res) => {
     const requestUser = req.body.user;
     const requestPortfolio = req.body.portfolio;
 
-
-
     const user = new User({
         _id: requestUser.id,
         name: requestUser.name,
@@ -57,13 +55,53 @@ export const upsertPortfolio = async (req, res) => {
         gravatar_id: requestUser.gravatar_id
     })
 
+    await User.findById(requestUser.id).exec()
+    .then(isExist => {
+            if (isExist === null) {
+                user.isNew = true;
+            } else {
+                console.log(isExist)
+                console.log(isExist.portfolios);
+                user.isNew = false;
+                user.portfolios = isExist.portfolios;
+            }
+        }
+    ).catch(err => {
+        console.log(err);
+    })
+
     const portfolio = new Portfolio({
-        _id: new mongoose.Types.ObjectId(),
+        _id: requestPortfolio._id,
         name: requestPortfolio.name,
         user: requestUser.id
     })
 
-    user.portfolios = [portfolio._id]; 
+    //If id doesn't exist, obj is new
+    if (portfolio._id === undefined) {
+        portfolio._id = new mongoose.Types.ObjectId();
+        portfolio.isNew = true;
+    } else {
+        await (Portfolio.findById(portfolio._id)).exec()
+        .then(isExist => {
+            if (err) console.log(err);
+            if (isExist === null) {
+                //Just In Case
+                portfolio.isNew = true;
+            } else {
+                portfolio.isNew = false;
+                portfolio.pages = isExist.pages;
+            }
+        }).catch(err => {
+            console.log(err);
+        })
+        
+    }
+
+
+    user.portfolios.push(portfolio._id);
+    //user.portfolios = [portfolio._id]; Need to manually add the arrays
+
+    user.markModified("portfolios"); //Need to mark to enact changes to array contents.
 
     const pages = []; //temp array for storing pages to be saved. Stored as such => [page, entries]
     
@@ -75,15 +113,36 @@ export const upsertPortfolio = async (req, res) => {
         const entries_id = []; //temp array for storing _id of entries for variable entries of page model.
 
         const page = new Page({
-            _id: new mongoose.Types.ObjectId(),
+            _id: pageObj._id,
             directory: pageObj.directory,
             portfolio: portfolio._id
         });
 
+        if (page._id === undefined) {
+            page._id = new mongoose.Types.ObjectId();
+            page.isNew = true;
+        } else {
+            await (Page.findById(page._id)).exec()
+            .then(isExist => {
+                if (err) console.log(err);
+                if (isExist === null) {
+                    //Just In Case
+                    page.isNew = true;
+                } else {
+                    page.isNew = false;
+                    page.entries = isExist.entries;
+                }
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+
         for (let entryObj of pageObj.entries) {
             const entry = new Entry({
-                _id: new mongoose.Types.ObjectId(),
+                _id: entryObj._id,
                 page: page._id,
+                type: entryObj.type,
+                style: entryObj.style,
                 width: entryObj.width,
                 height: entryObj.height,
                 fonts: entryObj.fonts,
@@ -93,32 +152,52 @@ export const upsertPortfolio = async (req, res) => {
                 sections: entryObj.sections
             });
 
+            if (entry._id === undefined) {
+                entry._id = new mongoose.Types.ObjectId();
+                entry.isNew = true;
+            } else {
+                entry.isNew = false;
+            }
+
             entries.push(entry);
             entries_id.push(entry._id);
         }
 
-        page.entries = entries_id;
+        for (let entryId of entries_id) {
+            page.entries.push(entryId);
+        }
+        page.markModified("entries"); //Need to mark to enact changes to array contents.
 
-        pages.push([page, entries]);
+
+        // page.entries = entries_id; //Need to manually update refs
+
+        pages.push([page, entries]); //new entries for each page is pushed to temp pages array
         pages_id.push(page._id);
     }
     
-    portfolio.pages = pages_id;
+    for (let pageId of pages_id) {
+        portfolio.pages.push(pageId);
+    }
+    //portfolio.pages = pages_id;  //Need to manually add to refs
+
+    portfolio.markModified("pages"); //Need to mark to enact changes to array contents.
     
+    //Mongoose will still throw a duplicate key error with error code E11000 even if isNew is specified manually. Need to resolve.
     user.save((err) => {
-        if (err) return res.status(400).send("error encountered");
+        if (err && err.code !== 11000) return res.status(400).send(err);
             
         portfolio.save((err) => {
-            if (err) return res.status(400).send("error encountered");
+            if (err && err.code !== 11000) return res.status(400).send(err);
 
             for (let page of pages) {
                 //first element will be the page to be saved, second element is the entries to be saved for that page
                 page[0].save((err) => {
-                    if (err) return res.status(400).send("error encountered");
+                    if (err && err.code !== 11000) return res.status(400).send(err);
 
                     for (let entry of page[1]) {
                         entry.save((err) => {
-                            if (err) return res.status(400).send("error encountered");
+                            if (err && err.code !== 11000) return res.status(400).send("error encountered");
+
                             console.log("entry saved/updated")
                         });
                     }
@@ -137,7 +216,7 @@ export const upsertPortfolio = async (req, res) => {
  */
 export const getPortfolios = async (req, res) => {
     const gh_id = req.query.id;
-    User.findOne({ _id: gh_id }).populate("portfolios").exec((err, user) => {
+    User.findById(gh_id).populate("portfolios").exec((err, user) => {
         if (err) {
             console.log(err);
             return res.status(400).send("error encountered");
