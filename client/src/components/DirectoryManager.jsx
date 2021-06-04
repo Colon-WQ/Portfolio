@@ -2,17 +2,19 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
+import TreeView from '@material-ui/lab/TreeView';
 import {Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab} from '@material-ui/core';
+import TreeItem from '@material-ui/lab/TreeItem';
 import {templates} from '../templates/Templates';
-import {FaSave, FaTimes} from 'react-icons/fa';
+import {FaPlus, FaSave, FaTimes} from 'react-icons/fa';
 
 
 /**
- * @file User Interface to allow users to pick a template for their portfolios
+ * @file User Interface to allow users to switch between views.
  * 
  * @author Chuan Hao
  * 
- * @see TemplateSelector
+ * @see DirectoryManager
  */
 
 /**
@@ -38,28 +40,6 @@ const styles = (theme) => ({
       flexDirection: 'column',
       padding: '5%',
       height: '100%'
-    },
-    buttonBase: {
-      width: '100%',
-      height: '100%',
-      flexDirection: 'column'
-    },
-    card: {
-      width: 345,
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    cardMedia: {
-      height: 200,
-    }, 
-    fab: {
-      marginTop: 'auto',
-      marginLeft: 'auto'
-    },
-    cardDiv: {
-      display: 'grid',
-      width: '100%',
-      gridTemplateColumns: 'repeat(auto-fill, 400px)'
     }
 })
 
@@ -68,7 +48,7 @@ const styles = (theme) => ({
  * 
  * @component
  */
-class TemplateSelector extends Component {
+class DirectoryManager extends Component {
     /**
      * Populates state with fields passed in as attribute fields.
      * @constructor
@@ -76,10 +56,9 @@ class TemplateSelector extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          type: "introduction",
-          style: 0
         }
         this.handleChange = this.handleChange.bind(this);
+        this.renderTree = this.renderTree.bind(this);
     }
 
     /**
@@ -87,7 +66,7 @@ class TemplateSelector extends Component {
      * 
      * @property {Function} componentDidMount
      * @return void
-     * @memberof TemplateSelector
+     * @memberof DirectoryManager
      */
     componentDidMount() {
         // is this necessary if template is a widget
@@ -109,21 +88,25 @@ class TemplateSelector extends Component {
       });
     }
 
-    /**
-     * Event handler to create the selected entry.
-     * 
-     * @param {number} id The index of the selected style.
-     */
-    handleSelect(id) {
-      this.props.onClose({
-        type: this.state.type,
-        style: id
-      })
+    handleSelect(event) {
+      console.log(event);
     }
 
-    // MODAL TAKES IN A SINGLE JSX ELEMENT
+    handleToggle(event) {
+      console.log(event);
+    }
+
+    renderTree(dirTree) {
+      return (
+      <TreeItem nodeId={dirTree.id} label={dirTree.directory === "" ? "root" : dirTree.directory}>
+        {dirTree.pages.map((page, index) => this.renderTree(page))}
+      </TreeItem>);
+    }
+
+    // TODO: add props dirTree={directory:"", id:number pages:[]}
     render() {
         const {classes} = this.props;
+        console.log(this.props.dirTree)
         // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
         return (
             <Modal className = {classes.modal}
@@ -131,48 +114,24 @@ class TemplateSelector extends Component {
               open={true}
               // TODO: add onClose save logic
               onClose={() => this.props.onClose(this.state)}
-              aria-labelledby="Template Selector"
-              aria-describedby="Select a template."
+              aria-labelledby="Directory Manager"
+              aria-describedby="Select a page."
             >
               <div className={classes.root}>
-                <Tabs
-                  value={this.state.type}
-                  onChange={this.handleChange}
-                >
-                  {Object.keys(templates).map((type) => {
-                    return (<Tab label={type} value={type}/>)
-                  })}
-                </Tabs>
-                <div className={classes.cardDiv}>
-                  {
-                    templates[this.state.type].map((entry, index) => {
-                      return (<Card className={classes.card}>
-                        <ButtonBase
-                          focusRipple
-                          key={index}
-                          className={classes.buttonBase}
-                          // focusVisibleClassName={}
-                          onClick={() => this.handleSelect(index)}
-                          name={index}
-                        >
-                          <CardMedia 
-                            component="img"
-                            alt={entry.name}
-                            image={entry.preview}
-                            title={entry.name}
-                            className={classes.cardMedia}
-                          />
-                          <CardContent>
-                            <Typography>{entry.name}</Typography>
-                          </CardContent>
-                        </ButtonBase>
-                      </Card>)
-                    })
-                  }
-                </div>
-                <Fab variant="extended" onClick={() => this.props.onClose(null)} className={classes.fab}>
+                <Fab>
                   <FaTimes/>
-                  CANCEL
+                </Fab>
+                <TreeView
+                  defaultCollapseIcon={<FaTimes/>}
+                  defaultExpandIcon={<FaSave/>}
+                  onNodeSelect={this.handleSelect}
+                  onNodeToggle={this.handleToggle}
+                >
+                  {this.renderTree(this.props.dirTree)}
+                </TreeView>
+                <Fab variant="extended">
+                  <FaPlus/>
+                  New page
                 </Fab>
               </div>
             </Modal>
@@ -201,4 +160,4 @@ const mapDispatchToProps = {
     repopulate_state
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TemplateSelector))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DirectoryManager))

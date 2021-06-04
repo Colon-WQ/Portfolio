@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
+    "@material-ui/lab": "^4.0.0-alpha.58",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -49,9 +50,9 @@
   },
   "devDependencies": {
     "better-docs": "^2.3.2",
-    "jsdoc": "^3.6.7",
     "eslint": "^7.27.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.3"
+    "eslint-plugin-import": "^2.23.3",
+    "jsdoc": "^3.6.7"
   }
 }
