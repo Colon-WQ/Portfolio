@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const EntrySchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     page: {type: mongoose.Schema.Types.ObjectId, ref: 'page'},
+    type: String,
+    style: String,
     width: String,
     height: String,
     fonts: {type: Map, of: String},

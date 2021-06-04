@@ -1,6 +1,7 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import {repopulate_state} from '../actions/LoginAction'
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {repopulate_state} from '../actions/LoginAction';
+import {saveCurrentWork} from '../actions/PortfolioAction.js';
 import {withStyles} from '@material-ui/core/styles'
 import {Button, Fab, IconButton, TextField, Typography} from '@material-ui/core';
 import {FaEdit, FaPlus, FaSave} from "react-icons/fa";
@@ -98,10 +99,20 @@ class Portfolio extends Component {
      * @return void
      * @memberof Portfolio
      */
-     componentDidMount() {
+    async componentDidMount() {
         if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            this.props.repopulate_state(localStorageItem)
+            const userLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+            const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+            await this.props.repopulate_state(userLocalStorageItem);
+            await this.props.saveCurrentWork(portfolioLocalStorageItem);
+        }
+        if (this.props.loggedIn) {
+            if (this.props.currentPortfolio !== null) {
+                this.setState({
+                    pages: this.props.currentPortfolio.pages
+                })
+            }
+            
         }
     }
 
@@ -123,7 +134,7 @@ class Portfolio extends Component {
      * @param {*} selection - the fields to update, or null if no changes are needed
      */
     handleSelector(selection) {
-        if(selection === null) {
+        if (selection === null) {
             this.setState({
                 showSelector: !this.state.showSelector
             })
@@ -286,6 +297,7 @@ class Portfolio extends Component {
                     gravatar_id: this.props.gravatar_id
                 },
                 portfolio: {
+                    _id: undefined,
                     name: "test",
                     pages: this.state.pages
                 }
@@ -386,7 +398,8 @@ const mapStateToProps = state => ({
     name: state.login.name,
     id: state.login.id,
     avatar_url: state.login.avatar_url,
-    gravatar_id: state.login.gravatar_id
+    gravatar_id: state.login.gravatar_id,
+    currentPortfolio: state.portfolio.currentPortfolio
 })
 
 /** 
@@ -396,7 +409,8 @@ const mapStateToProps = state => ({
  * @memberof Portfolio
  */
 const mapDispatchToProps = {
-    repopulate_state
+    repopulate_state,
+    saveCurrentWork
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))
