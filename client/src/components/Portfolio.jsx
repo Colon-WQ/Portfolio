@@ -9,11 +9,11 @@ import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import {templates} from './templates';
+import {templates} from '../templates/Templates';
 import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
-
+import DirectoryManager from './DirectoryManager';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -190,13 +190,52 @@ class Portfolio extends Component {
      * 
      */
     handleCreateFile(entries, directory) {
-        console.log("entries are");
-        console.log(entries);
+        const images = [];
+        const copy = JSON.parse(JSON.stringify(entries));
+        for(let idx = 0; idx < copy.length; idx++) {
+            let dupeEntry = copy[idx];
+            Object.entries(dupeEntry.images).map(([key, item]) => {
+                if (item.startsWith('data:image/')){
+                    const split=item.split(',');
+                    const fileType=split[0].substring(11, split[0].indexOf(';'));
+                    const baseContent=split[1];
+                    console.log(baseContent);
+                    const imgDir=`assets/${key}${idx}.${fileType}`;
+                    images.push({
+                        file: `${directory}${imgDir}`,
+                        contents: baseContent
+                    });
+                    copy[idx].images[key]=imgDir;
+                }
+                // copy.images[key] = `${directory}/${key}.jpg`
+            })
+            for(let s_idx = 0; s_idx < dupeEntry.sections.length; s_idx++) {
+                let dupeSection = dupeEntry.sections[s_idx];
+                Object.entries(dupeSection.images).map(([key, item]) => {
+                    if (item.startsWith('data:image/')){
+                        const split=item.split(',');
+                        const fileType=split[0].substring(11, split[0].indexOf(';'));
+                        const baseContent=split[1];
+                        const size = baseContent.length * 3 / 4 - baseContent.split('=')
+                        console.log(baseContent);
+                        const imgDir=`assets/${key}${idx}_section${s_idx}.${fileType}`;
+                        images.push({
+                            file: `${directory}${imgDir}`,
+                            contents: baseContent
+                        });
+                        copy[idx].sections[s_idx].images[key]=imgDir;
+                    }
+                    // copy.images[key] = `${directory}/${key}.jpg`
+                })
+            }
+        }
+            
+        
         const sheets = new ServerStyleSheets();
         // TODO: test renderToStaticMarkup
         const rawHTML = ReactDOMServer.renderToString(sheets.collect(
             <div style={{display: "flex", flexDirection: "column"}}>
-                {entries.map((entry, index) => this.renderEntry(entry))}
+                {copy.map((entry, index) => this.renderEntry(entry))}
             </div>),);
         // TODO: add title
         const html = Base64.encode(`
@@ -214,11 +253,12 @@ class Portfolio extends Component {
             ${rawHTML}
             </body>`);
         const css = Base64.encode(sheets.toString());
-        const js = Base64.encode(entries
+        const js = Base64.encode(copy
             .map((entry, index) => templates[entry.type][entry.style].script(index))
             .filter(Boolean).join('\n'));
 
         const files = [
+            ...images,
             {
                 file: `${directory}scripts.js`,
                 contents: js
@@ -313,16 +353,23 @@ class Portfolio extends Component {
             })}
             {this.state.showEditor && entry != undefined
                 ? <EntryEditor 
-                    fields={entry} 
-                    info={templates[entry.type][entry.style].info} 
-                    onClose={this.handleEditorClose} 
-                /> 
+                        fields={entry} 
+                        info={templates[entry.type][entry.style].info} 
+                        onClose={this.handleEditorClose} 
+                    /> 
                 : null}
             {this.state.showSelector
                 ? <TemplateSelector
                     onClose={this.handleSelector} 
                 /> 
                 : null}
+            {false
+                ? <DirectoryManager
+                        onClose={console.log}
+                        dirTree={{directory:"", id:0, pages:[{directory:"sub", id:1, pages:[]}]}}
+                    />
+                : null
+            }
             <div className={classes.staticDiv}>
                 <Fab 
                     className={classes.controlFAB}
