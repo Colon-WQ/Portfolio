@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction'
 import Typography from '@material-ui/core/Typography';
@@ -7,7 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Button, Divider, Drawer, Hidden, IconButton, List, ListItem } from '@material-ui/core';
+import { Button, List, ListItem } from '@material-ui/core';
 import { theme } from '../styles/styles';
 
 

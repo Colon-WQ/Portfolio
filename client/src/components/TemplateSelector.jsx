@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import {Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab} from '@material-ui/core';
+import {Typography, Modal, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab} from '@material-ui/core';
 import {templates} from '../templates/Templates';
-import {FaSave, FaTimes} from 'react-icons/fa';
+import {FaTimes} from 'react-icons/fa';
 
 
 /**

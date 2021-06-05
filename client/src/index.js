@@ -26,14 +26,6 @@ const store = createStore(
   applyMiddleware(thunk)
 )
 
-const portfolioFields = {
-  finalizeDialogState: false,
-  overrideDialogState: false,
-  repositoryName: "",
-  repositoryHTML: "",
-  repositoryCSS: ""
-}
-
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme = {theme}>
