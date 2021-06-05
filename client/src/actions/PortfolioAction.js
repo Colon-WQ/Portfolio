@@ -186,8 +186,6 @@ export function fetchPortfolios(id) {
         }).then(res => res.data)
         .then(data => {
             //TODO PROBABLY HAVE TO CONVERT DATA INTO AN ARRAY DEPENDING ON THE RESULT
-            console.log("look here")
-            console.log(data.portfolios)
             if (data.portfolios !== undefined) {
                 dispatch(fetchPortfoliosSuccess(data.portfolios))
             } 

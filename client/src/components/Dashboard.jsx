@@ -7,6 +7,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 /**
@@ -53,6 +59,21 @@ const styles = (theme) => ({
  * @component
  */
 class Dashboard extends Component {
+
+    constructor() {
+        super();
+        this.state = {
+            nameDialogState: false,
+            portfolioName: "MyPortfolio"
+        }
+
+        this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
+        this.handleOpenPortfolio = this.handleOpenPortfolio.bind(this);
+        this.handleOnChange = this.handleOnChange.bind(this);
+        this.handleNameDialogClose = this.handleNameDialogClose.bind(this);
+        this.handleNameDialogOpen = this.handleNameDialogOpen.bind(this);
+    }
+
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
      * 
@@ -66,7 +87,7 @@ class Dashboard extends Component {
             const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
             await this.props.repopulate_state(localStorageItem);
         }
-        this.props.fetchPortfolios(this.props.id);
+        await this.props.fetchPortfolios(this.props.id);
     }
 
     /**
@@ -87,14 +108,40 @@ class Dashboard extends Component {
         });
     }
 
+    handleOnChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
+    }
+
+    handleNameDialogOpen() {
+        this.setState({
+            nameDialogState: true
+        })
+    }
+
+    handleNameDialogClose() {
+        this.setState({
+            nameDialogState: false
+        })
+    }
+
     /**
      * Changes route to /edit to render a fresh Portfolio creation screen.
      * 
      * @return void
      * @memberof Dashboard
      */
-    handleAddPortfolio = async () => {
+    async handleAddPortfolio() {
         await this.props.clearCurrentWorkFromLocal();
+
+        const portfolio = {
+            _id: undefined,
+            name: this.state.portfolioName,
+            pages: undefined
+        }
+
+        await this.props.saveCurrentWorkToLocal(portfolio);
         
         window.location.pathname = '/edit'
     }
@@ -106,7 +153,7 @@ class Dashboard extends Component {
      * @return void
      * @param {*} event The DOM node that the click event was bound to. 
      */
-    handleOpenPortfolio = async (event) => {
+    async handleOpenPortfolio(event) {
         const id = event.currentTarget.id;
         const portfolio = await axios({
             method: "GET",
@@ -123,8 +170,6 @@ class Dashboard extends Component {
             }
         });
 
-        console.log("portfolio pages");
-        console.log(portfolio.pages[0].entries);
         //Need to wait for portfolio to be saved to localStorage before changing route
         //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
         //LocalStorage is suitable to store portfolio data.
@@ -135,7 +180,6 @@ class Dashboard extends Component {
 
     render() {
         const { name, portfolios, classes } = this.props
-        console.log(portfolios)
         return (
             <div className={classes.root}>
                 <div className={classes.appBarSpacer}/>
@@ -143,12 +187,54 @@ class Dashboard extends Component {
                 <Grid className={classes.gridHorizontal}>
                     {portfolios.map((element, idx) => {
                         return (<Button key={idx} id={element._id.valueOf()} onClick={this.handleOpenPortfolio} className={classes.portfolioButton}>
-                            {element._id.valueOf()}
+                            {element.name}
                         </Button>);
                     })}
-                    <Button onClick={this.handleAddPortfolio} className={classes.portfolioButton}>Add a Portfolio</Button>
+                    <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
                 <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
+                <Dialog
+                    open={this.state.nameDialogState}
+                    onClose={this.handleNameDialogClose}
+                    aria-labelledby="portfolio name dialog"
+                >
+                    <DialogTitle id="portfolio-name-dialog-title">
+                        Portfolio Name
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Set your Portfolio name here. This will be part of your website's url, so choose carefully.
+                        </DialogContentText>
+                        <TextField
+                            name="portfolioName"
+                            autoFocus
+                            margin="dense"
+                            label="Portfolio Name"
+                            type="string"
+                            defaultValue={this.state.portfolioName}
+                            fullWidth
+                            onChange={this.handleOnChange}
+                            InputLabelProps={{
+                                style: {color: "whitesmoke"},
+                            }}
+                            InputProps={{
+                                color: 'secondary'
+                            }}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={this.handleNameDialogClose}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={this.handleAddPortfolio}
+                        >
+                            Set Name
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
 
         )

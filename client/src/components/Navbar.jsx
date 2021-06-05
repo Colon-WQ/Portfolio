@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { log_out_user, repopulate_state } from '../actions/LoginAction';
+import { clearCurrentWorkFromLocal } from '../actions/PortfolioAction';
 import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
@@ -9,7 +10,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
+import { Avatar, Box, Button, Divider, Drawer, Hidden } from '@material-ui/core';
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -181,9 +182,10 @@ class Navbar extends Component {
      * @return void
      * @memberof Navbar
      */
-    handleLogout() {
+    async handleLogout() {
         console.log("logging out")
-        this.props.log_out_user()
+        await this.props.log_out_user()
+        await this.props.clearCurrentWorkFromLocal();
         localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE)
         console.log("successfully cleared localStorage")
         axios({
@@ -292,7 +294,8 @@ const mapStateToProps = state => ({
  */
 const mapDispatchToProps = {
   log_out_user,
-  repopulate_state
+  repopulate_state,
+  clearCurrentWorkFromLocal
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Navbar))
