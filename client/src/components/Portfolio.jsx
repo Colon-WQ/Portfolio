@@ -1,12 +1,13 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import {repopulate_state} from '../actions/LoginAction'
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {repopulate_state} from '../actions/LoginAction';
+import {saveCurrentWork, saveCurrentWorkToLocal} from '../actions/PortfolioAction.js';
 import {withStyles} from '@material-ui/core/styles'
-import {Button, Fab, IconButton, TextField, Typography} from '@material-ui/core';
-import {FaEdit, FaPlus, FaSave} from "react-icons/fa";
+import {Fab} from '@material-ui/core';
+import {FaEdit, FaPlus, FaSave, FaTimes} from "react-icons/fa";
 import {Base64} from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
-import {ServerStyleSheets, ThemeProvider} from '@material-ui/core/styles'
+import {ServerStyleSheets} from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
 import {templates} from '../templates/Templates';
 import TemplateSelector from './TemplateSelector';
@@ -76,6 +77,8 @@ class Portfolio extends Component {
         super(props);
         this.state = {
             editMode: true,
+            portfolio_id: undefined,
+            name: "test",
             pages: [{
                 directory: "",
                 entries: []
@@ -90,6 +93,7 @@ class Portfolio extends Component {
         this.handleCreateFile = this.handleCreateFile.bind(this);
         this.handleProduction = this.handleProduction.bind(this);
         this.handleSelector = this.handleSelector.bind(this);
+        this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
     }
 
     /**
@@ -98,10 +102,30 @@ class Portfolio extends Component {
      * @return void
      * @memberof Portfolio
      */
-     componentDidMount() {
+    async componentDidMount() {
         if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            this.props.repopulate_state(localStorageItem)
+            const userLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+            const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+            await this.props.repopulate_state(userLocalStorageItem);
+            await this.props.saveCurrentWork(portfolioLocalStorageItem);
+        }
+        if (this.props.loggedIn) {
+            if (this.props.currentPortfolio !== null) {
+                //Need to set the relevant _id, name, pages if portfolio exists.
+                //Redux state currentPortfolio is set such that if its not null, it will have name.
+                this.setState({
+                    name: this.props.currentPortfolio.name
+                })
+
+                if ( this.props.currentPortfolio._id !== undefined && this.props.currentPortfolio.pages !== undefined) {
+                    this.setState({
+                        portfolio_id: this.props.currentPortfolio._id,
+                        pages: this.props.currentPortfolio.pages
+                    })
+                }
+            
+            }
+            
         }
     }
 
@@ -123,7 +147,7 @@ class Portfolio extends Component {
      * @param {*} selection - the fields to update, or null if no changes are needed
      */
     handleSelector(selection) {
-        if(selection === null) {
+        if (selection === null) {
             this.setState({
                 showSelector: !this.state.showSelector
             })
@@ -274,6 +298,8 @@ class Portfolio extends Component {
      */
     async handleProduction() {
         //this saves the portfolio to mongoDB
+        console.log("sending")
+        console.log(this.state.pages)
         await axios({
             method: "PUT",
             url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
@@ -286,18 +312,45 @@ class Portfolio extends Component {
                     gravatar_id: this.props.gravatar_id
                 },
                 portfolio: {
-                    name: "test",
+                    _id: this.state.portfolio_id,
+                    name: this.state.name,
                     pages: this.state.pages
                 }
             }
         }).then(res => {
             console.log(res.data.message);
+            //Need to set the id first to fetch it after this.
+            this.setState({
+                portfolio_id: res.data._id
+            })
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
             } else {
                 console.log(err.message);
             }
+        })
+
+        //Need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
+        //WARNING: Could be a source of poor performance. Might be a better way to do this.
+        await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
+            withCredentials: true
+        }).then((res) => {
+            console.log("_id updated");
+            this.props.saveCurrentWorkToLocal(res.data.portfolio);
+            return res;
+        }).then(res => {
+            //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
+            //Name is also set.
+            this.setState({
+                pages: res.data.portfolio.pages
+            })
+        }).catch(err => {
+            console.log(err);
+            console.log("error getting _id from mongoDB, returning user to Dashboard to retry");
+            window.location.pathname = "/dashboard";
         })
 
         let pushableArray = [];
@@ -318,12 +371,29 @@ class Portfolio extends Component {
         })
     }
 
+    async handleDeletePortfolio() {
+        await axios({
+            method: "DELETE",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/delete/" + this.state.portfolio_id,
+            withCredentials: true
+        }).then(res => {
+            console.log(res.data.message);
+            window.location.pathname = '/dashboard';
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+        })
+    }
+
 
     render() {
         const { classes } = this.props;
 
         let entry = undefined;
-        if (this.state.pages[this.state.currentPage].entries != []) {
+        if (this.state.pages[this.state.currentPage].entries !== []) {
             entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
         }
 
@@ -339,7 +409,7 @@ class Portfolio extends Component {
                     {this.renderEntry(entry)}
                 </div>);
             })}
-            {this.state.showEditor && entry != undefined
+            {this.state.showEditor && entry !== undefined
                 ? <EntryEditor 
                         fields={entry} 
                         info={templates[entry.type][entry.style].info} 
@@ -366,10 +436,16 @@ class Portfolio extends Component {
                 </Fab>
                 <Fab 
                     className={classes.controlFAB}
-                    onClick={() => console.log(this.handleProduction())}>
+                    onClick={this.handleProduction}>
                     <FaSave/>
                 </Fab>
                 <Publish pushables={this.state.pushables}/>
+                <Fab
+                    className={classes.controlFAB}
+                    onClick={this.handleDeletePortfolio}
+                >
+                    <FaTimes/>
+                </Fab>
             </div>
         </div>);
     }
@@ -386,7 +462,8 @@ const mapStateToProps = state => ({
     name: state.login.name,
     id: state.login.id,
     avatar_url: state.login.avatar_url,
-    gravatar_id: state.login.gravatar_id
+    gravatar_id: state.login.gravatar_id,
+    currentPortfolio: state.portfolio.currentPortfolio
 })
 
 /** 
@@ -396,7 +473,9 @@ const mapStateToProps = state => ({
  * @memberof Portfolio
  */
 const mapDispatchToProps = {
-    repopulate_state
+    repopulate_state,
+    saveCurrentWork,
+    saveCurrentWorkToLocal
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))

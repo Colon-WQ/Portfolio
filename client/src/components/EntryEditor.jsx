@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
-import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, CssBaseline, Modal, Icon, Input, InputLabel, Fab } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes } from "react-icons/fa";
 
 

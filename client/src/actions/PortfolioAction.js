@@ -88,11 +88,11 @@ export const clearCurrentWork = () => ({
  * @function
  * @requires NPM:redux-thunk
  */
-export async function saveCurrentWorkToLocal(curr) {
+export function saveCurrentWorkToLocal(curr) {
     return dispatch => {
-        window.localStorage.setItem(process.emv.REACT_APP_AUTOSAVE_LOCALSTORAGE, JSON.stringify(curr))
+        window.localStorage.setItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE, JSON.stringify(curr))
         dispatch(saveCurrentWork(curr))
-        console.log("portfolio work saved temporarily")
+        //console.log("portfolio work saved temporarily")
     }
 }
 
@@ -109,11 +109,11 @@ export async function saveCurrentWorkToLocal(curr) {
  * @function
  * @requires NPM:redux-thunk
  */
-export async function clearCurrentWorkFromLocal() {
+export function clearCurrentWorkFromLocal() {
     return dispatch => {
-        window.localStorage.removeItem(process.emv.REACT_APP_AUTOSAVE_LOCALSTORAGE)
+        window.localStorage.removeItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE)
         dispatch(clearCurrentWork())
-        console.log("portfolio work cleared")
+        //console.log("portfolio work cleared")
     }
 }
 
@@ -186,7 +186,9 @@ export function fetchPortfolios(id) {
         }).then(res => res.data)
         .then(data => {
             //TODO PROBABLY HAVE TO CONVERT DATA INTO AN ARRAY DEPENDING ON THE RESULT
-            dispatch(fetchPortfoliosSuccess(data.portfolios))
+            if (data.portfolios !== undefined) {
+                dispatch(fetchPortfoliosSuccess(data.portfolios))
+            } 
         }).catch(err => dispatch(fetchPortfoliosFailure(err)))
     }
 }
