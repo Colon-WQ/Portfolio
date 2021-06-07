@@ -14,6 +14,7 @@ import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
+import {Prompt, withRouter} from 'react-router-dom';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -330,67 +331,68 @@ class Portfolio extends Component {
     return files;
   }
 
-  /**
-   * A function to generate all files needed to be pushed to github.
-   * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
-   * 
-   * TODO: Add a name setter for Portfolio, currently set to Test
-   */
+    /**
+     * A function to generate all files needed to be pushed to github.
+     * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+     * 
+     * TODO: Add a name setter for Portfolio, currently set to Test
+     */
   async handleProduction() {
     //this saves the portfolio to mongoDB
-    console.log("sending")
-    console.log(this.state.pages)
     await axios({
-      method: "PUT",
-      url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
-      withCredentials: true,
-      data: {
-        user: {
-          id: this.props.id,
-          name: this.props.name,
-          avatar: this.props.avatar_url,
-          gravatar_id: this.props.gravatar_id
-        },
-        portfolio: {
-          _id: this.state.portfolio_id,
-          name: this.state.name,
-          pages: this.state.pages
+        method: "PUT",
+        url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
+        withCredentials: true,
+        data: {
+            user: {
+                id: this.props.id,
+                name: this.props.name,
+                avatar: this.props.avatar_url,
+                gravatar_id: this.props.gravatar_id
+            },
+            portfolio: {
+                _id: this.state.portfolio_id,
+                name: this.state.name,
+                pages: this.state.pages
+            }
         }
-      }
-    }).then(res => {
-      console.log(res.data.message);
-      //Need to set the id first to fetch it after this.
-      this.setState({
-        portfolio_id: res.data._id
-      })
-    }).catch(err => {
-      if (err.response) {
-        console.log(err.response.data);
-      } else {
-        console.log(err.message);
-      }
-    })
+    }).then(async res => {
+        console.log(res.data.message);
+        //Need to set the id first to fetch it after this.
+        this.setState({
+            portfolio_id: res.data._id
+        })
 
-    //Need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
-    //WARNING: Could be a source of poor performance. Might be a better way to do this.
-    await axios({
-      method: "GET",
-      url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
-      withCredentials: true
-    }).then((res) => {
-      console.log("_id updated");
-      this.props.saveCurrentWorkToLocal(res.data.portfolio);
-      return res;
-    }).then(res => {
-      //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
-      //Name is also set.
-      this.setState({
-        pages: res.data.portfolio.pages
-      })
+        //If saving/updating is successful, need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
+        //WARNING: Could be a source of poor performance. Might be a better way to do this.
+        await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
+            withCredentials: true
+        }).then(res => {
+            console.log("_id updated");
+            this.props.saveCurrentWorkToLocal(res.data.portfolio);
+            //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
+            //Name is also set.
+            this.setState({
+                pages: res.data.portfolio.pages
+            });
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+            
+            this.props.history.push("/dashboard");
+        })
+
     }).catch(err => {
-      console.log(err);
-      console.log("error getting _id from mongoDB, returning user to Dashboard to retry");
-      window.location.pathname = "/dashboard";
+        if (err.response) {
+            console.log(err.response.data);
+        } else {
+            console.log(err.message);
+        }
     })
 
     let pushableArray = [];
@@ -416,6 +418,7 @@ class Portfolio extends Component {
    * 
    * @param {number} index the index of the entry to be deleted
    * @returns void
+   * @memberof Portfolio
    */
   handleDeleteEntry(index) {
     const newPages = [...this.state.pages];
@@ -429,6 +432,12 @@ class Portfolio extends Component {
     });
   }
 
+  /**
+   * Afunction to delete the current portfolio from mongodb
+   *
+   * @returns void
+   * @memberof Portfolio
+   */
   async handleDeletePortfolio() {
     await axios({
       method: "DELETE",
@@ -436,7 +445,7 @@ class Portfolio extends Component {
       withCredentials: true
     }).then(res => {
       console.log(res.data.message);
-      window.location.pathname = '/dashboard';
+      this.props.history.push("/dashboard");
     }).catch(err => {
       if (err.response) {
         console.log(err.response.data);
@@ -483,6 +492,23 @@ class Portfolio extends Component {
 
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
+        <Prompt
+            when={true}
+            message={JSON.stringify({
+                message: "Are you sure you want to leave? Have you saved your work?",
+                portfolio: {
+                    _id: this.state.portfolio_id,
+                    name: this.state.name,
+                    pages: this.state.pages
+                },
+                user: {
+                    id: this.props.id,
+                    name: this.props.name,
+                    avatar: this.props.avatar_url,
+                    gravatar_id: this.props.gravatar_id
+                }
+            })}
+        />
         {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
           return (<div style={{ display: "flex", flexDirection: "row" }}>
             <Fab
@@ -567,4 +593,4 @@ const mapDispatchToProps = {
   saveCurrentWorkToLocal
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))
