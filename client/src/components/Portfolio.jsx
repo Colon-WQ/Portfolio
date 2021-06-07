@@ -4,7 +4,7 @@ import { repopulate_state } from '../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
 import { withStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core';
-import { FaEdit, FaPlus, FaSave, FaTimes } from "react-icons/fa";
+import { FaEdit, FaLink, FaPlus, FaSave, FaTimes, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import { ServerStyleSheets } from '@material-ui/core/styles'
@@ -43,6 +43,11 @@ const styles = (theme) => ({
   editFAB: {
     position: 'absolute',
     marginTop: '2vw',
+    marginLeft: '2vw'
+  },
+  delFAB: {
+    position: 'absolute',
+    marginTop: '5vw',
     marginLeft: '2vw'
   },
   controlFAB: {
@@ -87,13 +92,22 @@ class Portfolio extends Component {
       currentEntry: 0,
       showEditor: false,
       showSelector: false,
-      pushables: []
+      showDirectory: false,
+      pushables: [],
+      dirTree: {
+        directory: "",
+        id: "root_mongo_id",
+        pages:
+          {}
+      }
     }
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
     this.handleProduction = this.handleProduction.bind(this);
     this.handleSelector = this.handleSelector.bind(this);
     this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
+    this.handleUpdatePages = this.handleUpdatePages.bind(this);
+    this.handleDirectory = this.handleDirectory.bind(this);
   }
 
   /**
@@ -397,13 +411,22 @@ class Portfolio extends Component {
     })
   }
 
-  handleShowPages(pageID) {
-    if (pageID === undefined) {
-      this.state.currentPage = pageID;
-    }
+  /**
+   * A function to delete entries from a portfolio
+   * 
+   * @param {number} index the index of the entry to be deleted
+   * @returns void
+   */
+  handleDeleteEntry(index) {
+    const newPages = [...this.state.pages];
+    // TODO: mark entry to be deleted from mongo
+    newPages[this.state.currentPage].entries =
+      this.state.pages[this.state.currentPage].entries.filter(
+        (item, filterIndex) => (filterIndex !== index)
+      );
     this.setState({
-      showDirectory: !this.state.showDirectory
-    })
+      pages: newPages
+    });
   }
 
   async handleDeletePortfolio() {
@@ -430,10 +453,26 @@ class Portfolio extends Component {
       name: newPageName,
       id: undefined
     }];
+
     this.state.pages = newPages;
+    this.state.dirTree = newDirTree;
+    console.log(this.state.pages);
   }
 
+  handleDirectory(directory) {
+    console.log(directory)
+    if (directory !== undefined) {
+      for (let index = 0; index < this.state.pages.length; index++) {
+        if (this.state.pages[index].directory === directory) this.state.currentPage = index;
+      }
+      console.log(this.state.currentPage)
+    }
+    this.setState({
+      showDirectory: !this.state.showDirectory
+    })
+  }
 
+  // TODO: move editor components and logic into component files
   render() {
     const { classes } = this.props;
 
@@ -450,6 +489,11 @@ class Portfolio extends Component {
               className={classes.editFAB}
               onClick={() => this.setState({ currentEntry: index, showEditor: !this.state.showEditor })}>
               <FaEdit />
+            </Fab>
+            <Fab
+              className={classes.delFAB}
+              onClick={() => this.handleDeleteEntry(index)}>
+              <FaTrash />
             </Fab>
             {this.renderEntry(entry)}
           </div>);
@@ -468,23 +512,8 @@ class Portfolio extends Component {
           : null}
         {this.state.showDirectory
           ? <DirectoryManager
-            onClose={this.handleShowPages}
-            dirTree={{
-              root:
-              {
-                directory: "root",
-                id: "root_mongo_id",
-                pages:
-                {
-                  sub:
-                  {
-                    directory: "root/sub",
-                    id: "root_sub_mongo_id",
-                    pages: {}
-                  }
-                }
-              }
-            }}
+            onClose={this.handleDirectory}
+            dirTree={this.state.dirTree}
             onCreate={this.handleUpdatePages}
           />
           : null
@@ -499,6 +528,11 @@ class Portfolio extends Component {
             className={classes.controlFAB}
             onClick={() => console.log(this.handleProduction())}>
             <FaSave />
+          </Fab>
+          <Fab
+            className={classes.controlFAB}
+            onClick={() => this.handleDirectory()}>
+            <FaLink />
           </Fab>
           <Publish pushables={this.state.pushables} />
         </div>

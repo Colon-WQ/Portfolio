@@ -4,7 +4,7 @@ import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
-import TreeItem from '@material-ui/lab/TreeItem';
+import { TreeItem } from '@material-ui/lab';
 import { templates } from '../templates/Templates';
 import { FaPlus, FaSave, FaTimes } from 'react-icons/fa';
 
@@ -56,8 +56,8 @@ class DirectoryManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      originalPage: this.props.cancelTo,
-      newPage: this.props.cancelTo
+      currPage: "",
+      dirTree: this.props.dirTree
     }
     this.handleSelectPage = this.handleSelectPage.bind(this);
     this.renderTree = this.renderTree.bind(this);
@@ -86,13 +86,13 @@ class DirectoryManager extends Component {
    */
   handleSelectPage(event, node) {
     this.setState({
-      newPage: node
+      currPage: node
     });
   }
 
   renderTree(dirTree, label) {
     return (
-      <TreeItem value={dirTree.directory} nodeId={dirTree.id} label={label}>
+      <TreeItem value={dirTree.directory} nodeId={dirTree.directory} label={label}>
         {Object.entries(dirTree.pages).map(([key, item]) => {
           return this.renderTree(item, key);
         })}
@@ -100,33 +100,38 @@ class DirectoryManager extends Component {
   }
 
   insertPage(pageArray, dirTree, index, fullDir) {
-    if (index !== pageArray.length - 1) {
-      this.insertPage(pageArray, dirTree.pages[pageArray[index]], index + 1);
-    } else {
+    if (index === pageArray.length - 1) {
       dirTree.pages[pageArray[index]] = {
         directory: fullDir,
         id: undefined,
         pages: {}
       }
     }
+    else {
+      this.insertPage(pageArray, dirTree.pages[pageArray[index]], index + 1, fullDir);
+    }
   }
 
-  handleCreatePage(currentDirectory, newName) {
-    const newDirectory = `${currentDirectory}/${newName}`;
-    const newDirTree = JSON.parse(JSON.stringify(this.props.dirTree));
-    this.insertPage(newDirectory.split("/"), newDirTree, 0, newDirectory);
+  handleCreatePage(newName) {
+    const newDirectory = `${this.state.currPage}/${newName}`;
+    const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
+    this.insertPage(newDirectory.split("/"), newDirTree, 1, newDirectory);
     this.props.onCreate(newDirTree, newName, newDirectory);
+    this.setState({
+      dirTree: newDirTree
+    })
   }
 
   // TODO: add props dirTree={name:"", directory:"", id:number, pages:[]}
+  // root page should not be renamed, since directory.root is hardcoded.
   render() {
     const { classes } = this.props;
-    console.log(this.props.dirTree)
     // should only have 1 root element for object.keys[0] to work
+    console.log(this.props.dirTree)
     return (
       <Modal className={classes.modal}
         open={true}
-        onClose={() => this.props.onClose(this.state.newPage)}
+        onClose={() => this.props.onClose(this.state.currPage)}
         aria-labelledby="Directory Manager"
         aria-describedby="Select a page."
       >
@@ -140,9 +145,9 @@ class DirectoryManager extends Component {
             onNodeSelect={this.handleSelectPage}
             onNodeToggle={this.handleToggle}
           >
-            {this.renderTree(this.props.dirTree, Object.keys(this.props.dirTree)[0])}
+            {this.renderTree(this.state.dirTree, "root")}
           </TreeView>
-          <Fab variant="extended">
+          <Fab variant="extended" onClick={(event) => this.handleCreatePage("temp")}>
             <FaPlus />
             New page
           </Fab>
