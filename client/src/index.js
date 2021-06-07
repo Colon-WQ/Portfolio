@@ -6,6 +6,7 @@ import LoginResult from './components/LoginResult';
 import Dashboard from './components/Dashboard';
 import Portfolio from './components/Portfolio';
 import Publish from './components/Publish';
+import UserConfirmation from './components/UserConfirmation';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -29,7 +30,9 @@ const store = createStore(
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme = {theme}>
-      <BrowserRouter>
+      <BrowserRouter
+        getUserConfirmation={(message, callback) => UserConfirmation(message, callback)}
+      >
         <Provider store = {store}>
           <Switch>
             <Route exact path = '/' component = {Home}></Route>

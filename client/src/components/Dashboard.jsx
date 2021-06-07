@@ -13,6 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { withRouter } from 'react-router-dom';
 
 
 /**
@@ -64,7 +65,9 @@ class Dashboard extends Component {
         super();
         this.state = {
             nameDialogState: false,
-            portfolioName: "MyPortfolio"
+            portfolioName: "MyPortfolio",
+            duplicateKeyError: false,
+            duplicateKeyHelperText: ""
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -110,6 +113,10 @@ class Dashboard extends Component {
 
     handleOnChange(event) {
         this.setState({
+            duplicateKeyError: false,
+            duplicateKeyHelperText: ""
+        })
+        this.setState({
             [event.target.name]: event.target.value
         });
     }
@@ -132,18 +139,27 @@ class Dashboard extends Component {
      * @return void
      * @memberof Dashboard
      */
-    async handleAddPortfolio() {
-        await this.props.clearCurrentWorkFromLocal();
+    handleAddPortfolio() {
 
-        const portfolio = {
-            _id: undefined,
-            name: this.state.portfolioName,
-            pages: undefined
+        if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.portfolioName).length === 0) {
+            //This clears current work from local, so we need to arrest the screen whenever user attempts to leave a portfolio
+            //page and remind him to save before leaving.
+            this.props.clearCurrentWorkFromLocal();
+
+            const portfolio = {
+                _id: undefined,
+                name: this.state.portfolioName,
+                pages: undefined
+            }
+
+            this.props.saveCurrentWorkToLocal(portfolio);
+            this.props.history.push("/edit");
+        } else {
+            this.setState({
+                duplicateKeyError: true,
+                duplicateKeyHelperText: "Portfolio name already exists"
+            })
         }
-
-        await this.props.saveCurrentWorkToLocal(portfolio);
-        
-        window.location.pathname = '/edit'
     }
 
     /**
@@ -175,7 +191,7 @@ class Dashboard extends Component {
         //LocalStorage is suitable to store portfolio data.
         await this.props.saveCurrentWorkToLocal(portfolio);
 
-        window.location.pathname = '/edit'
+        this.props.history.push("/edit");
     }
 
     render() {
@@ -192,7 +208,7 @@ class Dashboard extends Component {
                     })}
                     <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
                 </Grid>
-                <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
+                {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Dialog
                     open={this.state.nameDialogState}
                     onClose={this.handleNameDialogClose}
@@ -220,6 +236,8 @@ class Dashboard extends Component {
                             InputProps={{
                                 color: 'secondary'
                             }}
+                            error={this.state.duplicateKeyError}
+                            helperText={this.state.duplicateKeyHelperText}
                         />
                     </DialogContent>
                     <DialogActions>
@@ -267,4 +285,4 @@ const mapDispatchToProps = {
     clearCurrentWorkFromLocal
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Dashboard)));

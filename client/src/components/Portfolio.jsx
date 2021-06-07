@@ -14,6 +14,7 @@ import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
+import {Prompt, withRouter} from 'react-router-dom';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -95,6 +96,8 @@ class Portfolio extends Component {
         this.handleSelector = this.handleSelector.bind(this);
         this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
     }
+
+    
 
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
@@ -298,8 +301,6 @@ class Portfolio extends Component {
      */
     async handleProduction() {
         //this saves the portfolio to mongoDB
-        console.log("sending")
-        console.log(this.state.pages)
         await axios({
             method: "PUT",
             url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
@@ -317,12 +318,37 @@ class Portfolio extends Component {
                     pages: this.state.pages
                 }
             }
-        }).then(res => {
+        }).then(async res => {
             console.log(res.data.message);
             //Need to set the id first to fetch it after this.
             this.setState({
                 portfolio_id: res.data._id
             })
+
+            //If saving/updating is successful, need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
+            //WARNING: Could be a source of poor performance. Might be a better way to do this.
+            await axios({
+                method: "GET",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
+                withCredentials: true
+            }).then(res => {
+                console.log("_id updated");
+                this.props.saveCurrentWorkToLocal(res.data.portfolio);
+                //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
+                //Name is also set.
+                this.setState({
+                    pages: res.data.portfolio.pages
+                });
+            }).catch(err => {
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
+                
+                this.props.history.push("/dashboard");
+            })
+
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -331,27 +357,7 @@ class Portfolio extends Component {
             }
         })
 
-        //Need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
-        //WARNING: Could be a source of poor performance. Might be a better way to do this.
-        await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
-            withCredentials: true
-        }).then((res) => {
-            console.log("_id updated");
-            this.props.saveCurrentWorkToLocal(res.data.portfolio);
-            return res;
-        }).then(res => {
-            //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
-            //Name is also set.
-            this.setState({
-                pages: res.data.portfolio.pages
-            })
-        }).catch(err => {
-            console.log(err);
-            console.log("error getting _id from mongoDB, returning user to Dashboard to retry");
-            window.location.pathname = "/dashboard";
-        })
+    
 
         let pushableArray = [];
 
@@ -378,7 +384,7 @@ class Portfolio extends Component {
             withCredentials: true
         }).then(res => {
             console.log(res.data.message);
-            window.location.pathname = '/dashboard';
+            this.props.history.push("/dashboard");
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -397,8 +403,25 @@ class Portfolio extends Component {
             entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
         }
 
-        return (
+        return (          
         <div style={{display: "flex", flexDirection: "column"}}>
+            <Prompt
+                when={true}
+                message={JSON.stringify({
+                    message: "Are you sure you want to leave? Have you saved your work?",
+                    portfolio: {
+                        _id: this.state.portfolio_id,
+                        name: this.state.name,
+                        pages: this.state.pages
+                    },
+                    user: {
+                        id: this.props.id,
+                        name: this.props.name,
+                        avatar: this.props.avatar_url,
+                        gravatar_id: this.props.gravatar_id
+                    }
+                })}
+            />
             {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
                 return (<div style={{display: "flex", flexDirection: "row"}}>
                     <Fab 
@@ -478,4 +501,4 @@ const mapDispatchToProps = {
     saveCurrentWorkToLocal
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))

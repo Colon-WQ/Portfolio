@@ -47,6 +47,10 @@ export const upsertPortfolio = async (req, res) => {
     const requestUser = req.body.user;
     const requestPortfolio = req.body.portfolio;
 
+    if (requestPortfolio.name === "") {
+        return res.status(400).send("Portfolio Name cannot be empty");
+    }
+
     const user = new User({
         _id: requestUser.id,
         name: requestUser.name,
@@ -54,7 +58,7 @@ export const upsertPortfolio = async (req, res) => {
         gravatar_id: requestUser.gravatar_id
     })
 
-    await User.findById(requestUser.id).exec()
+    await User.findById(requestUser.id)
     .then(isExist => {
             if (isExist === null) {
                 user.isNew = true;
@@ -77,11 +81,24 @@ export const upsertPortfolio = async (req, res) => {
 
     //If id doesn't exist, obj is new
     if (portfolio._id === undefined) {
-        portfolio._id = new mongoose.Types.ObjectId();
-        portfolio.isNew = true;
-        user.portfolios.push(portfolio._id); //If portfolio is new, then add it in user's ref
+
+        //This will handle duplicate names chosen before anything is actually saved.
+        await Portfolio.findOne({ name: portfolio.name })
+        .then(isExist => {
+            if (isExist === null) {
+                portfolio._id = new mongoose.Types.ObjectId();
+                portfolio.isNew = true;
+                user.portfolios.push(portfolio._id); //If portfolio is new, then add it in user's ref
+            } else {
+                return res.status(400).send("Duplicate Portfolio Name Chosen");
+            }
+        }).catch(err => {
+            console.log(err);
+            return res.status(400).send(err);
+        })
+        
     } else {
-        await Portfolio.findById(portfolio._id).exec()
+        await Portfolio.findById(portfolio._id)
         .then(isExist => {
             if (isExist === null) {
                 //Just In Case
@@ -117,7 +134,7 @@ export const upsertPortfolio = async (req, res) => {
             page._id = new mongoose.Types.ObjectId();
             page.isNew = true;
         } else {
-            await Page.findById(page._id).exec()
+            await Page.findById(page._id)
             .then(isExist => {
                 if (isExist === null) {
                     //Just In Case
@@ -187,21 +204,21 @@ export const upsertPortfolio = async (req, res) => {
                         .then(() => {
                             console.log("entry saved/updated")
                         }).catch(err => {
-                            if (err && err.code !== 11000) return res.status(400).send("error encountered");
+                            return res.status(400).send("error encountered");
                         });
                     }
 
                     return res.status(200).json({ message: "user created and portfolio created for user.", _id: portfolio._id });
                 }).catch(err => {
-                    if (err && err.code !== 11000) return res.status(400).send(err);
+                    return res.status(400).send(err);
                 })
             }
         }).catch(err => {
-            if (err && err.code !== 11000) return res.status(400).send(err);
+            return res.status(400).send(err);      
         })
 
     }).catch(err => {
-        if (err && err.code !== 11000) return res.status(400).send(err);
+        return res.status(400).send(err);
     })
 
     
@@ -213,7 +230,7 @@ export const upsertPortfolio = async (req, res) => {
  */
 export const getPortfolios = async (req, res) => {
     const gh_id = req.query.id;
-    await User.findById(gh_id).populate("portfolios").exec()
+    await User.findById(gh_id).populate("portfolios")
     .then(user => {
         if (user == null) {
             console.log("user id not found");
@@ -236,11 +253,11 @@ export const deletePortfolio = async (req, res) => {
     
     const id = req.params.id;
 
-    await Portfolio.findByIdAndDelete(id).exec()
+    await Portfolio.findByIdAndDelete(id)
     .then(async (deletedPortfolio) => {
         console.log("deleted portfolio");
 
-        await User.findById(deletedPortfolio.user).exec()
+        await User.findById(deletedPortfolio.user)
         .then(async (user) => {
             console.log(id)
             console.log(user.portfolios)
@@ -265,11 +282,11 @@ export const deletePortfolio = async (req, res) => {
         })
         
         for (let pageId of deletedPortfolio.pages) {
-            await Page.findByIdAndDelete(pageId).exec()
+            await Page.findByIdAndDelete(pageId)
             .then(async (deletedPage) => {
                 console.log("deleted page");
                 for (let pageId of deletedPage.entries) {
-                    await Entry.findByIdAndDelete(pageId).exec()
+                    await Entry.findByIdAndDelete(pageId)
                     .then((deletedEntry) => {
                         console.log("deleted entry");
                     }).catch(err => {
