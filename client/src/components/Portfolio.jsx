@@ -20,7 +20,7 @@ import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
-import {Prompt, withRouter} from 'react-router-dom';
+import { Prompt, withRouter } from 'react-router-dom';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -46,11 +46,6 @@ const styles = (theme) => ({
   },
   entryDiv: {
     position: 'relative'
-  },
-  editFAB: {
-    position: 'absolute',
-    marginTop: '2vw',
-    marginLeft: '2vw'
   },
   delFAB: {
     position: 'absolute',
@@ -97,9 +92,6 @@ class Portfolio extends Component {
       }],
       currentPage: 0,
       currentEntry: 0,
-      showEditor: false,
-      showSelector: false,
-      showDirectory: false,
       pushables: [],
       dirTree: {
         directory: "",
@@ -220,56 +212,20 @@ class Portfolio extends Component {
    * @param {*} selection - the fields to update, or null if no changes are needed
    */
   handleSelector(selection) {
-    if (selection === null) {
-      this.setState({
-        showSelector: !this.state.showSelector
-      })
-    } else {
-      const entryType = selection.type;
-      const entryStyle = selection.style;
-      const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
-      const newEntry = {
-        type: entryType,
-        style: entryStyle,
-        ...fieldsCopy
-      };
-      const newPages = [...this.state.pages];
-      newPages[this.state.currentPage].entries =
-        [...this.state.pages[this.state.currentPage].entries, newEntry];
-      this.setState({
-        pages: newPages,
-        showSelector: !this.state.showSelector
-      })
-    }
-  }
-
-  /**
-   * Event handler to open/close the template selector and update states if necessary
-   * 
-   * @param {*} selection - the fields to update, or null if no changes are needed
-   */
-  handleSelector(selection) {
-    if (selection === null) {
-      this.setState({
-        showSelector: !this.state.showSelector
-      })
-    } else {
-      const entryType = selection.type;
-      const entryStyle = selection.style;
-      const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
-      const newEntry = {
-        type: entryType,
-        style: entryStyle,
-        ...fieldsCopy
-      };
-      const newPages = [...this.state.pages];
-      newPages[this.state.currentPage].entries =
-        [...this.state.pages[this.state.currentPage].entries, newEntry];
-      this.setState({
-        pages: newPages,
-        showSelector: !this.state.showSelector
-      })
-    }
+    const entryType = selection.type;
+    const entryStyle = selection.style;
+    const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
+    const newEntry = {
+      type: entryType,
+      style: entryStyle,
+      ...fieldsCopy
+    };
+    const newPages = [...this.state.pages];
+    newPages[this.state.currentPage].entries =
+      [...this.state.pages[this.state.currentPage].entries, newEntry];
+    this.setState({
+      pages: newPages,
+    })
   }
 
   /**
@@ -285,13 +241,10 @@ class Portfolio extends Component {
       entries[this.state.currentEntry] = fields;
       newPages[this.state.currentPage].entries = entries;
       this.setState({
-        showEditor: !this.state.showEditor,
         pages: newPages
       })
     } else {
-      this.setState({
-        showEditor: !this.state.showEditor
-      })
+      this.forceUpdate();
     }
   }
 
@@ -391,68 +344,68 @@ class Portfolio extends Component {
     return files;
   }
 
-    /**
-     * A function to generate all files needed to be pushed to github.
-     * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
-     * 
-     * TODO: Add a name setter for Portfolio, currently set to Test
-     */
+  /**
+   * A function to generate all files needed to be pushed to github.
+   * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+   * 
+   * TODO: Add a name setter for Portfolio, currently set to Test
+   */
   async handleProduction() {
     //this saves the portfolio to mongoDB
     await axios({
-        method: "PUT",
-        url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
-        withCredentials: true,
-        data: {
-            user: {
-                id: this.props.id,
-                name: this.props.name,
-                avatar: this.props.avatar_url,
-                gravatar_id: this.props.gravatar_id
-            },
-            portfolio: {
-                _id: this.state.portfolio_id,
-                name: this.state.name,
-                pages: this.state.pages
-            }
+      method: "PUT",
+      url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
+      withCredentials: true,
+      data: {
+        user: {
+          id: this.props.id,
+          name: this.props.name,
+          avatar: this.props.avatar_url,
+          gravatar_id: this.props.gravatar_id
+        },
+        portfolio: {
+          _id: this.state.portfolio_id,
+          name: this.state.name,
+          pages: this.state.pages
         }
+      }
     }).then(async res => {
-        console.log(res.data.message);
-        //Need to set the id first to fetch it after this.
-        this.setState({
-            portfolio_id: res.data._id
-        })
+      console.log(res.data.message);
+      //Need to set the id first to fetch it after this.
+      this.setState({
+        portfolio_id: res.data._id
+      })
 
-        //If saving/updating is successful, need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
-        //WARNING: Could be a source of poor performance. Might be a better way to do this.
-        await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
-            withCredentials: true
-        }).then(res => {
-            console.log("_id updated");
-            this.props.saveCurrentWorkToLocal(res.data.portfolio);
-            //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
-            //Name is also set.
-            this.setState({
-                pages: res.data.portfolio.pages
-            });
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
-            
-            this.props.history.push("/dashboard");
-        })
+      //If saving/updating is successful, need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
+      //WARNING: Could be a source of poor performance. Might be a better way to do this.
+      await axios({
+        method: "GET",
+        url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
+        withCredentials: true
+      }).then(res => {
+        console.log("_id updated");
+        this.props.saveCurrentWorkToLocal(res.data.portfolio);
+        //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
+        //Name is also set.
+        this.setState({
+          pages: res.data.portfolio.pages
+        });
+      }).catch(err => {
+        if (err.response) {
+          console.log(err.response.data);
+        } else {
+          console.log(err.message);
+        }
+
+        this.props.history.push("/dashboard");
+      })
 
     }).catch(err => {
-        if (err.response) {
-            console.log(err.response.data);
-        } else {
-            console.log(err.message);
-        }
+      if (err.response) {
+        console.log(err.response.data);
+      } else {
+        console.log(err.message);
+      }
     })
 
     let pushableArray = [];
@@ -530,45 +483,41 @@ class Portfolio extends Component {
   }
 
   handleDirectory(directory) {
-    console.log(directory)
     if (directory !== undefined) {
       for (let index = 0; index < this.state.pages.length; index++) {
         if (this.state.pages[index].directory === directory) this.state.currentPage = index;
       }
-      console.log(this.state.currentPage)
     }
-    this.setState({
-      showDirectory: !this.state.showDirectory
-    })
+    this.forceUpdate();
   }
 
   // TODO: move editor components and logic into component files
   render() {
     const { classes } = this.props;
 
-    let entry = undefined;
+    let selectedEntry = undefined;
     if (this.state.pages[this.state.currentPage].entries != []) {
-      entry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
+      selectedEntry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
     }
 
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
         <Prompt
-            when={this.props.isUnsaved}
-            message={JSON.stringify({
-                message: "Are you sure you want to leave? You have unsaved work.",
-                portfolio: {
-                    _id: this.state.portfolio_id,
-                    name: this.state.name,
-                    pages: this.state.pages
-                },
-                user: {
-                    id: this.props.id,
-                    name: this.props.name,
-                    avatar: this.props.avatar_url,
-                    gravatar_id: this.props.gravatar_id
-                }
-            })}
+          when={this.props.isUnsaved}
+          message={JSON.stringify({
+            message: "Are you sure you want to leave? You have unsaved work.",
+            portfolio: {
+              _id: this.state.portfolio_id,
+              name: this.state.name,
+              pages: this.state.pages
+            },
+            user: {
+              id: this.props.id,
+              name: this.props.name,
+              avatar: this.props.avatar_url,
+              gravatar_id: this.props.gravatar_id
+            }
+          })}
         />
         <Dialog
           open={this.state.deleteDialogState}
@@ -578,7 +527,7 @@ class Portfolio extends Component {
         >
           <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
           <DialogContent>
-            <DialogContentText id="delete-confirmation-description" style={{color: "white"}}>
+            <DialogContentText id="delete-confirmation-description" style={{ color: "white" }}>
               Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
             </DialogContentText>
           </DialogContent>
@@ -592,12 +541,14 @@ class Portfolio extends Component {
           </DialogActions>
         </Dialog>
         {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
+          console.log(entry)
           return (<div style={{ display: "flex", flexDirection: "row" }}>
-            <Fab
-              className={classes.editFAB}
-              onClick={() => this.setState({ currentEntry: index, showEditor: !this.state.showEditor })}>
-              <FaEdit />
-            </Fab>
+            <EntryEditor
+              fields={entry}
+              info={templates[entry.type][entry.style].info}
+              onClose={this.handleEditorClose}
+              key={index}
+            />
             <Fab
               className={classes.delFAB}
               onClick={() => this.handleDeleteEntry(index)}>
@@ -606,48 +557,26 @@ class Portfolio extends Component {
             {this.renderEntry(entry)}
           </div>);
         })}
-        {this.state.showEditor && entry != undefined
-          ? <EntryEditor
-            fields={entry}
-            info={templates[entry.type][entry.style].info}
-            onClose={this.handleEditorClose}
-          />
-          : null}
-        {this.state.showSelector
-          ? <TemplateSelector
-            onClose={this.handleSelector}
-          />
-          : null}
-        {this.state.showDirectory
-          ? <DirectoryManager
-            onClose={this.handleDirectory}
-            dirTree={this.state.dirTree}
-            onCreate={this.handleUpdatePages}
-          />
-          : null
-        }
         <div className={classes.staticDiv}>
           <Fab
             className={classes.controlFAB}
             onClick={() => this.handleDeleteDialogState(true)}
           >
-            <FaTimes/>
-          </Fab>
-          <Fab
-            className={classes.controlFAB}
-            onClick={() => this.handleSelector(null)}>
-            <FaPlus />
+            <FaTimes />
           </Fab>
           <Fab
             className={classes.controlFAB}
             onClick={() => console.log(this.handleProduction())}>
             <FaSave />
           </Fab>
-          <Fab
-            className={classes.controlFAB}
-            onClick={() => this.handleDirectory()}>
-            <FaLink />
-          </Fab>
+          <TemplateSelector
+            onClose={this.handleSelector}
+          />
+          <DirectoryManager
+            onClose={this.handleDirectory}
+            dirTree={this.state.dirTree}
+            onCreate={this.handleUpdatePages}
+          />
           <Publish pushables={this.state.pushables} />
         </div>
       </div>);
