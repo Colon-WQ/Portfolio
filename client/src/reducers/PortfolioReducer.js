@@ -11,7 +11,8 @@ import {
     FETCH_PORTFOLIOS_SUCCESS,
     FETCH_PORTFOLIOS_FAILURE,
     SAVE_CURRENT_WORK,
-    CLEAR_CURRENT_WORK
+    CLEAR_CURRENT_WORK,
+    TOGGLE_UNSAVED_WORK
 } from '../actions/PortfolioAction'
 
 /** 
@@ -26,7 +27,8 @@ const initialState = {
     portfolios: [],
     loading: false,
     error: null,
-    currentPortfolio: null
+    currentPortfolio: null,
+    isUnsaved: false
 }
 
 /**
@@ -70,6 +72,11 @@ export default function portfolio(state = initialState, action) {
             return {
                 ...state,
                 currentPortfolio: null
+            }
+        case TOGGLE_UNSAVED_WORK:
+            return {
+                ...state,
+                isUnsaved: action.payload.bool
             }
         default:
             return state;
