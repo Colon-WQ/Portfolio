@@ -88,7 +88,7 @@ class Dashboard extends Component {
      */
     async componentDidMount() {
         if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+            const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
             await this.props.repopulate_state(localStorageItem);
         }
         await this.props.fetchPortfolios(this.props.id);
@@ -179,27 +179,43 @@ class Dashboard extends Component {
      */
     async handleOpenPortfolio(event) {
         const id = event.currentTarget.id;
-        const portfolio = await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
-            withCredentials: true
-        }).then(res => {
-            console.log(`portfolio ${res.data.portfolio.name} fetched`);
-            return res.data.portfolio;
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
+
+        const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+        
+        /** 
+         * On returning to dashboard, the prompt will make sure that the user has already saved his work to mongoDB and to localStorage.
+         * If the user wants to reopen the portfolio again, we can increase speed and reduce calls to backend by simply using the portfolio
+         * that is already in the localStorage.
+         */
+        if (portfolioLocalStorageItem !== null) {
+            if (portfolioLocalStorageItem._id === id) {
+                console.log("portfolio already exists locally");
+                this.props.history.push("/edit");
             }
-        });
+        } else {
+            const portfolio = await axios({
+                method: "GET",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
+                withCredentials: true
+            }).then(res => {
+                console.log(`portfolio ${res.data.portfolio.name} fetched`);
+                return res.data.portfolio;
+            }).catch(err => {
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
+            });
 
-        //Need to wait for portfolio to be saved to localStorage before changing route
-        //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
-        //LocalStorage is suitable to store portfolio data.
-        await this.props.saveCurrentWorkToLocal(portfolio);
+            //Need to wait for portfolio to be saved to localStorage before changing route
+            //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
+            //LocalStorage is suitable to store portfolio data.
+            await this.props.saveCurrentWorkToLocal(portfolio);
 
-        this.props.history.push("/edit");
+            this.props.history.push("/edit");
+        }
+        
     }
 
     render() {

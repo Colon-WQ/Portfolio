@@ -7,10 +7,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import axios from 'axios';
+import { useDispatch } from "react-redux";
+import { toggleUnsavedWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction';
 
-const UserConfirmation = (message, callback) => {
+const UserConfirmation = async (message, callback) => {
+
+    const dispatch = useDispatch();
+
+
     
-    const textObj = JSON.parse(message);
+    const textObj = await JSON.parse(message);
 
     const container = document.createElement("div");
     container.setAttribute("custom-confirmation-navigation", "");
@@ -39,6 +45,9 @@ const UserConfirmation = (message, callback) => {
                 }
             }).then(res => {
                 console.log(res.data.message);
+                //This ensures that we reset isUnsaved in redux and also save portfolio to localStorage for later use.
+                dispatch(saveCurrentWorkToLocal(res.data.portfolio));
+                dispatch(toggleUnsavedWork(false));
                 callback(true);
             }).catch(err => {
                 if (err.response) {
