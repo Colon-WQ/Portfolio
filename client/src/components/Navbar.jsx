@@ -182,9 +182,9 @@ class Navbar extends Component {
      * @return void
      * @memberof Navbar
      */
-    componentDidMount() {
+    async componentDidMount() {
       if (!this.props.loggedIn) {
-        const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+        const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
         this.props.repopulate_state(localStorageItem)
       }
     }

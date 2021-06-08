@@ -128,8 +128,8 @@ class Portfolio extends Component {
    */
   async componentDidMount() {
     if (!this.props.loggedIn) {
-      const userLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-      const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+      const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+      const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
       await this.props.repopulate_state(userLocalStorageItem);
       await this.props.saveCurrentWork(portfolioLocalStorageItem);
     }
