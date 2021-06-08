@@ -11,6 +11,8 @@ import List from '@material-ui/core/List';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Box, Button, Divider, Drawer, Hidden } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
+
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -30,7 +32,7 @@ import { Avatar, Box, Button, Divider, Drawer, Hidden } from '@material-ui/core'
  */
 const styles = (theme) => ({
     root: {
-      display: 'flex',
+      display: 'flex'
     },
     toolbar: {
       paddingRight: 24, // keep right padding when drawer closed
@@ -137,6 +139,12 @@ const styles = (theme) => ({
         backgroundColor: theme.palette.error.dark
       }
     },
+    dashboardButton: {
+      color: theme.palette.error.main,
+      '&:hover': {
+        backgroundColor: theme.palette.error.dark
+      }
+    }
 });
 
 
@@ -161,6 +169,11 @@ class Navbar extends Component {
             menu_open: false,
             user_drawer_open: false
         }
+
+        this.handleLogout = this.handleLogout.bind(this);
+        this.handleReturnDashboard = this.handleReturnDashboard.bind(this);
+        this.handleUserMenu = this.handleUserMenu.bind(this);
+        this.handleReturnHome = this.handleReturnHome.bind(this);
     }
 
     /**
@@ -169,9 +182,9 @@ class Navbar extends Component {
      * @return void
      * @memberof Navbar
      */
-    componentDidMount() {
+    async componentDidMount() {
       if (!this.props.loggedIn) {
-        const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+        const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
         this.props.repopulate_state(localStorageItem)
       }
     }
@@ -184,20 +197,43 @@ class Navbar extends Component {
      */
     async handleLogout() {
         console.log("logging out")
-        await this.props.log_out_user()
-        await this.props.clearCurrentWorkFromLocal();
+        this.props.log_out_user()
+        this.props.clearCurrentWorkFromLocal();
         localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE)
         console.log("successfully cleared localStorage")
-        axios({
+        await axios({
             method: 'GET',
             url: process.env.REACT_APP_BACKEND + '/logout',
             withCredentials: true
         }).then(res => {
-            window.location.pathname = '/'
+            this.props.history.push("/");
         }).catch(err => {
             console.log(err.message)
         })
     }
+
+    /**
+     * Function to return user to the Dashboard
+     * 
+     * @return void
+     * @memberof Navbar
+     */
+    handleReturnDashboard() {
+      this.props.history.push("/dashboard");
+      this.handleUserMenu();
+    }
+
+    /**
+     * Function to return user to the homepage.
+     * 
+     * @return void
+     * @memberof Navbar
+     */
+    handleReturnHome() {
+      this.props.history.push("/")
+      this.handleUserMenu();
+    }
+
 
     /**
      * Logout function to clear cookies and invalidate the github authorization.
@@ -222,12 +258,12 @@ class Navbar extends Component {
         return (
             <div className = {classes.root}>
                 <CssBaseline />
-                <AppBar position="absolute" 
+                <AppBar position="fixed" 
                 className={this.state.user_drawer_open 
                     ? `${classes.appBar} ${classes.appBarShift}` 
                     : classes.appBar}>
                     <ToolBar className={classes.toolbar}>
-                        <Button className={classes.homeButton} href="/">
+                        <Button className={classes.homeButton} onClick={this.handleReturnHome}>
                           <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
                               <Box fontWeight="bold">Portfol.<span style={{color: "#FF0000"}}>io</span></Box>
                           </Typography>
@@ -261,6 +297,9 @@ class Navbar extends Component {
                           <List className={classes.flexDown}>
                             <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
                               LOGOUT
+                            </Button>
+                            <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
+                              DASHBOARD
                             </Button>
                         </List>
                     </div>
@@ -298,4 +337,4 @@ const mapDispatchToProps = {
   clearCurrentWorkFromLocal
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Navbar))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Navbar)))

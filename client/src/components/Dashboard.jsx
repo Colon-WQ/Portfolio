@@ -13,6 +13,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { withRouter } from 'react-router-dom';
+import { BeatLoader } from 'react-spinners';
 
 
 /**
@@ -64,7 +66,9 @@ class Dashboard extends Component {
         super();
         this.state = {
             nameDialogState: false,
-            portfolioName: "MyPortfolio"
+            portfolioName: "MyPortfolio",
+            duplicateKeyError: false,
+            duplicateKeyHelperText: ""
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -84,7 +88,7 @@ class Dashboard extends Component {
      */
     async componentDidMount() {
         if (!this.props.loggedIn) {
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+            const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
             await this.props.repopulate_state(localStorageItem);
         }
         await this.props.fetchPortfolios(this.props.id);
@@ -110,6 +114,10 @@ class Dashboard extends Component {
 
     handleOnChange(event) {
         this.setState({
+            duplicateKeyError: false,
+            duplicateKeyHelperText: ""
+        })
+        this.setState({
             [event.target.name]: event.target.value
         });
     }
@@ -132,18 +140,34 @@ class Dashboard extends Component {
      * @return void
      * @memberof Dashboard
      */
-    async handleAddPortfolio() {
-        await this.props.clearCurrentWorkFromLocal();
+    handleAddPortfolio() {
 
-        const portfolio = {
-            _id: undefined,
-            name: this.state.portfolioName,
-            pages: undefined
+        if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.portfolioName).length === 0) {
+            //This clears current work from local, so we need to arrest the screen whenever user attempts to leave a portfolio
+            //page and remind him to save before leaving.
+            this.props.clearCurrentWorkFromLocal();
+
+            const portfolio = {
+                _id: undefined,
+                name: this.state.portfolioName,
+                pages: undefined
+            }
+
+            this.props.saveCurrentWorkToLocal(portfolio);
+            this.props.history.push("/edit");
+        } else {
+            if (this.state.portfolioName === "") {
+                this.setState({
+                    duplicateKeyError: true,
+                    duplicateKeyHelperText: "Portfolio name cannot be empty"
+                })
+            } else {
+                this.setState({
+                    duplicateKeyError: true,
+                    duplicateKeyHelperText: "Portfolio name already exists"
+                })
+            }
         }
-
-        await this.props.saveCurrentWorkToLocal(portfolio);
-        
-        window.location.pathname = '/edit'
     }
 
     /**
@@ -155,27 +179,43 @@ class Dashboard extends Component {
      */
     async handleOpenPortfolio(event) {
         const id = event.currentTarget.id;
-        const portfolio = await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
-            withCredentials: true
-        }).then(res => {
-            console.log(`portfolio ${res.data.portfolio.name} fetched`);
-            return res.data.portfolio;
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
+
+        const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+        
+        /** 
+         * On returning to dashboard, the prompt will make sure that the user has already saved his work to mongoDB and to localStorage.
+         * If the user wants to reopen the portfolio again, we can increase speed and reduce calls to backend by simply using the portfolio
+         * that is already in the localStorage.
+         */
+        if (portfolioLocalStorageItem !== null) {
+            if (portfolioLocalStorageItem._id === id) {
+                console.log("portfolio already exists locally");
+                this.props.history.push("/edit");
             }
-        });
+        } else {
+            const portfolio = await axios({
+                method: "GET",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
+                withCredentials: true
+            }).then(res => {
+                console.log(`portfolio ${res.data.portfolio.name} fetched`);
+                return res.data.portfolio;
+            }).catch(err => {
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
+            });
 
-        //Need to wait for portfolio to be saved to localStorage before changing route
-        //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
-        //LocalStorage is suitable to store portfolio data.
-        await this.props.saveCurrentWorkToLocal(portfolio);
+            //Need to wait for portfolio to be saved to localStorage before changing route
+            //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
+            //LocalStorage is suitable to store portfolio data.
+            await this.props.saveCurrentWorkToLocal(portfolio);
 
-        window.location.pathname = '/edit'
+            this.props.history.push("/edit");
+        }
+        
     }
 
     render() {
@@ -185,14 +225,28 @@ class Dashboard extends Component {
                 <div className={classes.appBarSpacer}/>
                 <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
                 <Grid className={classes.gridHorizontal}>
-                    {portfolios.map((element, idx) => {
-                        return (<Button key={idx} id={element._id.valueOf()} onClick={this.handleOpenPortfolio} className={classes.portfolioButton}>
-                            {element.name}
-                        </Button>);
-                    })}
-                    <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
+                    {
+                        this.props.loading 
+                        ?
+                            <BeatLoader/>
+                        :
+                        this.props.error
+                            ?
+                                this.props.error.response.status === 404
+                                ?
+                                    <Typography variant="body1">Create your first Portfolio!</Typography>
+                                :
+                                    <Typography variant="body1">{this.props.error.message}</Typography>
+                            :
+                            portfolios.map((element, idx) => {
+                                return (<Button key={idx} id={element._id.valueOf()} onClick={this.handleOpenPortfolio} className={classes.portfolioButton}>
+                                    {element.name}
+                                </Button>);
+                            })
+                    }
                 </Grid>
-                <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button>
+                {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
+                <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
                 <Dialog
                     open={this.state.nameDialogState}
                     onClose={this.handleNameDialogClose}
@@ -220,6 +274,8 @@ class Dashboard extends Component {
                             InputProps={{
                                 color: 'secondary'
                             }}
+                            error={this.state.duplicateKeyError}
+                            helperText={this.state.duplicateKeyHelperText}
                         />
                     </DialogContent>
                     <DialogActions>
@@ -251,7 +307,9 @@ const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
     name: state.login.name,
     id: state.login.id,
-    portfolios: state.portfolio.portfolios
+    portfolios: state.portfolio.portfolios,
+    loading: state.portfolio.loading,
+    error: state.portfolio.error
 });
 
 /** 
@@ -267,4 +325,4 @@ const mapDispatchToProps = {
     clearCurrentWorkFromLocal
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Dashboard)));

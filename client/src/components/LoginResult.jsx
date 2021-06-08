@@ -53,12 +53,12 @@ class LoginResult extends Component {
      * @return void
      * @memberof LoginResult
      */
-    componentDidMount() {
+    async componentDidMount() {
 
         //If user is not loggedIn already
         if (!this.props.loggedIn) {
             //Check if loggedIn user might have accidentally refreshed into this url
-            const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+            const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             //If localStorage returns null, user is not loggedIn, proceed to login
             if (localStorageItem == null) {
                 let search = window.location.search;

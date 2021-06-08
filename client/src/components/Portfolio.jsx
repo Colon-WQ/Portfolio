@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
-import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
+import { saveCurrentWork, saveCurrentWorkToLocal, toggleUnsavedWork } from '../actions/PortfolioAction.js';
 import { withStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { FaEdit, FaLink, FaPlus, FaSave, FaTimes, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
@@ -14,6 +20,7 @@ import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
+import {Prompt, withRouter} from 'react-router-dom';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -83,7 +90,7 @@ class Portfolio extends Component {
     this.state = {
       editMode: true,
       portfolio_id: undefined,
-      name: "test",
+      name: "",
       pages: [{
         directory: "",
         entries: []
@@ -99,7 +106,9 @@ class Portfolio extends Component {
         id: "root_mongo_id",
         pages:
           {}
-      }
+      },
+      deleteDialogState: false,
+      isTimerExist: false
     }
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
@@ -108,6 +117,7 @@ class Portfolio extends Component {
     this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
     this.handleUpdatePages = this.handleUpdatePages.bind(this);
     this.handleDirectory = this.handleDirectory.bind(this);
+    this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
   }
 
   /**
@@ -118,11 +128,13 @@ class Portfolio extends Component {
    */
   async componentDidMount() {
     if (!this.props.loggedIn) {
-      const userLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-      const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+      const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+      const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
       await this.props.repopulate_state(userLocalStorageItem);
       await this.props.saveCurrentWork(portfolioLocalStorageItem);
     }
+
+    //The rationale behind using this.state.name as the check is that name would be set before the user enters
     if (this.props.loggedIn) {
       if (this.props.currentPortfolio !== null) {
         //Need to set the relevant _id, name, pages if portfolio exists.
@@ -139,6 +151,55 @@ class Portfolio extends Component {
         }
       }
     }
+  }
+
+  /**
+   * componentDidUpdate checks when isUnsaved is changed and triggers a timer to autosave so that we will not save
+   * while the user is actively editing his Portfolio.
+   * 
+   * First sets isTimerExist in state to true
+   * 
+   * After timer is up, saves current portfolio to localStorage and redux state. 
+   * 
+   * The timer is now set to 3s after any edit is done.
+   * 
+   * @return void
+   * @memberof Portfolio
+   */
+  componentDidUpdate() {
+    if (this.props.isUnsaved && !this.state.isTimerExist) {
+      setTimeout(() => {
+        this.props.saveCurrentWorkToLocal({
+          _id: this.state.portfolio_id,
+          name: this.state.name,
+          pages: this.state.pages
+        });
+        this.props.toggleUnsavedWork(false);
+
+        //Sets isTimerExist to false after saving so new timers can be set.
+        this.setState({
+          isTimerExist: false
+        })
+      }, 3000);
+
+      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
+      this.setState({
+        isTimerExist: true
+      });
+    }
+  }
+
+  /**
+   * This function handles changes to deleteDialogState
+   *
+   * @param {boolean} bool
+   * @returns void
+   * @memberof Portfolio
+   */
+  handleDeleteDialogState(bool) {
+    this.setState({
+      deleteDialogState: bool
+    })
   }
 
   /**
@@ -330,67 +391,68 @@ class Portfolio extends Component {
     return files;
   }
 
-  /**
-   * A function to generate all files needed to be pushed to github.
-   * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
-   * 
-   * TODO: Add a name setter for Portfolio, currently set to Test
-   */
+    /**
+     * A function to generate all files needed to be pushed to github.
+     * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+     * 
+     * TODO: Add a name setter for Portfolio, currently set to Test
+     */
   async handleProduction() {
     //this saves the portfolio to mongoDB
-    console.log("sending")
-    console.log(this.state.pages)
     await axios({
-      method: "PUT",
-      url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
-      withCredentials: true,
-      data: {
-        user: {
-          id: this.props.id,
-          name: this.props.name,
-          avatar: this.props.avatar_url,
-          gravatar_id: this.props.gravatar_id
-        },
-        portfolio: {
-          _id: this.state.portfolio_id,
-          name: this.state.name,
-          pages: this.state.pages
+        method: "PUT",
+        url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
+        withCredentials: true,
+        data: {
+            user: {
+                id: this.props.id,
+                name: this.props.name,
+                avatar: this.props.avatar_url,
+                gravatar_id: this.props.gravatar_id
+            },
+            portfolio: {
+                _id: this.state.portfolio_id,
+                name: this.state.name,
+                pages: this.state.pages
+            }
         }
-      }
-    }).then(res => {
-      console.log(res.data.message);
-      //Need to set the id first to fetch it after this.
-      this.setState({
-        portfolio_id: res.data._id
-      })
-    }).catch(err => {
-      if (err.response) {
-        console.log(err.response.data);
-      } else {
-        console.log(err.message);
-      }
-    })
+    }).then(async res => {
+        console.log(res.data.message);
+        //Need to set the id first to fetch it after this.
+        this.setState({
+            portfolio_id: res.data._id
+        })
 
-    //Need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
-    //WARNING: Could be a source of poor performance. Might be a better way to do this.
-    await axios({
-      method: "GET",
-      url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
-      withCredentials: true
-    }).then((res) => {
-      console.log("_id updated");
-      this.props.saveCurrentWorkToLocal(res.data.portfolio);
-      return res;
-    }).then(res => {
-      //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
-      //Name is also set.
-      this.setState({
-        pages: res.data.portfolio.pages
-      })
+        //If saving/updating is successful, need to fetch from db to get the ObjectIds created by mongoose for the portfolio, pages and entries.
+        //WARNING: Could be a source of poor performance. Might be a better way to do this.
+        await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
+            withCredentials: true
+        }).then(res => {
+            console.log("_id updated");
+            this.props.saveCurrentWorkToLocal(res.data.portfolio);
+            //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
+            //Name is also set.
+            this.setState({
+                pages: res.data.portfolio.pages
+            });
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+            
+            this.props.history.push("/dashboard");
+        })
+
     }).catch(err => {
-      console.log(err);
-      console.log("error getting _id from mongoDB, returning user to Dashboard to retry");
-      window.location.pathname = "/dashboard";
+        if (err.response) {
+            console.log(err.response.data);
+        } else {
+            console.log(err.message);
+        }
     })
 
     let pushableArray = [];
@@ -416,10 +478,12 @@ class Portfolio extends Component {
    * 
    * @param {number} index the index of the entry to be deleted
    * @returns void
+   * @memberof Portfolio
    */
   handleDeleteEntry(index) {
     const newPages = [...this.state.pages];
-    // TODO: mark entry to be deleted from mongo
+    // TODO: mark entry to be deleted from mongo. NO NEED: The upsert basically wipes everything and then adds all the entries back in the same order
+    //that was given to the route.
     newPages[this.state.currentPage].entries =
       this.state.pages[this.state.currentPage].entries.filter(
         (item, filterIndex) => (filterIndex !== index)
@@ -429,6 +493,12 @@ class Portfolio extends Component {
     });
   }
 
+  /**
+   * A function to delete the current portfolio from mongodb
+   *
+   * @returns void
+   * @memberof Portfolio
+   */
   async handleDeletePortfolio() {
     await axios({
       method: "DELETE",
@@ -436,7 +506,7 @@ class Portfolio extends Component {
       withCredentials: true
     }).then(res => {
       console.log(res.data.message);
-      window.location.pathname = '/dashboard';
+      this.props.history.push("/dashboard");
     }).catch(err => {
       if (err.response) {
         console.log(err.response.data);
@@ -483,6 +553,44 @@ class Portfolio extends Component {
 
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
+        <Prompt
+            when={this.props.isUnsaved}
+            message={JSON.stringify({
+                message: "Are you sure you want to leave? You have unsaved work.",
+                portfolio: {
+                    _id: this.state.portfolio_id,
+                    name: this.state.name,
+                    pages: this.state.pages
+                },
+                user: {
+                    id: this.props.id,
+                    name: this.props.name,
+                    avatar: this.props.avatar_url,
+                    gravatar_id: this.props.gravatar_id
+                }
+            })}
+        />
+        <Dialog
+          open={this.state.deleteDialogState}
+          onClose={() => this.handleDeleteDialogState(false)}
+          aria-labelledby="delete-confirmation-dialog"
+          aria-describedby="delete-confirmation-dialog"
+        >
+          <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="delete-confirmation-description" style={{color: "white"}}>
+              Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.handleDeleteDialogState(false)}>
+              Cancel
+            </Button>
+            <Button onClick={this.handleDeletePortfolio}>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
         {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
           return (<div style={{ display: "flex", flexDirection: "row" }}>
             <Fab
@@ -521,6 +629,12 @@ class Portfolio extends Component {
         <div className={classes.staticDiv}>
           <Fab
             className={classes.controlFAB}
+            onClick={() => this.handleDeleteDialogState(true)}
+          >
+            <FaTimes/>
+          </Fab>
+          <Fab
+            className={classes.controlFAB}
             onClick={() => this.handleSelector(null)}>
             <FaPlus />
           </Fab>
@@ -552,7 +666,8 @@ const mapStateToProps = state => ({
   id: state.login.id,
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
-  currentPortfolio: state.portfolio.currentPortfolio
+  currentPortfolio: state.portfolio.currentPortfolio,
+  isUnsaved: state.portfolio.isUnsaved
 })
 
 /** 
@@ -564,7 +679,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   repopulate_state,
   saveCurrentWork,
-  saveCurrentWorkToLocal
+  saveCurrentWorkToLocal,
+  toggleUnsavedWork
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Portfolio))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))
