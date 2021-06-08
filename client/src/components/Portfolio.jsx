@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
-import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
+import { saveCurrentWork, saveCurrentWorkToLocal, toggleUnsavedWork } from '../actions/PortfolioAction.js';
 import { withStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { FaEdit, FaLink, FaPlus, FaSave, FaTimes, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
@@ -84,7 +90,7 @@ class Portfolio extends Component {
     this.state = {
       editMode: true,
       portfolio_id: undefined,
-      name: "test",
+      name: "",
       pages: [{
         directory: "",
         entries: []
@@ -100,7 +106,9 @@ class Portfolio extends Component {
         id: "root_mongo_id",
         pages:
           {}
-      }
+      },
+      deleteDialogState: false,
+      isTimerExist: false
     }
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
@@ -109,6 +117,7 @@ class Portfolio extends Component {
     this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
     this.handleUpdatePages = this.handleUpdatePages.bind(this);
     this.handleDirectory = this.handleDirectory.bind(this);
+    this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
   }
 
   /**
@@ -124,6 +133,8 @@ class Portfolio extends Component {
       await this.props.repopulate_state(userLocalStorageItem);
       await this.props.saveCurrentWork(portfolioLocalStorageItem);
     }
+
+    //The rationale behind using this.state.name as the check is that name would be set before the user enters
     if (this.props.loggedIn) {
       if (this.props.currentPortfolio !== null) {
         //Need to set the relevant _id, name, pages if portfolio exists.
@@ -140,6 +151,55 @@ class Portfolio extends Component {
         }
       }
     }
+  }
+
+  /**
+   * componentDidUpdate checks when isUnsaved is changed and triggers a timer to autosave so that we will not save
+   * while the user is actively editing his Portfolio.
+   * 
+   * First sets isTimerExist in state to true
+   * 
+   * After timer is up, saves current portfolio to localStorage and redux state. 
+   * 
+   * The timer is now set to 3s after any edit is done.
+   * 
+   * @return void
+   * @memberof Portfolio
+   */
+  componentDidUpdate() {
+    if (this.props.isUnsaved && !this.state.isTimerExist) {
+      setTimeout(() => {
+        this.props.saveCurrentWorkToLocal({
+          _id: this.state.portfolio_id,
+          name: this.state.name,
+          pages: this.state.pages
+        });
+        this.props.toggleUnsavedWork(false);
+
+        //Sets isTimerExist to false after saving so new timers can be set.
+        this.setState({
+          isTimerExist: false
+        })
+      }, 3000);
+
+      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
+      this.setState({
+        isTimerExist: true
+      });
+    }
+  }
+
+  /**
+   * This function handles changes to deleteDialogState
+   *
+   * @param {boolean} bool
+   * @returns void
+   * @memberof Portfolio
+   */
+  handleDeleteDialogState(bool) {
+    this.setState({
+      deleteDialogState: bool
+    })
   }
 
   /**
@@ -422,7 +482,8 @@ class Portfolio extends Component {
    */
   handleDeleteEntry(index) {
     const newPages = [...this.state.pages];
-    // TODO: mark entry to be deleted from mongo
+    // TODO: mark entry to be deleted from mongo. NO NEED: The upsert basically wipes everything and then adds all the entries back in the same order
+    //that was given to the route.
     newPages[this.state.currentPage].entries =
       this.state.pages[this.state.currentPage].entries.filter(
         (item, filterIndex) => (filterIndex !== index)
@@ -433,7 +494,7 @@ class Portfolio extends Component {
   }
 
   /**
-   * Afunction to delete the current portfolio from mongodb
+   * A function to delete the current portfolio from mongodb
    *
    * @returns void
    * @memberof Portfolio
@@ -493,9 +554,9 @@ class Portfolio extends Component {
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
         <Prompt
-            when={true}
+            when={this.props.isUnsaved}
             message={JSON.stringify({
-                message: "Are you sure you want to leave? Have you saved your work?",
+                message: "Are you sure you want to leave? You have unsaved work.",
                 portfolio: {
                     _id: this.state.portfolio_id,
                     name: this.state.name,
@@ -509,6 +570,27 @@ class Portfolio extends Component {
                 }
             })}
         />
+        <Dialog
+          open={this.state.deleteDialogState}
+          onClose={() => this.handleDeleteDialogState(false)}
+          aria-labelledby="delete-confirmation-dialog"
+          aria-describedby="delete-confirmation-dialog"
+        >
+          <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="delete-confirmation-description" style={{color: "white"}}>
+              Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.handleDeleteDialogState(false)}>
+              Cancel
+            </Button>
+            <Button onClick={this.handleDeletePortfolio}>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
         {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
           return (<div style={{ display: "flex", flexDirection: "row" }}>
             <Fab
@@ -547,6 +629,12 @@ class Portfolio extends Component {
         <div className={classes.staticDiv}>
           <Fab
             className={classes.controlFAB}
+            onClick={() => this.handleDeleteDialogState(true)}
+          >
+            <FaTimes/>
+          </Fab>
+          <Fab
+            className={classes.controlFAB}
             onClick={() => this.handleSelector(null)}>
             <FaPlus />
           </Fab>
@@ -578,7 +666,8 @@ const mapStateToProps = state => ({
   id: state.login.id,
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
-  currentPortfolio: state.portfolio.currentPortfolio
+  currentPortfolio: state.portfolio.currentPortfolio,
+  isUnsaved: state.portfolio.isUnsaved
 })
 
 /** 
@@ -590,7 +679,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   repopulate_state,
   saveCurrentWork,
-  saveCurrentWorkToLocal
+  saveCurrentWorkToLocal,
+  toggleUnsavedWork
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))

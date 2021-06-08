@@ -109,6 +109,25 @@ export const upsertPortfolio = async (req, res) => {
                 
                 portfolio.pages = []; //Somehow this is necessary to make sure there are no duplicated page _id in pages.
                 //I suspect that by setting isNew to false, mongoose just decides to add to contents of the pages array to the already existing pages array.
+
+                //Have to delete pages that are not supposed to exist anymore.
+                const dict = new Set();
+                for (let requestPage of requestPortfolio.pages) {
+                    if (requestPage._id !== undefined) {
+                        dict.add(requestPage._id.valueOf());
+                    }
+                }
+                
+                for (let existingPage of isExist.pages) {
+                    if (!dict.has(existingPage._id.valueOf().toString())) {
+                        Page.findByIdAndDelete(existingPage._id)
+                        .then(deleted => {
+                            console.log("deleted page " + deleted._id);
+                        }).catch(err => {
+                            console.log(err);
+                        })
+                    }
+                }
             }
         }).catch(err => {
             console.log(err);
@@ -143,6 +162,25 @@ export const upsertPortfolio = async (req, res) => {
                     page.isNew = false;
                     page.entries = []; //Somehow this is necessary to make sure there are no duplicated entry _id in entries as well.
                     //I suspect that by setting isNew to false, mongoose just decides to add to contents of the entries array to the already existing entries array.
+
+                    //Have to delete entries that are not supposed to exist anymore.
+                    const dict = new Set();
+                    for (let requestEntry of pageObj.entries) {
+                        if (requestEntry._id !== undefined) {
+                            dict.add(requestEntry._id.valueOf());
+                        }
+                    }
+                    
+                    for (let existingEntry of isExist.entries) {
+                        if (!dict.has(existingEntry._id.valueOf().toString())) {
+                            Entry.findByIdAndDelete(existingEntry._id)
+                            .then(deleted => {
+                                console.log("deleted entry " + deleted._id);
+                            }).catch(err => {
+                                console.log(err);
+                            })
+                        }
+                    }
                 }
             }).catch(err => {
                 console.log(err);
@@ -168,7 +206,7 @@ export const upsertPortfolio = async (req, res) => {
                 entry._id = new mongoose.Types.ObjectId();
                 entry.isNew = true;
             } else {
-                entry.isNew = false; 
+                entry.isNew = false;
             }
 
             //Regardless of whether the page's entries are new or not new, we want to add it in the order it was given to us into page refs.

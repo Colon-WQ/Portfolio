@@ -32,7 +32,7 @@ import { withRouter } from 'react-router-dom';
  */
 const styles = (theme) => ({
     root: {
-      display: 'flex',
+      display: 'flex'
     },
     toolbar: {
       paddingRight: 24, // keep right padding when drawer closed
@@ -258,7 +258,7 @@ class Navbar extends Component {
         return (
             <div className = {classes.root}>
                 <CssBaseline />
-                <AppBar position="absolute" 
+                <AppBar position="fixed" 
                 className={this.state.user_drawer_open 
                     ? `${classes.appBar} ${classes.appBarShift}` 
                     : classes.appBar}>

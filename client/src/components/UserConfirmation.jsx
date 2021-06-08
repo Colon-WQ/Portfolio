@@ -16,6 +16,14 @@ const UserConfirmation = (message, callback) => {
     container.setAttribute("custom-confirmation-navigation", "");
     document.body.appendChild(container);
 
+    /**
+     * If callbackState is false, user decides to not leave the page.
+     * If callbackState is true, user decides to leave the page. There is a need to
+     * ask the user if he wishes to save or discard work.
+     *
+     * @param {*} callbackState Boolean with which the callback function takes.
+     * @param {*} isSave Boolean indicating whether to save current work or not.
+     */
     const closeModal = async (callbackState, isSave) => {
         ReactDOM.unmountComponentAtNode(container);
         document.body.removeChild(container);
@@ -52,6 +60,7 @@ const UserConfirmation = (message, callback) => {
             open={true}
             aria-labelledby="prompt-dialog"
             aria-describedby="prompt-dialog"
+            fullWidth
         >
             <DialogTitle
                 id="promp-title"
@@ -73,7 +82,7 @@ const UserConfirmation = (message, callback) => {
                     <Button
                         onClick={() => closeModal(true, false)}
                     >
-                        Discard work
+                        Discard unsaved work
                     </Button>
                     <Button
                         onClick={() => closeModal(true, true)}

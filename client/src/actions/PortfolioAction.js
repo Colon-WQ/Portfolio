@@ -49,6 +49,14 @@ export const SAVE_CURRENT_WORK = "SAVE_CURRENT_WORK"
 export const CLEAR_CURRENT_WORK = "CLEAR_CURRENT_WORK"
 
 /**
+ * string that identifies a TOGGLE_UNSAVED_WORK action
+ * 
+ * @type {string}
+ * @member TOGGLE_UNSAVED_WORK
+ */
+export const TOGGLE_UNSAVED_WORK = "TOGGLE_UNSAVED_WORK"
+
+/**
  * SAVE_CURRENT_WORK action creator. This action saves user's current portfolio work
  * to localStorage.
  * 
@@ -72,6 +80,19 @@ export const saveCurrentWork = curr => ({
  */
 export const clearCurrentWork = () => ({
     type: CLEAR_CURRENT_WORK
+})
+
+/**
+ * TOGGLE_UNSAVED_WORK action creator. This action sets the isUnsaved boolean in redux store.
+ * 
+ * @param {boolean} bool - Boolean indicating if unsaved work exists.
+ * @returns {{type: string}} - TOGGLE_UNSAVED_WORK action object.
+ * @member toggleUnsavedWork
+ * @function
+ */
+export const toggleUnsavedWork = (bool) => ({
+    type: TOGGLE_UNSAVED_WORK,
+    payload: { bool }
 })
 
 /**

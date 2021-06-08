@@ -14,6 +14,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { withRouter } from 'react-router-dom';
+import { BeatLoader } from 'react-spinners';
 
 
 /**
@@ -155,10 +156,17 @@ class Dashboard extends Component {
             this.props.saveCurrentWorkToLocal(portfolio);
             this.props.history.push("/edit");
         } else {
-            this.setState({
-                duplicateKeyError: true,
-                duplicateKeyHelperText: "Portfolio name already exists"
-            })
+            if (this.state.portfolioName === "") {
+                this.setState({
+                    duplicateKeyError: true,
+                    duplicateKeyHelperText: "Portfolio name cannot be empty"
+                })
+            } else {
+                this.setState({
+                    duplicateKeyError: true,
+                    duplicateKeyHelperText: "Portfolio name already exists"
+                })
+            }
         }
     }
 
@@ -201,14 +209,28 @@ class Dashboard extends Component {
                 <div className={classes.appBarSpacer}/>
                 <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
                 <Grid className={classes.gridHorizontal}>
-                    {portfolios.map((element, idx) => {
-                        return (<Button key={idx} id={element._id.valueOf()} onClick={this.handleOpenPortfolio} className={classes.portfolioButton}>
-                            {element.name}
-                        </Button>);
-                    })}
-                    <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
+                    {
+                        this.props.loading 
+                        ?
+                            <BeatLoader/>
+                        :
+                        this.props.error
+                            ?
+                                this.props.error.response.status === 404
+                                ?
+                                    <Typography variant="body1">Create your first Portfolio!</Typography>
+                                :
+                                    <Typography variant="body1">{this.props.error.message}</Typography>
+                            :
+                            portfolios.map((element, idx) => {
+                                return (<Button key={idx} id={element._id.valueOf()} onClick={this.handleOpenPortfolio} className={classes.portfolioButton}>
+                                    {element.name}
+                                </Button>);
+                            })
+                    }
                 </Grid>
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
+                <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
                 <Dialog
                     open={this.state.nameDialogState}
                     onClose={this.handleNameDialogClose}
@@ -269,7 +291,9 @@ const mapStateToProps = state => ({
     loggedIn: state.login.loggedIn,
     name: state.login.name,
     id: state.login.id,
-    portfolios: state.portfolio.portfolios
+    portfolios: state.portfolio.portfolios,
+    loading: state.portfolio.loading,
+    error: state.portfolio.error
 });
 
 /** 
