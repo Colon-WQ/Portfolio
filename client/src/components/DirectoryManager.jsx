@@ -6,7 +6,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
 import { TreeItem } from '@material-ui/lab';
 import { templates } from '../templates/Templates';
-import { FaPlus, FaSave, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaSave, FaTimes, FaLink } from 'react-icons/fa';
 
 
 /**
@@ -32,7 +32,7 @@ const styles = (theme) => ({
     textAlign: 'center',
     backgroundColor: '#444444',
     opacity: '90%',
-    height: '100%'
+    height: '100%',
   },
   modal: {
     overflow: 'scroll',
@@ -40,6 +40,30 @@ const styles = (theme) => ({
     flexDirection: 'column',
     padding: '5%',
     height: '100%'
+  },
+  controlFAB: {
+    position: 'static',
+    marginRight: '0.5vw',
+    marginBottom: '0.5vw'
+  },
+  treeItem: {
+    '&$treeItemSelected > $treeItemContent': {
+      backgroundColor: '#F00'
+    }
+  },
+  treeItemSelected: {
+  },
+  treeItemExpanded: {
+    // borderLeft: '1px dashed #FFF',
+  },
+  treeItemGroup: {
+    marginLeft: 7,
+    paddingLeft: 18,
+    borderLeft: '1px dashed #FFF'
+  },
+  treeItemContent: {},
+  treeView: {
+    textAlign: 'left'
   }
 })
 
@@ -57,7 +81,8 @@ class DirectoryManager extends Component {
     super(props);
     this.state = {
       currPage: "",
-      dirTree: this.props.dirTree
+      dirTree: this.props.dirTree,
+      showDirectory: false
     }
     this.handleSelectPage = this.handleSelectPage.bind(this);
     this.renderTree = this.renderTree.bind(this);
@@ -90,15 +115,43 @@ class DirectoryManager extends Component {
     });
   }
 
+  /**
+   * A function to recursively render the directory tree
+   * @param {Map} dirTree the directory tree map to be used
+   * @param {*} label the name of the current folder
+   * @returns JSX component containing the TreeItem to be rendered
+   */
   renderTree(dirTree, label) {
+    const { classes } = this.props;
+
     return (
-      <TreeItem value={dirTree.directory} nodeId={dirTree.directory} label={label}>
+      <TreeItem
+        value={dirTree.directory}
+        nodeId={dirTree.directory}
+        label={label}
+        classes={{
+          root: classes.treeItem,
+          selected: classes.treeItemSelected,
+          // expanded: classes.treeItemExpanded,
+          content: classes.treeItemContent,
+          group: classes.treeItemGroup
+        }}
+      >
         {Object.entries(dirTree.pages).map(([key, item]) => {
           return this.renderTree(item, key);
         })}
-      </TreeItem>);
+      </TreeItem>
+    );
   }
 
+  /**
+   * 
+   * 
+   * @param {*} pageArray 
+   * @param {*} dirTree 
+   * @param {*} index 
+   * @param {*} fullDir 
+   */
   insertPage(pageArray, dirTree, index, fullDir) {
     if (index === pageArray.length - 1) {
       dirTree.pages[pageArray[index]] = {
@@ -122,6 +175,18 @@ class DirectoryManager extends Component {
     })
   }
 
+  handleCloseDirectory(save) {
+    // if (save) {
+
+    // } else {
+    //   // this.props.onClose(null, false);
+    // }
+    this.props.onClose(this.state.currPage);
+    this.setState({
+      showDirectory: false
+    })
+  }
+
   // TODO: add props dirTree={name:"", directory:"", id:number, pages:[]}
   // root page should not be renamed, since directory.root is hardcoded.
   render() {
@@ -129,30 +194,38 @@ class DirectoryManager extends Component {
     // should only have 1 root element for object.keys[0] to work
     console.log(this.props.dirTree)
     return (
-      <Modal className={classes.modal}
-        open={true}
-        onClose={() => this.props.onClose(this.state.currPage)}
-        aria-labelledby="Directory Manager"
-        aria-describedby="Select a page."
-      >
-        <div className={classes.root}>
-          <Fab>
-            <FaTimes />
-          </Fab>
-          <TreeView
-            defaultCollapseIcon={<FaTimes />}
-            defaultExpandIcon={<FaSave />}
-            onNodeSelect={this.handleSelectPage}
-            onNodeToggle={this.handleToggle}
-          >
-            {this.renderTree(this.state.dirTree, "root")}
-          </TreeView>
-          <Fab variant="extended" onClick={(event) => this.handleCreatePage("temp")}>
-            <FaPlus />
-            New page
-          </Fab>
-        </div>
-      </Modal>
+      <div>
+        <Fab
+          className={classes.controlFAB}
+          onClick={() => this.setState({ showDirectory: true })}>
+          <FaLink />
+        </Fab>
+        <Modal className={classes.modal}
+          open={this.state.showDirectory}
+          onClose={() => this.handleCloseDirectory(true)}
+          aria-labelledby="Directory Manager"
+          aria-describedby="Select a page."
+        >
+          <div className={classes.root}>
+            <Fab variant="extended" onClick={() => { this.handleCloseDirectory(false) }}>
+              <FaTimes />
+            </Fab>
+            <TreeView
+              defaultCollapseIcon={<FaTimes />}
+              defaultExpandIcon={<FaSave />}
+              onNodeSelect={this.handleSelectPage}
+              onNodeToggle={this.handleToggle}
+              className={classes.treeView}
+            >
+              {this.renderTree(this.state.dirTree, "root")}
+            </TreeView>
+            <Fab variant="extended" onClick={(event) => this.handleCreatePage("temp")}>
+              <FaPlus />
+              New page
+            </Fab>
+          </div>
+        </Modal>
+      </div>
     )
   }
 }
