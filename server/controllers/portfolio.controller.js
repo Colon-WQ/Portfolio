@@ -20,7 +20,10 @@ export const getPortfolio = async (req, res) => {
             return res.status(404).send("portfolio _id not found");
         } else {
             console.log("portfolio found. Pages populated");
-            console.log(portfolio);
+            for (let test of portfolio.pages[0].entries) {
+                console.log(test._id);
+            }
+            
             return res.status(200).json({ portfolio: portfolio });
         }
     }).catch(err => {
@@ -167,10 +170,11 @@ export const upsertPortfolio = async (req, res) => {
                     const dict = new Set();
                     for (let requestEntry of pageObj.entries) {
                         if (requestEntry._id !== undefined) {
+                            console.log(requestEntry._id.valueOf() + " added to set");
                             dict.add(requestEntry._id.valueOf());
                         }
                     }
-                    
+                    console.log(dict)
                     for (let existingEntry of isExist.entries) {
                         if (!dict.has(existingEntry._id.valueOf().toString())) {
                             Entry.findByIdAndDelete(existingEntry._id)

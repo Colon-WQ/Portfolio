@@ -4,13 +4,7 @@ import { repopulate_state } from '../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal, toggleUnsavedWork } from '../actions/PortfolioAction.js';
 import { withStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { FaEdit, FaLink, FaPlus, FaSave, FaTimes, FaTrash } from "react-icons/fa";
+import { FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import { ServerStyleSheets } from '@material-ui/core/styles'
@@ -99,17 +93,15 @@ class Portfolio extends Component {
         pages:
           {}
       },
-      deleteDialogState: false,
       isTimerExist: false
     }
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
     this.handleProduction = this.handleProduction.bind(this);
     this.handleSelector = this.handleSelector.bind(this);
-    this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
     this.handleUpdatePages = this.handleUpdatePages.bind(this);
     this.handleDirectory = this.handleDirectory.bind(this);
-    this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
+    this.handleSavePortfolio = this.handleSavePortfolio.bind(this);
   }
 
   /**
@@ -158,41 +150,34 @@ class Portfolio extends Component {
    * @return void
    * @memberof Portfolio
    */
-  componentDidUpdate() {
-    if (this.props.isUnsaved && !this.state.isTimerExist) {
-      setTimeout(() => {
-        this.props.saveCurrentWorkToLocal({
-          _id: this.state.portfolio_id,
-          name: this.state.name,
-          pages: this.state.pages
-        });
-        this.props.toggleUnsavedWork(false);
+  // componentDidUpdate() {
+  //   if (this.props.isUnsaved && !this.state.isTimerExist) {
+  //     setTimeout(async () => {
+  //       console.log("Autosaving")
 
-        //Sets isTimerExist to false after saving so new timers can be set.
-        this.setState({
-          isTimerExist: false
-        })
-      }, 3000);
+  //       await this.handleSavePortfolio();
 
-      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
-      this.setState({
-        isTimerExist: true
-      });
-    }
-  }
+  //       // this.props.saveCurrentWorkToLocal({
+  //       //   _id: this.state.portfolio_id,
+  //       //   name: this.state.name,
+  //       //   pages: this.state.pages
+  //       // });
+  //       this.props.toggleUnsavedWork(false);
 
-  /**
-   * This function handles changes to deleteDialogState
-   *
-   * @param {boolean} bool
-   * @returns void
-   * @memberof Portfolio
-   */
-  handleDeleteDialogState(bool) {
-    this.setState({
-      deleteDialogState: bool
-    })
-  }
+  //       //Sets isTimerExist to false after saving so new timers can be set.
+  //       this.setState({
+  //         isTimerExist: false
+  //       })
+  //     }, 3000);
+
+  //     //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
+  //     this.setState({
+  //       isTimerExist: true
+  //     });
+  //   }
+  // }
+
+
 
   /**
    * Function to enter entries based on the entry's type and template style.
@@ -226,6 +211,9 @@ class Portfolio extends Component {
     this.setState({
       pages: newPages,
     })
+
+    //triggers Autosave
+    this.props.toggleUnsavedWork(true);
   }
 
   /**
@@ -235,6 +223,7 @@ class Portfolio extends Component {
    * @param {boolean} changed - Whether the fields have been changed/ if the user intends to save the changes.
    */
   handleEditorClose(fields, changed) {
+    
     if (changed) {
       const newPages = [...this.state.pages];
       const entries = [...this.state.pages[this.state.currentPage].entries];
@@ -243,6 +232,9 @@ class Portfolio extends Component {
       this.setState({
         pages: newPages
       })
+
+      //triggers Autosave
+      this.props.toggleUnsavedWork(true);
     } else {
       this.forceUpdate();
     }
@@ -345,13 +337,12 @@ class Portfolio extends Component {
   }
 
   /**
-   * A function to generate all files needed to be pushed to github.
-   * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+   * Handles saving portfolio to mongoDB
    * 
-   * TODO: Add a name setter for Portfolio, currently set to Test
+   * @returns void
+   * @memberof Portfolio
    */
-  async handleProduction() {
-    //this saves the portfolio to mongoDB
+  async handleSavePortfolio() {
     await axios({
       method: "PUT",
       url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
@@ -397,6 +388,8 @@ class Portfolio extends Component {
           console.log(err.message);
         }
 
+        //If code comes to here, it means _id is not fetched after save is successful. We bring the user
+        //back to dashboard to force him to reopen and fetch the portfolio again.
         this.props.history.push("/dashboard");
       })
 
@@ -407,6 +400,16 @@ class Portfolio extends Component {
         console.log(err.message);
       }
     })
+  }
+
+  /**
+   * A function to generate all files needed to be pushed to github.
+   * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+   * 
+   */
+  async handleProduction() {
+    //this saves the portfolio to mongoDB
+    await this.handleSavePortfolio();
 
     let pushableArray = [];
 
@@ -444,29 +447,9 @@ class Portfolio extends Component {
     this.setState({
       pages: newPages
     });
-  }
 
-  /**
-   * A function to delete the current portfolio from mongodb
-   *
-   * @returns void
-   * @memberof Portfolio
-   */
-  async handleDeletePortfolio() {
-    await axios({
-      method: "DELETE",
-      url: process.env.REACT_APP_BACKEND + "/portfolio/delete/" + this.state.portfolio_id,
-      withCredentials: true
-    }).then(res => {
-      console.log(res.data.message);
-      this.props.history.push("/dashboard");
-    }).catch(err => {
-      if (err.response) {
-        console.log(err.response.data);
-      } else {
-        console.log(err.message);
-      }
-    })
+    //triggers Autosave
+    this.props.toggleUnsavedWork(true);
   }
 
   handleUpdatePages(newDirTree, newPageName, newPageDirectory) {
@@ -480,6 +463,9 @@ class Portfolio extends Component {
     this.state.pages = newPages;
     this.state.dirTree = newDirTree;
     console.log(this.state.pages);
+
+    //Triggers autosave
+    this.props.toggleUnsavedWork(true);
   }
 
   handleDirectory(directory) {
@@ -519,29 +505,9 @@ class Portfolio extends Component {
             }
           })}
         />
-        <Dialog
-          open={this.state.deleteDialogState}
-          onClose={() => this.handleDeleteDialogState(false)}
-          aria-labelledby="delete-confirmation-dialog"
-          aria-describedby="delete-confirmation-dialog"
-        >
-          <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="delete-confirmation-description" style={{ color: "white" }}>
-              Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => this.handleDeleteDialogState(false)}>
-              Cancel
-            </Button>
-            <Button onClick={this.handleDeletePortfolio}>
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
+        
         {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
-          console.log(entry)
+          //console.log(entry)
           return (<div style={{ display: "flex", flexDirection: "row" }}>
             <EntryEditor
               fields={entry}
@@ -558,12 +524,6 @@ class Portfolio extends Component {
           </div>);
         })}
         <div className={classes.staticDiv}>
-          <Fab
-            className={classes.controlFAB}
-            onClick={() => this.handleDeleteDialogState(true)}
-          >
-            <FaTimes />
-          </Fab>
           <Fab
             className={classes.controlFAB}
             onClick={() => console.log(this.handleProduction())}>
