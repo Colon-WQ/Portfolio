@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
-import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
+import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab, TextField } from '@material-ui/core';
 import { TreeItem } from '@material-ui/lab';
 import { templates } from '../templates/Templates';
 import { FaPlus, FaSave, FaTimes, FaLink } from 'react-icons/fa';
@@ -64,6 +64,10 @@ const styles = (theme) => ({
   treeItemContent: {},
   treeView: {
     textAlign: 'left'
+  },
+  textField: {},
+  hide: {
+    display: 'none'
   }
 })
 
@@ -81,11 +85,14 @@ class DirectoryManager extends Component {
     super(props);
     this.state = {
       currPage: "",
+      showInput: false,
       dirTree: this.props.dirTree,
-      showDirectory: false
+      dirName: "",
     }
     this.handleSelectPage = this.handleSelectPage.bind(this);
     this.renderTree = this.renderTree.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDeletePage = this.handleDeletePage.bind(this);
   }
 
   /**
@@ -111,7 +118,7 @@ class DirectoryManager extends Component {
    */
   handleSelectPage(event, node) {
     this.setState({
-      currPage: node
+      currPage: node === 'root' ? '' : node
     });
   }
 
@@ -127,7 +134,7 @@ class DirectoryManager extends Component {
     return (
       <TreeItem
         value={dirTree.directory}
-        nodeId={dirTree.directory}
+        nodeId={dirTree.directory === '' ? label : dirTree.directory}
         label={label}
         classes={{
           root: classes.treeItem,
@@ -144,37 +151,52 @@ class DirectoryManager extends Component {
     );
   }
 
+  // TODO: can combine with other directory tree traversals to imporve code reuse
   /**
+   * Auxillary function to insert an empty page into a directory tree
    * 
-   * 
-   * @param {*} pageArray 
-   * @param {*} dirTree 
-   * @param {*} index 
-   * @param {*} fullDir 
+   * @param {[map]} pageArray the array of directories to be traversed
+   * @param {*} dirTree the current directory
+   * @param {*} index the index of the current durectory in pageArray
+   * @param {*} fullDir the full directory string
+   * @returns {boolean} whether the insert was successful
    */
   insertPage(pageArray, dirTree, index, fullDir) {
-    if (index === pageArray.length - 1) {
+    if (index >= pageArray.length - 1) {
+      if (dirTree.pages[pageArray[index]] !== undefined) return false;
       dirTree.pages[pageArray[index]] = {
         directory: fullDir,
         id: undefined,
         pages: {}
       }
+      return true;
     }
     else {
-      this.insertPage(pageArray, dirTree.pages[pageArray[index]], index + 1, fullDir);
+      return this.insertPage(pageArray, dirTree.pages[pageArray[index]], index + 1, fullDir);
     }
   }
 
+  /**
+   * Event handler to create a new page
+   * 
+   * @param {string} newName the name of the new page
+   */
   handleCreatePage(newName) {
     const newDirectory = `${this.state.currPage}/${newName}`;
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
-    this.insertPage(newDirectory.split("/"), newDirTree, 1, newDirectory);
+    const insertSuccess = this.insertPage(newDirectory.split("/"), newDirTree, 1, newDirectory, newDirectory);
+    console.log(`directory created successfully: ${insertSuccess}`);
     this.props.onCreate(newDirTree, newName, newDirectory);
     this.setState({
-      dirTree: newDirTree
+      dirTree: newDirTree,
+      showInput: false,
     })
   }
 
+  /**
+   * Event handler to update portfolio preview on directory change
+   * @param {boolean}} save whether the user wishes to change the view to the selected directory
+   */
   handleCloseDirectory(save) {
     // if (save) {
 
@@ -187,12 +209,61 @@ class DirectoryManager extends Component {
     })
   }
 
+  /**
+   * Generic event handler for updating state via componenent name
+   * @param {*} event 
+   */
+  handleChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    })
+  }
+
+  getParentPage(pageArray, dirTree, index) {
+    if (index === pageArray.length - 1) {
+      return dirTree
+    }
+    else {
+      return this.getParentPage(pageArray, dirTree.pages[pageArray[index]], index + 1);
+    }
+  }
+
+  handleDeletePage() {
+    const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
+    const directoryArray = this.state.currPage.split("/");
+    if (directoryArray === []) {
+      console.log('Root directory cannot be deleted.')
+    }
+    const parent = this.getParentPage(directoryArray, newDirTree, 1);
+
+    const child = parent.pages[directoryArray[directoryArray.length - 1]];
+    const deleteArray = [];
+    const flatten = (page) => {
+      deleteArray.push(page.directory);
+      Object.entries(page.pages).map(([key, item]) => flatten(item));
+    }
+    flatten(child);
+    // TODO: pass flattened array to portfolio handler
+
+    // TODO: offer option to merge child subdirectories to parent
+    // if (child.pages !== []) { }
+    const copy = { ...parent.pages };
+    console.log(parent);
+    delete copy[directoryArray[directoryArray.length - 1]];
+    parent.pages = copy;
+    this.setState({
+      dirTree: newDirTree,
+      currPage: parent.directory
+    })
+    // TODO: Update portfolio state.
+  }
+
+
   // TODO: add props dirTree={name:"", directory:"", id:number, pages:[]}
   // root page should not be renamed, since directory.root is hardcoded.
   render() {
     const { classes } = this.props;
     // should only have 1 root element for object.keys[0] to work
-    console.log(this.props.dirTree)
     return (
       <div>
         <Fab
@@ -214,18 +285,42 @@ class DirectoryManager extends Component {
               defaultCollapseIcon={<FaTimes />}
               defaultExpandIcon={<FaSave />}
               onNodeSelect={this.handleSelectPage}
-              onNodeToggle={this.handleToggle}
+              // onNodeToggle={this.handleToggle}
               className={classes.treeView}
             >
               {this.renderTree(this.state.dirTree, "root")}
             </TreeView>
-            <Fab variant="extended" onClick={(event) => this.handleCreatePage("temp")}>
+            <TextField
+              id="dirName"
+              label="directory name"
+              name="dirName"
+              value={this.state.dirName}
+              margin="normal"
+              variant="outlined"
+              onChange={this.handleChange}
+              className={this.state.showInput ? classes.textField : classes.hide}
+            />
+            <Fab
+              variant="extended"
+              onClick={(event) => this.setState({ showInput: true })}
+              className={!this.state.showInput ? classes.controlFAB : classes.hide}>
               <FaPlus />
               New page
             </Fab>
+            <Fab
+              variant="extended"
+              onClick={(event) => this.handleCreatePage(this.state.dirName)}
+              className={this.state.showInput ? classes.controlFAB : classes.hide}>
+              Create page
+            </Fab>
+            <Fab
+              variant="extended"
+              onClick={this.handleDeletePage}>
+              Delete page
+            </Fab>
           </div>
         </Modal>
-      </div>
+      </div >
     )
   }
 }

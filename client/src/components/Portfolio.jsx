@@ -85,7 +85,6 @@ class Portfolio extends Component {
         entries: []
       }],
       currentPage: 0,
-      currentEntry: 0,
       pushables: [],
       dirTree: {
         directory: "",
@@ -222,12 +221,11 @@ class Portfolio extends Component {
    * @param {*} fields
    * @param {boolean} changed - Whether the fields have been changed/ if the user intends to save the changes.
    */
-  handleEditorClose(fields, changed) {
-    
+  handleEditorClose(fields, changed, index) {
     if (changed) {
       const newPages = [...this.state.pages];
       const entries = [...this.state.pages[this.state.currentPage].entries];
-      entries[this.state.currentEntry] = fields;
+      entries[index] = fields;
       newPages[this.state.currentPage].entries = entries;
       this.setState({
         pages: newPages
@@ -472,6 +470,8 @@ class Portfolio extends Component {
     if (directory !== undefined) {
       for (let index = 0; index < this.state.pages.length; index++) {
         if (this.state.pages[index].directory === directory) this.state.currentPage = index;
+        console.log(this.state.currentPage);
+        console.log(this.state.pages)
       }
     }
     this.forceUpdate();
@@ -480,11 +480,6 @@ class Portfolio extends Component {
   // TODO: move editor components and logic into component files
   render() {
     const { classes } = this.props;
-
-    let selectedEntry = undefined;
-    if (this.state.pages[this.state.currentPage].entries != []) {
-      selectedEntry = this.state.pages[this.state.currentPage].entries[this.state.currentEntry];
-    }
 
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -505,15 +500,17 @@ class Portfolio extends Component {
             }
           })}
         />
-        
+
         {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
-          //console.log(entry)
+          // Key MUST be unique -> component will be reinitialized if key is different.
           return (<div style={{ display: "flex", flexDirection: "row" }}>
             <EntryEditor
               fields={entry}
               info={templates[entry.type][entry.style].info}
-              onClose={this.handleEditorClose}
-              key={index}
+              onClose={(data, changed) => {
+                this.handleEditorClose(data, changed, index);
+              }}
+              key={`${this.state.currentPage}-${index}-${entry.type}-${entry.style}`}
             />
             <Fab
               className={classes.delFAB}
