@@ -341,6 +341,7 @@ class EntryEditor extends Component {
 
   render() {
     const { classes } = this.props;
+    console.log("render")
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
     return (
       <div>
