@@ -20,10 +20,6 @@ export const getPortfolio = async (req, res) => {
             return res.status(404).send("portfolio _id not found");
         } else {
             console.log("portfolio found. Pages populated");
-            for (let test of portfolio.pages[0].entries) {
-                console.log(test._id);
-            }
-            
             return res.status(200).json({ portfolio: portfolio });
         }
     }).catch(err => {

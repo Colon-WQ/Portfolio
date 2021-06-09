@@ -13,8 +13,7 @@ const styles = (theme) => ({
         alignItems: "center",
         height: "100%",
         width: "100%"
-    },
-    appBarSpacer: theme.mixins.toolbar
+    }
 })
 
 class AboutTemplateMinimalist extends Component {
@@ -50,10 +49,8 @@ class AboutTemplateMinimalist extends Component {
             <div 
                 className={classes.root}
             >
-                <div className={classes.appBarSpacer}/>
                 <Card
                     style={{ textAlign: "center" }}
-                    variant="outlined"
                 >
                         <CardContent>
                         <Typography 
