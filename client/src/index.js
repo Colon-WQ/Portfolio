@@ -16,6 +16,7 @@ import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
 
+
 /**
  * @file index.js is the root file for this Portfol.io app
  * 
@@ -26,6 +27,8 @@ const store = createStore(
   rootReducer,
   applyMiddleware(thunk)
 )
+
+
 
 ReactDOM.render(
   <React.StrictMode>
