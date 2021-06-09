@@ -13,8 +13,15 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardActions from '@material-ui/core/CardActions';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { withRouter } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
+import { FaRegEdit } from 'react-icons/fa'
 
 
 /**
@@ -40,17 +47,32 @@ const styles = (theme) => ({
         justifyContent: 'start',
         alignItems: 'center'
     },
-    gridHorizontal: {
-        container: true,
-        direction: 'row',
-        justify: 'space-evenly',
+    portfolioButton: {
+        variant: 'contained',
+        size: 'small',
+        color: 'primary'
+    },
+    cardRoot: {
+        margin: theme.spacing(1),
+        display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
     },
-    portfolioButton: {
-        margin: theme.spacing(1),
-        variant: 'contained',
-        size: 'large',
-        color: 'primary'
+    cardDetails: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    cardControls: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    cardMedia: {
+        width: 151,
+        height: 151,
     },
     appBarSpacer: theme.mixins.toolbar
 });
@@ -68,7 +90,10 @@ class Dashboard extends Component {
             nameDialogState: false,
             portfolioName: "MyPortfolio",
             duplicateKeyError: false,
-            duplicateKeyHelperText: ""
+            duplicateKeyHelperText: "",
+            anchorEl: null,
+            currentPortfolio_Id: "",
+            deleteDialogState: false
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -76,7 +101,12 @@ class Dashboard extends Component {
         this.handleOnChange = this.handleOnChange.bind(this);
         this.handleNameDialogClose = this.handleNameDialogClose.bind(this);
         this.handleNameDialogOpen = this.handleNameDialogOpen.bind(this);
+        this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
+        this.handleOpenEditMenu = this.handleOpenEditMenu.bind(this);
+        this.handleCloseEditMenu = this.handleCloseEditMenu.bind(this);
+        this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
     }
+
 
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
@@ -101,7 +131,7 @@ class Dashboard extends Component {
      * @ignore
      */
     checkCookie(e) {
-        console.log('testing cookie')
+        console.log('testing cookie');
         axios({
             method: "GET",
             url: process.env.REACT_APP_BACKEND + '/portfolio/status',
@@ -131,6 +161,22 @@ class Dashboard extends Component {
     handleNameDialogClose() {
         this.setState({
             nameDialogState: false
+        })
+    }
+
+    /**
+     * This function handles changes to deleteDialogState
+     *
+     * @param {boolean} bool
+     * @returns void
+     * @memberof Portfolio
+     */
+    handleDeleteDialogState(bool) {
+        if (bool) {
+            this.handleCloseEditMenu();
+        }
+        this.setState({
+            deleteDialogState: bool
         })
     }
 
@@ -175,48 +221,75 @@ class Dashboard extends Component {
      * Then changes route to /edit to render the Portfolio.
      * 
      * @return void
-     * @param {*} event The DOM node that the click event was bound to. 
+     * @memberof Dashboard
      */
     async handleOpenPortfolio(event) {
+
         const id = event.currentTarget.id;
 
-        const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
-        
-        /** 
-         * On returning to dashboard, the prompt will make sure that the user has already saved his work to mongoDB and to localStorage.
-         * If the user wants to reopen the portfolio again, we can increase speed and reduce calls to backend by simply using the portfolio
-         * that is already in the localStorage.
-         */
-        if (portfolioLocalStorageItem !== null) {
-            if (portfolioLocalStorageItem._id === id) {
-                console.log("portfolio already exists locally");
-                this.props.history.push("/edit");
+        const portfolio = await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
+            withCredentials: true
+        }).then(res => {
+            console.log(`portfolio ${res.data.portfolio.name} fetched`);
+            return res.data.portfolio;
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
             }
-        } else {
-            const portfolio = await axios({
-                method: "GET",
-                url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
-                withCredentials: true
-            }).then(res => {
-                console.log(`portfolio ${res.data.portfolio.name} fetched`);
-                return res.data.portfolio;
-            }).catch(err => {
-                if (err.response) {
-                    console.log(err.response.data);
-                } else {
-                    console.log(err.message);
-                }
-            });
+        });
 
-            //Need to wait for portfolio to be saved to localStorage before changing route
-            //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
-            //LocalStorage is suitable to store portfolio data.
-            await this.props.saveCurrentWorkToLocal(portfolio);
+        //Need to wait for portfolio to be saved to localStorage before changing route
+        //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
+        //LocalStorage is suitable to store portfolio data.
+        await this.props.saveCurrentWorkToLocal(portfolio);
 
-            this.props.history.push("/edit");
-        }
-        
+        this.props.history.push("/edit");
+    
     }
+
+        /**
+     * A function to delete the current portfolio from mongodb
+     *
+     * @returns void
+     * @memberof Portfolio
+     */
+    async handleDeletePortfolio() {
+        await axios({
+            method: "DELETE",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/delete/" + this.state.currentPortfolio_Id,
+            withCredentials: true
+        }).then(async res => {
+            console.log(res.data.message);
+            await this.props.fetchPortfolios(this.props.id);
+
+        }).catch(err => {
+            if (err.response) {
+            console.log(err.response.data);
+            } else {
+            console.log(err.message);
+            }
+        })
+
+        this.handleDeleteDialogState(false);
+    }
+
+    handleOpenEditMenu(event) {
+        this.setState({
+            anchorEl: event.currentTarget,
+            currentPortfolio_Id: event.currentTarget.id
+        })
+    }
+
+    handleCloseEditMenu() {
+        this.setState({
+            anchorEl: null
+        })
+    }
+
 
     render() {
         const { name, portfolios, classes } = this.props
@@ -224,7 +297,7 @@ class Dashboard extends Component {
             <div className={classes.root}>
                 <div className={classes.appBarSpacer}/>
                 <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
-                <Grid className={classes.gridHorizontal}>
+                <Grid container direction='row' justify='center' alignItems='center'>
                     {
                         this.props.loading 
                         ?
@@ -238,15 +311,68 @@ class Dashboard extends Component {
                                 :
                                     <Typography variant="body1">{this.props.error.message}</Typography>
                             :
-                            portfolios.map((element, idx) => {
-                                return (<Button key={idx} id={element._id.valueOf()} onClick={this.handleOpenPortfolio} className={classes.portfolioButton}>
-                                    {element.name}
-                                </Button>);
-                            })
+                                portfolios.length === 0
+                                    ?
+                                        <Typography variant="body1">Oops. It appears that you have no saved Portfolios</Typography>
+                                    :
+                                        portfolios.map((element, idx) => {
+                                            return (
+                                                <Card 
+                                                    className={classes.cardRoot}
+                                                    key={idx} 
+                                                >
+                                                    <div className={classes.cardDetails}>
+                                                        <CardContent>
+                                                            <Typography component="h5" variant="h5">{element.name}</Typography>
+                                                        </CardContent>
+                                                        <CardActions className={classes.cardControls}>
+                                                            <Button
+                                                                id={element._id.valueOf()}
+                                                                className={classes.portfolioButton}
+                                                                aria-controls="edit-menu"
+                                                                aria-haspopup="true"
+                                                                onClick={this.handleOpenEditMenu}
+                                                            >
+                                                                <FaRegEdit/>
+                                                            </Button>
+                                                            <span style={{width: "15vh"}}/>
+                                                            <Button 
+                                                                id={element._id.valueOf()}  
+                                                                className={classes.portfolioButton}
+                                                                onClick={this.handleOpenPortfolio}
+                                                            >
+                                                                Open
+                                                            </Button>
+                                                        </CardActions>
+                                                    </div>
+                                                    
+                                                    <CardMedia
+                                                        component="img"
+                                                        className={classes.cardMedia}
+                                                        src="https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png"
+                                                    />
+                                                </Card>
+                                                
+                                            );
+                                        })
                     }
                 </Grid>
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
+                <Menu
+                    id="edit-menu"
+                    anchorEl={this.state.anchorEl}
+                    style={{display: 'inline-block'}}
+                    keepMounted
+                    open={Boolean(this.state.anchorEl)}
+                    onClose={this.handleCloseEditMenu}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{vertical: 'center', horizontal: 'left'}}
+                    transformOrigin={{vertical: 'center', horizontal: 'left'}}
+                >
+                    <MenuItem style={{display: 'inline'}} onClick={() => this.handleDeleteDialogState(true)}>Delete</MenuItem>
+                    <MenuItem style={{display: 'inline'}} onClick={this.handleCloseEditMenu}>Change Name</MenuItem>
+                </Menu>
                 <Dialog
                     open={this.state.nameDialogState}
                     onClose={this.handleNameDialogClose}
@@ -288,6 +414,27 @@ class Dashboard extends Component {
                             onClick={this.handleAddPortfolio}
                         >
                             Set Name
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog
+                    open={this.state.deleteDialogState}
+                    onClose={() => this.handleDeleteDialogState(false)}
+                    aria-labelledby="delete-confirmation-dialog"
+                    aria-describedby="delete-confirmation-dialog"
+                >
+                    <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="delete-confirmation-description" style={{ color: "white" }}>
+                                Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
+                            </DialogContentText>
+                        </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.handleDeleteDialogState(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={this.handleDeletePortfolio}>
+                            Delete
                         </Button>
                     </DialogActions>
                 </Dialog>
