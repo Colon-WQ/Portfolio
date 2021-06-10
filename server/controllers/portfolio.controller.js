@@ -13,7 +13,7 @@ const router = express.Router();
  */
 export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
-    console.log(portfolio_id);
+    //console.log(portfolio_id);
     await Portfolio.findById(portfolio_id).populate({ path: "pages", populate: { path: 'entries' } }).exec()
     .then(portfolio => {
         if (portfolio == null) {
@@ -22,6 +22,18 @@ export const getPortfolio = async (req, res) => {
             console.log("portfolio found. Pages populated");
             return res.status(200).json({ portfolio: portfolio });
         }
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+}
+
+export const updatePortfolio = async (req, res) => {
+    const portfolio = req.body.portfolio;
+    await Portfolio.findByIdAndUpdate(portfolio._id, portfolio)
+    .then(update => {
+        console.log("portfolio updated");
+        return res.status(200).json({ message: "portfolio updated" });
     }).catch(err => {
         console.log(err);
         return res.status(400).send("error encountered");
