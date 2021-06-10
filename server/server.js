@@ -19,30 +19,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const swaggerOptions = {
-    definition: {
-      openapi: "3.0.0",
-      info: {
-        title: "Express API for Portfol.io",
-        version: "1.0.0",
-        description:
-          "This is a CRUD API application made with Express and documented with Swagger",
-        license: {
-          name: "MIT",
-          url: "https://spdx.org/licenses/MIT.html",
-        },
-        contact: {
-          name: "Chen En & Chuan Hao"
-        },
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Express API for Portfol.io",
+      version: "1.0.0",
+      description:
+        "This is a CRUD API application made with Express and documented with Swagger",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
       },
-      servers: [
-        {
-          url: "http://localhost:5000",
-          description: "Development backend server"
-        },
-      ]
+      contact: {
+        name: "Chen En & Chuan Hao"
+      },
     },
-    apis: ["./routes/*.js"],
-  };
+    servers: [
+      {
+        url: "http://localhost:5000",
+        description: "Development backend server"
+      },
+    ]
+  },
+  apis: ["./routes/*.js"],
+};
   
 const swaggerSpecs = await swaggerJSDoc(swaggerOptions)
 
@@ -84,6 +84,13 @@ mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, u
   .then(() => console.log("Mongoose server started."))
   .catch((error) => console.log(error));
 
+// const connect = mongoose.connection;
+// let gfs;
+// connect.once("open", () => {
+//   gfs = new mongoose.mongo.GridFSBucket(connect.db, {
+//     bucketName: "images"
+//   })
+// })
 
 app.listen(PORT_CONFIG, () => console.log("server up and running at " + PORT_CONFIG));
 
