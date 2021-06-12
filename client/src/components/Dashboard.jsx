@@ -21,8 +21,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withRouter } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
-import { FaRegEdit } from 'react-icons/fa'
-
+import { FaRegEdit } from 'react-icons/fa';
+import FormData from 'form-data';
 
 /**
  * @file Dashboard component displays previews of the user's portfolios and offers 
@@ -95,7 +95,9 @@ class Dashboard extends Component {
             currentPortfolio_Id: "",
             deleteDialogState: false,
             changeNameDialogState: false,
-            changedName: ""
+            changedName: "",
+            file: null,
+            imageSrc: ""
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -109,6 +111,9 @@ class Dashboard extends Component {
         this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
         this.handleChangeNameDialogState = this.handleChangeNameDialogState.bind(this);
         this.handleChangePortfolioName = this.handleChangePortfolioName.bind(this);
+        this.handleTestUploadImage = this.handleTestUploadImage.bind(this);
+        this.onFileChange = this.onFileChange.bind(this);
+        this.handleTestGetImage = this.handleTestGetImage.bind(this);
     }
 
 
@@ -361,6 +366,55 @@ class Dashboard extends Component {
         
     }
 
+    handleTestUploadImage() {
+        console.log("uploading image");
+        const bodyFormData = new FormData();
+        bodyFormData.append('file', this.state.file);
+        console.log(bodyFormData.get("file"))
+        axios({
+            method: "POST",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage",
+            withCredentials: true,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" }
+        }).then(res => {
+            console.log(res.data);
+            console.log(res.data.id);
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+        })
+    }
+
+    onFileChange(event) {
+        this.setState({
+            file: event.target.files[0]
+        })
+    }
+
+    handleTestGetImage() {
+        axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c45d3d8a652202826eaef5",
+            withCredentials: true,
+            responseType: 'blob'
+        }).then(res => {
+            console.log(res)
+            this.setState({
+                imageSrc: URL.createObjectURL(res.data)
+            })
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+        })
+    }
+
 
     render() {
         const { name, portfolios, classes } = this.props
@@ -430,6 +484,16 @@ class Dashboard extends Component {
                 </Grid>
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
+                <input type="file" onChange={this.onFileChange}></input>
+                <Button onClick={this.handleTestUploadImage} className={classes.portfolioButton}>Test Upload Image</Button>
+                <Button onClick={this.handleTestGetImage} className={classes.portfolioButton}>Test Get Image</Button>
+                {/* <img src={process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c45d3d8a652202826eaef5"} height="300"></img> */}
+                {this.state.imageSrc !== "" ?
+                    <img src={this.state.imageSrc} height="300"></img>
+                    :
+                    <div/>
+                }
+                
                 <Menu
                     id="edit-menu"
                     anchorEl={this.state.anchorEl}

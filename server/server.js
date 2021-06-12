@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import cookieParser from "cookie-parser";
 import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
 
+
+
 //swagger jsdocs imports
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -79,21 +81,23 @@ app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, "..", 'client/deploy/index.html'));
 });
 
-// connects mongoose + express
+//connects mongoose + express
 mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
   .then(() => console.log("Mongoose server started."))
   .catch((error) => console.log(error));
 
-// const connect = mongoose.connection;
-// let gfs;
-// connect.once("open", () => {
-//   gfs = new mongoose.mongo.GridFSBucket(connect.db, {
-//     bucketName: "images"
-//   })
-// })
+
+const connect = mongoose.connection;
+// const connect = mongoose.createConnection(MONGO_URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useFindAndModify: false
+// });
+
 
 app.listen(PORT_CONFIG, () => console.log("server up and running at " + PORT_CONFIG));
 
 
+export default connect;
 
 
