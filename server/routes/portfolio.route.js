@@ -4,10 +4,15 @@ import {
     upsertPortfolio,
     getPortfolios,
     deletePortfolio,
-    updatePortfolio
+    updatePortfolio,
+    postImage,
+    getImage,
+    getImages
 } from '../controllers/portfolio.controller.js';
 import { checkGitCreated, checkExistingRepos, createRepo, getRepoContent, publishGithub } from '../controllers/github-api.controller.js';
 import auth from '../middleware/auth.middleware.js';
+import imageUploader from '../middleware/uploader.middleware.js';
+
 /**
  * @openapi
  * tags:
@@ -218,7 +223,11 @@ router.put("/updatePortfolio", auth, updatePortfolio);
 
 router.delete("/delete/:id", auth, deletePortfolio);
 
-// router.post("/images/:id", )
+router.post("/uploadImage", auth, imageUploader.single('file'), postImage);
+
+router.get("/getImage/:id", auth, getImage);
+
+router.get("getImages", auth, getImages);
 
 router.get("/:id", auth, getPortfolio);
 

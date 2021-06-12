@@ -4,6 +4,8 @@ import User from '../models/user.model.js';
 import Portfolio from '../models/portfolio.model.js';
 import Page from '../models/page.model.js';
 import Entry from '../models/entry.model.js';
+import connect from '../server.js';
+import Grid from 'gridfs-stream';
 
 
 const router = express.Router();
@@ -358,6 +360,55 @@ export const deletePortfolio = async (req, res) => {
     })
 
     
+}
+
+
+export const postImage = async (req, res) => {
+    return res.json({ file: req.file, id: req.file.id });
+}
+
+export const getImage = async (req, res) => {
+    const gfs = Grid(connect.db, mongoose.mongo);
+    gfs.collection('images');
+
+    gfs.files.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) })
+    .then(file => {
+        if (file === null) return res.status(400).send("error encountered");
+
+        if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+            const readStream = gfs.createReadStream(file._id);
+            
+
+            readStream.pipe(res);
+        } else {
+            return res.status(200).json({ file: file, message: "not an image" });
+        }
+
+        
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+}
+
+export const getImages = async (req, res) => {
+    const gfs = Grid(connect.db, mongoose.mongo);
+    gfs.collection('images');
+
+    gfs.files.find().toArray((err, files) => {
+
+        if (err) {
+            console.log(err);
+            return res.status(400).send("error encountered");
+        }
+
+        if (!files || files.length === 0) {
+            return res.status(404).send("no files exists");
+        }
+
+        return res.status(200).json({ files: files })
+    })
+
 }
 
 export default router;
