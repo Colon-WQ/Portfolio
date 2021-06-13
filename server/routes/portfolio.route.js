@@ -6,8 +6,10 @@ import {
     deletePortfolio,
     updatePortfolio,
     postImage,
+    updateImage,
     getImage,
-    getImages
+    getImages,
+    deleteImage
 } from '../controllers/portfolio.controller.js';
 import { checkGitCreated, checkExistingRepos, createRepo, getRepoContent, publishGithub } from '../controllers/github-api.controller.js';
 import auth from '../middleware/auth.middleware.js';
@@ -223,11 +225,15 @@ router.put("/updatePortfolio", auth, updatePortfolio);
 
 router.delete("/delete/:id", auth, deletePortfolio);
 
-router.post("/uploadImage", auth, imageUploader.single('file'), postImage);
+router.post("/uploadImage/:id", auth, imageUploader.single('file'), postImage);
+
+router.put("/updateImage/:id", auth, imageUploader.single('file'), updateImage);
 
 router.get("/getImage/:id", auth, getImage);
 
-router.get("getImages", auth, getImages);
+router.get("/getImageRefs/:id", auth, getImages);
+
+router.delete("/deleteImage/:id", auth, deleteImage);
 
 router.get("/:id", auth, getPortfolio);
 
