@@ -71,6 +71,9 @@ const styles = (theme) => ({
   }
 })
 
+const RENAME = 0;
+const CREATE = 1;
+
 /**
  * User interface to allow users to select templates for each entry.
  * 
@@ -88,11 +91,14 @@ class DirectoryManager extends Component {
       showInput: false,
       dirTree: this.props.dirTree,
       dirName: "",
+      inputMode: RENAME,
+      expanded: []
     }
     this.handleSelectPage = this.handleSelectPage.bind(this);
     this.renderTree = this.renderTree.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleDeletePage = this.handleDeletePage.bind(this);
+    this.handleRenameDirectory = this.handleRenameDirectory.bind(this);
   }
 
   /**
@@ -118,7 +124,7 @@ class DirectoryManager extends Component {
    */
   handleSelectPage(event, node) {
     this.setState({
-      currPage: node === 'root' ? '' : node
+      currPage: node
     });
   }
 
@@ -134,7 +140,7 @@ class DirectoryManager extends Component {
     return (
       <TreeItem
         value={dirTree.directory}
-        nodeId={dirTree.directory === '' ? label : dirTree.directory}
+        nodeId={dirTree.directory}
         label={label}
         classes={{
           root: classes.treeItem,
@@ -186,7 +192,7 @@ class DirectoryManager extends Component {
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
     const insertSuccess = this.insertPage(newDirectory.split("/"), newDirTree, 1, newDirectory, newDirectory);
     console.log(`directory created successfully: ${insertSuccess}`);
-    this.props.onCreate(newDirTree, newName, newDirectory);
+    this.props.onUpdate(newDirTree, [], newName, newDirectory);
     this.setState({
       dirTree: newDirTree,
       showInput: false,
@@ -228,6 +234,39 @@ class DirectoryManager extends Component {
     }
   }
 
+  handleRenameDirectory() {
+    // this.state.dirName
+    console.log(this.state.currPage)
+
+    const pageArray = this.state.currPage.split('/');
+    const oldName = pageArray[pageArray.length - 1];
+    const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
+    let ptr = newDirTree;
+    for (let index = 1; index < pageArray.length - 1; index++) {
+      ptr = ptr.pages[pageArray[index]]
+    }
+
+    console.log(oldName);
+    ptr.pages[this.state.dirName] = ptr.pages[oldName];
+    delete ptr.pages[oldName]
+    const from = [];
+    const to = [];
+    this.renameDirectory(ptr.pages[this.state.dirName], this.state.dirName, from, to);
+
+    this.props.onUpdate(ptr);
+    this.setState({
+      dirTree: newDirTree,
+      showInput: false
+    })
+  }
+
+  renameDirectory(dirTree, newDirectory, from, to) {
+    from.push(dirTree.directory);
+    to.push(newDirectory);
+    dirTree.directory = newDirectory;
+    Object.entries(dirTree.pages).map(([key, item]) => this.renameDirectory(item, `${newDirectory}/${key}`));
+  }
+
   handleDeletePage() {
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
     const directoryArray = this.state.currPage.split("/");
@@ -258,7 +297,6 @@ class DirectoryManager extends Component {
     // TODO: Update portfolio state.
   }
 
-
   // TODO: add props dirTree={name:"", directory:"", id:number, pages:[]}
   // root page should not be renamed, since directory.root is hardcoded.
   render() {
@@ -284,8 +322,9 @@ class DirectoryManager extends Component {
             <TreeView
               defaultCollapseIcon={<FaTimes />}
               defaultExpandIcon={<FaSave />}
+              expanded={this.state.expanded}
               onNodeSelect={this.handleSelectPage}
-              // onNodeToggle={this.handleToggle}
+              onNodeToggle={(event, nodeIds) => this.setState({ expanded: nodeIds })}
               className={classes.treeView}
             >
               {this.renderTree(this.state.dirTree, "root")}
@@ -302,16 +341,29 @@ class DirectoryManager extends Component {
             />
             <Fab
               variant="extended"
-              onClick={(event) => this.setState({ showInput: true })}
-              className={!this.state.showInput ? classes.controlFAB : classes.hide}>
+              onClick={(event) => this.setState({ showInput: true, inputMode: CREATE })}
+              className={!this.state.showInput || this.state.inputMode !== CREATE ? classes.controlFAB : classes.hide}>
               <FaPlus />
               New page
             </Fab>
             <Fab
               variant="extended"
+              onClick={(event) => this.setState({ showInput: true, inputMode: RENAME })}
+              className={!this.state.showInput || this.state.inputMode !== RENAME ? classes.controlFAB : classes.hide}>
+              <FaPlus />
+              Rename page
+            </Fab>
+            <Fab
+              variant="extended"
               onClick={(event) => this.handleCreatePage(this.state.dirName)}
-              className={this.state.showInput ? classes.controlFAB : classes.hide}>
-              Create page
+              className={this.state.showInput && this.state.inputMode === CREATE ? classes.controlFAB : classes.hide}>
+              Create
+            </Fab>
+            <Fab
+              variant="extended"
+              onClick={(event) => this.handleRenameDirectory(this.state.dirName)}
+              className={this.state.showInput && this.state.inputMode === RENAME ? classes.controlFAB : classes.hide}>
+              Rename
             </Fab>
             <Fab
               variant="extended"
@@ -320,7 +372,7 @@ class DirectoryManager extends Component {
             </Fab>
           </div>
         </Modal>
-      </div >
+      </div>
     )
   }
 }
