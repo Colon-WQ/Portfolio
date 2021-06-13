@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal, toggleUnsavedWork } from '../actions/PortfolioAction.js';
-import { withStyles } from '@material-ui/core/styles'
+import { ThemeProvider, withStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core';
 import { FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
@@ -15,6 +15,7 @@ import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
 import { Prompt, withRouter } from 'react-router-dom';
+import { theme } from '../styles/styles';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -154,32 +155,32 @@ class Portfolio extends Component {
    * @return void
    * @memberof Portfolio
    */
-  // componentDidUpdate() {
-  //   if (this.props.isUnsaved && !this.state.isTimerExist) {
-  //     setTimeout(async () => {
-  //       console.log("Autosaving")
+  componentDidUpdate() {
+    if (this.props.isUnsaved && !this.state.isTimerExist) {
+      setTimeout(async () => {
+        console.log("Autosaving")
 
-  //       await this.handleSavePortfolio();
+        await this.handleSavePortfolio();
 
-  //       // this.props.saveCurrentWorkToLocal({
-  //       //   _id: this.state.portfolio_id,
-  //       //   name: this.state.name,
-  //       //   pages: this.state.pages
-  //       // });
-  //       this.props.toggleUnsavedWork(false);
+        // this.props.saveCurrentWorkToLocal({
+        //   _id: this.state.portfolio_id,
+        //   name: this.state.name,
+        //   pages: this.state.pages
+        // });
+        this.props.toggleUnsavedWork(false);
 
-  //       //Sets isTimerExist to false after saving so new timers can be set.
-  //       this.setState({
-  //         isTimerExist: false
-  //       })
-  //     }, 3000);
+        //Sets isTimerExist to false after saving so new timers can be set.
+        this.setState({
+          isTimerExist: false
+        })
+      }, 3000);
 
-  //     //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
-  //     this.setState({
-  //       isTimerExist: true
-  //     });
-  //   }
-  // }
+      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
+      this.setState({
+        isTimerExist: true
+      });
+    }
+  }
 
 
 
@@ -297,10 +298,16 @@ class Portfolio extends Component {
 
     const sheets = new ServerStyleSheets();
     // TODO: test renderToStaticMarkup
+    //NOTE: sheets.collect will look for mui styling in the provided component.
+    //We also need to wrap that component with the theme we are using so that the style can reference it properly
+    //Suspect that because certain styles are missing, their defaults may be injected into our app, resulting in default css styles.
     const rawHTML = ReactDOMServer.renderToString(sheets.collect(
+      <ThemeProvider theme={theme}>
       <div style={{ display: "flex", flexDirection: "column" }}>
         {copy.map((entry, index) => this.renderEntry(entry))}
-      </div>));
+      </div>
+      </ThemeProvider>
+      ));
     // TODO: add title
     const html = Base64.encode(`
             <!DOCTYPE html>

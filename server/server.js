@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import cookieParser from "cookie-parser";
 import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
 
+
+
 //swagger jsdocs imports
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -19,30 +21,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const swaggerOptions = {
-    definition: {
-      openapi: "3.0.0",
-      info: {
-        title: "Express API for Portfol.io",
-        version: "1.0.0",
-        description:
-          "This is a CRUD API application made with Express and documented with Swagger",
-        license: {
-          name: "MIT",
-          url: "https://spdx.org/licenses/MIT.html",
-        },
-        contact: {
-          name: "Chen En & Chuan Hao"
-        },
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Express API for Portfol.io",
+      version: "1.0.0",
+      description:
+        "This is a CRUD API application made with Express and documented with Swagger",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
       },
-      servers: [
-        {
-          url: "http://localhost:5000",
-          description: "Development backend server"
-        },
-      ]
+      contact: {
+        name: "Chen En & Chuan Hao"
+      },
     },
-    apis: ["./routes/*.js"],
-  };
+    servers: [
+      {
+        url: "http://localhost:5000",
+        description: "Development backend server"
+      },
+    ]
+  },
+  apis: ["./routes/*.js"],
+};
   
 const swaggerSpecs = await swaggerJSDoc(swaggerOptions)
 
@@ -79,14 +81,23 @@ app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, "..", 'client/deploy/index.html'));
 });
 
-// connects mongoose + express
+//connects mongoose + express
 mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
   .then(() => console.log("Mongoose server started."))
   .catch((error) => console.log(error));
 
 
+const connect = mongoose.connection;
+// const connect = mongoose.createConnection(MONGO_URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useFindAndModify: false
+// });
+
+
 app.listen(PORT_CONFIG, () => console.log("server up and running at " + PORT_CONFIG));
 
 
+export default connect;
 
 

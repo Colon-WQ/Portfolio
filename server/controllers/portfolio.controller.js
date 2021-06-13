@@ -4,6 +4,9 @@ import User from '../models/user.model.js';
 import Portfolio from '../models/portfolio.model.js';
 import Page from '../models/page.model.js';
 import Entry from '../models/entry.model.js';
+import Image from '../models/image.model.js';
+import connect from '../server.js';
+import Grid from 'gridfs-stream';
 
 
 const router = express.Router();
@@ -13,19 +16,27 @@ const router = express.Router();
  */
 export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
-    console.log(portfolio_id);
+    //console.log(portfolio_id);
     await Portfolio.findById(portfolio_id).populate({ path: "pages", populate: { path: 'entries' } }).exec()
     .then(portfolio => {
         if (portfolio == null) {
             return res.status(404).send("portfolio _id not found");
         } else {
             console.log("portfolio found. Pages populated");
-            for (let test of portfolio.pages[0].entries) {
-                console.log(test._id);
-            }
-            
             return res.status(200).json({ portfolio: portfolio });
         }
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+}
+
+export const updatePortfolio = async (req, res) => {
+    const portfolio = req.body.portfolio;
+    await Portfolio.findByIdAndUpdate(portfolio._id, portfolio)
+    .then(update => {
+        console.log("portfolio updated");
+        return res.status(200).json({ message: "portfolio updated" });
     }).catch(err => {
         console.log(err);
         return res.status(400).send("error encountered");
@@ -351,5 +362,203 @@ export const deletePortfolio = async (req, res) => {
 
     
 }
+
+
+
+/**
+ * Should take in id as a string from url params.
+ * Needs to take in formData with file and label fields
+ * Checks if image already exists
+ */
+export const postImage = async (req, res) => {
+
+    const portfolioId = req.params.id;
+    //Check if image exists already
+    await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: req.body.label })
+    .then(async image => {
+        if (image) return res.status(400).send("image with same label already exists");
+        //Check if portfolio exists. There could be an error with delete.
+        await Portfolio.findById(portfolioId)
+        .then(portfolio => {
+            if (!portfolio) return res.status(400).send(`portfolio ${portfolioId} does not exist`);
+            const newImage = new Image({
+                _id: new mongoose.Types.ObjectId(),
+                label: req.body.label,
+                filename: req.file.filename,
+                fileId: req.file.id,
+                portfolio: new mongoose.Types.ObjectId(portfolioId)
+            });
+            //Once Image is saved, it's time to update images ref in portfolio
+            newImage.save()
+            .then(async image => {
+                const images = portfolio.images;
+                if (images.filter(img => img == image._id).length !== 0) return res.status(400).send("duplicate image objectId")
+
+                const imagesCopy = [...images];
+
+                imagesCopy.push(image._id);
+                portfolio.images = imagesCopy;
+                portfolio.markModified("images");
+                //save when called on a document will instead update if changes are made.
+                await portfolio.save();
+
+                return res.status(200).json({ message: `image with label: ${req.body.label} has been successfully saved with portfolio image refs updated accordingly` })
+            }).catch(err => {
+                console.log(err);
+                return res.status(400).send("error encountered");
+            })
+        }).catch(err => {
+            console.log(err);
+            return res.status(400).send("error encountered");
+        })       
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+}
+
+/**
+ * Should take in id as a string from url params.
+ * Needs to take in formData with file and label fields
+ * Checks if image already exists
+ */
+export const updateImage = async (req, res) => {
+    const gfs = Grid(connect.db, mongoose.mongo);
+    gfs.collection('images');
+
+    const portfolioId = req.params.id;
+    const label = req.body.label;
+    await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label})
+    .then(async image => {
+        if (!image) return res.status(404).send(`image with label ${label} does not exist`);
+        const fileIdToDelete = image.fileId;
+        //Need to first delete the currently stored file
+        await gfs.files.findByIdAndDelete(fileIdToDelete)
+        .then(async () => {
+            //Note: Does not matter if file is really deleted since this is update.
+            console.log(`file by id ${fileIdToDelete} deleted`);
+            //Then update the filename and fileId in image document.
+            image.fileId = req.file.fileId;
+            image.filename = req.file.filename;
+            image.markModified("fileId");
+            image.markModified("filename");
+            await image.save();
+
+            return res.status(200).json({ message: `successfully updated file for image with label ${label}`})
+        }).catch(err => {
+            console.log(err);
+            return res.status(400).send("error encountered");
+        })
+
+        
+    })
+}
+
+/**
+ * Needs to take label as query params.
+ * Needs to take portfolio objectId as string in url params.
+ */
+export const getImage = async (req, res) => {
+    const gfs = Grid(connect.db, mongoose.mongo);
+    gfs.collection('images');
+
+    const portfolioId = req.params.id;
+    const label = req.query.label;
+
+    await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
+    .then(image => {
+        if (!image) {
+            return res.status(404).send("image with label could not be found for the requested portfolio");
+        } else {
+            gfs.files.findOne({ _id: new mongoose.Types.ObjectId(image.fileId) })
+            .then(file => {
+                if (file === null) return res.status(400).send("error encountered");
+    
+                if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+                    const readStream = gfs.createReadStream(file._id);
+                    readStream.pipe(res);
+                } else {
+                    return res.status(200).json({ file: file, message: "not an image" });
+                }
+                
+            }).catch(err => {
+                console.log(err);
+                return res.status(400).send("error encountered");
+            })
+        }
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+    
+    
+}
+
+//This simply populates the images ref array of portfolio. You need to get the images one by one using the array from frontend.
+export const getImages = async (req, res) => {
+    
+    const portfolioId = req.params.id;
+
+    await Portfolio.findById(portfolioId).populate("images")
+    .then(portfolio => {
+        if (!portfolio) return res.status(404).send("portfolio does not exist");
+        return res.status(200).json({ message: "successfully fetched images ref array", images: portfolio.images })
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+
+}
+
+export const deleteImage = async (req, res) => {
+    const gfs = Grid(connect.db, mongoose.mongo);
+    gfs.collection('images');
+
+    const portfolioId = req.params.id;
+    const label = req.body.label;
+
+    await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
+    .then(async image => {
+        if (!image) return res.status(404).send(`image with label ${label} does not exist`);
+
+        await gfs.files.deleteOne({ _id: new mongoose.Types.ObjectId(image.fileId) })
+        .then(async deletedFile => {
+            if (!deletedFile) return res.status(404).send(`file ${image.fileId} does not exist`);
+
+            await Image.deleteOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
+            .then(async deletedImage => {
+                if (!deletedImage) return res.status(404).send(`image with label ${label} does not exist`);
+
+                await Portfolio.findById(portfolioId)
+                .then(async portfolio => {
+                    if (!portfolio) return res.status(404).send(`portfolio ${portfolioId} does not exist`);
+                    const images = portfolio.images;
+                    const imagesCopy = images.filter(img => img._id != deleteImage._id);
+                    portfolio.images = imagesCopy;
+                    portfolio.markModified("images");
+                    await portfolio.save()
+                    
+                    return res.status(200).json({ message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` });
+                }).catch(err => {
+                    console.log(err);
+                    return res.status(400).send("error encountered");
+                })
+
+            }).catch(err => {
+                console.log(err);
+                return res.status(400).send("error encountered");
+            })
+
+        }).catch(err => {
+            console.log(err);
+            return res.status(400).send("error encountered");
+        })
+
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+}
+
 
 export default router;

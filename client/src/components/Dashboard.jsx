@@ -21,8 +21,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withRouter } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
-import { FaRegEdit } from 'react-icons/fa'
-
+import { FaRegEdit } from 'react-icons/fa';
+import FormData from 'form-data';
 
 /**
  * @file Dashboard component displays previews of the user's portfolios and offers 
@@ -93,7 +93,11 @@ class Dashboard extends Component {
             duplicateKeyHelperText: "",
             anchorEl: null,
             currentPortfolio_Id: "",
-            deleteDialogState: false
+            deleteDialogState: false,
+            changeNameDialogState: false,
+            changedName: "",
+            file: null,
+            images: null
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -105,6 +109,11 @@ class Dashboard extends Component {
         this.handleOpenEditMenu = this.handleOpenEditMenu.bind(this);
         this.handleCloseEditMenu = this.handleCloseEditMenu.bind(this);
         this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
+        this.handleChangeNameDialogState = this.handleChangeNameDialogState.bind(this);
+        this.handleChangePortfolioName = this.handleChangePortfolioName.bind(this);
+        this.handleTestUploadImage = this.handleTestUploadImage.bind(this);
+        this.onFileChange = this.onFileChange.bind(this);
+        this.handleTestGetImage = this.handleTestGetImage.bind(this);
     }
 
 
@@ -174,6 +183,13 @@ class Dashboard extends Component {
     handleDeleteDialogState(bool) {
         if (bool) {
             this.handleCloseEditMenu();
+        } else {
+            //after closing dialog, need to reset error, error text and the relevant text field
+            this.setState({
+                portfolioName: "",
+                duplicateKeyError: false,
+                duplicateKeyHelperText: ""
+            })
         }
         this.setState({
             deleteDialogState: bool
@@ -187,26 +203,25 @@ class Dashboard extends Component {
      * @memberof Dashboard
      */
     handleAddPortfolio() {
-
-        if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.portfolioName).length === 0) {
-            //This clears current work from local, so we need to arrest the screen whenever user attempts to leave a portfolio
-            //page and remind him to save before leaving.
-            this.props.clearCurrentWorkFromLocal();
-
-            const portfolio = {
-                _id: undefined,
-                name: this.state.portfolioName,
-                pages: undefined
-            }
-
-            this.props.saveCurrentWorkToLocal(portfolio);
-            this.props.history.push("/edit");
+        if (this.state.portfolioName === "") {
+            this.setState({
+                duplicateKeyError: true,
+                duplicateKeyHelperText: "Portfolio name cannot be empty"
+            })
         } else {
-            if (this.state.portfolioName === "") {
-                this.setState({
-                    duplicateKeyError: true,
-                    duplicateKeyHelperText: "Portfolio name cannot be empty"
-                })
+            if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.portfolioName).length === 0) {
+                //This clears current work from local, so we need to arrest the screen whenever user attempts to leave a portfolio
+                //page and remind him to save before leaving.
+                this.props.clearCurrentWorkFromLocal();
+
+                const portfolio = {
+                    _id: undefined,
+                    name: this.state.portfolioName,
+                    pages: undefined
+                }
+
+                this.props.saveCurrentWorkToLocal(portfolio);
+                this.props.history.push("/edit");
             } else {
                 this.setState({
                     duplicateKeyError: true,
@@ -214,6 +229,7 @@ class Dashboard extends Component {
                 })
             }
         }
+        
     }
 
     /**
@@ -227,13 +243,18 @@ class Dashboard extends Component {
 
         const id = event.currentTarget.id;
 
-        const portfolio = await axios({
+        await axios({
             method: "GET",
             url: process.env.REACT_APP_BACKEND + "/portfolio/" + id,
             withCredentials: true
-        }).then(res => {
+        }).then(async res => {
             console.log(`portfolio ${res.data.portfolio.name} fetched`);
-            return res.data.portfolio;
+            //Need to wait for portfolio to be saved to localStorage before changing route
+            //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
+            //LocalStorage is suitable to store portfolio data.
+            await this.props.saveCurrentWorkToLocal(res.data.portfolio);
+
+            this.props.history.push("/edit");
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -242,12 +263,7 @@ class Dashboard extends Component {
             }
         });
 
-        //Need to wait for portfolio to be saved to localStorage before changing route
-        //Since the website is public anyways, portfolio data is meant to be public and thus not considered sensitive.
-        //LocalStorage is suitable to store portfolio data.
-        await this.props.saveCurrentWorkToLocal(portfolio);
-
-        this.props.history.push("/edit");
+        
     
     }
 
@@ -287,6 +303,143 @@ class Dashboard extends Component {
     handleCloseEditMenu() {
         this.setState({
             anchorEl: null
+        })
+    }
+
+    handleChangeNameDialogState(bool) {
+        if (bool) {
+            this.handleCloseEditMenu();
+        } else {
+            //after closing dialog, need to reset error, error text and the relevant text field
+            this.setState({
+                changedName: "",
+                duplicateKeyError: false,
+                duplicateKeyHelperText: ""
+            })
+        }
+
+        this.setState({
+            changeNameDialogState: bool
+        });
+    }
+
+    //currentPortfolio_Id will be set to the _id of the selected portfolio when menu is opened, so once in the dialog,
+    //currentPortfolio_Id will be the correct one.
+    async handleChangePortfolioName() {
+        if (this.state.changedName === "") {
+            this.setState({
+                duplicateKeyError: true,
+                duplicateKeyHelperText: "Portfolio name cannot be empty"
+            })
+        } else {
+            if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.changedName).length === 0) {
+                const originalPortfolio = this.props.portfolios.find(element => element._id === this.state.currentPortfolio_Id);
+                const changedPortfolio = {...originalPortfolio};
+                changedPortfolio.name = this.state.changedName;
+                await axios({
+                    method: "PUT",
+                    url: process.env.REACT_APP_BACKEND + "/portfolio/updatePortfolio",
+                    withCredentials: true,
+                    data: {
+                        portfolio: changedPortfolio
+                    }
+                }).then(res => {
+                    console.log(res.data.message);
+                }).catch(err => {
+                    if (err.response) {
+                        console.log(err.response.data);
+                    } else {
+                        console.log(err.message);
+                    }
+                })
+
+                await this.props.fetchPortfolios(this.props.id);
+                this.handleChangeNameDialogState(false);
+
+            } else {
+                this.setState({
+                    duplicateKeyError: true,
+                    duplicateKeyHelperText: "Portfolio name already exists"
+                })
+            }
+        }
+        
+    }
+
+    //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
+    handleTestUploadImage() {
+        console.log("uploading image");
+        const bodyFormData = new FormData();
+        bodyFormData.append('file', this.state.file);
+        bodyFormData.append('label', "preview");
+        console.log(bodyFormData.get("file"))
+        axios({
+            method: "POST",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + "60c0724c8eed4f011f0beb06",
+            withCredentials: true,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" }
+        }).then(res => {
+            console.log(res.data.message);
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
+        })
+    }
+
+    onFileChange(event) {
+        this.setState({
+            file: event.target.files[0]
+        })
+    }
+
+    //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
+    async handleTestGetImage() {
+        await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + "60c0724c8eed4f011f0beb06",
+            withCredentials: true
+        }).then(async res => {
+            console.log(res.data.message);
+            console.log(res.data.images);
+            const imageRefs = res.data.images;
+            const images = {};
+            for (let imageRef of imageRefs) {
+                await axios({
+                    method: "GET",
+                    url: process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c0724c8eed4f011f0beb06",
+                    withCredentials: true,
+                    responseType: 'blob',
+                    params: {
+                        label: imageRef.label
+                    }
+                }).then(res => {
+                    console.log(`image ${imageRef.label} fetched`);
+                    images[imageRef.label] = URL.createObjectURL(res.data);
+                }).catch(err => {
+                    if (err.response) {
+                        console.log(err.response.data);
+                    } else {
+                        console.log(err.message);
+                    }
+                })
+            }
+
+            
+            this.setState({
+                images: images
+            })
+
+            console.log(this.state.images);
+        }).catch(err => {
+            if (err.response) {
+                console.log(err.response.data);
+            } else {
+                console.log(err.message);
+            }
         })
     }
 
@@ -359,6 +512,18 @@ class Dashboard extends Component {
                 </Grid>
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
+                <input type="file" onChange={this.onFileChange}></input>
+                <Button onClick={this.handleTestUploadImage} className={classes.portfolioButton}>Test Upload Image</Button>
+                <Button onClick={this.handleTestGetImage} className={classes.portfolioButton}>Test Get Image</Button>
+                {/* <img src={process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c45d3d8a652202826eaef5"} height="300"></img> */}
+                {this.state.images !== null ?
+                    Object.keys(this.state.images).map(key => 
+                        <img src={this.state.images[key]} height="300"></img>
+                    )
+                    :
+                    <Typography variant="body1" component="body1">Woops no images exist for this portfolio</Typography>
+                }
+                
                 <Menu
                     id="edit-menu"
                     anchorEl={this.state.anchorEl}
@@ -371,19 +536,20 @@ class Dashboard extends Component {
                     transformOrigin={{vertical: 'center', horizontal: 'left'}}
                 >
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleDeleteDialogState(true)}>Delete</MenuItem>
-                    <MenuItem style={{display: 'inline'}} onClick={this.handleCloseEditMenu}>Change Name</MenuItem>
+                    <MenuItem style={{display: 'inline'}} onClick={() => this.handleChangeNameDialogState(true)}>Change Name</MenuItem>
                 </Menu>
                 <Dialog
                     open={this.state.nameDialogState}
                     onClose={this.handleNameDialogClose}
                     aria-labelledby="portfolio name dialog"
+                    fullWidth
                 >
                     <DialogTitle id="portfolio-name-dialog-title">
                         Portfolio Name
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Set your Portfolio name here. This will be part of your website's url, so choose carefully.
+                            Set your Portfolio name here.
                         </DialogContentText>
                         <TextField
                             name="portfolioName"
@@ -422,6 +588,7 @@ class Dashboard extends Component {
                     onClose={() => this.handleDeleteDialogState(false)}
                     aria-labelledby="delete-confirmation-dialog"
                     aria-describedby="delete-confirmation-dialog"
+                    fullWidth
                 >
                     <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
                         <DialogContent>
@@ -437,6 +604,46 @@ class Dashboard extends Component {
                             Delete
                         </Button>
                     </DialogActions>
+                </Dialog>
+                <Dialog
+                    open={this.state.changeNameDialogState}
+                    onClose={() => this.handleChangeNameDialogState(false)}
+                    aria-labelledby="change-name-dialog"
+                    aria-describedby="change-name-dialog"
+                    fullWidth
+                >
+                    <DialogTitle id="change-name-dialog-title">Change Portfolio Name</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Type your new portfolio name here.
+                            </DialogContentText>
+                            <TextField
+                                name="changedName"
+                                autoFocus
+                                margin="dense"
+                                label="New Portfolio Name"
+                                type="string"
+                                defaultValue={this.state.changedName}
+                                fullWidth
+                                onChange={this.handleOnChange}
+                                InputLabelProps={{
+                                    style: {color: "whitesmoke"},
+                                }}
+                                InputProps={{
+                                    color: 'secondary'
+                                }}
+                                error={this.state.duplicateKeyError}
+                                helperText={this.state.duplicateKeyHelperText}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => this.handleChangeNameDialogState(false)}>
+                                Cancel
+                            </Button>
+                            <Button onClick={this.handleChangePortfolioName}>
+                                Change
+                            </Button>
+                        </DialogActions>
                 </Dialog>
             </div>
 
