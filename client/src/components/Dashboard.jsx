@@ -97,7 +97,7 @@ class Dashboard extends Component {
             changeNameDialogState: false,
             changedName: "",
             file: null,
-            imageSrc: ""
+            images: null
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -366,20 +366,21 @@ class Dashboard extends Component {
         
     }
 
+    //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
     handleTestUploadImage() {
         console.log("uploading image");
         const bodyFormData = new FormData();
         bodyFormData.append('file', this.state.file);
+        bodyFormData.append('label', "preview");
         console.log(bodyFormData.get("file"))
         axios({
             method: "POST",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + "60c0724c8eed4f011f0beb06",
             withCredentials: true,
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" }
         }).then(res => {
-            console.log(res.data);
-            console.log(res.data.id);
+            console.log(res.data.message);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -395,17 +396,44 @@ class Dashboard extends Component {
         })
     }
 
-    handleTestGetImage() {
-        axios({
+    //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
+    async handleTestGetImage() {
+        await axios({
             method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c45d3d8a652202826eaef5",
-            withCredentials: true,
-            responseType: 'blob'
-        }).then(res => {
-            console.log(res)
+            url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + "60c0724c8eed4f011f0beb06",
+            withCredentials: true
+        }).then(async res => {
+            console.log(res.data.message);
+            console.log(res.data.images);
+            const imageRefs = res.data.images;
+            const images = {};
+            for (let imageRef of imageRefs) {
+                await axios({
+                    method: "GET",
+                    url: process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c0724c8eed4f011f0beb06",
+                    withCredentials: true,
+                    responseType: 'blob',
+                    params: {
+                        label: imageRef.label
+                    }
+                }).then(res => {
+                    console.log(`image ${imageRef.label} fetched`);
+                    images[imageRef.label] = URL.createObjectURL(res.data);
+                }).catch(err => {
+                    if (err.response) {
+                        console.log(err.response.data);
+                    } else {
+                        console.log(err.message);
+                    }
+                })
+            }
+
+            
             this.setState({
-                imageSrc: URL.createObjectURL(res.data)
+                images: images
             })
+
+            console.log(this.state.images);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -488,10 +516,12 @@ class Dashboard extends Component {
                 <Button onClick={this.handleTestUploadImage} className={classes.portfolioButton}>Test Upload Image</Button>
                 <Button onClick={this.handleTestGetImage} className={classes.portfolioButton}>Test Get Image</Button>
                 {/* <img src={process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + "60c45d3d8a652202826eaef5"} height="300"></img> */}
-                {this.state.imageSrc !== "" ?
-                    <img src={this.state.imageSrc} height="300"></img>
+                {this.state.images !== null ?
+                    Object.keys(this.state.images).map(key => 
+                        <img src={this.state.images[key]} height="300"></img>
+                    )
                     :
-                    <div/>
+                    <Typography variant="body1" component="body1">Woops no images exist for this portfolio</Typography>
                 }
                 
                 <Menu
