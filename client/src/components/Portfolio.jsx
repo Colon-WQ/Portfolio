@@ -81,14 +81,19 @@ class Portfolio extends Component {
       editMode: true,
       portfolio_id: undefined,
       name: "",
-      pages: [{
-        directory: "",
-        entries: []
-      }],
-      currentPage: 0,
+      // pages: [{
+      //   directory: "",
+      //   entries: []
+      // }],
+      pages: {
+        root: {
+          entries: []
+        }
+      },
+      currentPage: 'root',
       pushables: [],
       dirTree: {
-        directory: "",
+        directory: 'root',
         id: "root_mongo_id",
         pages:
           {}
@@ -205,7 +210,7 @@ class Portfolio extends Component {
       style: entryStyle,
       ...fieldsCopy
     };
-    const newPages = [...this.state.pages];
+    const newPages = { ...this.state.pages };
     newPages[this.state.currentPage].entries =
       [...this.state.pages[this.state.currentPage].entries, newEntry];
     this.setState({
@@ -224,7 +229,7 @@ class Portfolio extends Component {
    */
   handleEditorClose(fields, changed, index) {
     if (changed) {
-      const newPages = [...this.state.pages];
+      const newPages = { ...this.state.pages };
       const entries = [...this.state.pages[this.state.currentPage].entries];
       entries[index] = fields;
       newPages[this.state.currentPage].entries = entries;
@@ -248,7 +253,9 @@ class Portfolio extends Component {
    * @returns {(Map|Array)} An array of maps containing the relative paths to each file and their contents.
    * 
    */
-  handleCreateFile(entries, directory) {
+  handleCreateFile(entries, dir) {
+    // removes 'root' placeholder
+    const directory = `${dir.substring(4)}/`;
     const images = [];
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
@@ -410,25 +417,35 @@ class Portfolio extends Component {
   /**
    * A function to generate all files needed to be pushed to github.
    * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
-   * 
    */
   async handleProduction() {
     //this saves the portfolio to mongoDB
     await this.handleSavePortfolio();
 
     let pushableArray = [];
-
-    for (const page of this.state.pages) {
-      const fileArray = this.handleCreateFile(page.entries, page.directory);
-      console.log("fileArray is: ")
-      console.log(fileArray);
+    Object.entries(this.state.pages).map(([key, page]) => {
+      const fileArray = this.handleCreateFile(page.entries, key);
       for (let obj of fileArray) {
+        console.log(obj)
         pushableArray.push({
           fileName: obj.file,
           fileContent: obj.contents
         })
       }
-    }
+    });
+
+
+    // for (const page of this.state.pages) {
+    //   const fileArray = this.handleCreateFile(page.entries, page.directory);
+    //   console.log("fileArray is: ")
+    //   console.log(fileArray);
+    //   for (let obj of fileArray) {
+    //     pushableArray.push({
+    //       fileName: obj.file,
+    //       fileContent: obj.contents
+    //     })
+    //   }
+    // }
     this.setState({
       pushables: pushableArray
     })
@@ -442,7 +459,7 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   handleDeleteEntry(index) {
-    const newPages = [...this.state.pages];
+    const newPages = { ...this.state.pages };
     // TODO: mark entry to be deleted from mongo. NO NEED: The upsert basically wipes everything and then adds all the entries back in the same order
     //that was given to the route.
     newPages[this.state.currentPage].entries =
@@ -457,17 +474,17 @@ class Portfolio extends Component {
     this.props.toggleUnsavedWork(true);
   }
 
-  handleUpdatePages(newDirTree, newPageName, newPageDirectory) {
-    const newPages = [...this.state.pages, {
-      directory: newPageDirectory,
-      entries: [],
-      name: newPageName,
-      id: undefined
-    }];
-
-    this.state.pages = newPages;
+  handleUpdatePages(newDirTree, changelog, newPageName, newPageDirectory) {
+    if (changelog !== undefined) {
+      const newPages = { ...this.state.pages };
+      newPages[newPageDirectory] = {
+        entries: [],
+        name: newPageName,
+        id: undefined
+      }
+      this.state.pages = newPages;
+    }
     this.state.dirTree = newDirTree;
-    console.log(this.state.pages);
 
     //Triggers autosave
     this.props.toggleUnsavedWork(true);
@@ -475,11 +492,7 @@ class Portfolio extends Component {
 
   handleDirectory(directory) {
     if (directory !== undefined) {
-      for (let index = 0; index < this.state.pages.length; index++) {
-        if (this.state.pages[index].directory === directory) this.state.currentPage = index;
-        console.log(this.state.currentPage);
-        console.log(this.state.pages)
-      }
+      this.state.currentPage = directory
     }
     this.forceUpdate();
   }
@@ -539,7 +552,7 @@ class Portfolio extends Component {
           <DirectoryManager
             onClose={this.handleDirectory}
             dirTree={this.state.dirTree}
-            onCreate={this.handleUpdatePages}
+            onUpdate={this.handleUpdatePages}
           />
           <Publish pushables={this.state.pushables} />
         </div>
