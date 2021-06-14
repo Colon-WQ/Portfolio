@@ -144,7 +144,6 @@ class EntryEditor extends Component {
   constructor(props) {
     super(props);
     const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
-    console.log(copied_fields);
     this.state = {
       data: copied_fields,
       currentSection: 0,
@@ -184,7 +183,6 @@ class EntryEditor extends Component {
    */
   componentDidMount() {
     // is this necessary if template is a widget
-    console.log("mount")
     if (!this.props.loggedIn) {
       const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
       this.props.repopulate_state(localStorageItem)
@@ -271,7 +269,6 @@ class EntryEditor extends Component {
         sections: spliced
       }
     })
-    console.log(spliced)
   }
 
   /**
@@ -341,7 +338,6 @@ class EntryEditor extends Component {
 
   render() {
     const { classes } = this.props;
-    console.log("render")
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
     return (
       <div>
