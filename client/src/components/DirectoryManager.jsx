@@ -87,7 +87,8 @@ class DirectoryManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currPage: "",
+      currentPage: this.props.dirTree,
+      currentPath: [],
       showInput: false,
       dirTree: this.props.dirTree,
       dirName: "",
@@ -120,28 +121,31 @@ class DirectoryManager extends Component {
    * Event handler to update states to reflect the selected page.
    * 
    * @param {*} event 
-   * @param {string} node The id of the page selected.
+   * @param {object} node The id of the page selected. 
+   * MUI api indicates node is supposed to be a string but object seems to work.
    */
-  handleSelectPage(event, node) {
+  handleSelectPage(event, node, path) {
+    // preventDefault prevents onNodeToggle from being called.
+    event.preventDefault();
     this.setState({
-      currPage: node
+      currentPage: node,
+      currentPath: path
     });
   }
 
   /**
    * A function to recursively render the directory tree
    * @param {Map} dirTree the directory tree map to be used
-   * @param {*} label the name of the current folder
+   * @param {*} folder the name of the current folder
    * @returns JSX component containing the TreeItem to be rendered
    */
-  renderTree(dirTree, label) {
-    const { classes } = this.props;
+  renderTree(dirTree, folder, classes, directoryArray) {
 
     return (
       <TreeItem
-        value={dirTree.directory}
-        nodeId={dirTree.directory}
-        label={label}
+        value={folder}
+        nodeId={folder}
+        label={folder}
         classes={{
           root: classes.treeItem,
           selected: classes.treeItemSelected,
@@ -149,9 +153,10 @@ class DirectoryManager extends Component {
           content: classes.treeItemContent,
           group: classes.treeItemGroup
         }}
+        onLabelClick={(event) => this.handleSelectPage(event, dirTree, directoryArray)}
       >
-        {Object.entries(dirTree.pages).map(([key, item]) => {
-          return this.renderTree(item, key);
+        {Object.entries(dirTree.directories).map(([key, item]) => {
+          return this.renderTree(item, key, classes, [...directoryArray, key]);
         })}
       </TreeItem>
     );
@@ -159,26 +164,22 @@ class DirectoryManager extends Component {
 
   // TODO: can combine with other directory tree traversals to imporve code reuse
   /**
-   * Auxillary function to insert an empty page into a directory tree
+   * Auxillary function to get a directory from a path array
    * 
-   * @param {[map]} pageArray the array of directories to be traversed
-   * @param {*} dirTree the current directory
-   * @param {*} index the index of the current durectory in pageArray
-   * @param {*} fullDir the full directory string
-   * @returns {boolean} whether the insert was successful
+   * @param {[string]} pageArray the array of directories to be traversed
+   * @param {{map}} dirTree the current directory
+   * @param {number} index the index of the current durectory in pageArray
+   * @returns {object} The parent directory if successful, undefined otherwise.
    */
-  insertPage(pageArray, dirTree, index, fullDir) {
+  getPage(pageArray, dirTree, index) {
+    // TODO: test if === causes any bugs -- >= might cause unexpected behaviour down the line
     if (index >= pageArray.length - 1) {
-      if (dirTree.pages[pageArray[index]] !== undefined) return false;
-      dirTree.pages[pageArray[index]] = {
-        directory: fullDir,
-        id: undefined,
-        pages: {}
-      }
-      return true;
+      // prevent overwriting
+      if (dirTree.directories[pageArray[index]] !== undefined) return undefined;
+      return dirTree;
     }
     else {
-      return this.insertPage(pageArray, dirTree.pages[pageArray[index]], index + 1, fullDir);
+      return this.getPage(pageArray, dirTree.directories[pageArray[index]], index + 1);
     }
   }
 
@@ -188,28 +189,32 @@ class DirectoryManager extends Component {
    * @param {string} newName the name of the new page
    */
   handleCreatePage(newName) {
-    const newDirectory = `${this.state.currPage}/${newName}`;
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
-    const insertSuccess = this.insertPage(newDirectory.split("/"), newDirTree, 1, newDirectory, newDirectory);
-    console.log(`directory created successfully: ${insertSuccess}`);
-    this.props.onUpdate(newDirTree, [], newName, newDirectory);
+    const parent = this.getPage(this.state.currentPath, newDirTree, 0);
+    console.log(this.state.currentPath)
+    const newPage = {
+      directory: newName,
+      entries: [],
+      directories: {},
+      id: undefined
+    };
+    parent.directories[newName] = newPage;
+
+    this.props.onUpdate(newDirTree);
+    console.log(this.state)
     this.setState({
       dirTree: newDirTree,
-      showInput: false,
+      currentPage: parent,
+      showInput: false
     })
   }
 
   /**
    * Event handler to update portfolio preview on directory change
-   * @param {boolean}} save whether the user wishes to change the view to the selected directory
+   * @param {boolean} save whether the user wishes to change the view to the selected directory
    */
   handleCloseDirectory(save) {
-    // if (save) {
-
-    // } else {
-    //   // this.props.onClose(null, false);
-    // }
-    this.props.onClose(this.state.currPage);
+    this.props.onClose(this.state.currentPage, this.state.currentPath);
     this.setState({
       showDirectory: false
     })
@@ -225,79 +230,63 @@ class DirectoryManager extends Component {
     })
   }
 
-  getParentPage(pageArray, dirTree, index) {
-    if (index === pageArray.length - 1) {
-      return dirTree
-    }
-    else {
-      return this.getParentPage(pageArray, dirTree.pages[pageArray[index]], index + 1);
-    }
-  }
-
+  /**
+   * Event handler for renaming a directory
+   */
   handleRenameDirectory() {
-    // this.state.dirName
-    console.log(this.state.currPage)
-
-    const pageArray = this.state.currPage.split('/');
-    const oldName = pageArray[pageArray.length - 1];
+    const pageArray = [...this.state.currentPath];
+    const oldName = pageArray.pop();
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
-    let ptr = newDirTree;
-    for (let index = 1; index < pageArray.length - 1; index++) {
-      ptr = ptr.pages[pageArray[index]]
-    }
+    const parent = this.getPage(pageArray, newDirTree, 0);
 
     console.log(oldName);
-    ptr.pages[this.state.dirName] = ptr.pages[oldName];
-    delete ptr.pages[oldName]
-    const from = [];
-    const to = [];
-    this.renameDirectory(ptr.pages[this.state.dirName], this.state.dirName, from, to);
+    parent.directories[this.state.dirName] = parent.directories[oldName];
+    delete parent.directories[oldName]
+    // const from = [];
+    // const to = [];
+    // this.renameDirectory(parent.directories[this.state.dirName], this.state.dirName, from, to);
 
-    this.props.onUpdate(ptr);
+    this.props.onUpdate(newDirTree);
     this.setState({
       dirTree: newDirTree,
+      currentPath: [...pageArray, this.state.dirName],
+      currentPage: parent.directories[this.state.dirName],
+      dirName: '',
       showInput: false
     })
   }
 
-  renameDirectory(dirTree, newDirectory, from, to) {
-    from.push(dirTree.directory);
-    to.push(newDirectory);
-    dirTree.directory = newDirectory;
-    Object.entries(dirTree.pages).map(([key, item]) => this.renameDirectory(item, `${newDirectory}/${key}`));
-  }
-
   handleDeletePage() {
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
-    const directoryArray = this.state.currPage.split("/");
-    if (directoryArray === []) {
-      console.log('Root directory cannot be deleted.')
-    }
-    const parent = this.getParentPage(directoryArray, newDirTree, 1);
+    const directoryArray = [...this.state.currentPath];
 
-    const child = parent.pages[directoryArray[directoryArray.length - 1]];
-    const deleteArray = [];
-    const flatten = (page) => {
-      deleteArray.push(page.directory);
-      Object.entries(page.pages).map(([key, item]) => flatten(item));
+    if (directoryArray === []) {
+      alert('Root directory cannot be deleted.')
     }
-    flatten(child);
-    // TODO: pass flattened array to portfolio handler
+
+    const pageName = directoryArray.pop();
+    const parent = this.getPage(directoryArray, newDirTree, 0);
+
+    // TODO: send flattened delete array to check if mongo needs to delete anything
+    // const child = parent.directories[pageName];
+    // const flatten = (page) => {
+    //   Object.entries(page.directories).map(([key, item]) => flatten(item));
+    // }
+    // flatten(child);
 
     // TODO: offer option to merge child subdirectories to parent
-    // if (child.pages !== []) { }
-    const copy = { ...parent.pages };
-    console.log(parent);
+    const copy = { ...parent.directories };
+    // TODO: change mutations in this file to use fp via filter and Object.entries
     delete copy[directoryArray[directoryArray.length - 1]];
-    parent.pages = copy;
+    parent.directories = copy;
     this.setState({
       dirTree: newDirTree,
-      currPage: parent.directory
+      currentPage: parent,
+      currentPath: directoryArray
     })
-    // TODO: Update portfolio state.
   }
 
-  // TODO: add props dirTree={name:"", directory:"", id:number, pages:[]}
+  // TODO: add props dirTree={name:"", directory:"", id:number, directories:[]}
   // root page should not be renamed, since directory.root is hardcoded.
   render() {
     const { classes } = this.props;
@@ -306,7 +295,12 @@ class DirectoryManager extends Component {
       <div>
         <Fab
           className={classes.controlFAB}
-          onClick={() => this.setState({ showDirectory: true })}>
+          onClick={() => this.setState({
+            showDirectory: true,
+            currentPage: this.props.dirTree,
+            currentPath: [],
+            ...this.props.getState()
+          })}>
           <FaLink />
         </Fab>
         <Modal className={classes.modal}
@@ -323,11 +317,11 @@ class DirectoryManager extends Component {
               defaultCollapseIcon={<FaTimes />}
               defaultExpandIcon={<FaSave />}
               expanded={this.state.expanded}
-              onNodeSelect={this.handleSelectPage}
+              // onNodeSelect={this.handleSelectPage}
               onNodeToggle={(event, nodeIds) => this.setState({ expanded: nodeIds })}
               className={classes.treeView}
             >
-              {this.renderTree(this.state.dirTree, "root")}
+              {this.renderTree(this.state.dirTree, "root", classes, [])}
             </TreeView>
             <TextField
               id="dirName"
