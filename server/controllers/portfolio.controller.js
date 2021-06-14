@@ -6,7 +6,6 @@ import Page from '../models/page.model.js';
 import Entry from '../models/entry.model.js';
 import Image from '../models/image.model.js';
 import connect from '../server.js';
-import Grid from 'gridfs-stream';
 
 
 const router = express.Router();
@@ -423,8 +422,7 @@ export const postImage = async (req, res) => {
  * Checks if image already exists
  */
 export const updateImage = async (req, res) => {
-    const gfs = Grid(connect.db, mongoose.mongo);
-    gfs.collection('images');
+    const gfs = new mongoose.mongo.GridFSBucket(connect.db, { bucketName: "uploads" });
 
     const portfolioId = req.params.id;
     const label = req.body.label;
@@ -433,24 +431,30 @@ export const updateImage = async (req, res) => {
         if (!image) return res.status(404).send(`image with label ${label} does not exist`);
         const fileIdToDelete = image.fileId;
         //Need to first delete the currently stored file
-        await gfs.files.findByIdAndDelete(fileIdToDelete)
+        await gfs.delete(new mongoose.Types.ObjectId(fileIdToDelete))
         .then(async () => {
             //Note: Does not matter if file is really deleted since this is update.
             console.log(`file by id ${fileIdToDelete} deleted`);
             //Then update the filename and fileId in image document.
-            image.fileId = req.file.fileId;
+            image.fileId = req.file.id;
             image.filename = req.file.filename;
-            image.markModified("fileId");
-            image.markModified("filename");
-            await image.save();
+            await image.save()
+            .then(() => {
+                return res.status(200).json({ message: `successfully updated file for image with label ${label}`})
+            }).catch(err => {
+                console.log("first", err);
+                return res.status(400).send("error encountered");
+            })
 
-            return res.status(200).json({ message: `successfully updated file for image with label ${label}`})
         }).catch(err => {
-            console.log(err);
+            console.log("first", err);
             return res.status(400).send("error encountered");
         })
 
         
+    }).catch(err => {
+        console.log("second", err);
+        return res.status(400).send("error encountered");
     })
 }
 
@@ -459,8 +463,7 @@ export const updateImage = async (req, res) => {
  * Needs to take portfolio objectId as string in url params.
  */
 export const getImage = async (req, res) => {
-    const gfs = Grid(connect.db, mongoose.mongo);
-    gfs.collection('images');
+    const gfs = new mongoose.mongo.GridFSBucket(connect.db, { bucketName: "uploads" });
 
     const portfolioId = req.params.id;
     const label = req.query.label;
@@ -470,13 +473,16 @@ export const getImage = async (req, res) => {
         if (!image) {
             return res.status(404).send("image with label could not be found for the requested portfolio");
         } else {
-            gfs.files.findOne({ _id: new mongoose.Types.ObjectId(image.fileId) })
-            .then(file => {
-                if (file === null) return res.status(400).send("error encountered");
+            gfs.find({ _id: new mongoose.Types.ObjectId(image.fileId) }).toArray()
+            .then(files => {
+                if (files[0] === null || files.length === 0) return res.status(400).send("error encountered");
+
+                const file = files[0];
     
                 if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
-                    const readStream = gfs.createReadStream(file._id);
-                    readStream.pipe(res);
+                    gfs.openDownloadStream(file._id).pipe(res);
+                    // const readStream = gfs.createReadStream(file._id);
+                    // readStream.pipe(res);
                 } else {
                     return res.status(200).json({ file: file, message: "not an image" });
                 }
@@ -511,8 +517,7 @@ export const getImages = async (req, res) => {
 }
 
 export const deleteImage = async (req, res) => {
-    const gfs = Grid(connect.db, mongoose.mongo);
-    gfs.collection('images');
+    const gfs = new mongoose.mongo.GridFSBucket(connect.db, { bucketName: "uploads" });
 
     const portfolioId = req.params.id;
     const label = req.body.label;
@@ -520,10 +525,11 @@ export const deleteImage = async (req, res) => {
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
     .then(async image => {
         if (!image) return res.status(404).send(`image with label ${label} does not exist`);
-
-        await gfs.files.deleteOne({ _id: new mongoose.Types.ObjectId(image.fileId) })
-        .then(async deletedFile => {
-            if (!deletedFile) return res.status(404).send(`file ${image.fileId} does not exist`);
+        console.log("deleting fileId " + image.fileId);
+        
+        await gfs.delete(new mongoose.Types.ObjectId(image.fileId))
+        .then(async () => {
+            // if (!deletedFile) return res.status(404).send(`file ${image.fileId} does not exist`);
 
             await Image.deleteOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
             .then(async deletedImage => {
@@ -537,8 +543,13 @@ export const deleteImage = async (req, res) => {
                     portfolio.images = imagesCopy;
                     portfolio.markModified("images");
                     await portfolio.save()
+                    .then(() => {
+                        return res.status(200).json({ message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` });
+                    }).catch(err => {
+                        console.log(err);
+                        return res.status(400).send("error encountered");
+                    })
                     
-                    return res.status(200).json({ message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` });
                 }).catch(err => {
                     console.log(err);
                     return res.status(400).send("error encountered");
