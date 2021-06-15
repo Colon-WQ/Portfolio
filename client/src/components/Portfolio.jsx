@@ -98,7 +98,8 @@ class Portfolio extends Component {
       //   pages:
       //     {}
       // },
-      isTimerExist: false
+      isTimerExist: false,
+      // showDirectory: false
     }
     this.state.currentPage = this.state.pages
     this.handleEditorClose = this.handleEditorClose.bind(this);
