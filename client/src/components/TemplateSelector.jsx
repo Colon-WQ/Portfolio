@@ -30,13 +30,16 @@ const styles = (theme) => ({
     textAlign: 'center',
     backgroundColor: '#444444',
     opacity: '90%',
-    height: '100%'
+    height: '100%',
+    overflowX: 'hidden',
+    overflowY: 'auto'
   },
   modal: {
-    overflow: 'scroll',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    padding: '5%',
+    padding: '5vh',
     height: '100%'
   },
   buttonBase: {
@@ -46,11 +49,13 @@ const styles = (theme) => ({
   },
   card: {
     width: 345,
+    minHeight: 150,
     display: 'flex',
     flexDirection: 'column'
   },
   cardMedia: {
-    height: 200,
+    maxHeight: 200,
+    overflow: 'hidden'
   },
   fab: {
     marginTop: 'auto',
@@ -59,7 +64,10 @@ const styles = (theme) => ({
   cardDiv: {
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, 400px)'
+    gridTemplateColumns: 'repeat(auto-fill, 345px)',
+    gridGap: '55px',
+    justifyContent: 'center',
+    overflowY: 'auto'
   },
   controlFAB: {
     position: 'static',
@@ -161,6 +169,8 @@ class TemplateSelector extends Component {
             <Tabs
               value={this.state.type}
               onChange={this.handleChange}
+              variant="scrollable"
+              scrollButtons="auto"
             >
               {Object.keys(templates).map((type) => {
                 return (<Tab label={type} value={type} />)

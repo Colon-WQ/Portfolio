@@ -261,6 +261,9 @@ class Portfolio extends Component {
    * 
    */
   handleCreateFile(entries, dir) {
+    // Allow users to create empty pages so they can create their own pages
+    if (entries === []) return [];
+
     // removes 'root' placeholder
     const directory = `${dir.substring(4)}/`;
     const images = [];
