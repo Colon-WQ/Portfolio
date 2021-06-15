@@ -83,25 +83,24 @@ class Portfolio extends Component {
       editMode: true,
       portfolio_id: undefined,
       name: "",
-      // pages: [{
-      //   directory: "",
-      //   entries: []
-      // }],
       pages: {
-        root: {
-          entries: []
-        }
-      },
-      currentPage: 'root',
-      pushables: [],
-      dirTree: {
         directory: 'root',
-        id: "root_mongo_id",
-        pages:
-          {}
+        entries: [],
+        directories: {},
+        id: 'root_mongo_id'
       },
+      currentPage: undefined,
+      currentPath: [],
+      pushables: [],
+      // dirTree: {
+      //   directory: 'root',
+      //   id: "root_mongo_id",
+      //   pages:
+      //     {}
+      // },
       isTimerExist: false
     }
+    this.state.currentPage = this.state.pages
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
     this.handleProduction = this.handleProduction.bind(this);
@@ -185,8 +184,6 @@ class Portfolio extends Component {
     }
   }
 
-
-
   /**
    * Function to enter entries based on the entry's type and template style.
    * 
@@ -197,6 +194,14 @@ class Portfolio extends Component {
    */
   renderEntry(entryFields, index) {
     return templates[entryFields.type][entryFields.style].component(entryFields, index);
+  }
+
+  traverseDirectory(pages, pathArray) {
+    let ptr = pages;
+    for (let index = 0; index < pathArray.length; index++) {
+      ptr = ptr.directories[pathArray[index]];
+    }
+    return ptr;
   }
 
   /**
@@ -214,10 +219,12 @@ class Portfolio extends Component {
       ...fieldsCopy
     };
     const newPages = { ...this.state.pages };
-    newPages[this.state.currentPage].entries =
-      [...this.state.pages[this.state.currentPage].entries, newEntry];
+    const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
+    currentPage.entries =
+      [...this.state.currentPage.entries, newEntry];
     this.setState({
       pages: newPages,
+      currentPage: currentPage
     })
 
     //triggers Autosave
@@ -233,9 +240,9 @@ class Portfolio extends Component {
   handleEditorClose(fields, changed, index) {
     if (changed) {
       const newPages = { ...this.state.pages };
-      const entries = [...this.state.pages[this.state.currentPage].entries];
+      const entries = [...this.state.currentPage.entries];
       entries[index] = fields;
-      newPages[this.state.currentPage].entries = entries;
+      this.traverseDirectory(newPages, this.state.currentPath).entries = entries;
       this.setState({
         pages: newPages
       })
@@ -306,11 +313,11 @@ class Portfolio extends Component {
     //Suspect that because certain styles are missing, their defaults may be injected into our app, resulting in default css styles.
     const rawHTML = ReactDOMServer.renderToString(sheets.collect(
       <ThemeProvider theme={theme}>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {copy.map((entry, index) => this.renderEntry(entry))}
-      </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {copy.map((entry, index) => this.renderEntry(entry))}
+        </div>
       </ThemeProvider>
-      ));
+    ));
     // TODO: add title
     const html = Base64.encode(`
             <!DOCTYPE html>
@@ -429,7 +436,6 @@ class Portfolio extends Component {
     Object.entries(this.state.pages).map(([key, page]) => {
       const fileArray = this.handleCreateFile(page.entries, key);
       for (let obj of fileArray) {
-        console.log(obj)
         pushableArray.push({
           fileName: obj.file,
           fileContent: obj.contents
@@ -451,10 +457,9 @@ class Portfolio extends Component {
    */
   handleDeleteEntry(index) {
     const newPages = { ...this.state.pages };
-    // TODO: mark entry to be deleted from mongo. NO NEED: The upsert basically wipes everything and then adds all the entries back in the same order
-    //that was given to the route.
-    newPages[this.state.currentPage].entries =
-      this.state.pages[this.state.currentPage].entries.filter(
+    let ptr = newPages;
+    this.traverseDirectory(newPages, this.state.currentPath).entries =
+      this.state.currentPage.entries.filter(
         (item, filterIndex) => (filterIndex !== index)
       );
     this.setState({
@@ -465,25 +470,26 @@ class Portfolio extends Component {
     this.props.toggleUnsavedWork(true);
   }
 
-  handleUpdatePages(newDirTree, changelog, newPageName, newPageDirectory) {
-    if (changelog !== undefined) {
-      const newPages = { ...this.state.pages };
-      newPages[newPageDirectory] = {
-        entries: [],
-        name: newPageName,
-        id: undefined
-      }
-      this.state.pages = newPages;
-    }
-    this.state.dirTree = newDirTree;
+  handleUpdatePages(newDirTree) {
+    // if (changelog !== undefined) {
+    //   const newPages = { ...this.state.pages };
+    //   newPages[newPageDirectory] = {
+    //     entries: [],
+    //     name: newPageName,
+    //     id: undefined
+    //   }
+    //   this.state.pages = newPages;
+    // }
+    this.state.pages = newDirTree;
 
     //Triggers autosave
     this.props.toggleUnsavedWork(true);
   }
 
-  handleDirectory(directory) {
-    if (directory !== undefined) {
-      this.state.currentPage = directory
+  handleDirectory(page, path) {
+    if (page !== undefined) {
+      this.state.currentPage = page;
+      this.state.currentPath = path;
     }
     this.forceUpdate();
   }
@@ -544,7 +550,7 @@ class Portfolio extends Component {
           })}
         />
 
-        {this.state.pages[this.state.currentPage].entries.map((entry, index) => {
+        {this.state.currentPage.entries.map((entry, index) => {
           // Key MUST be unique -> component will be reinitialized if key is different.
           return (<div id="preview" style={{ display: "flex", flexDirection: "row" }}>
             <EntryEditor
@@ -553,7 +559,10 @@ class Portfolio extends Component {
               onClose={(data, changed) => {
                 this.handleEditorClose(data, changed, index);
               }}
-              key={`${this.state.currentPage}-${index}-${entry.type}-${entry.style}`}
+              key={`${this.state.currentPath === []
+                ? 'root'
+                : this.state.currentPath[this.state.currentPath.length - 1]
+                }-${index}-${entry.type}-${entry.style}`}
             />
             <Fab
               className={classes.delFAB}
@@ -580,7 +589,12 @@ class Portfolio extends Component {
           />
           <DirectoryManager
             onClose={this.handleDirectory}
-            dirTree={this.state.dirTree}
+            getState={() => {
+              return {
+                dirTree: this.state.pages
+              }
+            }}
+            dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
           <Publish pushables={this.state.pushables} />
