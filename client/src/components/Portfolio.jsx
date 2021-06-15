@@ -16,6 +16,8 @@ import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
 import { Prompt, withRouter } from 'react-router-dom';
 import { theme } from '../styles/styles';
+import html2canvas from 'html2canvas';
+import FormData from 'form-data';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -96,7 +98,8 @@ class Portfolio extends Component {
       //   pages:
       //     {}
       // },
-      isTimerExist: false
+      isTimerExist: false,
+      // showDirectory: false
     }
     this.state.currentPage = this.state.pages
     this.handleEditorClose = this.handleEditorClose.bind(this);
@@ -106,6 +109,7 @@ class Portfolio extends Component {
     this.handleUpdatePages = this.handleUpdatePages.bind(this);
     this.handleDirectory = this.handleDirectory.bind(this);
     this.handleSavePortfolio = this.handleSavePortfolio.bind(this);
+    this.handleUploadPreview = this.handleUploadPreview.bind(this);
   }
 
   /**
@@ -443,18 +447,6 @@ class Portfolio extends Component {
       }
     });
 
-
-    // for (const page of this.state.pages) {
-    //   const fileArray = this.handleCreateFile(page.entries, page.directory);
-    //   console.log("fileArray is: ")
-    //   console.log(fileArray);
-    //   for (let obj of fileArray) {
-    //     pushableArray.push({
-    //       fileName: obj.file,
-    //       fileContent: obj.contents
-    //     })
-    //   }
-    // }
     this.setState({
       pushables: pushableArray
     })
@@ -506,6 +498,38 @@ class Portfolio extends Component {
     this.forceUpdate();
   }
 
+  async handleUploadPreview() {
+    console.log("uploading image");
+
+    await html2canvas(document.querySelector("#preview"))
+    .then(async canvas => {
+
+      const bodyFormData = new FormData();
+      bodyFormData.append('file', canvas.toDataURL("image/png"));
+      bodyFormData.append('label', "preview");
+      //console.log(bodyFormData.get("file"))
+      await axios({
+          method: "POST",
+          url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+          withCredentials: true,
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" }
+      }).then(res => {
+          console.log(res.data.message);
+      }).catch(err => {
+          if (err.response) {
+              console.log(err.response.data);
+          } else {
+              console.log(err.message);
+          }
+      })
+    }).catch(err => {
+      console.log(err);
+    })
+        
+    
+  }
+
   // TODO: move editor components and logic into component files
   render() {
     const { classes } = this.props;
@@ -532,7 +556,7 @@ class Portfolio extends Component {
 
         {this.state.currentPage.entries.map((entry, index) => {
           // Key MUST be unique -> component will be reinitialized if key is different.
-          return (<div style={{ display: "flex", flexDirection: "row" }}>
+          return (<div id="preview" style={{ display: "flex", flexDirection: "row" }}>
             <EntryEditor
               fields={entry}
               info={templates[entry.type][entry.style].info}
@@ -553,6 +577,12 @@ class Portfolio extends Component {
           </div>);
         })}
         <div className={classes.staticDiv}>
+          <Fab
+            className={classes.controlFAB}
+            onClick={() => this.handleUploadPreview()}
+          >
+            Preview
+          </Fab>
           <Fab
             className={classes.controlFAB}
             onClick={() => console.log(this.handleProduction())}>
