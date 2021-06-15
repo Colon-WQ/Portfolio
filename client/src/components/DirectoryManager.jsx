@@ -91,6 +91,7 @@ class DirectoryManager extends Component {
       currentPath: [],
       showInput: false,
       dirTree: this.props.dirTree,
+      showDirectory: false,
       dirName: "",
       inputMode: RENAME,
       expanded: []

@@ -32,7 +32,8 @@ const styles = (theme) => ({
     opacity: '90%'
   },
   modal: {
-    overflow: 'scroll',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
     padding: '5%',
