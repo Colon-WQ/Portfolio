@@ -98,8 +98,7 @@ class Portfolio extends Component {
       //   pages:
       //     {}
       // },
-      isTimerExist: false,
-      // showDirectory: false
+      isTimerExist: false
     }
     this.state.currentPage = this.state.pages
     this.handleEditorClose = this.handleEditorClose.bind(this);
@@ -138,7 +137,8 @@ class Portfolio extends Component {
         if (this.props.currentPortfolio._id !== undefined && this.props.currentPortfolio.pages !== undefined) {
           this.setState({
             portfolio_id: this.props.currentPortfolio._id,
-            pages: this.props.currentPortfolio.pages
+            pages: this.props.currentPortfolio.pages,
+            currentPage: this.props.currentPortfolio.pages
           })
         }
       }
@@ -369,6 +369,7 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   async handleSavePortfolio() {
+    console.log("saving begins");
     await axios({
       method: "PUT",
       url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",

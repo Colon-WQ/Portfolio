@@ -66,6 +66,7 @@ export const updatePortfolio = async (req, res) => {
  */
 export const upsertPortfolio = async (req, res) => {
 
+    console.log("save request begins");
     const requestUser = req.body.user;
     const requestPortfolio = req.body.portfolio;
 
@@ -173,7 +174,7 @@ export const upsertPortfolio = async (req, res) => {
                     if (Object.keys(obj).length !== 0) {
                         for (let key in Object.keys(obj)) {
                             incomingPageIds.add(obj[key]._id.valueOf());
-                            
+                            console.log("added " + obj[key]._id.valueOf());
 
                             collectIncoming(obj[key].directories);
                         }
@@ -182,20 +183,25 @@ export const upsertPortfolio = async (req, res) => {
 
                 collectIncoming(requestPortfolio.pages.directories);
 
+                console.log(incomingPageIds);
+
                 //Gets the existing directories of the root page to start off recursive process on.
-                const currentDir = await Page.findById(isExist.pages)
+                const currentDir = await Page.findById(isExist.pages._id)
                 .then(page => {
+                    console.log("found",page)
                     return page.directories;
                 }).catch(err => {
                     console.log(err);
                 })
-
+                console.log(Object.keys(currentDir))
+                console.log(Object.keys(currentDir).length)
+                //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map!
                 /**
                  * collectExisting fetches from mongodb each subsequent nested directories if any and checks if the pages that they are
                  * referencing should be deleted by comparing with the Set formed above ^.
                  */
                 const collectExisting = async (obj) => {
-                    if (Object.keys(obj).length !== 0) {
+                    if (Object.keys(obj).length > 3) {
                         for (let key of Object.keys(obj)) {
                             //need to recursively go thru all the page directories first and check each _id
                             let directories = await Page.findById(obj[key]._id)
@@ -220,6 +226,9 @@ export const upsertPortfolio = async (req, res) => {
                             }
                             
                         }
+                    } else {
+                        
+                        return;
                     }
                 }
 
@@ -380,7 +389,7 @@ export const upsertPortfolio = async (req, res) => {
     //go thru all directories in all related page documents.
     await recursePages(requestPortfolio.pages, null);
 
-    console.log(pages);
+    console.log("save log", pages);
 
     
 
