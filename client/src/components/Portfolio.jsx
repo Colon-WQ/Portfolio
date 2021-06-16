@@ -158,32 +158,32 @@ class Portfolio extends Component {
    * @return void
    * @memberof Portfolio
    */
-  componentDidUpdate() {
-    if (this.props.isUnsaved && !this.state.isTimerExist) {
-      setTimeout(async () => {
-        console.log("Autosaving")
+  // componentDidUpdate() {
+  //   if (this.props.isUnsaved && !this.state.isTimerExist) {
+  //     setTimeout(async () => {
+  //       console.log("Autosaving")
 
-        await this.handleSavePortfolio();
+  //       await this.handleSavePortfolio();
 
-        // this.props.saveCurrentWorkToLocal({
-        //   _id: this.state.portfolio_id,
-        //   name: this.state.name,
-        //   pages: this.state.pages
-        // });
-        this.props.toggleUnsavedWork(false);
+  //       // this.props.saveCurrentWorkToLocal({
+  //       //   _id: this.state.portfolio_id,
+  //       //   name: this.state.name,
+  //       //   pages: this.state.pages
+  //       // });
+  //       this.props.toggleUnsavedWork(false);
 
-        //Sets isTimerExist to false after saving so new timers can be set.
-        this.setState({
-          isTimerExist: false
-        })
-      }, 3000);
+  //       //Sets isTimerExist to false after saving so new timers can be set.
+  //       this.setState({
+  //         isTimerExist: false
+  //       })
+  //     }, 3000);
 
-      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
-      this.setState({
-        isTimerExist: true
-      });
-    }
-  }
+  //     //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
+  //     this.setState({
+  //       isTimerExist: true
+  //     });
+  //   }
+  // }
 
   /**
    * Function to enter entries based on the entry's type and template style.
