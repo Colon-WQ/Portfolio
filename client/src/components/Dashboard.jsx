@@ -508,13 +508,13 @@ class Dashboard extends Component {
                             ?
                                 this.props.error.response.status === 404
                                 ?
-                                    <Typography variant="body1">Create your first Portfolio!</Typography>
+                                    <Typography variant="h6">Create your first Portfolio!</Typography>
                                 :
-                                    <Typography variant="body1">{this.props.error.message}</Typography>
+                                    <Typography variant="h6">{this.props.error.message}</Typography>
                             :
                                 portfolios.length === 0
                                     ?
-                                        <Typography variant="body1">Oops. It appears that you have no saved Portfolios</Typography>
+                                        <Typography variant="h6">Oops. It appears that you have no saved Portfolios</Typography>
                                     :
                                         portfolios.map((element, idx) => {
                                             return (
@@ -568,7 +568,7 @@ class Dashboard extends Component {
                         <img src={this.state.images[key]} height="300"></img>
                     )
                     :
-                    <Typography variant="body1" component="body1">Woops no images exist for this portfolio</Typography>
+                    <Typography variant="h6" component="h6">Woops no images exist for this portfolio</Typography>
                 }
                 
                 <Menu

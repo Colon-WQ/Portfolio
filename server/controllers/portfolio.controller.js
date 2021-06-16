@@ -17,19 +17,27 @@ export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
     //console.log(portfolio_id);
 
-    /**
-     * Since pages are stored in nested directories maps there are two options here. Create a route to populate each page when we visit them.
-     * OR
-     * recursively populate the entire thing into an object then send back the completed thing.
-     */
-    await Portfolio.findById(portfolio_id).populate({ path: "pages", populate: { path: 'entries' } }).exec()
-    .then(portfolio => {
+    
+
+    await Portfolio.findById(portfolio_id).populate({ 
+        path: "pages", 
+        populate: [
+            { path: 'entries' }, 
+            { path: 'directories.$*.dir', 
+                populate: [
+                    {path: 'entries'}, 
+                    {path: 'directories.$*.dir'}
+                ]
+            }
+        ] 
+    }).then(portfolio => {
         if (portfolio == null) {
             return res.status(404).send("portfolio _id not found");
         } else {
             console.log("portfolio found. Pages populated");
             console.log(portfolio);
             console.log(portfolio.pages.entries);
+            console.log(portfolio.pages.directories);
             return res.status(200).json({ portfolio: portfolio });
         }
     }).catch(err => {
@@ -66,6 +74,7 @@ export const updatePortfolio = async (req, res) => {
  */
 export const upsertPortfolio = async (req, res) => {
 
+    console.log("save request begins");
     const requestUser = req.body.user;
     const requestPortfolio = req.body.portfolio;
 
@@ -164,17 +173,22 @@ export const upsertPortfolio = async (req, res) => {
 
                 //add all incoming page ids into a set
                 const incomingPageIds = new Set();
-                
+                console.log("incoming", requestPortfolio.pages.directories);
+                console.log("incoming keys", Object.keys(requestPortfolio.pages.directories));
                 /**
                  * CollectIncoming recursively collects page ids from (nested?) directories map and places them in a Set.
-                 * Note: If portfolio is not new, it simply won't have anything in directories, so no need to check for Undefined.
+                 * Note: new pages could be created in an existing Portfolio, so need to check for undefined.
                  */
                 const collectIncoming = (obj) => {
+                    console.log(obj);
                     if (Object.keys(obj).length !== 0) {
-                        for (let key in Object.keys(obj)) {
-                            incomingPageIds.add(obj[key]._id.valueOf());
+                        for (let key of Object.keys(obj)) {
                             
-
+                            if (obj[key]._id !== undefined) {
+                                incomingPageIds.add(obj[key]._id.valueOf());
+                                console.log("added " + obj[key]._id.valueOf());
+                            }
+                            //undefined page could still be linked to previously created page. Still need to check to the very end.
                             collectIncoming(obj[key].directories);
                         }
                     }
@@ -182,24 +196,31 @@ export const upsertPortfolio = async (req, res) => {
 
                 collectIncoming(requestPortfolio.pages.directories);
 
+                console.log(incomingPageIds);
+
                 //Gets the existing directories of the root page to start off recursive process on.
-                const currentDir = await Page.findById(isExist.pages)
+                const currentDir = await Page.findById(isExist.pages._id)
                 .then(page => {
+                    console.log("found",page)
                     return page.directories;
                 }).catch(err => {
                     console.log(err);
                 })
-
+                console.log(Object.keys(currentDir))
+                console.log(Object.values(currentDir))
+                console.log(Object.keys(currentDir).length)
+                //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map!
                 /**
                  * collectExisting fetches from mongodb each subsequent nested directories if any and checks if the pages that they are
                  * referencing should be deleted by comparing with the Set formed above ^.
                  */
                 const collectExisting = async (obj) => {
-                    if (Object.keys(obj).length !== 0) {
+                    if (Object.keys(obj).length > 3) {
                         for (let key of Object.keys(obj)) {
                             //need to recursively go thru all the page directories first and check each _id
                             let directories = await Page.findById(obj[key]._id)
                             .then(page => {
+                                if (!page) return res.status(400).send("error encountered");
                                 return page.directories;
                             }).catch(err => {
                                 console.log(err);
@@ -237,13 +258,19 @@ export const upsertPortfolio = async (req, res) => {
     //E.g. the root page will be stored as 123456789012/ : [root page document, [entry documents for root page]]
     const pages = {}
 
+    //The below 2 data structures will allow orphaned/deleted entries to be cleaned up.
+    //Store incoming entries
+    const incomingEntries = new Set();
+    //store existing entries
+    const existingEntries = [];
+
     
     /**
      * upsertPage will execute in 3 phases.
      * 
      * 1st phase: It constructs the page document and checks if the page already exists depending on existence of its _id.
      * 
-     * 2nd phase: If page exists, it checks if the existing page has entries that should be deleted, then deletes them.
+     * 2nd phase: adds incoming entries to incomingEntriesSet and existing entries to existingEntries array for comparison to delete later.
      * 
      * 3rd phase: It generates the entry documents and stores the page documents along with the entry documents in the higher level pages map
      * as specified directly above ^.
@@ -262,7 +289,7 @@ export const upsertPortfolio = async (req, res) => {
         //new array for entry objs to be saved.
         const entryObjs = [];
 
-        if (requestPortfolio.pages._id === undefined) {
+        if (requestPage._id === undefined) {
             page._id = new mongoose.Types.ObjectId();
             page.isNew = true;
 
@@ -273,33 +300,26 @@ export const upsertPortfolio = async (req, res) => {
              * 
              * The entry documents have yet to be checked for deletion.
              */
-            await Page.findById(requestPortfolio.pages._id)
-            .then(isExist => {
+            await Page.findById(requestPage._id)
+            .then(async isExist => {
                 if (isExist === null) {
                     page.isNew = true;
                 }
                 page.isNew =  false;
                 page.entries = [];
 
-                const dict = new Set();
+                
 
                 //Compare and remove unnecessary existing entries. This prevents orphaned entry documents.
                 for (let requestEntry of requestPage.entries) {
                     if (requestEntry._id !== undefined) {
-                        console.log(requestEntry._id.valueOf() + " added to set");
-                        dict.add(requestEntry._id.valueOf());
+                        console.log(requestEntry._id.valueOf() + " added to incoming entries set");
+                        incomingEntries.add(requestEntry._id.valueOf());
                     }
                 }
-                console.log(dict)
+                
                 for (let existingEntry of isExist.entries) {
-                    if (!dict.has(existingEntry._id.valueOf().toString())) {
-                        Entry.findByIdAndDelete(existingEntry._id)
-                        .then(deleted => {
-                            console.log("deleted entry " + deleted._id);
-                        }).catch(err => {
-                            console.log(err);
-                        })
-                    }
+                    existingEntries.push(existingEntry._id.valueOf().toString());
                 }
             })
         }
@@ -339,36 +359,33 @@ export const upsertPortfolio = async (req, res) => {
 
     //pages in portfolio document has to be upserted first and foremost.
     //Need to set the portfolio pages to _id of the root page document.
-    portfolio.pages = await upsertPage(requestPortfolio.pages);
+    const rootPage_id = await upsertPage(requestPortfolio.pages);
+    portfolio.pages = rootPage_id;
 
     
     //recursePages takes the _id of the parent page document to allow the _id of child page documents to be added to parent page's directories map.
     const recursePages = async (obj, prev_id) => {
+        console.log("recurse", obj.directories);
         const directories = obj.directories
         if (Object.keys(directories).length !== 0) {
-            //This happens in two phases. This ensures that even when 2 higher level directories are pointing at a lower level one, there will
-            //be a page document already created for both the higher level directories for the program to refer to.
 
-            //First phase, we create page documents for all directories along the same level.
             for (let key of Object.keys(directories)) {
                 const current_id = await upsertPage(directories[key]);
                 //obj.directory would allow us to refer to page that is supposed to be parent directory.
                 //We need to then prepend the _id string of the parent page
-                if (prev_id !== null) {
-                    //parentDir is the directory of the prev page
-                    const parentDir = obj.directory;
-                    const parentKey = prev_id + parentDir;
-                    //childDir is the directory of this current page.
-                    const childDir = directories[key].directory;
-                    const childKey = current_id + childDir;
-                    //
-                    pages[parentKey][0].directories[childDir] = pages[childKey][0];
-                }
                 
-            }
+                //parentDir is the directory of the prev page
+                const parentDir = obj.directory;
+                const parentKey = prev_id + parentDir;
+                //childDir is the directory of this current page.
+                const childDir = directories[key].directory;
+                const childKey = current_id + childDir;
+                //
+                
+                pages[parentKey][0].directories.set(childDir, {dir: pages[childKey][0]._id});
+                // pages[parentKey][0].directories[childDir] = pages[childKey][0];
+                console.log("directories changed", pages[parentKey][0].directories);
 
-            //Second phase, we then recurse onto the next lower level of directories.
-            for (let key of Object.keys(directories)) {
                 await recursePages(directories[key], current_id);
             }
 
@@ -378,9 +395,26 @@ export const upsertPortfolio = async (req, res) => {
 
 
     //go thru all directories in all related page documents.
-    await recursePages(requestPortfolio.pages, null);
+    await recursePages(requestPortfolio.pages, rootPage_id);
 
-    console.log(pages);
+    //Need to clean up entries here
+    for (let entryId of existingEntries) {
+        if (!incomingEntries.has(entryId)) {
+            await Entry.findByIdAndDelete(entryId)
+            .then(deleted => {
+                console.log("deleted unwanted entry " + deleted._id);
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+    }
+
+
+    console.log("save log", pages);
+    for (let key of Object.keys(pages)) {
+        console.log(key);
+        console.log("directories", pages[key][0].directories);
+    }
 
     
 
@@ -495,11 +529,11 @@ export const upsertPortfolio = async (req, res) => {
                         .then(() => {
                             console.log("entry saved/updated")
                         }).catch(err => {
-                            return res.status(400).send("error encountered");
+                            return res.status(400).send(err);
                         });
                     }
 
-                    return res.status(200).json({ message: "user created and portfolio created for user.", _id: portfolio._id });
+                    
                 }).catch(err => {
                     return res.status(400).send(err);
                 })
@@ -512,7 +546,7 @@ export const upsertPortfolio = async (req, res) => {
         return res.status(400).send(err);
     })
 
-    
+    return res.status(200).json({ message: "user created and portfolio created for user.", _id: portfolio._id });
 }
 
 /**
