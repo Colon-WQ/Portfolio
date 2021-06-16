@@ -479,15 +479,6 @@ class Portfolio extends Component {
   }
 
   handleUpdatePages(newDirTree) {
-    // if (changelog !== undefined) {
-    //   const newPages = { ...this.state.pages };
-    //   newPages[newPageDirectory] = {
-    //     entries: [],
-    //     name: newPageName,
-    //     id: undefined
-    //   }
-    //   this.state.pages = newPages;
-    // }
     this.state.pages = newDirTree;
     this.state.currentPage = newDirTree;
     this.state.currentPath = [];
