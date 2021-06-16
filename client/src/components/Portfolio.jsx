@@ -243,9 +243,11 @@ class Portfolio extends Component {
       const newPages = { ...this.state.pages };
       const entries = [...this.state.currentPage.entries];
       entries[index] = fields;
-      this.traverseDirectory(newPages, this.state.currentPath).entries = entries;
+      const currentPage = this.traverseDirectory(newPages, this.state.currentPath)
+      currentPage.entries = entries;
       this.setState({
-        pages: newPages
+        pages: newPages,
+        currentPage: currentPage
       })
 
       //triggers Autosave
@@ -462,12 +464,14 @@ class Portfolio extends Component {
   handleDeleteEntry(index) {
     const newPages = { ...this.state.pages };
     let ptr = newPages;
-    this.traverseDirectory(newPages, this.state.currentPath).entries =
+    const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
+    currentPage.entries =
       this.state.currentPage.entries.filter(
         (item, filterIndex) => (filterIndex !== index)
       );
     this.setState({
-      pages: newPages
+      pages: newPages,
+      currentPage: currentPage
     });
 
     //triggers Autosave
@@ -485,15 +489,17 @@ class Portfolio extends Component {
     //   this.state.pages = newPages;
     // }
     this.state.pages = newDirTree;
+    this.state.currentPage = newDirTree;
+    this.state.currentPath = [];
 
     //Triggers autosave
     this.props.toggleUnsavedWork(true);
   }
 
-  handleDirectory(page, path) {
-    if (page !== undefined) {
-      this.state.currentPage = page;
-      this.state.currentPath = path;
+  handleDirectory(currentPage, currentPath) {
+    if (currentPage !== undefined) {
+      this.state.currentPage = currentPage;
+      this.state.currentPath = currentPath;
     }
     this.forceUpdate();
   }
@@ -502,32 +508,32 @@ class Portfolio extends Component {
     console.log("uploading image");
 
     await html2canvas(document.querySelector("#preview"))
-    .then(async canvas => {
+      .then(async canvas => {
 
-      const bodyFormData = new FormData();
-      bodyFormData.append('file', canvas.toDataURL("image/png"));
-      bodyFormData.append('label', "preview");
-      //console.log(bodyFormData.get("file"))
-      await axios({
+        const bodyFormData = new FormData();
+        bodyFormData.append('file', canvas.toDataURL("image/png"));
+        bodyFormData.append('label', "preview");
+        //console.log(bodyFormData.get("file"))
+        await axios({
           method: "POST",
           url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
           withCredentials: true,
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" }
-      }).then(res => {
+        }).then(res => {
           console.log(res.data.message);
-      }).catch(err => {
+        }).catch(err => {
           if (err.response) {
-              console.log(err.response.data);
+            console.log(err.response.data);
           } else {
-              console.log(err.message);
+            console.log(err.message);
           }
+        })
+      }).catch(err => {
+        console.log(err);
       })
-    }).catch(err => {
-      console.log(err);
-    })
-        
-    
+
+
   }
 
   // TODO: move editor components and logic into component files
