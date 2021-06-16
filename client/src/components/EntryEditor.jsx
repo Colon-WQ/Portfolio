@@ -395,6 +395,8 @@ class EntryEditor extends Component {
                     <div>
                       <Input
                         type="color"
+                        name={key}
+                        id={key}
                         value={item}
                         onChange={(event) => this.handleChange(event, "colours")}
                         style={{ width: "100%" }}

@@ -12,7 +12,7 @@ const styles = (theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  std: {display: 'block'},
+  std: { display: 'block' },
   textBox: {
     backgroundColor: '#FFFFFF',
     opacity: '75%',
@@ -31,29 +31,29 @@ class IntroTemplateMinimalist extends Component {
   static preview = preview;
 
   static info = {
-    fonts: {titleFont: {label: "title font"}},
-    colours: {primary: {label: "primary"},secondary: {label: "secondary"}},
-    images: {dp: {label: "Your portrait photo", allowColour: false}, bg: {label: "Entry background", allowColour: true}},
-    texts: {name: {label: "Your full name"}, status: {label: "your current position"}},
+    fonts: { titleFont: { label: "title font" } },
+    colours: { primary: { label: "primary" }, secondary: { label: "secondary" } },
+    images: { dp: { label: "Your portrait photo", allowColour: false }, bg: { label: "Entry background", allowColour: true } },
+    texts: { name: { label: "Your full name" }, status: { label: "your current position" } },
     sections: {}
   };
 
   static script = (index) => "";
 
   static defaultField = {
-    width: "100%", 
-    height: "80vh", 
-    fonts: {titleFont: "title font"},
-    colours: {primary: "#d19a19", secondary: "#000000"},
-    images: {dp: "https://bit.ly/3fRv2Y2",bg: "https://bit.ly/2RWO4Ei"},
-    texts: {name: "Port Folio",status: "UI/UX developer"},
+    width: "100%",
+    height: "80vh",
+    fonts: { titleFont: "Roboto" },
+    colours: { primary: "#d19a19", secondary: "#000000" },
+    images: { dp: "https://bit.ly/3fRv2Y2", bg: "https://bit.ly/2RWO4Ei" },
+    texts: { name: "Port Folio", status: "UI/UX developer" },
     sections: []
   };
 
   render() {
     const { classes, fields } = this.props;
     return (
-      <div className = {classes.root} style={{
+      <div className={classes.root} style={{
         backgroundRepeat: false,
         backgroundImage: `url("${fields.images.bg}")`,
         backgroundSize: "cover",
@@ -64,21 +64,21 @@ class IntroTemplateMinimalist extends Component {
         display: "flex",
         flexDirection: "row"
       }}>
-        <CssBaseline/>
-        <div style={{marginLeft: "auto", marginRight: "10%"}}>
+        <CssBaseline />
+        <div style={{ marginLeft: "auto", marginRight: "10%" }}>
           <Box className={classes.textBox}>
-            <Typography component="h2" variant="h2" style={{color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif"}}>
+            <Typography component="h2" variant="h2" style={{ color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif" }}>
               Hello! my name is
             </Typography>
-            <Typography component="h1" variant="h1" style={{color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}>
+            <Typography component="h1" variant="h1" style={{ color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif` }}>
               {fields.texts.name}
             </Typography>
-            <Typography component="h2" variant="h2" style={{color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif"}}>
+            <Typography component="h2" variant="h2" style={{ color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif" }}>
               {fields.texts.status}
             </Typography>
           </Box>
         </div>
-        <img src={fields.images.dp} alt="my portrait" style={{height: "100%", width: "auto", marginRight: "auto"}}/>
+        <img src={fields.images.dp} alt="my portrait" style={{ height: "100%", width: "auto", marginRight: "auto" }} />
       </div>);
   }
 }

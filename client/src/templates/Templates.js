@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import IntroTemplateMinimalist from './introduction/IntroTemplateMinimalist';
 import TimelineTemplateMinimalist from './timeline/TimelineTemplateMinimalist';
 import AboutTemplateMinimalist from './about/AboutTemplateMinimalist';
+import IntroTemplateRedline from './introduction/IntroTemplateRedline';
 //  TODO: rename to templates?
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -19,7 +20,15 @@ export const templates = {
       script: IntroTemplateMinimalist.script,
       info: IntroTemplateMinimalist.info,
       defaultField: IntroTemplateMinimalist.defaultField
-    }
+    },
+    {
+      name: IntroTemplateRedline.templateName, 
+      preview: IntroTemplateRedline.preview,
+      component: (fields, id) => (<IntroTemplateRedline fields={fields} id={id}/>),
+      script: IntroTemplateRedline.script,
+      info: IntroTemplateRedline.info,
+      defaultField: IntroTemplateRedline.defaultField
+    },
   ],
   about: [
     {
