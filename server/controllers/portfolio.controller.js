@@ -23,10 +23,10 @@ export const getPortfolio = async (req, res) => {
         path: "pages", 
         populate: [
             { path: 'entries' }, 
-            { path: 'directories.$*.dir', 
+            { path: 'directories.$*', 
                 populate: [
                     {path: 'entries'}, 
-                    {path: 'directories.$*.dir'}
+                    {path: 'directories.$*'}
                 ]
             }
         ] 
@@ -137,32 +137,6 @@ export const upsertPortfolio = async (req, res) => {
                 user.portfolios.push(portfolio._id); //If portfolio is new, then add it in user's ref
             } else {
                 portfolio.isNew = false;
-                
-                // portfolio.pages = []; //Somehow this is necessary to make sure there are no duplicated page _id in pages.
-                // //I suspect that by setting isNew to false, mongoose just decides to add to contents of the pages array to the already existing pages array.
-
-                //Have to delete pages that are not supposed to exist anymore.
-                // const dict = new Set();
-                // for (let requestPage of requestPortfolio.pages) {
-                //     if (requestPage._id !== undefined) {
-                //         dict.add(requestPage._id.valueOf());
-                //     }
-                // }
-
-                //pages is just a page. If id is undefined, then it is a new page.
-                
-                
-                // for (let existingPage of isExist.pages) {
-                //     if (!dict.has(existingPage._id.valueOf().toString())) {
-                //         Page.findByIdAndDelete(existingPage._id)
-                //         .then(deleted => {
-                //             console.log("deleted page " + deleted._id);
-                //         }).catch(err => {
-                //             console.log(err);
-                //         })
-                //     }
-                // }
-
 
                 /**
                  * The below process checks existing page documents with the newly incoming ones and allows us to determine which page documents are no longer needed.
@@ -321,7 +295,7 @@ export const upsertPortfolio = async (req, res) => {
                 for (let existingEntry of isExist.entries) {
                     existingEntries.push(existingEntry._id.valueOf().toString());
                 }
-            })
+            }).catch(err => console.log(err));
         }
 
         //regardless of new or not, need to set up entry objects either for updating or saving.
@@ -382,7 +356,7 @@ export const upsertPortfolio = async (req, res) => {
                 const childKey = current_id + childDir;
                 //
                 
-                pages[parentKey][0].directories.set(childDir, {dir: pages[childKey][0]._id});
+                pages[parentKey][0].directories.set(childDir, pages[childKey][0]._id);
                 // pages[parentKey][0].directories[childDir] = pages[childKey][0];
                 console.log("directories changed", pages[parentKey][0].directories);
 
@@ -391,7 +365,6 @@ export const upsertPortfolio = async (req, res) => {
 
         }
     }
-
 
 
     //go thru all directories in all related page documents.
@@ -417,100 +390,6 @@ export const upsertPortfolio = async (req, res) => {
     }
 
     
-
-    //user.markModified("portfolios"); //Need to mark to enact changes to array contents.
-
-    // const pages = []; //temp array for storing pages to be saved. Stored as such => [page, entries]
-    
-    // for (let pageObj of requestPortfolio.pages) {
-
-    //     const entries = []; //temp array for storing entries to be saved.
-
-    //     const page = new Page({
-    //         _id: pageObj._id,
-    //         directory: pageObj.directory,
-    //         portfolio: portfolio._id
-    //     });
-
-    //     if (page._id === undefined) {
-    //         page._id = new mongoose.Types.ObjectId();
-    //         page.isNew = true;
-    //     } else {
-    //         await Page.findById(page._id)
-    //         .then(isExist => {
-    //             if (isExist === null) {
-    //                 //Just In Case
-    //                 page.isNew = true;
-    //             } else {
-    //                 page.isNew = false;
-    //                 page.entries = []; //Somehow this is necessary to make sure there are no duplicated entry _id in entries as well.
-    //                 //I suspect that by setting isNew to false, mongoose just decides to add to contents of the entries array to the already existing entries array.
-
-    //                 //Have to delete entries that are not supposed to exist anymore.
-    //                 const dict = new Set();
-    //                 for (let requestEntry of pageObj.entries) {
-    //                     if (requestEntry._id !== undefined) {
-    //                         console.log(requestEntry._id.valueOf() + " added to set");
-    //                         dict.add(requestEntry._id.valueOf());
-    //                     }
-    //                 }
-    //                 console.log(dict)
-    //                 for (let existingEntry of isExist.entries) {
-    //                     if (!dict.has(existingEntry._id.valueOf().toString())) {
-    //                         Entry.findByIdAndDelete(existingEntry._id)
-    //                         .then(deleted => {
-    //                             console.log("deleted entry " + deleted._id);
-    //                         }).catch(err => {
-    //                             console.log(err);
-    //                         })
-    //                     }
-    //                 }
-    //             }
-    //         }).catch(err => {
-    //             console.log(err);
-    //         })
-    //     }
-
-    //     for (let entryObj of pageObj.entries) {
-    //         const entry = new Entry({
-    //             _id: entryObj._id,
-    //             page: page._id,
-    //             type: entryObj.type,
-    //             style: entryObj.style,
-    //             width: entryObj.width,
-    //             height: entryObj.height,
-    //             fonts: entryObj.fonts,
-    //             colours: entryObj.colours,
-    //             images: entryObj.images,
-    //             texts: entryObj.texts,
-    //             sections: entryObj.sections
-    //         });
-
-    //         if (entry._id === undefined) {
-    //             entry._id = new mongoose.Types.ObjectId();
-    //             entry.isNew = true;
-    //         } else {
-    //             entry.isNew = false;
-    //         }
-
-    //         //Regardless of whether the page's entries are new or not new, we want to add it in the order it was given to us into page refs.
-    //         //Furthermore, this will allow us to handle deleted entries.
-    //         page.entries.push(entry._id) 
-
-    //         entries.push(entry);
-    //     }
-    //     //page.markModified("entries"); //Need to mark to enact changes to array contents.
-
-    //     pages.push([page, entries]); //new entries for each page is pushed to temp pages array
-
-    //     //Regardless of whether the page is new or not new, we want to add it in the order it was given to us into page refs
-    //     //Furthermore, this will allow us to handle deleted pages.
-    //     portfolio.pages.push(page._id); 
-    // }
-
-    //portfolio.markModified("pages"); //Need to mark to enact changes to array contents.
-    
-    //Mongoose will still throw a duplicate key error with error code E11000 even if isNew is specified manually. Need to resolve.
     await user.save()
     .then(async () => {   
         await portfolio.save()
