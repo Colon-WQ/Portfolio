@@ -1,4 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
+import * as fonts from './fonts';
 
 //visit here to see what to override 
 //https://material-ui.com/customization/default-theme/
@@ -34,5 +35,12 @@ export const theme = createMuiTheme({
         '"Segoe UI"',
         'Roboto'
       ].join(',')
+    },
+    overrides: {
+      MuiCssBaseline: {
+        '@global': {
+          '@font-face': Object.values(fonts)
+        }
+      }
     }
   })

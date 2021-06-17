@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 
-
 const PageSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     directory: { type: String, default: "/"},
