@@ -372,6 +372,7 @@ class Portfolio extends Component {
    */
   async handleSavePortfolio() {
     console.log("saving begins");
+    console.log(this.state.pages);
     await axios({
       method: "PUT",
       url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
@@ -496,36 +497,39 @@ class Portfolio extends Component {
     this.forceUpdate();
   }
 
+
   async handleUploadPreview() {
     console.log("uploading image");
 
     await html2canvas(document.querySelector("#preview"))
-      .then(async canvas => {
+      .then(canvas => {
 
-        const bodyFormData = new FormData();
-        bodyFormData.append('file', canvas.toDataURL("image/png"));
-        bodyFormData.append('label', "preview");
-        //console.log(bodyFormData.get("file"))
-        await axios({
-          method: "POST",
-          url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
-          withCredentials: true,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" }
-        }).then(res => {
-          console.log(res.data.message);
-        }).catch(err => {
-          if (err.response) {
-            console.log(err.response.data);
-          } else {
-            console.log(err.message);
+        canvas.toBlob(async blob => {
+            const bodyFormData = new FormData();
+            bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
+            bodyFormData.append('label', "preview");
+            //console.log(bodyFormData.get("file"))
+            await axios({
+              method: "POST",
+              url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+              withCredentials: true,
+              data: bodyFormData,
+              headers: { "Content-Type": "multipart/form-data" }
+            }).then(res => {
+              console.log(res.data.message);
+              console.log(res.data.refs);
+            }).catch(err => {
+              if (err.response) {
+                console.log(err.response.data);
+              } else {
+                console.log(err.message);
+              }
+            })
           }
-        })
+        )
       }).catch(err => {
         console.log(err);
       })
-
-
   }
 
   // TODO: move editor components and logic into component files
