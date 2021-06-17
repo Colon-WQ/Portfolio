@@ -28,8 +28,6 @@ const store = createStore(
   applyMiddleware(thunk)
 )
 
-
-
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme = {theme}>
