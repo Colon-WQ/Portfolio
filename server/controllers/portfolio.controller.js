@@ -11,7 +11,7 @@ import connect from '../server.js';
 const router = express.Router();
 
 /**
- * String of objectId of portfolio required. Get using objectId.valueOf()
+ * String of objectId of portfolio required. Get using objectId.toHexString()
  */
 export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
@@ -73,8 +73,6 @@ export const updatePortfolio = async (req, res) => {
  * Note: Upsert option set to true ensures that document, if not existing, will be created. Otherwise it will be updated.
  */
 export const upsertPortfolio = async (req, res) => {
-
-    console.log("save request begins");
     const requestUser = req.body.user;
     const requestPortfolio = req.body.portfolio;
 
@@ -94,8 +92,7 @@ export const upsertPortfolio = async (req, res) => {
             if (isExist === null) {
                 user.isNew = true;
             } else {
-                console.log(isExist)
-                console.log(isExist.portfolios);
+                console.log("User already exists", isExist.portfolios);
                 user.isNew = false;
                 user.portfolios = isExist.portfolios;
             }
@@ -110,7 +107,7 @@ export const upsertPortfolio = async (req, res) => {
         user: requestUser.id
     })
 
-    //If id doesn't exist, obj is new
+    //If id is undefined, portfolio is new
     if (portfolio._id === undefined) {
 
         //This will handle duplicate names chosen before anything is actually saved.
@@ -119,7 +116,8 @@ export const upsertPortfolio = async (req, res) => {
             if (isExist === null) {
                 portfolio._id = new mongoose.Types.ObjectId();
                 portfolio.isNew = true;
-                user.portfolios.push(portfolio._id); //If portfolio is new, then add it in user's ref
+                //This ensures that the portfolios ref array in user is the same, with the newest portfolio pushed in.
+                user.portfolios.push(portfolio._id);
             } else {
                 return res.status(400).send("Duplicate Portfolio Name Chosen");
             }
@@ -138,6 +136,9 @@ export const upsertPortfolio = async (req, res) => {
             } else {
                 portfolio.isNew = false;
 
+                //Need to ensure images are passed over.
+                portfolio.images = isExist.images;
+
                 /**
                  * The below process checks existing page documents with the newly incoming ones and allows us to determine which page documents are no longer needed.
                  * 
@@ -149,18 +150,24 @@ export const upsertPortfolio = async (req, res) => {
                 const incomingPageIds = new Set();
                 console.log("incoming", requestPortfolio.pages.directories);
                 console.log("incoming keys", Object.keys(requestPortfolio.pages.directories));
+
                 /**
                  * CollectIncoming recursively collects page ids from (nested?) directories map and places them in a Set.
                  * Note: new pages could be created in an existing Portfolio, so need to check for undefined.
                  */
                 const collectIncoming = (obj) => {
-                    console.log(obj);
                     if (Object.keys(obj).length !== 0) {
                         for (let key of Object.keys(obj)) {
                             
                             if (obj[key]._id !== undefined) {
-                                incomingPageIds.add(obj[key]._id.valueOf());
-                                console.log("added " + obj[key]._id.valueOf());
+                                if (typeof obj[key]._id === "object") {
+                                    incomingPageIds.add(obj[key]._id.toHexString());
+                                    console.log("incoming pages added " + obj[key]._id.toHexString());
+                                } else {
+                                    incomingPageIds.add(obj[key]._id);
+                                    console.log("incoming pages added " + obj[key]._id);
+                                }
+                                
                             }
                             //undefined page could still be linked to previously created page. Still need to check to the very end.
                             collectIncoming(obj[key].directories);
@@ -176,10 +183,10 @@ export const upsertPortfolio = async (req, res) => {
                 //Gets the existing directories of the root page to start off recursive process on.
                 const currentDir = await Page.findById(isExist.pages._id).lean()
                 .then(page => {
-                    console.log("found",page)
                     return page.directories;
                 }).catch(err => {
                     console.log(err);
+                    return res.status(400).send("error encountered");
                 })
                 
                 //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map if lean() is not used.
@@ -195,18 +202,21 @@ export const upsertPortfolio = async (req, res) => {
                             //need to recursively go thru all the page directories first and check each _id
                             let directories = await Page.findById(obj[key]._id).lean()
                             .then(page => {
+                                //TODO: DEVELOP LOGIC TO HANDLE IF PAGE THAT'S SUPPOSED TO EXIST DOES NOT IN FACT EXIST.
                                 if (!page) return res.status(400).send("error encountered");
                                 return page.directories;
                             }).catch(err => {
                                 console.log(err);
+                                return res.status(400).send("error encountered");
                             })
 
                             await collectExisting(directories);
 
                             //only if it does not belong in set, then delete at the end, after checking thru all the existing page _ids in current page's directories
-                            if (!incomingPageIds.has(obj[key]._id.valueOf().toString())) {
+                            if (!incomingPageIds.has(obj[key]._id.toHexString())) {
+                                //What lean() does is that it returns a plain JS object and not a mongoose document.
                                 //delete attached entry documents first
-                                await Page.findById(obj[key]._id)
+                                await Page.findById(obj[key]._id).lean()
                                 .then(async page => {
                                     for (entryId of page.entries) {
                                         await Entry.findByIdAndDelete(entryId).then(deletedEntry => console.log(`${deletedEntry._id} entry deleted`)).catch(err => console.log(err));
@@ -276,7 +286,7 @@ export const upsertPortfolio = async (req, res) => {
              * 
              * The entry documents have yet to be checked for deletion.
              */
-            await Page.findById(requestPage._id)
+            await Page.findById(requestPage._id).lean()
             .then(async isExist => {
                 if (isExist === null) {
                     page.isNew = true;
@@ -289,13 +299,21 @@ export const upsertPortfolio = async (req, res) => {
                 //Compare and remove unnecessary existing entries. This prevents orphaned entry documents.
                 for (let requestEntry of requestPage.entries) {
                     if (requestEntry._id !== undefined) {
-                        console.log(requestEntry._id.valueOf() + " added to incoming entries set");
-                        incomingEntries.add(requestEntry._id.valueOf());
+                        if (typeof requestEntry._id === "string") {
+                            //It would seem that requestEntry._id here is already a string.
+                            console.log(requestEntry._id + " added to incoming entries set");
+                            incomingEntries.add(requestEntry._id);
+                        } else {
+                            //But in the off case that it is not, convert it to string.
+                            console.log(requestEntry._id.toHexString() + " added to incoming entries set");
+                            incomingEntries.add(requestEntry._id.toHexString());
+                        }
+                        
                     }
                 }
                 
                 for (let existingEntry of isExist.entries) {
-                    existingEntries.push(existingEntry._id.valueOf().toString());
+                    existingEntries.push(existingEntry._id.toHexString());
                 }
             }).catch(err => console.log(err));
         }
@@ -328,9 +346,9 @@ export const upsertPortfolio = async (req, res) => {
         }
 
         page.entries = entries;
-        pages[page._id.valueOf() + requestPage.directory] = [page, entryObjs];
+        pages[page._id.toHexString() + requestPage.directory] = [page, entryObjs];
         //returns the objectId of the current page for use in populating directories ref array.
-        return page._id.valueOf();
+        return page._id.toHexString();
     }
 
     //pages in portfolio document has to be upserted first and foremost.
@@ -360,7 +378,7 @@ export const upsertPortfolio = async (req, res) => {
                 
                 pages[parentKey][0].directories.set(childDir, pages[childKey][0]._id);
                 // pages[parentKey][0].directories[childDir] = pages[childKey][0];
-                console.log("directories changed", pages[parentKey][0].directories);
+                console.log("directory added " + childDir + " : " + pages[childKey][0]._id);
 
                 await recursePages(directories[key], current_id);
             }
@@ -372,6 +390,7 @@ export const upsertPortfolio = async (req, res) => {
     //go thru all directories in all related page documents.
     await recursePages(requestPortfolio.pages, rootPage_id);
 
+    
     //Need to clean up entries here
     for (let entryId of existingEntries) {
         if (!incomingEntries.has(entryId)) {
@@ -384,8 +403,7 @@ export const upsertPortfolio = async (req, res) => {
         }
     }
 
-
-    console.log("save log", pages);
+    console.log("summary of each page's updated directories")
     for (let key of Object.keys(pages)) {
         console.log(key);
         console.log("directories", pages[key][0].directories);
@@ -499,11 +517,11 @@ export const deletePortfolio = async (req, res) => {
                 }
                 await Page.findByIdAndDelete(pageId)
                 .then(async deletedPage => {
-                    console.log(`${deletedPage._id.valueOf()} page deleted`);
+                    console.log(`${deletedPage._id.toHexString()} page deleted`);
                     for (let entryId of deletedPage.entries) {
                         await Entry.findByIdAndDelete(entryId)
                         .then(deletedEntry => {
-                            console.log(`${deletedEntry._id.valueOf()} entry deleted`);
+                            console.log(`${deletedEntry._id.toHexString()} entry deleted`);
                         }).catch(err => {
                             console.log(err);
                             return res.status(400).send("error encountered");
@@ -566,11 +584,19 @@ export const postImage = async (req, res) => {
 
                 imagesCopy.push(image._id);
                 portfolio.images = imagesCopy;
-                portfolio.markModified("images");
+                
                 //save when called on a document will instead update if changes are made.
-                await portfolio.save();
+                await portfolio.save()
+                .then(saved => {
+                    return res.status(200).json({ message: `image with label: ${req.body.label} has been successfully saved with portfolio image refs updated accordingly`,
+                        refs: saved.images
+                    })
+                }).catch(err => {
+                    console.log(err);
+                    return res.status(400).send("error encountered");
+                })
 
-                return res.status(200).json({ message: `image with label: ${req.body.label} has been successfully saved with portfolio image refs updated accordingly` })
+                
             }).catch(err => {
                 console.log(err);
                 return res.status(400).send("error encountered");
@@ -700,7 +726,7 @@ export const deleteImage = async (req, res) => {
         .then(async () => {
             // if (!deletedFile) return res.status(404).send(`file ${image.fileId} does not exist`);
 
-            await Image.deleteOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
+            await Image.findOneAndDelete({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
             .then(async deletedImage => {
                 if (!deletedImage) return res.status(404).send(`image with label ${label} does not exist`);
 
@@ -708,9 +734,11 @@ export const deleteImage = async (req, res) => {
                 .then(async portfolio => {
                     if (!portfolio) return res.status(404).send(`portfolio ${portfolioId} does not exist`);
                     const images = portfolio.images;
-                    const imagesCopy = images.filter(img => img._id != deleteImage._id);
-                    portfolio.images = imagesCopy;
-                    portfolio.markModified("images");
+                    
+                    const imagesFiltered = images.filter(img => img.toHexString() !== deletedImage._id.toHexString());
+                    
+                    portfolio.images = imagesFiltered;
+                    
                     await portfolio.save()
                     .then(() => {
                         return res.status(200).json({ message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` });
