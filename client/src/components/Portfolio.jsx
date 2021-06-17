@@ -372,6 +372,7 @@ class Portfolio extends Component {
    */
   async handleSavePortfolio() {
     console.log("saving begins");
+    console.log(this.state.pages);
     await axios({
       method: "PUT",
       url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",

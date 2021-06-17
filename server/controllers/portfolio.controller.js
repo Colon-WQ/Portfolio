@@ -172,33 +172,35 @@ export const upsertPortfolio = async (req, res) => {
 
                 console.log(incomingPageIds);
 
+                //What lean() does is that it returns a plain JS object and not a mongoose document.
                 //Gets the existing directories of the root page to start off recursive process on.
-                const currentDir = await Page.findById(isExist.pages._id)
+                const currentDir = await Page.findById(isExist.pages._id).lean()
                 .then(page => {
                     console.log("found",page)
                     return page.directories;
                 }).catch(err => {
                     console.log(err);
                 })
-                console.log(Object.keys(currentDir))
-                console.log(Object.values(currentDir))
-                console.log(Object.keys(currentDir).length)
-                //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map!
+                
+                //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map if lean() is not used.
+                //Furthermore, you cannot access properties not declared in schema
                 /**
                  * collectExisting fetches from mongodb each subsequent nested directories if any and checks if the pages that they are
                  * referencing should be deleted by comparing with the Set formed above ^.
                  */
                 const collectExisting = async (obj) => {
-                    if (Object.keys(obj).length > 3) {
+                    if (Object.keys(obj).length !== 0) {
                         for (let key of Object.keys(obj)) {
+                            //What lean() does is that it returns a plain JS object and not a mongoose document.
                             //need to recursively go thru all the page directories first and check each _id
-                            let directories = await Page.findById(obj[key]._id)
+                            let directories = await Page.findById(obj[key]._id).lean()
                             .then(page => {
                                 if (!page) return res.status(400).send("error encountered");
                                 return page.directories;
                             }).catch(err => {
                                 console.log(err);
                             })
+
                             await collectExisting(directories);
 
                             //only if it does not belong in set, then delete at the end, after checking thru all the existing page _ids in current page's directories
@@ -484,27 +486,42 @@ export const deletePortfolio = async (req, res) => {
             console.log(err)
             return res.status(400).send("error encountered");
         })
-        
-        for (let pageId of deletedPortfolio.pages) {
-            await Page.findByIdAndDelete(pageId)
-            .then(async (deletedPage) => {
-                console.log("deleted page");
-                for (let pageId of deletedPage.entries) {
-                    await Entry.findByIdAndDelete(pageId)
-                    .then((deletedEntry) => {
-                        console.log("deleted entry");
-                    }).catch(err => {
-                        console.log(err);
-                        return res.status(400).send("error encountered");
-                    })
-                }
 
-                return res.status(200).json({ message: `Successfully deleted Portfolio by id ${id}` });
-            }).catch(err => {
-                console.log(err)
-                return res.status(400).send("error encountered");
-            })
+        //fully recurse through all the directories, then start deleting pages and their attached entries.
+        const recurseDelete = async (pageId) => {
+            await Page.findById(pageId).lean()
+            .then(async page => {
+                //what lean() does is that it returns a plain js object. This object has no save() or any other document method.
+                const directories = page.directories;
+                
+                for (let key of Object.keys(directories)) {
+                    await recurseDelete(directories[key]);
+                }
+                await Page.findByIdAndDelete(pageId)
+                .then(async deletedPage => {
+                    console.log(`${deletedPage._id.valueOf()} page deleted`);
+                    for (let entryId of deletedPage.entries) {
+                        await Entry.findByIdAndDelete(entryId)
+                        .then(deletedEntry => {
+                            console.log(`${deletedEntry._id.valueOf()} entry deleted`);
+                        }).catch(err => {
+                            console.log(err);
+                            return res.status(400).send("error encountered");
+                        })
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    return res.status(400).send("error encountered");
+                })
+            }).catch(err => console.log(err));
+  
         }
+
+        //At this pt, deletedPortfolio is not populated, so pages is an ObjectId.
+        await recurseDelete(deletedPortfolio.pages);
+
+        return res.status(200).json({ message: `Successfully deleted Portfolio by id ${id}` });
+        
 
     }).catch(err => {
         console.log(err)
