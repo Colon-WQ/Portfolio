@@ -174,9 +174,9 @@ class DirectoryManager extends Component {
    */
   getPage(pageArray, dirTree, index) {
     // TODO: test if === causes any bugs -- >= might cause unexpected behaviour down the line
-    if (index >= pageArray.length - 1) {
+    if (index >= pageArray.length) {
       // prevent overwriting
-      if (dirTree.directories[pageArray[index]] !== undefined) return undefined;
+      if (dirTree === undefined) return undefined;
       return dirTree;
     }
     else {
@@ -193,6 +193,8 @@ class DirectoryManager extends Component {
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
     const parent = this.getPage(this.state.currentPath, newDirTree, 0);
     console.log(this.state.currentPath)
+    console.log(parent);
+    console.log(newDirTree);
     const newPage = {
       directory: newName,
       entries: [],
@@ -240,7 +242,6 @@ class DirectoryManager extends Component {
     const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
     const parent = this.getPage(pageArray, newDirTree, 0);
 
-    console.log(oldName);
     parent.directories[this.state.dirName] = parent.directories[oldName];
     delete parent.directories[oldName]
     // const from = [];
@@ -278,8 +279,10 @@ class DirectoryManager extends Component {
     // TODO: offer option to merge child subdirectories to parent
     const copy = { ...parent.directories };
     // TODO: change mutations in this file to use fp via filter and Object.entries
-    delete copy[directoryArray[directoryArray.length - 1]];
+    delete copy[pageName];
     parent.directories = copy;
+    this.props.onUpdate(newDirTree);
+    console.log(directoryArray)
     this.setState({
       dirTree: newDirTree,
       currentPage: parent,

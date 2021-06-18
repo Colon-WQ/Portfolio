@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit } from "react-icons/fa";
-
+import { fonts } from '../styles/fonts';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -148,7 +148,8 @@ class EntryEditor extends Component {
     this.state = {
       data: copied_fields,
       currentSection: 0,
-      showEditor: false
+      showEditor: false,
+      anchorEl: null
     }
     this.handleCreateEntry = this.handleCreateEntry.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -157,6 +158,7 @@ class EntryEditor extends Component {
     this.handleSectionView = this.handleSectionView.bind(this);
     this.handleCloseEditor = this.handleCloseEditor.bind(this);
     this.handleShowEditor = this.handleShowEditor.bind(this);
+    this.handleFontMenu = this.handleFontMenu.bind(this);
   }
 
   /**
@@ -199,6 +201,7 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleChange(event, category) {
+    console.log(event)
     if (category === "") {
       this.setState({
         data: {
@@ -336,6 +339,24 @@ class EntryEditor extends Component {
     })
   }
 
+  handleFontMenu(event) {
+    this.setState({
+      anchorEl: event.currentTarget
+    })
+  }
+
+  handleUpdateFont(field, font) {
+    this.setState({
+      data: {
+        ...this.state.data,
+        fonts: {
+          ...this.state.data.fonts,
+          [field]: font
+        }
+      },
+      anchorEl: null
+    })
+  }
 
   render() {
     const { classes } = this.props;
@@ -382,15 +403,43 @@ class EntryEditor extends Component {
                   className={classes.styleInput}
                 />
                 {Object.entries(this.state.data.fonts).map(([key, item]) => {
-                  return (<TextField
-                    name={key}
-                    id={key}
-                    label={this.props.info.fonts[key].label}
-                    value={item}
-                    margin="normal"
-                    variant="outlined"
-                    onChange={(event) => this.handleChange(event, "fonts")}
-                    className={classes.styleInput} />)
+                  return (
+                    <div>
+                      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleFontMenu}>
+                        <Typography variant="inherit" style={{ fontFamily: item }}>
+                          {this.props.info.fonts[key].label}
+                        </Typography>
+                      </Button>
+                      <Menu
+                        name={key}
+                        id={key}
+                        anchorEl={this.state.anchorEl}
+                        keepMounted
+                        open={Boolean(this.state.anchorEl)}
+                        onClose={() => this.setState({ anchorEl: null })}
+                      >
+                        {fonts.map((fontName) => (
+                          <MenuItem onClick={(event) => this.handleUpdateFont(key, fontName)}>
+                            <Typography variant="inherit" style={{ fontFamily: fontName }}>
+                              {fontName}
+                            </Typography>
+                          </MenuItem>
+                        ))}
+                      </Menu>
+                    </div>
+
+
+
+                    // <TextField
+                    // name={key}
+                    // id={key}
+                    //   label={this.props.info.fonts[key].label}
+                    //   value={item}
+                    //   margin="normal"
+                    //   variant="outlined"
+                    //   onChange={(event) => this.handleChange(event, "fonts")}
+                    //   className={classes.styleInput} />
+                  )
                 })}
                 {Object.entries(this.state.data.colours).map(([key, item]) => {
                   return (
