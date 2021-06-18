@@ -50,16 +50,16 @@ class TimelineTemplateMinimalist extends Component {
   static info = {
     fonts: { titleFont: { label: "title font" } },
     colours: { primary: { label: "primary" }, secondary: { label: "secondary" } },
-    images: { bg: { label: "Entry background", allowColour: true } },
+    images: { bg: { label: "Entry background", format: ['image'] } },
     texts: { title: { label: "Timeline title" } },
     sections: {
       enabled: true,
       defaultEntry: {
-        images: { timelineImage: "https://bit.ly/3c3wsNL" },
+        images: { timelineImage: { src: "https://bit.ly/3c3wsNL", format: 'image' } },
         texts: { timelineTitle: "New section", timelineDate: "2077" }
       },
       entryFormat: {
-        images: { timelineImage: { label: "Event Image", allowColour: true } },
+        images: { timelineImage: { label: "Event Image", format: ['image'] } },
         texts: { timelineTitle: { label: "Event name" }, timelineDate: { label: "Event date" } }
       }
     }
@@ -70,14 +70,14 @@ class TimelineTemplateMinimalist extends Component {
     height: "fit-content",
     fonts: { titleFont: "roboto" },
     colours: { primary: "#d19a19", secondary: "#000000" },
-    images: { bg: "https://bit.ly/3i3I9I2" },
+    images: { bg: { src: "https://bit.ly/3i3I9I2", format: 'image' } },
     texts: { title: "My past experiences" },
     sections: [{
-      images: { timelineImage: "https://bit.ly/3hXPM2R" },
+      images: { timelineImage: { src: "https://bit.ly/3hXPM2R", format: 'image' } },
       texts: { timelineTitle: "Portfolio Deployed on Github!", timelineDate: "2021" }
     },
     {
-      images: { timelineImage: "https://bit.ly/3c3wsNL" },
+      images: { timelineImage: { src: "https://bit.ly/3c3wsNL", format: 'image' } },
       texts: { timelineTitle: "Portfolio added to resume", timelineDate: "2021" }
     }]
   };
@@ -87,7 +87,7 @@ class TimelineTemplateMinimalist extends Component {
     return (
       <div className={classes.root} style={{
         backgroundRepeat: false,
-        backgroundImage: `url("${fields.images.bg}")`,
+        backgroundImage: `url("${fields.images.bg.src}")`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         width: fields.width,

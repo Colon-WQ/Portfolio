@@ -137,7 +137,6 @@ class TemplateSelector extends Component {
   }
 
   handleCloseSelector(values) {
-    console.log(values);
     if (values !== undefined) {
       this.props.onClose(values)
     }
