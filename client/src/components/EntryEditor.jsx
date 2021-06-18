@@ -375,7 +375,9 @@ class EntryEditor extends Component {
     const { classes } = this.props;
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
     return (
-      <div>
+      <div
+        data-html2canvas-ignore="true"
+      >
         <Fab
           className={classes.editFAB}
           onClick={this.handleShowEditor}>

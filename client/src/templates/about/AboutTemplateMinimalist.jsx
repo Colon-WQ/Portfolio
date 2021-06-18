@@ -11,8 +11,8 @@ const styles = (theme) => ({
         justifyContent: "start",
         padding: "1rem",
         alignItems: "center",
-        height: "100%",
-        width: "100%"
+        width: "100%",
+        height: 'auto'
     }
 })
 
