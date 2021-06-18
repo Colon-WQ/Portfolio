@@ -17,33 +17,72 @@ export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
     //console.log(portfolio_id);
 
-    
-
-    await Portfolio.findById(portfolio_id).populate({ 
-        path: "pages", 
-        populate: [
-            { path: 'entries' }, 
-            { path: 'directories.$*', 
-                populate: [
-                    {path: 'entries'}, 
-                    {path: 'directories.$*'}
-                ]
+    await Portfolio.findById(portfolio_id).lean().populate({ path: "pages", populate: { path: 'entries' }})
+    .then(async portfolio => {
+        
+        const deepPopulate = async (currPage) => {
+            
+            for (let key of Object.keys(currPage.directories)) {
+                console.log(key)
+                const page = await Page.findById(currPage.directories[key]).lean().populate("entries");
+                currPage.directories[key] = page;
+                await deepPopulate(page);
             }
-        ] 
-    }).then(portfolio => {
-        if (portfolio == null) {
-            return res.status(404).send("portfolio _id not found");
-        } else {
-            console.log("portfolio found. Pages populated");
-            console.log(portfolio);
-            console.log(portfolio.pages.entries);
-            console.log(portfolio.pages.directories);
-            return res.status(200).json({ portfolio: portfolio });
+            
         }
+
+        await deepPopulate(portfolio.pages);
+
+        console.log(portfolio)
+
+        return res.status(200).json({ portfolio: portfolio });
     }).catch(err => {
-        console.log(err);
+        console.log(err)
         return res.status(400).send("error encountered");
-    })
+    });
+
+    // await Portfolio.findById(portfolio_id).populate({ 
+    //     path: "pages", 
+    //     populate: [
+    //         { path: 'entries' }, 
+    //         { path: 'directories.$*', 
+    //             populate: [
+    //                 {path: 'entries'}, 
+    //                 {path: 'directories.$*',
+    //                     populate: [
+    //                         {path: 'entries'},
+    //                         {path: 'directories.$*'}
+    //                     ]
+    //                 }
+    //             ]
+    //         }
+    //     ] 
+    // }).then(portfolio => {
+    //     if (portfolio == null) {
+    //         return res.status(404).send("portfolio _id not found");
+    //     } else {
+    //         console.log("portfolio found. Pages populated");
+            
+    //         // const enumerateDirectories = (directories) => {
+    //         //     console.log(directories)
+    //         //     console.log(Object.keys(directories))
+    //         //     console.log(directories.get("test"))
+    //         //     for (let key of Object.keys(directories)) {
+    //         //         console.log(key, directories.get(key).directories)
+    //         //         enumerateDirectories(directories.get(key).directories);
+    //         //     }
+    //         // }
+
+    //         // enumerateDirectories(portfolio.pages.directories);
+            
+            
+            
+    //         return res.status(200).json({ portfolio: portfolio });
+    //     }
+    // }).catch(err => {
+    //     console.log(err);
+    //     return res.status(400).send("error encountered");
+    // })
 }
 
 export const updatePortfolio = async (req, res) => {
@@ -547,6 +586,21 @@ export const deletePortfolio = async (req, res) => {
     })
 
     
+}
+
+export const checkExistingImage = async (req, res) => {
+    const portfolioId = req.params.id;
+    await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: req.query.label })
+    .then(async image => {
+        if (image) {
+            return res.status(200).json({isExist: true});
+        } else {
+            return res.status(200).json({isExist: false});
+        }
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
 }
 
 

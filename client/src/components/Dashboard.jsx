@@ -463,7 +463,12 @@ class Dashboard extends Component {
             }
         }).then(res => {
             console.log(res.data.message);
-            this.handleTestGetImage();
+            const temp = this.state.images;
+            delete temp[this.state.currentPortfolio_Id + label];
+            this.setState({
+                images: temp
+            });
+            this.handleGetImage(this.state.currentPortfolio_Id);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);

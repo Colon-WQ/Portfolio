@@ -405,12 +405,14 @@ class Portfolio extends Component {
         withCredentials: true
       }).then(async res => {
         console.log("_id updated");
+        console.log(res.data.portfolio);
         this.props.saveCurrentWorkToLocal(res.data.portfolio);
         //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
         //Name is also set.
         this.setState({
           pages: res.data.portfolio.pages
         });
+        console.log(this.state.pages);
 
         //After _id is fetched, we then update the preview.
         await this.handleUploadPreview();
@@ -502,8 +504,6 @@ class Portfolio extends Component {
 
 
   async handleUploadPreview() {
-    console.log("uploading image");
-
     await html2canvas(document.querySelector("#preview"), { backgroundColor: null, useCORS: true })
       .then(canvas => {
 
@@ -511,36 +511,54 @@ class Portfolio extends Component {
             const bodyFormData = new FormData();
             bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
             bodyFormData.append('label', "preview");
+
             await axios({
-              method: "POST",
-              url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+              method: "GET",
+              url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingImage/" + this.state.portfolio_id,
               withCredentials: true,
-              data: bodyFormData,
-              headers: { "Content-Type": "multipart/form-data" }
-            }).then(res => {
-              console.log(res.data.message);
-              console.log(res.data.refs);
-            }).catch(async err => {
+              params: {
+                label: "preview"
+              }
+            }).then(async res => {
+              if (res.data.isExist) {
+                console.log("updating image")
+                await axios({
+                  method: "PUT",
+                  url: process.env.REACT_APP_BACKEND + "/portfolio/updateImage/" + this.state.portfolio_id,
+                  withCredentials: true,
+                  data: bodyFormData,
+                  headers: { "Content-Type": "multipart/form-data" }
+                }).then(res => {
+                  console.log(res.data.message);
+                }).catch(err => {
+                  if (err.response) {
+                    console.log(err.response.data);
+                  } else {
+                    console.log(err.message);
+                  }
+                })
+              } else {
+                console.log("uploading image");
+                await axios({
+                  method: "POST",
+                  url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+                  withCredentials: true,
+                  data: bodyFormData,
+                  headers: { "Content-Type": "multipart/form-data" }
+                }).then(res => {
+                  console.log(res.data.message);
+                  console.log(res.data.refs);
+                }).catch(async err => {
+                  if (err.response) {
+                    console.log(err.response.data);
+                  } else {
+                    console.log(err.message);
+                  }
+                });
+              }
+            }).catch(err => {
               if (err.response) {
-                if (err.status === 400 && err.response.data === "image with same label already exists") {
-                  await axios({
-                    method: "PUT",
-                    url: process.env.REACT_APP_BACKEND + "/portfolio/updateImage/" + this.state.portfolio_id,
-                    withCredentials: true,
-                    data: bodyFormData,
-                    headers: { "Content-Type": "multipart/form-data" }
-                  }).then(res => {
-                    console.log(res.data.message);
-                  }).catch(err => {
-                    if (err.response) {
-                      console.log(err.response.data);
-                    } else {
-                      console.log(err.message);
-                    }
-                  })
-                } else {
-                  console.log(err.response.data);
-                }
+                console.log(err.response.data);
               } else {
                 console.log(err.message);
               }
