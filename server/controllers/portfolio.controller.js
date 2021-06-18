@@ -637,18 +637,18 @@ export const updateImage = async (req, res) => {
             .then(() => {
                 return res.status(200).json({ message: `successfully updated file for image with label ${label}`})
             }).catch(err => {
-                console.log("first", err);
+                
                 return res.status(400).send("error encountered");
             })
 
         }).catch(err => {
-            console.log("first", err);
+            
             return res.status(400).send("error encountered");
         })
 
         
     }).catch(err => {
-        console.log("second", err);
+        
         return res.status(400).send("error encountered");
     })
 }
