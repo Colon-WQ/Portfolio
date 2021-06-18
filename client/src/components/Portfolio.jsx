@@ -505,27 +505,27 @@ class Portfolio extends Component {
       .then(canvas => {
 
         canvas.toBlob(async blob => {
-            const bodyFormData = new FormData();
-            bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
-            bodyFormData.append('label', "preview");
-            //console.log(bodyFormData.get("file"))
-            await axios({
-              method: "POST",
-              url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
-              withCredentials: true,
-              data: bodyFormData,
-              headers: { "Content-Type": "multipart/form-data" }
-            }).then(res => {
-              console.log(res.data.message);
-              console.log(res.data.refs);
-            }).catch(err => {
-              if (err.response) {
-                console.log(err.response.data);
-              } else {
-                console.log(err.message);
-              }
-            })
-          }
+          const bodyFormData = new FormData();
+          bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
+          bodyFormData.append('label', "preview");
+          //console.log(bodyFormData.get("file"))
+          await axios({
+            method: "POST",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+            withCredentials: true,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" }
+          }).then(res => {
+            console.log(res.data.message);
+            console.log(res.data.refs);
+          }).catch(err => {
+            if (err.response) {
+              console.log(err.response.data);
+            } else {
+              console.log(err.message);
+            }
+          })
+        }
         )
       }).catch(err => {
         console.log(err);
