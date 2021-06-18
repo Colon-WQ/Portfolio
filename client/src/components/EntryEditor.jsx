@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit } from "react-icons/fa";
 import { fonts } from '../styles/fonts';
+import * as icons from '../styles/icons';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -103,6 +104,14 @@ const styles = (theme) => ({
     marginTop: '2vw',
     marginLeft: '2vw'
   },
+  gridDiv: {
+    display: 'grid',
+    width: '100%',
+    gridTemplateColumns: 'repeat(auto-fill, 50px)',
+    gridGap: '10px',
+    justifyContent: 'center',
+    overflowY: 'auto'
+  }
 })
 
 /**
@@ -241,13 +250,17 @@ class EntryEditor extends Component {
             ...this.state.data,
             images: {
               ...this.state.data.images,
-              [event.target.name]: e.target.result
+              [event.target.name]: {
+                src: e.target.result,
+                format: this.state.data.images[event.target.name].format
+              }
             }
           }
         })
       } else {
         const newSections = [...this.state.data.sections];
-        newSections[this.state.currentSection].images[event.target.name] = e.target.result;
+        // TODO: create deep copy, mutating .src currently mutates original array elements
+        newSections[this.state.currentSection].images[event.target.name].src = e.target.result;
         this.setState({
           data: {
             ...this.state.data,
@@ -425,18 +438,6 @@ class EntryEditor extends Component {
                         ))}
                       </Menu>
                     </div>
-
-
-
-                    // <TextField
-                    // name={key}
-                    // id={key}
-                    //   label={this.props.info.fonts[key].label}
-                    //   value={item}
-                    //   margin="normal"
-                    //   variant="outlined"
-                    //   onChange={(event) => this.handleChange(event, "fonts")}
-                    //   className={classes.styleInput} />
                   )
                 })}
                 {Object.entries(this.state.data.colours).map(([key, item]) => {
@@ -469,28 +470,65 @@ class EntryEditor extends Component {
                 <div className={classes.rowDiv}>
                   <div className={classes.imgGrid}>
                     {Object.entries(this.state.data.images).map(([key, item]) => {
-                      return (
-                        <div>
-                          <input
-                            accept="image/*"
-                            className={classes.imgInput}
-                            style={{ display: "none" }}
-                            id={key}
-                            name={key}
-                            type="file"
-                            onChange={this.handleImageUpload}
-                          // value={item}
-                          />
-                          <label htmlFor={key}>
-                            <Button component="span">
-                              <img src={item} className={classes.imgPreview} />
-                            </Button>
-                            <Typography>
-                              {this.props.info.images[key].label}
-                            </Typography>
-                          </label>
-                        </div>
-                      );
+                      switch (item.format) {
+                        case 'image':
+                          return (
+                            <div>
+                              <input
+                                accept="image/*"
+                                className={classes.imgInput}
+                                style={{ display: "none" }}
+                                id={key}
+                                name={key}
+                                type="file"
+                                onChange={this.handleImageUpload}
+                              // value={item}
+                              />
+                              <label htmlFor={key}>
+                                <Button component="span">
+                                  <img src={item.src} className={classes.imgPreview} />
+                                </Button>
+                                <Typography>
+                                  {this.props.info.images[key].label}
+                                </Typography>
+                              </label>
+                            </div>);
+                        case 'svg':
+                          return (
+                            <div>
+                              <IconButton>
+                                <svg></svg>
+                                <Typography>
+                                  {this.props.info.images[key].label}
+                                </Typography>
+                              </IconButton>
+                              <Modal>
+                                <Tabs
+                                  value={this.state.type}
+                                  // onChange={this.handleChange}
+                                  variant="scrollable"
+                                  scrollButtons="auto"
+                                >
+                                  {Object.values(icons).map((icon) => {
+                                    return (<Tab label={icon.label} value={icon.label} />)
+                                  })}
+                                </Tabs>
+                                <div className={classes.gridDiv}>
+                                  {Object.entries(icons['faIcons'].icons).map(([key, value]) => {
+                                    return (
+                                      <div>
+                                        <value />
+                                        <Typography>
+                                          {key}
+                                        </Typography>
+                                      </div>);
+                                  })}
+                                </div>
+                              </Modal>
+                            </div>);
+                        default:
+                          return null;
+                      }
                     })}
                   </div>
                   <div className={classes.textGrid}>
@@ -547,7 +585,7 @@ class EntryEditor extends Component {
                                     />
                                     <label htmlFor={key}>
                                       <Button component="span">
-                                        <img src={item} className={classes.imgPreview} />
+                                        <img src={item.src} className={classes.imgPreview} />
                                       </Button>
                                       <Typography>
                                         {this.props.info.sections.entryFormat.images[key].label}

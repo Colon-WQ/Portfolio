@@ -213,12 +213,14 @@ class Portfolio extends Component {
   handleSelector(selection) {
     const entryType = selection.type;
     const entryStyle = selection.style;
+    console.log(templates[entryType][entryStyle].defaultField);
     const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
     const newEntry = {
       type: entryType,
       style: entryStyle,
       ...fieldsCopy
     };
+    console.log(fieldsCopy)
     const newPages = { ...this.state.pages };
     const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
     currentPage.entries =
