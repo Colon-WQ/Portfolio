@@ -403,14 +403,19 @@ class Portfolio extends Component {
         method: "GET",
         url: process.env.REACT_APP_BACKEND + "/portfolio/" + this.state.portfolio_id,
         withCredentials: true
-      }).then(res => {
+      }).then(async res => {
         console.log("_id updated");
+        console.log(res.data.portfolio);
         this.props.saveCurrentWorkToLocal(res.data.portfolio);
         //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
         //Name is also set.
         this.setState({
           pages: res.data.portfolio.pages
         });
+        console.log(this.state.pages);
+
+        //After _id is fetched, we then update the preview.
+        await this.handleUploadPreview();
       }).catch(err => {
         if (err.response) {
           console.log(err.response.data);
@@ -499,33 +504,66 @@ class Portfolio extends Component {
 
 
   async handleUploadPreview() {
-    console.log("uploading image");
-
-    await html2canvas(document.querySelector("#preview"))
+    await html2canvas(document.querySelector("#preview"), { backgroundColor: null, useCORS: true })
       .then(canvas => {
 
         canvas.toBlob(async blob => {
-          const bodyFormData = new FormData();
-          bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
-          bodyFormData.append('label', "preview");
-          //console.log(bodyFormData.get("file"))
-          await axios({
-            method: "POST",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
-            withCredentials: true,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" }
-          }).then(res => {
-            console.log(res.data.message);
-            console.log(res.data.refs);
-          }).catch(err => {
-            if (err.response) {
-              console.log(err.response.data);
-            } else {
-              console.log(err.message);
-            }
-          })
-        }
+            const bodyFormData = new FormData();
+            bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
+            bodyFormData.append('label', "preview");
+
+            await axios({
+              method: "GET",
+              url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingImage/" + this.state.portfolio_id,
+              withCredentials: true,
+              params: {
+                label: "preview"
+              }
+            }).then(async res => {
+              if (res.data.isExist) {
+                console.log("updating image")
+                await axios({
+                  method: "PUT",
+                  url: process.env.REACT_APP_BACKEND + "/portfolio/updateImage/" + this.state.portfolio_id,
+                  withCredentials: true,
+                  data: bodyFormData,
+                  headers: { "Content-Type": "multipart/form-data" }
+                }).then(res => {
+                  console.log(res.data.message);
+                }).catch(err => {
+                  if (err.response) {
+                    console.log(err.response.data);
+                  } else {
+                    console.log(err.message);
+                  }
+                })
+              } else {
+                console.log("uploading image");
+                await axios({
+                  method: "POST",
+                  url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+                  withCredentials: true,
+                  data: bodyFormData,
+                  headers: { "Content-Type": "multipart/form-data" }
+                }).then(res => {
+                  console.log(res.data.message);
+                  console.log(res.data.refs);
+                }).catch(async err => {
+                  if (err.response) {
+                    console.log(err.response.data);
+                  } else {
+                    console.log(err.message);
+                  }
+                });
+              }
+            }).catch(err => {
+              if (err.response) {
+                console.log(err.response.data);
+              } else {
+                console.log(err.message);
+              }
+            })
+          }
         )
       }).catch(err => {
         console.log(err);
@@ -556,35 +594,32 @@ class Portfolio extends Component {
           })}
         />
 
-        {this.state.currentPage.entries.map((entry, index) => {
-          // Key MUST be unique -> component will be reinitialized if key is different.
-          return (<div id="preview" style={{ display: "flex", flexDirection: "row" }}>
-            <EntryEditor
-              fields={entry}
-              info={templates[entry.type][entry.style].info}
-              onClose={(data, changed) => {
-                this.handleEditorClose(data, changed, index);
-              }}
-              key={`${this.state.currentPath === []
-                ? 'root'
-                : this.state.currentPath[this.state.currentPath.length - 1]
-                }-${index}-${entry.type}-${entry.style}`}
-            />
-            <Fab
-              className={classes.delFAB}
-              onClick={() => this.handleDeleteEntry(index)}>
-              <FaTrash />
-            </Fab>
-            {this.renderEntry(entry)}
-          </div>);
-        })}
+        <div id="preview">
+          {this.state.currentPage.entries.map((entry, index) => {
+            // Key MUST be unique -> component will be reinitialized if key is different.
+            return (<div style={{ display: "flex", flexDirection: "row" }}>
+              <EntryEditor
+                fields={entry}
+                info={templates[entry.type][entry.style].info}
+                onClose={(data, changed) => {
+                  this.handleEditorClose(data, changed, index);
+                }}
+                key={`${this.state.currentPath === []
+                  ? 'root'
+                  : this.state.currentPath[this.state.currentPath.length - 1]
+                  }-${index}-${entry.type}-${entry.style}`}
+              />
+              <Fab
+                data-html2canvas-ignore="true"
+                className={classes.delFAB}
+                onClick={() => this.handleDeleteEntry(index)}>
+                <FaTrash />
+              </Fab>
+              {this.renderEntry(entry)}
+            </div>);
+          })}
+        </div>
         <div className={classes.staticDiv}>
-          <Fab
-            className={classes.controlFAB}
-            onClick={() => this.handleUploadPreview()}
-          >
-            Preview
-          </Fab>
           <Fab
             className={classes.controlFAB}
             onClick={() => console.log(this.handleProduction())}>

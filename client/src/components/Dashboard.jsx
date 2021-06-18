@@ -97,7 +97,8 @@ class Dashboard extends Component {
             changeNameDialogState: false,
             changedName: "",
             file: null,
-            images: null
+            images: {},
+            defaultPreviewSrc: "https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png"
         }
 
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -113,7 +114,7 @@ class Dashboard extends Component {
         this.handleChangePortfolioName = this.handleChangePortfolioName.bind(this);
         this.handleTestUploadImage = this.handleTestUploadImage.bind(this);
         this.onFileChange = this.onFileChange.bind(this);
-        this.handleTestGetImage = this.handleTestGetImage.bind(this);
+        this.handleGetImage = this.handleGetImage.bind(this);
         this.handleDeleteImage = this.handleDeleteImage.bind(this);
         this.handleUpdateImage = this.handleUpdateImage.bind(this);
     }
@@ -133,6 +134,9 @@ class Dashboard extends Component {
             await this.props.repopulate_state(localStorageItem);
         }
         await this.props.fetchPortfolios(this.props.id);
+        
+        this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+        
     }
 
     /**
@@ -401,20 +405,21 @@ class Dashboard extends Component {
     }
 
     //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
-    async handleTestGetImage() {
+    async handleGetImage(portfolio_id) {
+        //console.log("getting images");
         await axios({
             method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + this.state.currentPortfolio_Id,
+            url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + portfolio_id,
             withCredentials: true
         }).then(async res => {
             console.log(res.data.message);
-            console.log("images", res.data.images);
+            //console.log("images", res.data.images);
             const imageRefs = res.data.images;
-            const images = {};
+            const images = this.state.images;
             for (let imageRef of imageRefs) {
                 await axios({
                     method: "GET",
-                    url: process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + this.state.currentPortfolio_Id,
+                    url: process.env.REACT_APP_BACKEND + "/portfolio/getImage/" + portfolio_id,
                     withCredentials: true,
                     responseType: 'blob',
                     params: {
@@ -422,7 +427,7 @@ class Dashboard extends Component {
                     }
                 }).then(res => {
                     console.log(`image ${imageRef.label} fetched`);
-                    images[imageRef.label] = URL.createObjectURL(res.data);
+                    images[portfolio_id + imageRef.label] = URL.createObjectURL(res.data);
                 }).catch(err => {
                     if (err.response) {
                         console.log(err.response.data);
@@ -437,7 +442,7 @@ class Dashboard extends Component {
                 images: images
             });
 
-            console.log(this.state.images);
+            //console.log(this.state.images);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -458,7 +463,12 @@ class Dashboard extends Component {
             }
         }).then(res => {
             console.log(res.data.message);
-            this.handleTestGetImage();
+            const temp = this.state.images;
+            delete temp[this.state.currentPortfolio_Id + label];
+            this.setState({
+                images: temp
+            });
+            this.handleGetImage(this.state.currentPortfolio_Id);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -528,7 +538,7 @@ class Dashboard extends Component {
                                                         </CardContent>
                                                         <CardActions className={classes.cardControls}>
                                                             <Button
-                                                                id={element._id.valueOf()}
+                                                                id={element._id}
                                                                 className={classes.portfolioButton}
                                                                 aria-controls="edit-menu"
                                                                 aria-haspopup="true"
@@ -538,7 +548,7 @@ class Dashboard extends Component {
                                                             </Button>
                                                             <span style={{width: "15vh"}}/>
                                                             <Button 
-                                                                id={element._id.valueOf()}  
+                                                                id={element._id}  
                                                                 className={classes.portfolioButton}
                                                                 onClick={this.handleOpenPortfolio}
                                                             >
@@ -550,7 +560,14 @@ class Dashboard extends Component {
                                                     <CardMedia
                                                         component="img"
                                                         className={classes.cardMedia}
-                                                        src="https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png"
+                                                        height='150'
+                                                        width= '150'
+                                                        src= {this.state.images[element._id + "preview"] === undefined
+                                                            ?
+                                                                this.state.defaultPreviewSrc
+                                                            :
+                                                                this.state.images[element._id + "preview"]
+                                                        }
                                                     />
                                                 </Card>
                                                 
@@ -561,15 +578,6 @@ class Dashboard extends Component {
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
                 <input type="file" onChange={this.onFileChange}></input>
-                {/* <Button onClick={this.handleTestUploadImage} className={classes.portfolioButton}>Test Upload Image</Button>
-                <Button onClick={this.handleTestGetImage} className={classes.portfolioButton}>Test Get Image</Button> */}
-                {this.state.images !== null ?
-                    Object.keys(this.state.images).map(key => 
-                        <img src={this.state.images[key]} height="300"></img>
-                    )
-                    :
-                    <Typography variant="h6" component="h6">Woops no images exist for this portfolio</Typography>
-                }
                 
                 <Menu
                     id="edit-menu"
@@ -584,8 +592,6 @@ class Dashboard extends Component {
                 >
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleDeleteDialogState(true)}>Delete</MenuItem>
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleChangeNameDialogState(true)}>Change Name</MenuItem>
-                    <MenuItem style={{display: 'inline'}} onClick={() => this.handleTestUploadImage("preview")}>Upload Image</MenuItem>
-                    <MenuItem style={{display: 'inline'}} onClick={this.handleTestGetImage}>Get Images</MenuItem>
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleDeleteImage("preview")}>Delete Image</MenuItem>
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleUpdateImage("preview")}>Update Image</MenuItem>
                 </Menu>
