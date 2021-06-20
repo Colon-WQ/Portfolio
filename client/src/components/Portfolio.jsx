@@ -468,25 +468,25 @@ class Portfolio extends Component {
     const fileArray = this.handleCreateFile(this.state.pages);
     let renameArray = [];
     fileArray.map((obj) => {
-      pushableArray.push({
+      renameArray.push({
         fileName: obj.file,
         fileContent: obj.contents
       })
     })
 
-    console.log(Object.keys(directories));
-    console.log("dir", path);
-    if (Object.keys(directories).length !== 0) {
-      for (let key of Object.keys(directories)) {
-        //file path has to be prepended to "key" which is the current directory.
-        recurseDirectories(directories[key], path + "/" + key)
-      }
-    }
+    // console.log(Object.keys(directories));
+    // console.log("dir", path);
+    // if (Object.keys(directories).length !== 0) {
+    //   for (let key of Object.keys(directories)) {
+    //     //file path has to be prepended to "key" which is the current directory.
+    //     recurseDirectories(directories[key], path + "/" + key)
+    //   }
+    // }
 
-    //Need to start this function with the initial path.
-    recurseDirectories(this.state.pages, this.state.pages.directory);
+    // //Need to start this function with the initial path.
+    // recurseDirectories(this.state.pages, this.state.pages.directory);
 
-    return pushableArray;
+    return renameArray;
   }
 
   /**
