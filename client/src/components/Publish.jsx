@@ -54,15 +54,6 @@ const styles = (theme) => ({
  * @component
  */
 class Publish extends Component {
-    // static propTypes = {
-    //     onPublish: PropTypes.func.isRequired,
-    //     fields: PropTypes.shape({
-    //         finalizeDialogState: Proptypes.bool,
-    //         overwriteDialogState: Proptypes.bool,
-    //         entryDisplayIndex: Proptypes.number,
-    //         repositoryName: Proptypes.string
-    //     })
-    // };
 
     /**
      * @constructor
@@ -107,14 +98,17 @@ class Publish extends Component {
      * @memberof Publish
      */
     handleFinalizeDialogOpen() {
+
+        const pushables = this.props.createPushables();
+
         console.log("portfolios are: ");
 
-        for (let obj of this.props.pushables) {
+        for (let obj of pushables) {
             console.log(obj.fileName)
         }
 
         this.setState({
-            repositoryContent: this.props.pushables
+            repositoryContent: pushables
         })
 
         console.log("pushables set")

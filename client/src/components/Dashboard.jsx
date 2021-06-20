@@ -115,7 +115,6 @@ class Dashboard extends Component {
         this.handleDeleteImage = this.handleDeleteImage.bind(this);
     }
 
-
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
      * 
@@ -132,7 +131,6 @@ class Dashboard extends Component {
         await this.props.fetchPortfolios(this.props.id);
         
         this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
-        
     }
 
     /**
@@ -264,9 +262,6 @@ class Dashboard extends Component {
                 console.log(err.message);
             }
         });
-
-        
-    
     }
 
         /**
@@ -381,14 +376,12 @@ class Dashboard extends Component {
 
     //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
     async handleGetImage(portfolio_id) {
-        //console.log("getting images");
         await axios({
             method: "GET",
             url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + portfolio_id,
             withCredentials: true
         }).then(async res => {
             console.log(res.data.message);
-            //console.log("images", res.data.images);
             const imageRefs = res.data.images;
             const images = this.state.images;
             for (let imageRef of imageRefs) {
@@ -414,12 +407,9 @@ class Dashboard extends Component {
                 })
             }
 
-            
             this.setState({
                 images: images
             });
-
-            //console.log(this.state.images);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -430,7 +420,6 @@ class Dashboard extends Component {
     }
 
     async handleDeleteImage(label) {
-        console.log("deleting image");
         await axios({
             method: "DELETE",
             url: process.env.REACT_APP_BACKEND + "/portfolio/deleteImage/" + this.state.currentPortfolio_Id,
