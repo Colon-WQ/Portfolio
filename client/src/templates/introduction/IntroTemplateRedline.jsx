@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
+import { FaGithub } from 'react-icons/fa';
 
 const styles = (theme) => ({
   root: {
@@ -49,16 +50,16 @@ class IntroTemplateRedline extends Component {
   static info = {
     fonts: { titleFont: { label: 'title font' } },
     colours: { primary: { label: 'primary' }, secondary: { label: 'secondary' } },
-    images: { bg: { label: 'Entry background', allowColour: true } },
+    images: { bg: { label: 'Entry background', format: ['image'] } },
     texts: { name: { label: 'Your name' }, status: { label: 'Your current status' } },
     sections: {
       enabled: true,
       defaultEntry: {
-        images: { socialIcon: 'https://bit.ly/3c3wsNL' },
+        images: { socialIcon: { src: () => <FaGithub />, format: 'svg' } },
         texts: { socialLink: 'https://github.com' }
       },
       entryFormat: {
-        images: { socialIcon: { label: 'Icon', allowColour: true } },
+        images: { socialIcon: { label: 'Icon', format: ['svg'] } },
         texts: { socialLink: { label: 'Link' } }
       }
     }
@@ -69,10 +70,10 @@ class IntroTemplateRedline extends Component {
     height: 'fit-content',
     fonts: { titleFont: 'Roboto' },
     colours: { primary: '#dd0000', secondary: '#FFFFFF' },
-    images: { bg: 'https://bit.ly/3gSDGpJ' },
+    images: { bg: { src: 'https://bit.ly/3gSDGpJ', format: 'image' } },
     texts: { name: 'Lorem Ipsum', status: 'Developer' },
     sections: [{
-      images: { socialIcon: 'https://bit.ly/3hXPM2R' },
+      images: { socialIcon: { src: () => <FaGithub />, format: 'svg' } },
       texts: { socialLink: 'https://github.com' }
     }]
   };
@@ -82,7 +83,7 @@ class IntroTemplateRedline extends Component {
     return (
       <div className={classes.root} style={{
         backgroundRepeat: false,
-        backgroundImage: `url("${fields.images.bg}")`,
+        backgroundImage: `url("${fields.images.bg.src}")`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundAttachment: 'fixed',
@@ -120,24 +121,24 @@ class IntroTemplateRedline extends Component {
               marginTop: '5vh'
             }}>
             {fields.sections.map((section, index) => {
+              console.log(section.images.socialIcon)
+              console.log(section.images.socialIcon.src)
+              console.log(section.images.socialIcon.format)
+              const SocialIcon = section.images.socialIcon.src()
               return (
                 <div className={classes.section}>
                   <IconButton
                     onClick={() => window.open(section.texts.socialLink)}
                     className={classes.socialButton}
-                    style={{
-                      backgroundImage: `url(${section.images.socialIcon})`,
-                      backgroundSize: 'cover'
-                    }}
                   >
+                    {<SocialIcon />}
+                    {/* {section.texts.socialLink} */}
                   </IconButton>
                 </div>
               );
             })}
           </div>
         </div>
-
-
       </div>);
   }
 }
