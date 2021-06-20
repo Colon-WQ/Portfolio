@@ -257,7 +257,7 @@ export const upsertPortfolio = async (req, res) => {
                                 //delete attached entry documents first
                                 await Page.findById(obj[key]._id).lean()
                                 .then(async page => {
-                                    for (entryId of page.entries) {
+                                    for (let entryId of page.entries) {
                                         await Entry.findByIdAndDelete(entryId).then(deletedEntry => console.log(`${deletedEntry._id} entry deleted`)).catch(err => console.log(err));
                                     }
                                 }).catch(err => console.log(err));
