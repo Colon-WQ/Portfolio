@@ -255,9 +255,15 @@ export const upsertPortfolio = async (req, res) => {
                             if (!incomingPageIds.has(obj[key]._id.toHexString())) {
                                 //What lean() does is that it returns a plain JS object and not a mongoose document.
                                 //delete attached entry documents first
+
+                                console.log(obj[key]._id.toHexString() + " page is no longer needed");
+
                                 await Page.findById(obj[key]._id).lean()
                                 .then(async page => {
-                                    for (entryId of page.entries) {
+
+                                    console.log("unnecessary page deleted", page)
+                                    console.log("beginning deletion of entries", page.entries)
+                                    for (let entryId of page.entries) {
                                         await Entry.findByIdAndDelete(entryId).then(deletedEntry => console.log(`${deletedEntry._id} entry deleted`)).catch(err => console.log(err));
                                     }
                                 }).catch(err => console.log(err));
