@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import { FaGithub } from 'react-icons/fa';
+import * as icons from '../../styles/icons';
 
 const styles = (theme) => ({
   root: {
@@ -55,11 +56,11 @@ class IntroTemplateRedline extends Component {
     sections: {
       enabled: true,
       defaultEntry: {
-        images: { socialIcon: { src: () => <FaGithub />, format: 'svg' } },
+        images: { socialIcon: { src: 'fa/FaGithub', format: 'icon' } },
         texts: { socialLink: 'https://github.com' }
       },
       entryFormat: {
-        images: { socialIcon: { label: 'Icon', format: ['svg'] } },
+        images: { socialIcon: { label: 'Icon', format: ['image', 'icon'] } },
         texts: { socialLink: { label: 'Link' } }
       }
     }
@@ -73,7 +74,7 @@ class IntroTemplateRedline extends Component {
     images: { bg: { src: 'https://bit.ly/3gSDGpJ', format: 'image' } },
     texts: { name: 'Lorem Ipsum', status: 'Developer' },
     sections: [{
-      images: { socialIcon: { src: () => <FaGithub />, format: 'svg' } },
+      images: { socialIcon: { src: 'fa/FaGithub', format: 'icon' } },
       texts: { socialLink: 'https://github.com' }
     }]
   };
@@ -121,10 +122,13 @@ class IntroTemplateRedline extends Component {
               marginTop: '5vh'
             }}>
             {fields.sections.map((section, index) => {
-              console.log(section.images.socialIcon)
-              console.log(section.images.socialIcon.src)
-              console.log(section.images.socialIcon.format)
-              const SocialIcon = section.images.socialIcon.src()
+              let SocialIcon;
+              if (section.images.socialIcon.format === 'icon') {
+                const category = section.images.socialIcon.src.split('/');
+                SocialIcon = icons[category[0]].icons[category[1]];
+              } else {
+                SocialIcon = <img src={section.images.socialIcon.src} />;
+              }
               return (
                 <div className={classes.section}>
                   <IconButton
@@ -132,7 +136,6 @@ class IntroTemplateRedline extends Component {
                     className={classes.socialButton}
                   >
                     {<SocialIcon />}
-                    {/* {section.texts.socialLink} */}
                   </IconButton>
                 </div>
               );
