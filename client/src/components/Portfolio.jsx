@@ -91,7 +91,6 @@ class Portfolio extends Component {
       },
       currentPage: undefined,
       currentPath: [],
-      pushables: [],
       // dirTree: {
       //   directory: 'root',
       //   id: "root_mongo_id",
@@ -273,9 +272,16 @@ class Portfolio extends Component {
     if (entries === []) return [];
 
     // removes 'root' placeholder
-    const directory = `${page.directory.substring(4)}/`;
+    // const directory = `${page.directory.substring(4)}/`;
+    // const images = [];
+    // console.log(entries);
+
+    const directory = page.directory === "root"
+      ? ''
+      : `${page.directory.substring(5)}/`;
     const images = [];
-    console.log(entries);
+    console.log(JSON.stringify(entries));
+
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
       let dupeEntry = copy[idx];
@@ -448,6 +454,8 @@ class Portfolio extends Component {
     })
   }
 
+
+
   /**
    * A function to generate all files needed to be pushed to github.
    * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
@@ -456,21 +464,29 @@ class Portfolio extends Component {
     //this saves the portfolio to mongoDB
     await this.handleSavePortfolio();
 
-    let pushableArray = this.handleCreateFile(this.state.pages);
-    console.log(this.state.pages);
-    // Object.entries(this.state.pages).map(([key, page]) => {
-    //   const fileArray = this.handleCreateFile(page);
-    //   for (let obj of fileArray) {
-    //     pushableArray.push({
-    //       fileName: obj.file,
-    //       fileContent: obj.contents
-    //     })
-    //   }
-    // });
 
-    this.setState({
-      pushables: pushableArray
+    const fileArray = this.handleCreateFile(this.state.pages);
+    let renameArray = [];
+    fileArray.map((obj) => {
+      pushableArray.push({
+        fileName: obj.file,
+        fileContent: obj.contents
+      })
     })
+
+    console.log(Object.keys(directories));
+    console.log("dir", path);
+    if (Object.keys(directories).length !== 0) {
+      for (let key of Object.keys(directories)) {
+        //file path has to be prepended to "key" which is the current directory.
+        recurseDirectories(directories[key], path + "/" + key)
+      }
+    }
+
+    //Need to start this function with the initial path.
+    recurseDirectories(this.state.pages, this.state.pages.directory);
+
+    return pushableArray;
   }
 
   /**
@@ -634,7 +650,7 @@ class Portfolio extends Component {
         <div className={classes.staticDiv}>
           <Fab
             className={classes.controlFAB}
-            onClick={() => console.log(this.handleProduction())}>
+            onClick={() => console.log(this.handleSavePortfolio())}>
             <FaSave />
           </Fab>
           <TemplateSelector
@@ -650,7 +666,7 @@ class Portfolio extends Component {
             dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
-          <Publish pushables={this.state.pushables} />
+          <Publish createPushables={this.handleProduction} />
         </div>
       </div>);
   }
