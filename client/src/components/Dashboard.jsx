@@ -96,7 +96,6 @@ class Dashboard extends Component {
             deleteDialogState: false,
             changeNameDialogState: false,
             changedName: "",
-            file: null,
             images: {},
             defaultPreviewSrc: "https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png"
         }
@@ -112,13 +111,9 @@ class Dashboard extends Component {
         this.handleDeleteDialogState = this.handleDeleteDialogState.bind(this);
         this.handleChangeNameDialogState = this.handleChangeNameDialogState.bind(this);
         this.handleChangePortfolioName = this.handleChangePortfolioName.bind(this);
-        this.handleTestUploadImage = this.handleTestUploadImage.bind(this);
-        this.onFileChange = this.onFileChange.bind(this);
         this.handleGetImage = this.handleGetImage.bind(this);
         this.handleDeleteImage = this.handleDeleteImage.bind(this);
-        this.handleUpdateImage = this.handleUpdateImage.bind(this);
     }
-
 
     /**
      * Attempts to fetch user details and logged in status from localStorage after component is rendered.
@@ -136,7 +131,6 @@ class Dashboard extends Component {
         await this.props.fetchPortfolios(this.props.id);
         
         this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
-        
     }
 
     /**
@@ -268,9 +262,6 @@ class Dashboard extends Component {
                 console.log(err.message);
             }
         });
-
-        
-    
     }
 
         /**
@@ -287,6 +278,17 @@ class Dashboard extends Component {
         }).then(async res => {
             console.log(res.data.message);
             await this.props.fetchPortfolios(this.props.id);
+
+            //deletes all images related to said portfolio
+            for (let key of Object.keys(this.state.images[this.state.currentPortfolio_Id])) {
+                await this.handleDeleteImage(key);
+            }
+
+            const temp = this.state.images;
+            delete temp[this.state.currentPortfolio_Id];
+            this.setState({
+                images: temp
+            })
 
         }).catch(err => {
             if (err.response) {
@@ -373,47 +375,13 @@ class Dashboard extends Component {
     }
 
     //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
-    //label set to preview for testing only.
-    async handleTestUploadImage(label) {
-        console.log("uploading image");
-        
-        const bodyFormData = new FormData();
-        bodyFormData.append('file', this.state.file);
-        bodyFormData.append('label', label);
-        console.log(bodyFormData.get("file"))
-        await axios({
-            method: "POST",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.currentPortfolio_Id,
-            withCredentials: true,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" }
-        }).then(res => {
-            console.log(res.data.message);
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
-        })
-    }
-
-    onFileChange(event) {
-        this.setState({
-            file: event.target.files[0]
-        })
-    }
-
-    //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
     async handleGetImage(portfolio_id) {
-        //console.log("getting images");
         await axios({
             method: "GET",
             url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + portfolio_id,
             withCredentials: true
         }).then(async res => {
             console.log(res.data.message);
-            //console.log("images", res.data.images);
             const imageRefs = res.data.images;
             const images = this.state.images;
             for (let imageRef of imageRefs) {
@@ -427,7 +395,9 @@ class Dashboard extends Component {
                     }
                 }).then(res => {
                     console.log(`image ${imageRef.label} fetched`);
-                    images[portfolio_id + imageRef.label] = URL.createObjectURL(res.data);
+                    const temp = {};
+                    temp[imageRef.label] = URL.createObjectURL(res.data);
+                    images[portfolio_id] = temp;
                 }).catch(err => {
                     if (err.response) {
                         console.log(err.response.data);
@@ -437,12 +407,9 @@ class Dashboard extends Component {
                 })
             }
 
-            
             this.setState({
                 images: images
             });
-
-            //console.log(this.state.images);
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -453,7 +420,6 @@ class Dashboard extends Component {
     }
 
     async handleDeleteImage(label) {
-        console.log("deleting image");
         await axios({
             method: "DELETE",
             url: process.env.REACT_APP_BACKEND + "/portfolio/deleteImage/" + this.state.currentPortfolio_Id,
@@ -463,35 +429,14 @@ class Dashboard extends Component {
             }
         }).then(res => {
             console.log(res.data.message);
-            const temp = this.state.images;
-            delete temp[this.state.currentPortfolio_Id + label];
-            this.setState({
-                images: temp
-            });
-            this.handleGetImage(this.state.currentPortfolio_Id);
-        }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
+            const temp = this.state.images
+            const tempPortfolioImages = temp[this.state.currentPortfolio_Id];
+            if (tempPortfolioImages !== undefined) {
+                delete tempPortfolioImages[label];
+                this.setState({
+                    images: temp
+                });
             }
-        });
-    }
-
-    async handleUpdateImage(label) {
-        console.log("updating image");
-        const bodyFormData = new FormData();
-        bodyFormData.append("file", this.state.file);
-        bodyFormData.append("label", label);
-        await axios({
-            method: "PUT",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/updateImage/" + this.state.currentPortfolio_Id,
-            withCredentials: true,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" }
-        }).then(res => {
-            console.log(res.data.message);
-            this.handleTestGetImage();
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -562,11 +507,15 @@ class Dashboard extends Component {
                                                         className={classes.cardMedia}
                                                         height='150'
                                                         width= '150'
-                                                        src= {this.state.images[element._id + "preview"] === undefined
+                                                        src= {this.state.images[element._id] === undefined
                                                             ?
                                                                 this.state.defaultPreviewSrc
                                                             :
-                                                                this.state.images[element._id + "preview"]
+                                                                this.state.images[element._id]["preview"] === undefined
+                                                                ?
+                                                                    this.state.defaultPreviewSrc
+                                                                :
+                                                                    this.state.images[element._id]["preview"]
                                                         }
                                                     />
                                                 </Card>
@@ -577,7 +526,6 @@ class Dashboard extends Component {
                 </Grid>
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
-                <input type="file" onChange={this.onFileChange}></input>
                 
                 <Menu
                     id="edit-menu"
@@ -592,8 +540,6 @@ class Dashboard extends Component {
                 >
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleDeleteDialogState(true)}>Delete</MenuItem>
                     <MenuItem style={{display: 'inline'}} onClick={() => this.handleChangeNameDialogState(true)}>Change Name</MenuItem>
-                    <MenuItem style={{display: 'inline'}} onClick={() => this.handleDeleteImage("preview")}>Delete Image</MenuItem>
-                    <MenuItem style={{display: 'inline'}} onClick={() => this.handleUpdateImage("preview")}>Update Image</MenuItem>
                 </Menu>
                 <Dialog
                     open={this.state.nameDialogState}

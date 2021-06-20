@@ -10,93 +10,57 @@ import connect from '../server.js';
 
 const router = express.Router();
 
+//standard error handling. Note: still need to return this function
+const handleErrors = (response, err, message) => {
+    console.log(err);
+    if (message === null) {
+        return response.status(400).send("error encountered");
+    } else {
+        return response.status(400).send(message);
+    }
+}
+
+//standard success handling. Note: still need to return this function
+const handleSuccess = (response, log, data) => {
+    console.log(log);
+    return response.status(200).json(data);
+}
+
 /**
  * String of objectId of portfolio required. Get using objectId.toHexString()
  */
 export const getPortfolio = async (req, res) => {
     const portfolio_id = req.params.id;
-    //console.log(portfolio_id);
 
     await Portfolio.findById(portfolio_id).lean().populate({ path: "pages", populate: { path: 'entries' }})
     .then(async portfolio => {
         
         const deepPopulate = async (currPage) => {
-            
             for (let key of Object.keys(currPage.directories)) {
                 console.log(key)
                 const page = await Page.findById(currPage.directories[key]).lean().populate("entries");
                 currPage.directories[key] = page;
                 await deepPopulate(page);
             }
-            
         }
 
         await deepPopulate(portfolio.pages);
 
-        console.log(portfolio)
-
-        return res.status(200).json({ portfolio: portfolio });
+        return handleSuccess(res, portfolio, { portfolio: portfolio });
     }).catch(err => {
-        console.log(err)
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     });
-
-    // await Portfolio.findById(portfolio_id).populate({ 
-    //     path: "pages", 
-    //     populate: [
-    //         { path: 'entries' }, 
-    //         { path: 'directories.$*', 
-    //             populate: [
-    //                 {path: 'entries'}, 
-    //                 {path: 'directories.$*',
-    //                     populate: [
-    //                         {path: 'entries'},
-    //                         {path: 'directories.$*'}
-    //                     ]
-    //                 }
-    //             ]
-    //         }
-    //     ] 
-    // }).then(portfolio => {
-    //     if (portfolio == null) {
-    //         return res.status(404).send("portfolio _id not found");
-    //     } else {
-    //         console.log("portfolio found. Pages populated");
-            
-    //         // const enumerateDirectories = (directories) => {
-    //         //     console.log(directories)
-    //         //     console.log(Object.keys(directories))
-    //         //     console.log(directories.get("test"))
-    //         //     for (let key of Object.keys(directories)) {
-    //         //         console.log(key, directories.get(key).directories)
-    //         //         enumerateDirectories(directories.get(key).directories);
-    //         //     }
-    //         // }
-
-    //         // enumerateDirectories(portfolio.pages.directories);
-            
-            
-            
-    //         return res.status(200).json({ portfolio: portfolio });
-    //     }
-    // }).catch(err => {
-    //     console.log(err);
-    //     return res.status(400).send("error encountered");
-    // })
 }
 
 export const updatePortfolio = async (req, res) => {
     const portfolio = req.body.portfolio;
     await Portfolio.findByIdAndUpdate(portfolio._id, portfolio)
-    .then(update => {
-        console.log("portfolio updated");
-        return res.status(200).json({ message: "portfolio updated" });
+    .then(() => {
+        return handleSuccess(res, "portfolio updated", { message: "portfolio updated" });
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
 }
-
 
 /**
  * THIS IS IDEALLY FOR THE SAVE BUTTON WITHIN EACH PORTFOLIO.
@@ -116,7 +80,7 @@ export const upsertPortfolio = async (req, res) => {
     const requestPortfolio = req.body.portfolio;
 
     if (requestPortfolio.name === "") {
-        return res.status(400).send("Portfolio Name cannot be empty");
+        return handleErrors(res, err, "Portfolio Name cannot be empty");
     }
 
     const user = new User({
@@ -131,13 +95,13 @@ export const upsertPortfolio = async (req, res) => {
             if (isExist === null) {
                 user.isNew = true;
             } else {
-                console.log("User already exists", isExist.portfolios);
+                //console.log("User already exists");
                 user.isNew = false;
                 user.portfolios = isExist.portfolios;
             }
         }
     ).catch(err => {
-        console.log(err);
+        return handleErrors(res, err, null);
     })
 
     const portfolio = new Portfolio({
@@ -155,14 +119,13 @@ export const upsertPortfolio = async (req, res) => {
             if (isExist === null) {
                 portfolio._id = new mongoose.Types.ObjectId();
                 portfolio.isNew = true;
-                //This ensures that the portfolios ref array in user is the same, with the newest portfolio pushed in.
+                //This is allowed since original array is empty to begin with.
                 user.portfolios.push(portfolio._id);
             } else {
-                return res.status(400).send("Duplicate Portfolio Name Chosen");
+                return handleErrors(res, err, "Duplicate Portfolio Name Chosen");
             }
         }).catch(err => {
-            console.log(err);
-            return res.status(400).send(err);
+            return handleErrors(res, err, null);
         })
         
     } else {
@@ -187,8 +150,6 @@ export const upsertPortfolio = async (req, res) => {
 
                 //add all incoming page ids into a set
                 const incomingPageIds = new Set();
-                console.log("incoming", requestPortfolio.pages.directories);
-                console.log("incoming keys", Object.keys(requestPortfolio.pages.directories));
 
                 /**
                  * CollectIncoming recursively collects page ids from (nested?) directories map and places them in a Set.
@@ -198,6 +159,7 @@ export const upsertPortfolio = async (req, res) => {
                     if (Object.keys(obj).length !== 0) {
                         for (let key of Object.keys(obj)) {
                             
+                            //handle object or string _ids.
                             if (obj[key]._id !== undefined) {
                                 if (typeof obj[key]._id === "object") {
                                     incomingPageIds.add(obj[key]._id.toHexString());
@@ -216,7 +178,7 @@ export const upsertPortfolio = async (req, res) => {
 
                 collectIncoming(requestPortfolio.pages.directories);
 
-                console.log(incomingPageIds);
+                console.log("incoming page ids", incomingPageIds);
 
                 //What lean() does is that it returns a plain JS object and not a mongoose document.
                 //Gets the existing directories of the root page to start off recursive process on.
@@ -224,12 +186,12 @@ export const upsertPortfolio = async (req, res) => {
                 .then(page => {
                     return page.directories;
                 }).catch(err => {
-                    console.log(err);
-                    return res.status(400).send("error encountered");
+                    return handleErrors(res, err, null)
                 })
                 
                 //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map if lean() is not used.
                 //Furthermore, you cannot access properties not declared in schema
+
                 /**
                  * collectExisting fetches from mongodb each subsequent nested directories if any and checks if the pages that they are
                  * referencing should be deleted by comparing with the Set formed above ^.
@@ -242,11 +204,10 @@ export const upsertPortfolio = async (req, res) => {
                             let directories = await Page.findById(obj[key]._id).lean()
                             .then(page => {
                                 //TODO: DEVELOP LOGIC TO HANDLE IF PAGE THAT'S SUPPOSED TO EXIST DOES NOT IN FACT EXIST.
-                                if (!page) return res.status(400).send("error encountered");
+                                if (!page) return handleErrors(res, err, null);
                                 return page.directories;
                             }).catch(err => {
-                                console.log(err);
-                                return res.status(400).send("error encountered");
+                                return handleErrors(res, err, null);
                             })
 
                             await collectExisting(directories);
@@ -257,12 +218,20 @@ export const upsertPortfolio = async (req, res) => {
                                 //delete attached entry documents first
                                 await Page.findById(obj[key]._id).lean()
                                 .then(async page => {
-                                    for (entryId of page.entries) {
-                                        await Entry.findByIdAndDelete(entryId).then(deletedEntry => console.log(`${deletedEntry._id} entry deleted`)).catch(err => console.log(err));
+                                    for (let entryId of page.entries) {
+                                        await Entry.findByIdAndDelete(entryId)
+                                        .then(deletedEntry => console.log(`${deletedEntry._id} entry deleted`))
+                                        .catch(err => console.log(err));
                                     }
-                                }).catch(err => console.log(err));
+                                }).catch(err => {
+                                    return handleErrors(res, err, null);
+                                });
                                 //Then delete the page document
-                                await Page.findByIdAndDelete(obj[key]._id).then(deletedPage => console.log(`${deletedPage._id} page deleted`)).catch(err => console.log(err));
+                                await Page.findByIdAndDelete(obj[key]._id)
+                                .then(deletedPage => console.log(`${deletedPage._id} page deleted`))
+                                .catch(err => {
+                                    return handleErrors(res, err, null);
+                                });
                             }
                             
                         }
@@ -273,11 +242,10 @@ export const upsertPortfolio = async (req, res) => {
 
             }
         }).catch(err => {
-            console.log(err);
+            return handleErrors(res, err, null);
         })
         
     }
-
 
     //page documents are stored in pages in the KVP form ===> page._id + page.directory : [page document, [entry documents...]]
     //E.g. the root page will be stored as 123456789012/ : [root page document, [entry documents for root page]]
@@ -289,7 +257,6 @@ export const upsertPortfolio = async (req, res) => {
     //store existing entries
     const existingEntries = [];
 
-    
     /**
      * upsertPage will execute in 3 phases.
      * 
@@ -311,6 +278,7 @@ export const upsertPortfolio = async (req, res) => {
 
         //new entries array for requestPage for ids
         const entries = [];
+
         //new array for entry objs to be saved.
         const entryObjs = [];
 
@@ -333,18 +301,13 @@ export const upsertPortfolio = async (req, res) => {
                 page.isNew =  false;
                 page.entries = [];
 
-                
-
                 //Compare and remove unnecessary existing entries. This prevents orphaned entry documents.
                 for (let requestEntry of requestPage.entries) {
                     if (requestEntry._id !== undefined) {
+                        //handle object or string _ids.
                         if (typeof requestEntry._id === "string") {
-                            //It would seem that requestEntry._id here is already a string.
-                            console.log(requestEntry._id + " added to incoming entries set");
                             incomingEntries.add(requestEntry._id);
                         } else {
-                            //But in the off case that it is not, convert it to string.
-                            console.log(requestEntry._id.toHexString() + " added to incoming entries set");
                             incomingEntries.add(requestEntry._id.toHexString());
                         }
                         
@@ -354,7 +317,9 @@ export const upsertPortfolio = async (req, res) => {
                 for (let existingEntry of isExist.entries) {
                     existingEntries.push(existingEntry._id.toHexString());
                 }
-            }).catch(err => console.log(err));
+            }).catch(err => {
+                return handleErrors(res, err, null);
+            });
         }
 
         //regardless of new or not, need to set up entry objects either for updating or saving.
@@ -395,10 +360,8 @@ export const upsertPortfolio = async (req, res) => {
     const rootPage_id = await upsertPage(requestPortfolio.pages);
     portfolio.pages = rootPage_id;
 
-    
     //recursePages takes the _id of the parent page document to allow the _id of child page documents to be added to parent page's directories map.
     const recursePages = async (obj, prev_id) => {
-        console.log("recurse", obj.directories);
         const directories = obj.directories
         if (Object.keys(directories).length !== 0) {
 
@@ -410,14 +373,12 @@ export const upsertPortfolio = async (req, res) => {
                 //parentDir is the directory of the prev page
                 const parentDir = obj.directory;
                 const parentKey = prev_id + parentDir;
+
                 //childDir is the directory of this current page.
                 const childDir = directories[key].directory;
                 const childKey = current_id + childDir;
-                //
                 
                 pages[parentKey][0].directories.set(childDir, pages[childKey][0]._id);
-                // pages[parentKey][0].directories[childDir] = pages[childKey][0];
-                console.log("directory added " + childDir + " : " + pages[childKey][0]._id);
 
                 await recursePages(directories[key], current_id);
             }
@@ -425,11 +386,10 @@ export const upsertPortfolio = async (req, res) => {
         }
     }
 
-
     //go thru all directories in all related page documents.
     await recursePages(requestPortfolio.pages, rootPage_id);
 
-    
+    console.log("incomingEntries:", incomingEntries);
     //Need to clean up entries here
     for (let entryId of existingEntries) {
         if (!incomingEntries.has(entryId)) {
@@ -448,13 +408,10 @@ export const upsertPortfolio = async (req, res) => {
         console.log("directories", pages[key][0].directories);
     }
 
-    
     await user.save()
     .then(async () => {   
         await portfolio.save()
         .then(async () => {
-
-            // for (let page of pages) {
             for (let key of Object.keys(pages)) {
 
                 const page = pages[key];
@@ -471,20 +428,18 @@ export const upsertPortfolio = async (req, res) => {
                         });
                     }
 
-                    
                 }).catch(err => {
-                    return res.status(400).send(err);
+                    return handleErrors(res, err, null);
                 })
             }
         }).catch(err => {
-            return res.status(400).send(err);      
+            return handleErrors(res, err, null);  
         })
-
     }).catch(err => {
-        return res.status(400).send(err);
+        return handleErrors(res, err, null);
     })
 
-    return res.status(200).json({ message: "user created and portfolio created for user.", _id: portfolio._id });
+    return handleSuccess(res, "portfolio created successfully", { message: "user created and portfolio created for user.", _id: portfolio._id });
 }
 
 /**
@@ -499,8 +454,7 @@ export const getPortfolios = async (req, res) => {
             console.log("user id not found");
             return res.status(404).send("User id not found");
         } else {
-            console.log("user portfolios found");
-            console.log(user.portfolios);
+            console.log("user portfolios found", user.portfolios);
             return res.status(200).json({ portfolios: user.portfolios });
         }
     }).catch(err => {
@@ -522,7 +476,6 @@ export const deletePortfolio = async (req, res) => {
 
         await User.findById(deletedPortfolio.user)
         .then(async (user) => {
-            console.log(id)
             console.log(user.portfolios)
             const temp = [];
             for (let portfolioId of user.portfolios) {
@@ -579,13 +532,11 @@ export const deletePortfolio = async (req, res) => {
 
         return res.status(200).json({ message: `Successfully deleted Portfolio by id ${id}` });
         
-
     }).catch(err => {
         console.log(err)
         return res.status(400).send("error encountered");
     })
 
-    
 }
 
 export const checkExistingImage = async (req, res) => {
@@ -593,17 +544,14 @@ export const checkExistingImage = async (req, res) => {
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: req.query.label })
     .then(async image => {
         if (image) {
-            return res.status(200).json({isExist: true});
+            return handleSuccess(res, "existing image label found", { isExist: true });
         } else {
-            return res.status(200).json({isExist: false});
+            return handleSuccess(res, "existing image label not found", { isExist: false });
         }
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
 }
-
-
 
 /**
  * Should take in id as a string from url params.
@@ -616,11 +564,12 @@ export const postImage = async (req, res) => {
     //Check if image exists already
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: req.body.label })
     .then(async image => {
-        if (image) return res.status(400).send("image with same label already exists");
+        if (image) return handleErrors(res, err, "image with same label already exists");
+
         //Check if portfolio exists. There could be an error with delete.
         await Portfolio.findById(portfolioId)
         .then(portfolio => {
-            if (!portfolio) return res.status(400).send(`portfolio ${portfolioId} does not exist`);
+            if (!portfolio) return handleErrors(res, err, `portfolio ${portfolioId} does not exist`);
             const newImage = new Image({
                 _id: new mongoose.Types.ObjectId(),
                 label: req.body.label,
@@ -632,7 +581,7 @@ export const postImage = async (req, res) => {
             newImage.save()
             .then(async image => {
                 const images = portfolio.images;
-                if (images.filter(img => img == image._id).length !== 0) return res.status(400).send("duplicate image objectId")
+                if (images.filter(img => img == image._id).length !== 0) return handleErrors(res, err, "duplicate image objectId");
 
                 const imagesCopy = [...images];
 
@@ -642,26 +591,22 @@ export const postImage = async (req, res) => {
                 //save when called on a document will instead update if changes are made.
                 await portfolio.save()
                 .then(saved => {
-                    return res.status(200).json({ message: `image with label: ${req.body.label} has been successfully saved with portfolio image refs updated accordingly`,
+                    return handleSuccess(res, "image saved successfully", { 
+                        message: `image with label: ${req.body.label} has been successfully saved with portfolio image refs updated accordingly`,
                         refs: saved.images
-                    })
+                    });
                 }).catch(err => {
-                    console.log(err);
-                    return res.status(400).send("error encountered");
+                    return handleErrors(res, err, null);
                 })
 
-                
             }).catch(err => {
-                console.log(err);
-                return res.status(400).send("error encountered");
+                return handleErrors(res, err, null);
             })
         }).catch(err => {
-            console.log(err);
-            return res.status(400).send("error encountered");
+            return handleErrors(res, err, null);
         })       
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
 }
 
@@ -677,7 +622,7 @@ export const updateImage = async (req, res) => {
     const label = req.body.label;
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label})
     .then(async image => {
-        if (!image) return res.status(404).send(`image with label ${label} does not exist`);
+        if (!image) return handleErrors(res, err, `image with label ${label} does not exist`);
         const fileIdToDelete = image.fileId;
         //Need to first delete the currently stored file
         await gfs.delete(new mongoose.Types.ObjectId(fileIdToDelete))
@@ -689,21 +634,17 @@ export const updateImage = async (req, res) => {
             image.filename = req.file.filename;
             await image.save()
             .then(() => {
-                return res.status(200).json({ message: `successfully updated file for image with label ${label}`})
+                return handleSuccess(res, "image updated successfully", { message: `successfully updated file for image with label ${label}` });
             }).catch(err => {
-                
-                return res.status(400).send("error encountered");
+                return handleErrors(res, err, null);
             })
 
         }).catch(err => {
-            
-            return res.status(400).send("error encountered");
+            return handleErrors(res, err, null);
         })
 
-        
     }).catch(err => {
-        
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
 }
 
@@ -720,32 +661,27 @@ export const getImage = async (req, res) => {
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
     .then(image => {
         if (!image) {
-            return res.status(404).send("image with label could not be found for the requested portfolio");
+            return handleErrors(res, err, "image with label could not be found for the requested portfolio");
         } else {
             gfs.find({ _id: new mongoose.Types.ObjectId(image.fileId) }).toArray()
             .then(files => {
-                if (files[0] === null || files.length === 0) return res.status(400).send("error encountered");
+                if (files[0] === null || files.length === 0) return handleErrors(res, err, "file does not exist");
 
                 const file = files[0];
     
                 if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
                     gfs.openDownloadStream(file._id).pipe(res);
-                    // const readStream = gfs.createReadStream(file._id);
-                    // readStream.pipe(res);
                 } else {
-                    return res.status(200).json({ file: file, message: "not an image" });
+                    return handleSuccess(res, "file retrieved successfully", { file: file, message: "not an image" });
                 }
-                
             }).catch(err => {
-                console.log(err);
-                return res.status(400).send("error encountered");
+                return handleErrors(res, err, null);
             })
         }
+
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
-    
     
 }
 
@@ -756,11 +692,10 @@ export const getImages = async (req, res) => {
 
     await Portfolio.findById(portfolioId).populate("images")
     .then(portfolio => {
-        if (!portfolio) return res.status(404).send("portfolio does not exist");
-        return res.status(200).json({ message: "successfully fetched images ref array", images: portfolio.images })
+        if (!portfolio) return handleErrors(res, err, "portfolio does not exist");
+        return handleSuccess(res, "images ref array retrieved successfully", { message: "successfully fetched images ref array", images: portfolio.images });
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
 
 }
@@ -795,32 +730,28 @@ export const deleteImage = async (req, res) => {
                     
                     await portfolio.save()
                     .then(() => {
-                        return res.status(200).json({ message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` });
+                        return handleSuccess(res, "image deleted successfully", { 
+                            message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` 
+                        });
                     }).catch(err => {
-                        console.log(err);
-                        return res.status(400).send("error encountered");
+                        return handleErrors(res, err, null);
                     })
                     
                 }).catch(err => {
-                    console.log(err);
-                    return res.status(400).send("error encountered");
+                    return handleErrors(res, err, null);
                 })
 
             }).catch(err => {
-                console.log(err);
-                return res.status(400).send("error encountered");
+                return handleErrors(res, err, null);
             })
 
         }).catch(err => {
-            console.log(err);
-            return res.status(400).send("error encountered");
+            return handleErrors(res, err, null);
         })
 
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, err, null);
     })
 }
-
 
 export default router;
