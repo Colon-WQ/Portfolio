@@ -212,14 +212,12 @@ class Portfolio extends Component {
   handleSelector(selection) {
     const entryType = selection.type;
     const entryStyle = selection.style;
-    console.log(templates[entryType][entryStyle].defaultField);
-    const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField))
+    const fieldsCopy = JSON.parse(JSON.stringify(templates[entryType][entryStyle].defaultField));
     const newEntry = {
       type: entryType,
       style: entryStyle,
       ...fieldsCopy
     };
-    console.log(fieldsCopy)
     const newPages = { ...this.state.pages };
     const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
     currentPage.entries =
@@ -267,22 +265,29 @@ class Portfolio extends Component {
    * @returns {(Map|Array)} An array of maps containing the relative paths to each file and their contents.
    * 
    */
-  handleCreateFile(entries, dir) {
+  handleCreateFile(page) {
     // Allow users to create empty pages so they can create their own pages
+    const entries = page.entries;
+    console.log(page);
     if (entries === []) return [];
 
     // removes 'root' placeholder
-    const directory = dir === "root" 
+    // const directory = `${page.directory.substring(4)}/`;
+    // const images = [];
+    // console.log(entries);
+
+    const directory = page.directory === "root"
       ? ''
-      : `${dir.substring(5)}/`;
+      : `${page.directory.substring(5)}/`;
     const images = [];
     console.log(JSON.stringify(entries));
+
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
       let dupeEntry = copy[idx];
       Object.entries(dupeEntry.images).map(([key, item]) => {
-        if (item.startsWith('data:image/')) {
-          const split = item.split(',');
+        if (item.format === 'image' && item.src.startsWith('data:image/')) {
+          const split = item.src.split(',');
           const fileType = split[0].substring(11, split[0].indexOf(';'));
           const baseContent = split[1];
           console.log(baseContent);
@@ -298,8 +303,8 @@ class Portfolio extends Component {
       for (let s_idx = 0; s_idx < dupeEntry.sections.length; s_idx++) {
         let dupeSection = dupeEntry.sections[s_idx];
         Object.entries(dupeSection.images).map(([key, item]) => {
-          if (item.startsWith('data:image/')) {
-            const split = item.split(',');
+          if (item.format === 'image' && item.src.startsWith('data:image/')) {
+            const split = item.src.split(',');
             const fileType = split[0].substring(11, split[0].indexOf(';'));
             const baseContent = split[1];
             const size = baseContent.length * 3 / 4 - baseContent.split('=')
@@ -348,7 +353,7 @@ class Portfolio extends Component {
       .map((entry, index) => templates[entry.type][entry.style].script(index))
       .filter(Boolean).join('\n'));
 
-    const files = [
+    let files = [
       ...images,
       {
         file: `${directory}scripts.js`,
@@ -363,6 +368,14 @@ class Portfolio extends Component {
         contents: css
       }
     ]
+
+    // inefficient code, might be able to optimise
+    Object.values(page.directories).map((value) => {
+      console.log(value);
+      const fileArray = this.handleCreateFile(value);
+      files = files.concat(fileArray);
+    })
+    console.log(files);
     // TODO: remove for deployment
     files.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     return files;
@@ -441,42 +454,39 @@ class Portfolio extends Component {
     })
   }
 
-  
+
 
   /**
    * A function to generate all files needed to be pushed to github.
    * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
    */
-  handleProduction() {
-    console.log(this.state.pages);
-    let pushableArray = [];
+  async handleProduction() {
+    //this saves the portfolio to mongoDB
+    await this.handleSavePortfolio();
 
-    const recurseDirectories = (page, path) => {
-      
-      const directories = page.directories;
 
-      const fileArray = this.handleCreateFile(page.entries, path);
-      for (let obj of fileArray) {
-        pushableArray.push({
-          fileName: obj.file,
-          fileContent: obj.contents
-        })
-      }
+    const fileArray = this.handleCreateFile(this.state.pages);
+    let renameArray = [];
+    fileArray.map((obj) => {
+      renameArray.push({
+        fileName: obj.file,
+        fileContent: obj.contents
+      })
+    })
 
-      console.log(Object.keys(directories));
-      console.log("dir", path);
-      if (Object.keys(directories).length !== 0) {
-        for (let key of Object.keys(directories)) {
-          //file path has to be prepended to "key" which is the current directory.
-          recurseDirectories(directories[key], path + "/" + key)
-        }
-      }
-    }
+    // console.log(Object.keys(directories));
+    // console.log("dir", path);
+    // if (Object.keys(directories).length !== 0) {
+    //   for (let key of Object.keys(directories)) {
+    //     //file path has to be prepended to "key" which is the current directory.
+    //     recurseDirectories(directories[key], path + "/" + key)
+    //   }
+    // }
 
-    //Need to start this function with the initial path.
-    recurseDirectories(this.state.pages, this.state.pages.directory);
+    // //Need to start this function with the initial path.
+    // recurseDirectories(this.state.pages, this.state.pages.directory);
 
-    return pushableArray;
+    return renameArray;
   }
 
   /**
@@ -526,62 +536,62 @@ class Portfolio extends Component {
       .then(canvas => {
 
         canvas.toBlob(async blob => {
-            const bodyFormData = new FormData();
-            bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
-            bodyFormData.append('label', "preview");
+          const bodyFormData = new FormData();
+          bodyFormData.append('file', new File([blob], `${this.state.name} preview`, { type: "image/png" }));
+          bodyFormData.append('label', "preview");
 
-            await axios({
-              method: "GET",
-              url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingImage/" + this.state.portfolio_id,
-              withCredentials: true,
-              params: {
-                label: "preview"
-              }
-            }).then(async res => {
-              if (res.data.isExist) {
-                console.log("updating image")
-                await axios({
-                  method: "PUT",
-                  url: process.env.REACT_APP_BACKEND + "/portfolio/updateImage/" + this.state.portfolio_id,
-                  withCredentials: true,
-                  data: bodyFormData,
-                  headers: { "Content-Type": "multipart/form-data" }
-                }).then(res => {
-                  console.log(res.data.message);
-                }).catch(err => {
-                  if (err.response) {
-                    console.log(err.response.data);
-                  } else {
-                    console.log(err.message);
-                  }
-                })
-              } else {
-                console.log("uploading image");
-                await axios({
-                  method: "POST",
-                  url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
-                  withCredentials: true,
-                  data: bodyFormData,
-                  headers: { "Content-Type": "multipart/form-data" }
-                }).then(res => {
-                  console.log(res.data.message);
-                  console.log(res.data.refs);
-                }).catch(async err => {
-                  if (err.response) {
-                    console.log(err.response.data);
-                  } else {
-                    console.log(err.message);
-                  }
-                });
-              }
-            }).catch(err => {
-              if (err.response) {
-                console.log(err.response.data);
-              } else {
-                console.log(err.message);
-              }
-            })
-          }
+          await axios({
+            method: "GET",
+            url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingImage/" + this.state.portfolio_id,
+            withCredentials: true,
+            params: {
+              label: "preview"
+            }
+          }).then(async res => {
+            if (res.data.isExist) {
+              console.log("updating image")
+              await axios({
+                method: "PUT",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/updateImage/" + this.state.portfolio_id,
+                withCredentials: true,
+                data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" }
+              }).then(res => {
+                console.log(res.data.message);
+              }).catch(err => {
+                if (err.response) {
+                  console.log(err.response.data);
+                } else {
+                  console.log(err.message);
+                }
+              })
+            } else {
+              console.log("uploading image");
+              await axios({
+                method: "POST",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/uploadImage/" + this.state.portfolio_id,
+                withCredentials: true,
+                data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" }
+              }).then(res => {
+                console.log(res.data.message);
+                console.log(res.data.refs);
+              }).catch(async err => {
+                if (err.response) {
+                  console.log(err.response.data);
+                } else {
+                  console.log(err.message);
+                }
+              });
+            }
+          }).catch(err => {
+            if (err.response) {
+              console.log(err.response.data);
+            } else {
+              console.log(err.message);
+            }
+          })
+        }
         )
       }).catch(err => {
         console.log(err);
@@ -656,7 +666,7 @@ class Portfolio extends Component {
             dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
-          <Publish createPushables = {this.handleProduction} />
+          <Publish createPushables={this.handleProduction} />
         </div>
       </div>);
   }

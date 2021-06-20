@@ -37,7 +37,7 @@ const styles = (theme) => ({
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    padding: '5%',
+    padding: '1%',
   },
   floating: {
     margin: 0,
@@ -107,10 +107,12 @@ const styles = (theme) => ({
   gridDiv: {
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, 50px)',
+    gridTemplateColumns: 'repeat(auto-fill, 250px)',
     gridGap: '10px',
     justifyContent: 'center',
-    overflowY: 'auto'
+    height: '80%',
+    overflowY: 'auto',
+    overflowX: 'hidden'
   }
 })
 
@@ -158,7 +160,8 @@ class EntryEditor extends Component {
       data: copied_fields,
       currentSection: 0,
       showEditor: false,
-      anchorEl: null
+      anchorEl: null,
+      showIcon: false
     }
     this.handleCreateEntry = this.handleCreateEntry.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -495,11 +498,12 @@ class EntryEditor extends Component {
                                 </Typography>
                               </label>
                             </div>);
-                        case 'svg':
+                        case 'icon':
+                          const category = item.src.split('/');
                           return (
                             <div>
                               <IconButton>
-                                <svg></svg>
+                                {icons[category[0]].icons[category[1]]}
                                 <Typography>
                                   {this.props.info.images[key].label}
                                 </Typography>
@@ -511,12 +515,12 @@ class EntryEditor extends Component {
                                   variant="scrollable"
                                   scrollButtons="auto"
                                 >
-                                  {Object.values(icons).map((icon) => {
+                                  {Object.entries(icons).map(([key, icon]) => {
                                     return (<Tab label={icon.label} value={icon.label} />)
                                   })}
                                 </Tabs>
                                 <div className={classes.gridDiv}>
-                                  {Object.entries(icons['faIcons'].icons).map(([key, value]) => {
+                                  {Object.entries(icons['fa'].icons).map(([key, value]) => {
                                     return (
                                       <div>
                                         <value />
@@ -573,28 +577,86 @@ class EntryEditor extends Component {
                           <div className={classes.rowDiv}>
                             <div className={classes.imgGrid}>
                               {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
-                                return (
-                                  <div>
-                                    <input
-                                      accept="image/*"
-                                      className={classes.imgInput}
-                                      style={{ display: "none" }}
-                                      id={key}
-                                      name={key}
-                                      type="file"
-                                      onChange={(event) => this.handleImageUpload(event, this.state.currentSection)}
-                                    // value={item}
-                                    />
-                                    <label htmlFor={key}>
-                                      <Button component="span">
-                                        <img src={item.src} className={classes.imgPreview} />
-                                      </Button>
-                                      <Typography>
-                                        {this.props.info.sections.entryFormat.images[key].label}
-                                      </Typography>
-                                    </label>
-                                  </div>
-                                );
+                                switch (item.format) {
+                                  case 'image':
+                                    return (
+                                      <div>
+                                        <input
+                                          accept="image/*"
+                                          className={classes.imgInput}
+                                          style={{ display: "none" }}
+                                          id={key}
+                                          name={key}
+                                          type="file"
+                                          onChange={(event) => this.handleImageUpload(event, this.state.currentSection)}
+                                        // value={item}
+                                        />
+                                        <label htmlFor={key}>
+                                          <Button component="span">
+                                            <img src={item.src} className={classes.imgPreview} />
+                                          </Button>
+                                          <Typography>
+                                            {this.props.info.sections.entryFormat.images[key].label}
+                                          </Typography>
+                                        </label>
+                                      </div>);
+                                  case 'icon':
+                                    const category = item.src.split('/');
+                                    const SocialIcon = icons[category[0]].icons[category[1]];
+                                    return (
+                                      <div>
+                                        <IconButton onClick={() => this.setState({ showIcon: true })}>
+                                          <SocialIcon />
+                                          <Typography>
+                                            {this.props.info.sections.entryFormat.images[key].label}
+                                          </Typography>
+                                        </IconButton>
+                                        <Modal
+                                          className={classes.modal}
+                                          open={this.state.showIcon}
+                                          // TODO: add onClose save logic
+                                          onClose={() => this.setState({ showIcon: false })}
+                                          aria-labelledby="Icon picker"
+                                          aria-describedby="Select an icon"
+                                          style={{
+                                            width: '80%',
+                                            height: '80%',
+                                            margin: 'auto',
+                                            backgroundColor: 'red'
+                                          }}>
+                                          <div
+                                            style={{
+                                              height: '100%'
+                                            }}
+                                          >
+                                            <Tabs
+                                              value={this.state.type}
+                                              // onChange={this.handleChange}
+                                              variant="scrollable"
+                                              scrollButtons="auto"
+                                            >
+                                              {Object.entries(icons).map(([key, icon]) => {
+                                                return (<Tab label={icon.label} value={icon.label} style={{ width: '80%', height: '80%' }} />)
+                                              })}
+                                            </Tabs>
+                                            <div className={classes.gridDiv}>
+                                              {Object.entries(icons['fa'].icons).map(([key, value]) => {
+                                                const ReactIcon = value;
+                                                return (
+                                                  <IconButton onClick={() => console.log(key)}>
+                                                    <ReactIcon />
+                                                    <Typography>
+                                                      {key}
+                                                    </Typography>
+                                                  </IconButton>);
+                                              })}
+                                            </div>
+                                          </div>
+                                        </Modal>
+                                      </div>);
+                                  default:
+                                    return null;
+                                }
                               })}
                             </div>
                             <div className={classes.textGrid}>
