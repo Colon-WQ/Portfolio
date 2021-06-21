@@ -134,8 +134,38 @@ export const publishGithub = async (req, res) => {
             "Authorization": `token ${gh_token}`,
             "Accept": "application/vnd.github.v3+json"
         }
-    }).then(res => {
+    }).then(async res => {
         const fetchedContentObject = {};
+
+        const recurseContent = async (content) => {
+            for (let obj of content) {
+                if (obj.type === "file") {
+                    fetchedContentObject[obj.path] = {
+                        sha: obj.sha
+                    }
+                } else if (obj.type === "dir") {
+                    await axios({
+                        method: "GET",
+                        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${req.body.route}/${obj.path}`,
+                        headers: {
+                            "Authorization": `token ${gh_token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    }).then(async response => {
+                        await recurseContent(response.data);
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                } else {
+                    //idk how to handle symlink nor what it is atm
+                }
+            }
+        }
+
+        await recurseContent(res.data);
+
+        console.log(fetchedContentObject);
+
         //Set up request body's content for easy reference during push later.
         for (let obj of res.data) {
             fetchedContentObject[obj.path] = {
@@ -179,7 +209,7 @@ export const publishGithub = async (req, res) => {
             console.log(`successfully pushed ${obj.fileName}`)
         }).catch(err => {
             console.log(err.message)
-            return res.status(400).send(err.message)
+            return res.status(400).send("error encountered");
         });
     }
 

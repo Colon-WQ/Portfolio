@@ -649,7 +649,7 @@ class Portfolio extends Component {
             dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
-          <Publish createPushables={this.handleProduction} />
+          <Publish createPushables={this.handleProduction}/>
         </div>
       </div>);
   }

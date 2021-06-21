@@ -7,6 +7,7 @@ const PortfolioSchema = mongoose.Schema({
     user: {type: Number, ref: 'user'},
     //pages will merely contain other page
     pages: {type: mongoose.Schema.Types.ObjectId, ref: 'page'},
+    pageUrl: {type: String, default: ""},
     // pages: [{type: mongoose.Schema.Types.ObjectId, ref: 'page'}],
     images: [{type: mongoose.Schema.Types.ObjectId, ref: 'image'}]
 })
