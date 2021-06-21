@@ -177,6 +177,7 @@ class EntryEditor extends Component {
     this.handleShowEditor = this.handleShowEditor.bind(this);
     this.handleFontMenu = this.handleFontMenu.bind(this);
     this.handleIconSelect = this.handleIconSelect.bind(this);
+    this.createImageControl = this.createImageControl.bind(this);
   }
 
   /**
@@ -414,6 +415,92 @@ class EntryEditor extends Component {
     }
   }
 
+  createImageControl(key, item, classes) {
+    switch (item.format) {
+      case 'image':
+        return (
+          <div>
+            <input
+              accept="image/*"
+              className={classes.imgInput}
+              style={{ display: "none" }}
+              id={key}
+              name={key}
+              type="file"
+              onChange={(event) => this.handleImageUpload(event, this.state.currentSection)}
+            // value={item}
+            />
+            <label htmlFor={key}>
+              <Button component="span">
+                <img src={item.src} className={classes.imgPreview} />
+              </Button>
+              <Typography>
+                {this.props.info.sections.entryFormat.images[key].label}
+              </Typography>
+            </label>
+          </div>);
+      case 'icon':
+        const category = item.src.split('/');
+        const SocialIcon = icons[category[0]].icons[category[1]];
+        return (
+          <div>
+            <IconButton onClick={() => this.setState({ showIcon: true, iconCategory: category[0] })}>
+              <SocialIcon />
+              <Typography>
+                {this.props.info.sections.entryFormat.images[key].label}
+              </Typography>
+            </IconButton>
+            <Modal
+              className={classes.modal}
+              open={this.state.showIcon}
+              // TODO: add onClose save logic
+              onClose={() => this.setState({ showIcon: false })}
+              aria-labelledby="Icon picker"
+              aria-describedby="Select an icon"
+              style={{
+                width: '80%',
+                height: '80%',
+                margin: 'auto',
+                backgroundColor: 'red'
+              }}>
+              <div
+                style={{
+                  height: '100%'
+                }}
+              >
+                <Tabs
+                  value={this.state.iconCategory}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  onChange={(event, value) => {
+                    console.log(value)
+                    this.setState({ iconCategory: value });
+                  }}
+                >
+                  {Object.entries(icons).map(([key, icon]) => {
+                    return (<Tab label={icon.label} value={key} style={{ width: '80%', height: '80%' }} />)
+                  })}
+                </Tabs>
+                <div className={classes.gridDiv}>
+                  {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
+                    const ReactIcon = value;
+                    return (
+                      <IconButton onClick={() => this.handleIconSelect(key, `${this.state.iconCategory}/${iconName}`, true)}>
+                        <ReactIcon />
+                        <Typography>
+                          {iconName}
+                        </Typography>
+                      </IconButton>);
+                  })}
+                </div>
+              </div>
+            </Modal>
+          </div>);
+      default:
+        return null;
+    }
+  }
+
   render() {
     const { classes } = this.props;
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
@@ -563,7 +650,7 @@ class EntryEditor extends Component {
                                   {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
                                     console.log(this.state.iconCategory)
                                     return (
-                                      <IconButton onClick={() => this.handleIconSelect(key, `${this.state.iconCategory}/${iconName}`, true)}>
+                                      <IconButton onClick={() => this.handleIconSelect(key, `${this.state.iconCategory}/${iconName}`, false)}>
                                         <value />
                                         <Typography>
                                           {key}
