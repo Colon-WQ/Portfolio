@@ -291,4 +291,26 @@ export const getRepoContent = async (req, res) => {
     })
 }
 
+
+export const getGithubPageStatus = async (req, res) => {
+    const gh_token = req.gh_token;
+    const username = req.username;
+    const repo = req.query.repo;
+    console.log("checking github page status");
+    await axios({
+        method: "GET",
+        url: `https://api.github.com/repos/${username}/${repo}/pages`,
+        headers: {
+            "Authorization": `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(response => {
+        console.log("github page status retrieved successfully");
+        return res.status(200).json({ status: response.data.status, url: response.data.html_url });
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
+    })
+}
+
 export default router;
