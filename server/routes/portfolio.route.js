@@ -12,7 +12,7 @@ import {
     deleteImage,
     checkExistingImage
 } from '../controllers/portfolio.controller.js';
-import { checkGitCreated, checkExistingRepos, createRepo, getRepoContent, publishGithub } from '../controllers/github-api.controller.js';
+import { checkGitCreated, checkExistingRepos, createRepo, getRepoContent, publishGithub, getGithubPageStatus } from '../controllers/github-api.controller.js';
 import auth from '../middleware/auth.middleware.js';
 import imageUploader from '../middleware/uploader.middleware.js';
 
@@ -219,6 +219,8 @@ router.get("/getRepoContent", auth, getRepoContent);
  *                                  description: error message.
  */
 router.put("/publishGithub", auth, publishGithub);
+
+router.get("/pageStatus", auth, getGithubPageStatus);
 
 router.put("/upsert", auth, upsertPortfolio);
 

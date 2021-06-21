@@ -134,8 +134,38 @@ export const publishGithub = async (req, res) => {
             "Authorization": `token ${gh_token}`,
             "Accept": "application/vnd.github.v3+json"
         }
-    }).then(res => {
+    }).then(async res => {
         const fetchedContentObject = {};
+
+        const recurseContent = async (content) => {
+            for (let obj of content) {
+                if (obj.type === "file") {
+                    fetchedContentObject[obj.path] = {
+                        sha: obj.sha
+                    }
+                } else if (obj.type === "dir") {
+                    await axios({
+                        method: "GET",
+                        url: `https://api.github.com/repos/${req.username}/${req.body.repo}/contents/${req.body.route}/${obj.path}`,
+                        headers: {
+                            "Authorization": `token ${gh_token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    }).then(async response => {
+                        await recurseContent(response.data);
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                } else {
+                    //idk how to handle symlink nor what it is atm
+                }
+            }
+        }
+
+        await recurseContent(res.data);
+
+        console.log(fetchedContentObject);
+
         //Set up request body's content for easy reference during push later.
         for (let obj of res.data) {
             fetchedContentObject[obj.path] = {
@@ -179,7 +209,7 @@ export const publishGithub = async (req, res) => {
             console.log(`successfully pushed ${obj.fileName}`)
         }).catch(err => {
             console.log(err.message)
-            return res.status(400).send(err.message)
+            return res.status(400).send("error encountered");
         });
     }
 
@@ -288,6 +318,28 @@ export const getRepoContent = async (req, res) => {
     }).catch(err => {
         console.log(err.message)
         return res.status(404).send("getting repository contents failed")
+    })
+}
+
+
+export const getGithubPageStatus = async (req, res) => {
+    const gh_token = req.gh_token;
+    const username = req.username;
+    const repo = req.query.repo;
+    console.log("checking github page status");
+    await axios({
+        method: "GET",
+        url: `https://api.github.com/repos/${username}/${repo}/pages`,
+        headers: {
+            "Authorization": `token ${gh_token}`,
+            "Accept": "application/vnd.github.v3+json"
+        }
+    }).then(response => {
+        console.log("github page status retrieved successfully");
+        return res.status(200).json({ status: response.data.status, url: response.data.html_url });
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).send("error encountered");
     })
 }
 
