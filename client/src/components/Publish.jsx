@@ -65,7 +65,9 @@ class Publish extends Component {
             overrideDialogState: false,
             repositoryName: "",
             repositoryContent: [],
-            anchorEl: null
+            anchorEl: null,
+            pageStatus: false,
+            pageUrl: ""
         }
         this.handleOnChange = this.handleOnChange.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
@@ -75,6 +77,7 @@ class Publish extends Component {
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
+        this.handleCheckPageStatus = this.handleCheckPageStatus.bind(this);
     }
 
 
@@ -279,6 +282,38 @@ class Publish extends Component {
         this.setState({
             finalizeDialogState: false
         })
+    }
+
+    async handleCheckPageStatus() {
+        if (this.state.repositoryName !== "") {
+            await axios({
+                method: "GET",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/pageStatus",
+                withCredentials: true,
+                params: {
+                    repo: repo
+                }
+            }).then(res => {
+                console.log(res.data.status);
+                console.log(res.data.url);
+                if (res.data.status === "built") {
+                    this.setState({
+                        pageStatus: true,
+                        pageUrl: res.data.url
+                    })
+                } else {
+                    this.setState({
+                        pageStatus: false
+                    })
+                }
+            }).catch(err => {
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
+            })
+        }
     }
 
 
