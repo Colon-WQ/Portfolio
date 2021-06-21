@@ -12,7 +12,7 @@ const EntrySchema = mongoose.Schema({
     images: {type: Map, of: {type: Map, of: String}},
     texts: {type: Map, of: String},
     sections: [{
-        images: {type: Map, of: String},
+        images: {type: Map, of: {type: Map, of: String}},
         texts: {type: Map, of: String}
     }]
 })
