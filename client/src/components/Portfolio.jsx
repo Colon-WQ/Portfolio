@@ -273,15 +273,9 @@ class Portfolio extends Component {
 
     // removes 'root' placeholder
     console.log(page.directory)
-    const directory = `${prepend}${page.directory === 'root' ? '' : page.directory}/`;
+    const directory = `${prepend}${page.directory === 'root' ? '' : page.directory + "/"}`;
     const images = [];
     console.log(entries);
-
-    // const directory = page.directory === "root"
-    //   ? ''
-    //   : `${page.directory.substring(5)}/`;
-    // const images = [];
-    // console.log(JSON.stringify(entries));
 
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
@@ -463,9 +457,6 @@ class Portfolio extends Component {
    * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
    */
   handleProduction() {
-    //this saves the portfolio to mongoDB
-    // await this.handleSavePortfolio();
-
 
     const fileArray = this.handleCreateFile(this.state.pages, '');
     fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
@@ -477,18 +468,6 @@ class Portfolio extends Component {
       })
     });
     console.log(renameArray);
-
-    // console.log(Object.keys(directories));
-    // console.log("dir", path);
-    // if (Object.keys(directories).length !== 0) {
-    //   for (let key of Object.keys(directories)) {
-    //     //file path has to be prepended to "key" which is the current directory.
-    //     recurseDirectories(directories[key], path + "/" + key)
-    //   }
-    // }
-
-    // //Need to start this function with the initial path.
-    // recurseDirectories(this.state.pages, this.state.pages.directory);
 
     return renameArray;
   }
