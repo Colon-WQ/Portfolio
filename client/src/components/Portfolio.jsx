@@ -265,22 +265,23 @@ class Portfolio extends Component {
    * @returns {(Map|Array)} An array of maps containing the relative paths to each file and their contents.
    * 
    */
-  handleCreateFile(page) {
+  handleCreateFile(page, prepend) {
     // Allow users to create empty pages so they can create their own pages
     const entries = page.entries;
     console.log(page);
     if (entries === []) return [];
 
     // removes 'root' placeholder
-    // const directory = `${page.directory.substring(4)}/`;
-    // const images = [];
-    // console.log(entries);
-
-    const directory = page.directory === "root"
-      ? ''
-      : `${page.directory.substring(5)}/`;
+    console.log(page.directory)
+    const directory = `${prepend}${page.directory === 'root' ? '' : page.directory}/`;
     const images = [];
-    console.log(JSON.stringify(entries));
+    console.log(entries);
+
+    // const directory = page.directory === "root"
+    //   ? ''
+    //   : `${page.directory.substring(5)}/`;
+    // const images = [];
+    // console.log(JSON.stringify(entries));
 
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
@@ -334,6 +335,7 @@ class Portfolio extends Component {
       </ThemeProvider>
     ));
     // TODO: add title
+    // TODO: remove empty files
     const html = Base64.encode(`
             <!DOCTYPE html>
             <html lang="en">
@@ -370,14 +372,14 @@ class Portfolio extends Component {
     ]
 
     // inefficient code, might be able to optimise
-    Object.values(page.directories).map((value) => {
-      console.log(value);
-      const fileArray = this.handleCreateFile(value);
-      files = files.concat(fileArray);
-    })
+    if (page.directories !== {}) {
+      Object.values(page.directories).map((value) => {
+        console.log(value);
+        const fileArray = this.handleCreateFile(value, directory);
+        files = files.concat(fileArray);
+      })
+    }
     console.log(files);
-    // TODO: remove for deployment
-    files.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     return files;
   }
 
@@ -460,19 +462,21 @@ class Portfolio extends Component {
    * A function to generate all files needed to be pushed to github.
    * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
    */
-  async handleProduction() {
+  handleProduction() {
     //this saves the portfolio to mongoDB
-    await this.handleSavePortfolio();
+    // await this.handleSavePortfolio();
 
 
-    const fileArray = this.handleCreateFile(this.state.pages);
+    const fileArray = this.handleCreateFile(this.state.pages, '');
+    fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     let renameArray = [];
     fileArray.map((obj) => {
       renameArray.push({
         fileName: obj.file,
         fileContent: obj.contents
       })
-    })
+    });
+    console.log(renameArray);
 
     // console.log(Object.keys(directories));
     // console.log("dir", path);

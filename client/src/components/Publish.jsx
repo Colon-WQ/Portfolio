@@ -77,7 +77,7 @@ class Publish extends Component {
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
-        this.handleCheckPageStatus = this.handleCheckPageStatus.bind(this);
+        // this.handleCheckPageStatus = this.handleCheckPageStatus.bind(this);
     }
 
 
@@ -103,6 +103,7 @@ class Publish extends Component {
     handleFinalizeDialogOpen() {
 
         const pushables = this.props.createPushables();
+        console.log(pushables)
 
         console.log("portfolios are: ");
 
@@ -159,7 +160,7 @@ class Publish extends Component {
     }
 
 
-    
+
     /**
      * This handles the event whereby override button in override dialog is clicked. It calls and
      * wait for handlePushToGithub() to complete before closing the override dialog.
@@ -271,7 +272,7 @@ class Publish extends Component {
             } else {
                 console.log(err.message);
             }
-            
+
             this.setState({
                 overrideDialogState: true
             })
@@ -284,65 +285,33 @@ class Publish extends Component {
         })
     }
 
-    async handleCheckPageStatus() {
-        if (this.state.repositoryName !== "") {
-            await axios({
-                method: "GET",
-                url: process.env.REACT_APP_BACKEND + "/portfolio/pageStatus",
-                withCredentials: true,
-                params: {
-                    repo: repo
-                }
-            }).then(res => {
-                console.log(res.data.status);
-                console.log(res.data.url);
-                if (res.data.status === "built") {
-                    this.setState({
-                        pageStatus: true,
-                        pageUrl: res.data.url
-                    })
-                } else {
-                    this.setState({
-                        pageStatus: false
-                    })
-                }
-            }).catch(err => {
-                if (err.response) {
-                    console.log(err.response.data);
-                } else {
-                    console.log(err.message);
-                }
-            })
-        }
-    }
-
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
 
         return (
             <div className={classes.root}>
                 <Fab
-                    size = 'large'
-                    aria-label = 'publish panel'
-                    aria-controls = 'simple-menu'
-                    aria-haspopup = 'true'
-                    className = {classes.actionFAB}
+                    size='large'
+                    aria-label='publish panel'
+                    aria-controls='simple-menu'
+                    aria-haspopup='true'
+                    className={classes.actionFAB}
                     onClick={this.handleFinalizeDialogOpen}
                 >
                     <FaUpload />
                 </Fab>
 
                 <Dialog
-                    open = {this.state.finalizeDialogState}
-                    onClose = {this.handleFinalizeDialogClose}
-                    aria-labelledby = "repo name input"
+                    open={this.state.finalizeDialogState}
+                    onClose={this.handleFinalizeDialogClose}
+                    aria-labelledby="repo name input"
                 >
-                    <DialogTitle id = "repo name input">
+                    <DialogTitle id="repo name input">
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText style={{color: "white"}}>
+                        <DialogContentText style={{ color: "white" }}>
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -355,7 +324,7 @@ class Publish extends Component {
                             fullWidth
                             onChange={this.handleOnChange}
                             InputLabelProps={{
-                                style: {color: "whitesmoke"},
+                                style: { color: "whitesmoke" },
                             }}
                             InputProps={{
                                 color: 'secondary'
@@ -363,21 +332,21 @@ class Publish extends Component {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleFinalizeDialogClose}>
+                        <Button onClick={this.handleFinalizeDialogClose}>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleFinalizeEdits}>
+                        <Button onClick={this.handleFinalizeEdits}>
                             Finalize
                         </Button>
                     </DialogActions>
                 </Dialog>
 
                 <Dialog
-                    open = {this.state.overrideDialogState}
-                    onClose = {this.handleOverrideDialogClose}
-                    aria-labelledby = "override permission input"
+                    open={this.state.overrideDialogState}
+                    onClose={this.handleOverrideDialogClose}
+                    aria-labelledby="override permission input"
                 >
-                    <DialogTitle id = "override permission input">
+                    <DialogTitle id="override permission input">
                         Warning!
                     </DialogTitle>
                     <DialogContent>
@@ -386,14 +355,14 @@ class Publish extends Component {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick = {this.handleOverrideDialogClose}>
+                        <Button onClick={this.handleOverrideDialogClose}>
                             Cancel
                         </Button>
-                        <Button onClick = {this.handleOverrideAllowed}>
+                        <Button onClick={this.handleOverrideAllowed}>
                             Allow Override
                         </Button>
                     </DialogActions>
-                </Dialog>     
+                </Dialog>
             </div>
         );
     }
