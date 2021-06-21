@@ -13,7 +13,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FaUpload } from 'react-icons/fa';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import Slide from '@material-ui/core/Slide';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { FaUpload, FaTimes, FaRegCopy } from 'react-icons/fa';
+
 
 
 /**
@@ -66,8 +71,12 @@ class Publish extends Component {
             repositoryName: "",
             repositoryContent: [],
             anchorEl: null,
-            pageStatus: false,
-            pageUrl: ""
+            publishLoading: false,
+            statusState: false,
+            publishError: false,
+            publishErrorMessage: "",
+            pageUrl: "",
+            pageCheckIntervalTask: null
         }
         this.handleOnChange = this.handleOnChange.bind(this);
         this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
@@ -77,7 +86,9 @@ class Publish extends Component {
         this.handleFinalizeEdits = this.handleFinalizeEdits.bind(this);
         this.handleOverrideAllowed = this.handleOverrideAllowed.bind(this);
         this.handlePushToGithub = this.handlePushToGithub.bind(this);
-        // this.handleCheckPageStatus = this.handleCheckPageStatus.bind(this);
+        this.handleCheckPageStatus = this.handleCheckPageStatus.bind(this);
+        this.handleStatusClose = this.handleStatusClose.bind(this);
+        this.handleCopyClipboard = this.handleCopyClipboard.bind(this);
     }
 
 
@@ -105,17 +116,9 @@ class Publish extends Component {
         const pushables = this.props.createPushables();
         console.log(pushables)
 
-        console.log("portfolios are: ");
-
-        for (let obj of pushables) {
-            console.log(obj.fileName)
-        }
-
         this.setState({
             repositoryContent: pushables
         })
-
-        console.log("pushables set")
 
         this.setState({
             anchorEl: null,
@@ -170,7 +173,8 @@ class Publish extends Component {
      */
     async handleOverrideAllowed() {
         console.log(`Override permission given to push to ${this.state.repositoryName} and toggle pages for it`)
-        await this.handlePushToGithub();
+        //no need to await this
+        this.handlePushToGithub();
         this.setState({
             overrideDialogState: false
         })
@@ -196,6 +200,15 @@ class Publish extends Component {
      */
     async handlePushToGithub() {
         console.log(`files are being pushed to ${this.state.repositoryName}`)
+        //reset loading, error and error message
+        this.setState({
+            publishLoading: true,
+            publishError: false,
+            publishErrorMessage: "",
+            statusState: false,
+            pageCheckIntervalTask: setInterval(this.handleCheckPageStatus, 15000)
+        });
+
         await axios({
             method: "PUT",
             url: process.env.REACT_APP_BACKEND + "/portfolio/publishGithub",
@@ -213,11 +226,20 @@ class Publish extends Component {
             } else {
                 console.log(err.message);
             }
+            
+            this.setState({
+                publishLoading: false,
+                publishError: true,
+                publishErrorMessage: "Failed to push files to Github",
+                statusState: true
+            })
+            if (this.state.pageCheckIntervalTask) {
+                window.clearInterval(this.state.pageCheckIntervalTask);
+            }
         })
 
         this.setState({
-            repositoryContent: [],
-            fileName: "",
+            repositoryContent: []
         })
     }
 
@@ -264,8 +286,8 @@ class Publish extends Component {
                 }
             })
 
-            //Waits for push to go through
-            await this.handlePushToGithub();
+            //no need to wait for push to go through
+            this.handlePushToGithub();
         }).catch(err => {
             if (err.response) {
                 console.log(err.response.data);
@@ -285,6 +307,62 @@ class Publish extends Component {
         })
     }
 
+    async handleCheckPageStatus() {
+        if (this.state.repositoryName !== "") {
+            await axios({
+                method: "GET",
+                url: process.env.REACT_APP_BACKEND + "/portfolio/pageStatus",
+                withCredentials: true,
+                params: {
+                    repo: this.state.repositoryName
+                }
+            }).then(res => {
+                console.log(res.data.status);
+                if (res.data.status === "built" || res.data.status === "errored") {
+                    if (this.state.pageCheckIntervalTask) {
+                        window.clearInterval(this.state.pageCheckIntervalTask);
+                    }
+                    if (res.data.status === "built") {
+                        this.setState({
+                            publishLoading: false,
+                            pageUrl: res.data.url,
+                            statusState: true
+                        })
+                    } else {
+                        this.setState({
+                            publishLoading: false,
+                            publishError: true,
+                            publishErrorMessage: "Github page deployment failed",
+                            statusState: true
+                        })
+                    }
+                }
+            }).catch(err => {
+                if (err.response) {
+                    console.log(err.response.data);
+                } else {
+                    console.log(err.message);
+                }
+
+            })
+        }
+    }
+
+    handleStatusClose(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            publishLoading: false,
+            publishError: false,
+            publishErrorMessage: "",
+            statusState: false
+        })
+    }
+
+    handleCopyClipboard() {
+        navigator.clipboard.writeText(this.state.pageUrl)
+    }
 
     render() {
         const { classes } = this.props;
@@ -299,8 +377,43 @@ class Publish extends Component {
                     className={classes.actionFAB}
                     onClick={this.handleFinalizeDialogOpen}
                 >
-                    <FaUpload />
+                    {this.state.publishLoading ? <CircularProgress size="2rem"/> : <FaUpload />}
                 </Fab>
+
+                <Snackbar
+                    key="Github Page Status"
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    open={this.state.statusState}
+                    onClose={this.handleStatusClose}
+                    TransitionComponent={props => <Slide {...props} direction="up" />}
+                >
+                    <SnackbarContent
+                        style={{backgroundColor: '#303030', color: 'white'}}
+                        message={this.state.publishError ? this.state.publishErrorMessage : this.state.pageUrl}
+                        action={
+                            <React.Fragment>
+                                {!this.state.publishError
+                                    ?
+                                        <Button onClick={this.handleCopyClipboard}>
+                                            <FaRegCopy/>
+                                        </Button>
+                                    :
+                                        <div/>
+                                }
+                                <Button
+                                    onClick={this.handleStatusClose}
+                                >
+                                    <FaTimes/>
+                                </Button>
+                            </React.Fragment>
+                        }
+                    />
+
+                    
+                </Snackbar>
 
                 <Dialog
                     open={this.state.finalizeDialogState}
@@ -375,7 +488,8 @@ class Publish extends Component {
  * @memberof EntryEditor
  */
 const mapStateToProps = state => ({
-    loggedIn: state.login.loggedIn
+    loggedIn: state.login.loggedIn,
+
 })
 
 /** 
