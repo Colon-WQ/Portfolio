@@ -33,6 +33,7 @@ export const logout = async (req, res) => {
             console.log(err.message)
         })
         //Cookie path defaults to '/' and its domain defaults to domain name of the app
+        //change to resumate.xyz for production.
         res.clearCookie("authorization", { domain: "localhost", path: "/"})
         console.log("logout successful")
         

@@ -38,7 +38,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
+        url: "http://resumate.xyz:5000",
         description: "Development backend server"
       },
     ]
@@ -63,10 +63,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Append routes here
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-app.use("/login", loginRoutes);
-app.use("/portfolio", portfolioRoutes);
-app.use("/logout", logoutRoutes);
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use("/api/login", loginRoutes);
+app.use("/api/portfolio", portfolioRoutes);
+app.use("/api/logout", logoutRoutes);
 
 
 const CONNECTION_URL = MONGO_URL;
