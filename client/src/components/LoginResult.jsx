@@ -60,7 +60,7 @@ class LoginResult extends Component {
             //Check if loggedIn user might have accidentally refreshed into this url
             const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             //If localStorage returns null, user is not loggedIn, proceed to login
-            if (localStorageItem == null) {
+            if (localStorageItem === null) {
                 let search = window.location.search;
                 let params = new URLSearchParams(search);
                 let ghCode = params.get('code');

@@ -202,7 +202,9 @@ class Home extends Component {
     async componentDidMount() {
         if (!this.props.loggedIn) {
             const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            this.props.repopulate_state(localStorageItem)
+            if (localStorageItem !== null) {
+                this.props.repopulate_state(localStorageItem);
+            } 
         }
     }
 

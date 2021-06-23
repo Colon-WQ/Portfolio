@@ -6,7 +6,9 @@ import { fileURLToPath } from 'url';
 import cookieParser from "cookie-parser";
 import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
 
+import session from 'express-session';
 
+import MongoStore from 'connect-mongo';
 
 //swagger jsdocs imports
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -52,6 +54,19 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser(SIGN_COOKIE_SECRET));
+app.use(session({
+  secret: SIGN_COOKIE_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    //secure: true,
+  },
+  store: MongoStore.create({
+    mongoUrl: MONGO_URL,
+    ttl: 6 * 60 * 60,
+    autoRemove: "native"
+  })
+}))
 
 // CORS setup
 const corsOptions = {
@@ -68,8 +83,6 @@ app.use("/api/login", loginRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/logout", logoutRoutes);
 
-
-const CONNECTION_URL = MONGO_URL;
 const PORT_CONFIG = PORT || 5000;
 
 
@@ -88,12 +101,6 @@ mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, u
 
 
 const connect = mongoose.connection;
-// const connect = mongoose.createConnection(MONGO_URL, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   useFindAndModify: false
-// });
-
 
 app.listen(PORT_CONFIG, () => console.log("server up and running at " + PORT_CONFIG));
 

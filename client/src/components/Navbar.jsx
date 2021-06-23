@@ -8,7 +8,7 @@ import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
-
+import { handleErrors } from '../handlers/errorHandler';
 import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Box, Button, Divider, Drawer, Hidden } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
@@ -185,7 +185,9 @@ class Navbar extends Component {
     async componentDidMount() {
       if (!this.props.loggedIn) {
         const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-        this.props.repopulate_state(localStorageItem)
+        if (localStorageItem !== null) {
+          await this.props.repopulate_state(localStorageItem);
+        }
       }
     }
     
@@ -208,7 +210,7 @@ class Navbar extends Component {
         }).then(res => {
             this.props.history.push("/");
         }).catch(err => {
-            console.log(err.message)
+            handleErrors(err, this.props.history);
         })
     }
 
