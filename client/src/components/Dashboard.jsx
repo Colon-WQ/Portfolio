@@ -113,7 +113,6 @@ class Dashboard extends Component {
         this.handleChangePortfolioName = this.handleChangePortfolioName.bind(this);
         this.handleGetImage = this.handleGetImage.bind(this);
         this.handleDeleteImage = this.handleDeleteImage.bind(this);
-        this.testGithubPageStatus = this.testGithubPageStatus.bind(this);
     }
 
     /**
@@ -429,22 +428,6 @@ class Dashboard extends Component {
         });
     }
 
-    async testGithubPageStatus(repo) {
-        await axios({
-            method: "GET",
-            url: process.env.REACT_APP_BACKEND + "/portfolio/pageStatus",
-            withCredentials: true,
-            params: {
-                repo: repo
-            }
-        }).then(res => {
-            console.log(res.data.status);
-            console.log(res.data.url);
-        }).catch(err => {
-            handleErrors(err, this.props.history);
-        })
-    }
-
 
     render() {
         const { name, portfolios, classes } = this.props
@@ -525,7 +508,6 @@ class Dashboard extends Component {
                 </Grid>
                 {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
                 <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
-                <Button onClick={() => this.testGithubPageStatus("testShit")} className={classes.portfolioButton}>Test Page Status</Button>
                 
                 <Menu
                     id="edit-menu"
