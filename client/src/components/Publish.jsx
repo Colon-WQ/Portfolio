@@ -18,6 +18,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Slide from '@material-ui/core/Slide';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FaUpload, FaTimes, FaRegCopy } from 'react-icons/fa';
+import { handleErrors } from '../handlers/errorHandler';
 
 
 
@@ -221,11 +222,7 @@ class Publish extends Component {
         }).then(res => {
             console.log(res.data.message);
         }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
             
             this.setState({
                 publishLoading: false,
@@ -279,21 +276,13 @@ class Publish extends Component {
             }).then(response => {
                 console.log(response.data.message)
             }).catch(err => {
-                if (err.response) {
-                    console.log(err.response.data);
-                } else {
-                    console.log(err.message);
-                }
+                handleErrors(err, this.props.history);
             })
 
             //no need to wait for push to go through
             this.handlePushToGithub();
         }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
 
             this.setState({
                 overrideDialogState: true
@@ -338,11 +327,7 @@ class Publish extends Component {
                     }
                 }
             }).catch(err => {
-                if (err.response) {
-                    console.log(err.response.data);
-                } else {
-                    console.log(err.message);
-                }
+                handleErrors(err, this.props.history);
 
             })
         }

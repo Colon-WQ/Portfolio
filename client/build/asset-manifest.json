@@ -1,19 +1,29 @@
 {
   "files": {
-    "main.js": "/static/js/main.f20318c9.chunk.js",
-    "main.js.map": "/static/js/main.f20318c9.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.8bc435c3.js",
-    "runtime-main.js.map": "/static/js/runtime-main.8bc435c3.js.map",
-    "static/js/2.dcd46d54.chunk.js": "/static/js/2.dcd46d54.chunk.js",
-    "static/js/2.dcd46d54.chunk.js.map": "/static/js/2.dcd46d54.chunk.js.map",
-    "static/js/3.0e01b3bc.chunk.js": "/static/js/3.0e01b3bc.chunk.js",
-    "static/js/3.0e01b3bc.chunk.js.map": "/static/js/3.0e01b3bc.chunk.js.map",
+    "main.js": "/static/js/main.a944be15.chunk.js",
+    "main.js.map": "/static/js/main.a944be15.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.430f9110.js",
+    "runtime-main.js.map": "/static/js/runtime-main.430f9110.js.map",
+    "static/js/2.26d4ebe3.chunk.js": "/static/js/2.26d4ebe3.chunk.js",
+    "static/js/2.26d4ebe3.chunk.js.map": "/static/js/2.26d4ebe3.chunk.js.map",
+    "static/js/3.6395196e.chunk.js": "/static/js/3.6395196e.chunk.js",
+    "static/js/3.6395196e.chunk.js.map": "/static/js/3.6395196e.chunk.js.map",
     "index.html": "/index.html",
-    "static/js/2.dcd46d54.chunk.js.LICENSE.txt": "/static/js/2.dcd46d54.chunk.js.LICENSE.txt"
+    "static/js/2.26d4ebe3.chunk.js.LICENSE.txt": "/static/js/2.26d4ebe3.chunk.js.LICENSE.txt",
+    "static/media/IntroMinimalist.ec6700a1.JPG": "/static/media/IntroMinimalist.ec6700a1.JPG",
+    "static/media/LiquidCrystal-Bold.c84b4328.woff2": "/static/media/LiquidCrystal-Bold.c84b4328.woff2",
+    "static/media/LiquidCrystal-BoldItalic.a30e37ed.woff2": "/static/media/LiquidCrystal-BoldItalic.a30e37ed.woff2",
+    "static/media/LiquidCrystal-ExBold.9d97e8f2.woff2": "/static/media/LiquidCrystal-ExBold.9d97e8f2.woff2",
+    "static/media/LiquidCrystal-ExBoldItalic.de63aaa0.woff2": "/static/media/LiquidCrystal-ExBoldItalic.de63aaa0.woff2",
+    "static/media/LiquidCrystal-Light.50eef454.woff2": "/static/media/LiquidCrystal-Light.50eef454.woff2",
+    "static/media/LiquidCrystal-LightItalic.e3e9bde9.woff2": "/static/media/LiquidCrystal-LightItalic.e3e9bde9.woff2",
+    "static/media/LiquidCrystal-Normal.f388bf69.woff2": "/static/media/LiquidCrystal-Normal.f388bf69.woff2",
+    "static/media/LiquidCrystal-NormalItalic.615622e6.woff2": "/static/media/LiquidCrystal-NormalItalic.615622e6.woff2",
+    "static/media/TimelineMinimalist.58a9e55e.JPG": "/static/media/TimelineMinimalist.58a9e55e.JPG"
   },
   "entrypoints": [
-    "static/js/runtime-main.8bc435c3.js",
-    "static/js/2.dcd46d54.chunk.js",
-    "static/js/main.f20318c9.chunk.js"
+    "static/js/runtime-main.430f9110.js",
+    "static/js/2.26d4ebe3.chunk.js",
+    "static/js/main.a944be15.chunk.js"
   ]
 }
