@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withRouter } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
 import { FaRegEdit } from 'react-icons/fa';
-import FormData from 'form-data';
+import { handleErrors } from '../handlers/errorHandler';
 
 /**
  * @file Dashboard component displays previews of the user's portfolios and offers 
@@ -127,7 +127,9 @@ class Dashboard extends Component {
     async componentDidMount() {
         if (!this.props.loggedIn) {
             const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-            await this.props.repopulate_state(localStorageItem);
+            if (localStorageItem !== null) {
+                await this.props.repopulate_state(localStorageItem);
+            }
         }
         await this.props.fetchPortfolios(this.props.id);
         
@@ -257,11 +259,7 @@ class Dashboard extends Component {
 
             this.props.history.push("/edit");
         }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
         });
     }
 
@@ -292,11 +290,7 @@ class Dashboard extends Component {
             })
 
         }).catch(err => {
-            if (err.response) {
-            console.log(err.response.data);
-            } else {
-            console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
         })
 
         this.handleDeleteDialogState(false);
@@ -355,11 +349,7 @@ class Dashboard extends Component {
                 }).then(res => {
                     console.log(res.data.message);
                 }).catch(err => {
-                    if (err.response) {
-                        console.log(err.response.data);
-                    } else {
-                        console.log(err.message);
-                    }
+                    handleErrors(err, this.props.history);
                 })
 
                 await this.props.fetchPortfolios(this.props.id);
@@ -412,11 +402,7 @@ class Dashboard extends Component {
                 images: images
             });
         }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
         });
     }
 
@@ -439,11 +425,7 @@ class Dashboard extends Component {
                 });
             }
         }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
         });
     }
 
@@ -459,11 +441,7 @@ class Dashboard extends Component {
             console.log(res.data.status);
             console.log(res.data.url);
         }).catch(err => {
-            if (err.response) {
-                console.log(err.response.data);
-            } else {
-                console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
         })
     }
 

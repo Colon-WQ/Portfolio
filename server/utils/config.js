@@ -11,3 +11,4 @@ export const FRONT_END = process.env.FRONT_END;
 export const BACK_END = process.env.BACK_END;
 export const MONGO_URL = process.env.MONGO_URL;
 export const PORT = process.env.PORT;
+export const ENCRYPT_KEY = process.env.ENCRYPT_KEY;
