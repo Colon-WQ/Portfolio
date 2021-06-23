@@ -117,7 +117,7 @@ const styles = (theme) => ({
   svgIcon: {
     width: 100,
     height: 100
-  }
+  },
 })
 
 /**
@@ -162,37 +162,26 @@ class EntryEditor extends Component {
     const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
     this.state = {
       data: copied_fields,
-      currentSection: 0,
       showEditor: false,
       anchorEl: null,
+
+      mediaAnchorEl: null,
       showIcon: false,
-      iconCategory: 'ai'
+      iconCategory: 'ai',
+      editSection: false,
+      currentSection: 0,
+      imageName: ''
     }
     this.handleCreateEntry = this.handleCreateEntry.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleImageUpload = this.handleImageUpload.bind(this);
-    this.handleEditSectionText = this.handleEditSectionText.bind(this);
     this.handleSectionView = this.handleSectionView.bind(this);
     this.handleCloseEditor = this.handleCloseEditor.bind(this);
-    this.handleShowEditor = this.handleShowEditor.bind(this);
-    this.handleFontMenu = this.handleFontMenu.bind(this);
     this.handleIconSelect = this.handleIconSelect.bind(this);
-    this.createImageControl = this.createImageControl.bind(this);
-  }
+    this.handleFont = this.handleFont.bind(this);
 
-  /**
-   * Displays the editor and resets state fields since react does not call constructor again
-   * 
-   * @return void
-   * @memberof EntryEditor
-   */
-  handleShowEditor() {
-    const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
-    this.setState({
-      data: copied_fields,
-      currentSection: 0,
-      showEditor: true
-    })
+    this.fileUploadRef = React.createRef();
+    this.imgColPickerRef = React.createRef();
   }
 
   // TODO: elements read from state instead of props
@@ -211,6 +200,10 @@ class EntryEditor extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return true;
+  }
+
   /**
    * Event handler for text fields. 
    * Text fields should be named after their keys in the state.
@@ -219,9 +212,9 @@ class EntryEditor extends Component {
    * @return void
    * @memberof EntryEditor
    */
-  handleChange(event, category) {
+  handleChange(event, category, section) {
     console.log(event)
-    if (category === "") {
+    if (category === '') {
       this.setState({
         data: {
           ...this.state.data,
@@ -229,14 +222,26 @@ class EntryEditor extends Component {
         }
       });
     } else {
-      const originalCat = { ...this.state.data[category] };
-      originalCat[event.target.name] = event.target.value;
-      this.setState({
-        data: {
-          ...this.state.data,
-          [category]: originalCat
-        }
-      });
+      if (section === undefined || section === false) {
+        const originalCat = { ...this.state.data[category] };
+        originalCat[event.target.name] = event.target.value;
+        this.setState({
+          data: {
+            ...this.state.data,
+            [category]: originalCat
+          }
+        });
+      } else {
+        const newSections = [...this.state.data.sections];
+        newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
+        this.setState({
+          data: {
+            ...this.state.data,
+            sections: newSections
+          }
+        });
+      }
+
     }
   }
 
@@ -249,33 +254,37 @@ class EntryEditor extends Component {
    * @return void
    * @memberof EntryEditor
    */
-  handleImageUpload(event, sectionIndex) {
+  handleImageUpload(event) {
+    console.log(this.state)
     // TODO: Open a upload dialog
     const freader = new FileReader();
     freader.readAsDataURL(event.target.files[0]);
     freader.onloadend = (e) => {
-      if (sectionIndex === undefined) {
+      if (!this.state.editSection) {
         this.setState({
           data: {
             ...this.state.data,
             images: {
               ...this.state.data.images,
-              [event.target.name]: {
+              [this.state.imageName]: {
                 src: e.target.result,
-                format: this.state.data.images[event.target.name].format
+                format: 'image'
               }
             }
-          }
+          },
+          mediaAnchorEl: null
         })
       } else {
         const newSections = [...this.state.data.sections];
         // TODO: create deep copy, mutating .src currently mutates original array elements
-        newSections[this.state.currentSection].images[event.target.name].src = e.target.result;
+        newSections[this.state.currentSection].images[this.state.imageName].src = e.target.result;
+        newSections[this.state.currentSection].images[this.state.imageName].format = 'image'
         this.setState({
           data: {
             ...this.state.data,
             sections: newSections
-          }
+          },
+          mediaAnchorEl: null
         });
       }
     }
@@ -317,25 +326,6 @@ class EntryEditor extends Component {
   }
 
   /**
-   * Event handler for editing sub sections.
-   * 
-   * @param {*} event
-   * @param {Number} index - the index of the section to be edited
-   * @return void
-   * @memberof EntryEditor
-   */
-  handleEditSectionText(event) {
-    const newSections = [...this.state.data.sections];
-    newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
-    this.setState({
-      data: {
-        ...this.state.data,
-        sections: newSections
-      }
-    });
-  }
-
-  /**
    * Event handler to cycle through sub sections
    * @param {*} event 
    */
@@ -351,6 +341,10 @@ class EntryEditor extends Component {
     })
   }
 
+  /**
+   * Event handler to save changes made in the editor and close the editor
+   * @param {boolean} save whether the changes should be saved to state
+   */
   handleCloseEditor(save) {
     if (save) {
       this.props.onClose(this.state.data, true);
@@ -362,142 +356,66 @@ class EntryEditor extends Component {
     })
   }
 
-  handleFontMenu(event) {
-    this.setState({
-      anchorEl: event.currentTarget
-    })
+  /**
+   * Event handler to update the font the user chose
+   * @param {object} event 
+   * @param {string} field the name of the text group to adopt the new font
+   * @param {string} font the font family to be changed to
+   */
+  handleFont(event, field, font) {
+    if (field === undefined) {
+      this.setState({
+        anchorEl: event.currentTarget
+      })
+    } else {
+      this.setState({
+        data: {
+          ...this.state.data,
+          fonts: {
+            ...this.state.data.fonts,
+            [field]: font
+          }
+        },
+        anchorEl: null
+      })
+    }
   }
 
-  handleUpdateFont(field, font) {
-    this.setState({
-      data: {
-        ...this.state.data,
-        fonts: {
-          ...this.state.data.fonts,
-          [field]: font
-        }
-      },
-      anchorEl: null
-    })
-  }
-
-  handleIconSelect(key, newValue, section) {
-    console.log(key);
-    console.log(newValue);
-    if (!section) {
+  /**
+   * Event handler to update the chosen svg from the icon picker
+   * @param {string} iconName a / separated string indicating the path to the specified icon
+   */
+  handleIconSelect(iconName) {
+    const newValue = `${this.state.iconCategory}/${iconName}`;
+    console.log('test');
+    if (!this.state.editSection) {
       this.setState({
         data: {
           ...this.state.data,
           images: {
             ...this.state.data.images,
-            [key]: {
+            [this.state.imageName]: {
               src: newValue,
               format: 'icon'
             }
           }
         },
-        showIcon: false
+        showIcon: false,
+        mediaAnchorEl: null
       })
     } else {
       const newSections = [...this.state.data.sections];
       // TODO: create deep copy, mutating .src currently mutates original array elements
-      console.log(key);
-      console.log(newValue)
-      newSections[this.state.currentSection].images[key].src = newValue;
-      newSections[this.state.currentSection].images[key].format = 'icon';
+      newSections[this.state.currentSection].images[this.state.imageName].src = newValue;
+      newSections[this.state.currentSection].images[this.state.imageName].format = 'icon';
       this.setState({
         data: {
           ...this.state.data,
           sections: newSections
         },
-        showIcon: false
+        showIcon: false,
+        mediaAnchorEl: null
       });
-    }
-  }
-
-  createImageControl(key, item, classes) {
-    switch (item.format) {
-      case 'image':
-        return (
-          <div>
-            <input
-              accept="image/*"
-              className={classes.imgInput}
-              style={{ display: "none" }}
-              id={key}
-              name={key}
-              type="file"
-              onChange={(event) => this.handleImageUpload(event, this.state.currentSection)}
-            // value={item}
-            />
-            <label htmlFor={key}>
-              <Button component="span">
-                <img src={item.src} className={classes.imgPreview} />
-              </Button>
-              <Typography>
-                {this.props.info.sections.entryFormat.images[key].label}
-              </Typography>
-            </label>
-          </div>);
-      case 'icon':
-        const category = item.src.split('/');
-        const SocialIcon = icons[category[0]].icons[category[1]];
-        return (
-          <div>
-            <IconButton onClick={() => this.setState({ showIcon: true, iconCategory: category[0] })}>
-              <SocialIcon />
-              <Typography>
-                {this.props.info.sections.entryFormat.images[key].label}
-              </Typography>
-            </IconButton>
-            <Modal
-              className={classes.modal}
-              open={this.state.showIcon}
-              // TODO: add onClose save logic
-              onClose={() => this.setState({ showIcon: false })}
-              aria-labelledby="Icon picker"
-              aria-describedby="Select an icon"
-              style={{
-                width: '80%',
-                height: '80%',
-                margin: 'auto',
-                backgroundColor: 'red'
-              }}>
-              <div
-                style={{
-                  height: '100%'
-                }}
-              >
-                <Tabs
-                  value={this.state.iconCategory}
-                  variant="scrollable"
-                  scrollButtons="auto"
-                  onChange={(event, value) => {
-                    console.log(value)
-                    this.setState({ iconCategory: value });
-                  }}
-                >
-                  {Object.entries(icons).map(([key, icon]) => {
-                    return (<Tab label={icon.label} value={key} style={{ width: '80%', height: '80%' }} />)
-                  })}
-                </Tabs>
-                <div className={classes.gridDiv}>
-                  {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
-                    const ReactIcon = value;
-                    return (
-                      <IconButton onClick={() => this.handleIconSelect(key, `${this.state.iconCategory}/${iconName}`, true)}>
-                        <ReactIcon />
-                        <Typography>
-                          {iconName}
-                        </Typography>
-                      </IconButton>);
-                  })}
-                </div>
-              </div>
-            </Modal>
-          </div>);
-      default:
-        return null;
     }
   }
 
@@ -510,7 +428,15 @@ class EntryEditor extends Component {
       >
         <Fab
           className={classes.editFAB}
-          onClick={this.handleShowEditor}>
+          onClick={() => {
+            const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
+            this.setState({
+              data: copied_fields,
+              currentSection: 0,
+              showEditor: true
+            })
+          }}
+        >
           <FaEdit />
         </Fab>
         <Modal className={classes.modal}
@@ -523,6 +449,81 @@ class EntryEditor extends Component {
         >
           <div className={classes.root}>
             <Typography component="h3" variant="h3">Entry editor</Typography>
+            <input
+              accept="image/*"
+              className={classes.imgInput}
+              style={{ display: "none" }}
+              ref={this.fileUploadRef}
+              type="file"
+              onChange={this.handleImageUpload}
+            // value={item}
+            />
+            <input
+              type="color"
+              ref={this.imgColPickerRef}
+              onChange={(event) => {
+                if (this.state.editSection) {
+                  const newSections = [...this.state.data.sections];
+                  newSections[this.state.currentSection].images[this.state.imageName].src = event.target.value;
+                  newSections[this.state.currentSection].images[this.state.imageName].format = 'colour';
+                  this.setState({
+                    data: {
+                      ...this.state.data,
+                      sections: newSections
+                    },
+                    mediaAnchorEl: null
+                  });
+                } else {
+                  this.setState({
+                    data: {
+                      ...this.state.data,
+                      images: {
+                        ...this.state.data.images,
+                        [this.state.imageName]: {
+                          src: event.target.value,
+                          format: 'colour'
+                        }
+                      }
+                    },
+                    mediaAnchorEl: null
+                  })
+                }
+              }}
+              onBlur={() => console.log("asda")}
+              style={{ display: "none" }}
+            />
+            <Modal
+              open={this.state.showIcon}
+              aria-labelledby="icon selection modal"
+              aria-describedby="a modal for users to pick an icon"
+              className={classes.modal}
+            >
+              <div>
+                <Tabs
+                  name="iconCategory"
+                  value={this.state.iconCategory}
+                  onChange={(event, tab) => this.setState({ iconCategory: tab })}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  {Object.entries(icons).map(([key, icon]) => {
+                    return (<Tab label={icon.label} value={key} />)
+                  })}
+                </Tabs>
+                <div className={classes.gridDiv}>
+                  {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
+                    const PreviewIcon = value;
+                    return (
+                      <IconButton onClick={() => this.handleIconSelect(iconName)}>
+                        <PreviewIcon />
+                        <Typography>
+                          {iconName}
+                        </Typography>
+                      </IconButton>);
+                  })}
+                </div>
+              </div>
+            </Modal>
             <div className={classes.rowDiv}>
               <div className={classes.styleDiv}>
                 <TextField
@@ -548,7 +549,7 @@ class EntryEditor extends Component {
                 {Object.entries(this.state.data.fonts).map(([key, item]) => {
                   return (
                     <div>
-                      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleFontMenu}>
+                      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event)}>
                         <Typography variant="inherit" style={{ fontFamily: item }}>
                           {this.props.info.fonts[key].label}
                         </Typography>
@@ -562,7 +563,7 @@ class EntryEditor extends Component {
                         onClose={() => this.setState({ anchorEl: null })}
                       >
                         {fonts.map((fontName) => (
-                          <MenuItem onClick={(event) => this.handleUpdateFont(key, fontName)}>
+                          <MenuItem onClick={(event) => this.handleFont(event, key, fontName)}>
                             <Typography variant="inherit" style={{ fontFamily: fontName }}>
                               {fontName}
                             </Typography>
@@ -602,67 +603,68 @@ class EntryEditor extends Component {
                 <div className={classes.rowDiv}>
                   <div className={classes.imgGrid}>
                     {Object.entries(this.state.data.images).map(([key, item]) => {
+                      let Preview;
                       switch (item.format) {
                         case 'image':
-                          return (
-                            <div>
-                              <input
-                                accept="image/*"
-                                className={classes.imgInput}
-                                style={{ display: "none" }}
-                                id={key}
-                                name={key}
-                                type="file"
-                                onChange={this.handleImageUpload}
-                              // value={item}
-                              />
-                              <label htmlFor={key}>
-                                <Button component="span">
-                                  <img src={item.src} className={classes.imgPreview} />
-                                </Button>
-                                <Typography>
-                                  {this.props.info.images[key].label}
-                                </Typography>
-                              </label>
-                            </div>);
+                          Preview = (props) => <img src={item.src} className={classes.imgPreview} />;
+                          break;
                         case 'icon':
                           const category = item.src.split('/');
-                          return (
-                            <div>
-                              <IconButton>
-                                {icons[category[0]].icons[category[1]]}
-                                <Typography>
-                                  {this.props.info.images[key].label}
-                                </Typography>
-                              </IconButton>
-                              <Modal>
-                                <Tabs
-                                  value={this.state.type}
-                                  // onChange={this.handleChange}
-                                  variant="scrollable"
-                                  scrollButtons="auto"
-                                >
-                                  {Object.entries(icons).map(([key, icon]) => {
-                                    return (<Tab label={icon.label} value={icon.label} />)
-                                  })}
-                                </Tabs>
-                                <div className={classes.gridDiv}>
-                                  {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
-                                    console.log(this.state.iconCategory)
-                                    return (
-                                      <IconButton onClick={() => this.handleIconSelect(key, `${this.state.iconCategory}/${iconName}`, false)}>
-                                        <value />
-                                        <Typography>
-                                          {key}
-                                        </Typography>
-                                      </IconButton>);
-                                  })}
-                                </div>
-                              </Modal>
-                            </div>);
+                          Preview = icons[category[0]].icons[category[1]];
+                          break;
+                        case 'colour':
+                          Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
+                          break;
                         default:
-                          return null;
+                          break;
                       }
+                      return (
+                        <div>
+                          <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState(
+                            {
+                              mediaAnchorEl: event.currentTarget,
+                              imageName: key,
+                              editSection: false
+                            })}>
+                            <Preview />
+                            <Typography>
+                              {this.props.info.images[key].label}
+                            </Typography>
+                          </Button>
+                          <Menu
+                            id="media-menu"
+                            anchorEl={this.state.mediaAnchorEl}
+                            keepMounted
+                            open={Boolean(this.state.mediaAnchorEl) && !this.state.editSection && this.state.imageName === key}
+                            onClose={() => this.setState({ mediaAnchorEl: null })}
+                          >
+                            {this.props.info.images[key].format.map((format) => {
+                              // TODO: debug change format errors
+                              switch (format) {
+                                case 'image':
+                                  return (<MenuItem onClick={() => {
+                                    this.fileUploadRef.current.click()
+                                  }}
+                                  >{format}</MenuItem>)
+                                case 'icon':
+                                  const category = item.src.split('/');
+                                  return (<MenuItem onClick={() => this.setState(
+                                    {
+                                      showIcon: true,
+                                      iconCategory: category[0]
+                                    })}
+                                  >{format}</MenuItem>);
+                                case 'colour':
+                                  return (<MenuItem onClick={
+                                    () => this.imgColPickerRef.current.click()
+                                  }>{format}</MenuItem>);
+                                default:
+                                  break;
+                              }
+                            })}
+                          </Menu>
+                        </div>
+                      );
                     })}
                   </div>
                   <div className={classes.textGrid}>
@@ -705,89 +707,67 @@ class EntryEditor extends Component {
                           <div className={classes.rowDiv}>
                             <div className={classes.imgGrid}>
                               {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
+                                let Preview;
                                 switch (item.format) {
                                   case 'image':
-                                    return (
-                                      <div>
-                                        <input
-                                          accept="image/*"
-                                          className={classes.imgInput}
-                                          style={{ display: "none" }}
-                                          id={key}
-                                          name={key}
-                                          type="file"
-                                          onChange={(event) => this.handleImageUpload(event, this.state.currentSection)}
-                                        // value={item}
-                                        />
-                                        <label htmlFor={key}>
-                                          <Button component="span">
-                                            <img src={item.src} className={classes.imgPreview} />
-                                          </Button>
-                                          <Typography>
-                                            {this.props.info.sections.entryFormat.images[key].label}
-                                          </Typography>
-                                        </label>
-                                      </div>);
+                                    Preview = (props) => <img src={item.src} className={classes.imgPreview} />;
+                                    break;
                                   case 'icon':
                                     const category = item.src.split('/');
-                                    const SocialIcon = icons[category[0]].icons[category[1]];
-                                    return (
-                                      <div>
-                                        <IconButton onClick={() => this.setState({ showIcon: true, iconCategory: category[0] })}>
-                                          <SocialIcon />
-                                          <Typography>
-                                            {this.props.info.sections.entryFormat.images[key].label}
-                                          </Typography>
-                                        </IconButton>
-                                        <Modal
-                                          className={classes.modal}
-                                          open={this.state.showIcon}
-                                          // TODO: add onClose save logic
-                                          onClose={() => this.setState({ showIcon: false })}
-                                          aria-labelledby="Icon picker"
-                                          aria-describedby="Select an icon"
-                                          style={{
-                                            width: '80%',
-                                            height: '80%',
-                                            margin: 'auto',
-                                            backgroundColor: 'red'
-                                          }}>
-                                          <div
-                                            style={{
-                                              height: '100%'
-                                            }}
-                                          >
-                                            <Tabs
-                                              value={this.state.iconCategory}
-                                              variant="scrollable"
-                                              scrollButtons="auto"
-                                              onChange={(event, value) => {
-                                                console.log(value)
-                                                this.setState({ iconCategory: value });
-                                              }}
-                                            >
-                                              {Object.entries(icons).map(([key, icon]) => {
-                                                return (<Tab label={icon.label} value={key} style={{ width: '80%', height: '80%' }} />)
-                                              })}
-                                            </Tabs>
-                                            <div className={classes.gridDiv}>
-                                              {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
-                                                const ReactIcon = value;
-                                                return (
-                                                  <IconButton onClick={() => this.handleIconSelect(key, `${this.state.iconCategory}/${iconName}`, true)}>
-                                                    <ReactIcon />
-                                                    <Typography>
-                                                      {iconName}
-                                                    </Typography>
-                                                  </IconButton>);
-                                              })}
-                                            </div>
-                                          </div>
-                                        </Modal>
-                                      </div>);
+                                    Preview = icons[category[0]].icons[category[1]];
+                                    break;
+                                  case 'colour':
+                                    Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
+                                    break;
                                   default:
-                                    return null;
+                                    break;
                                 }
+                                return (
+                                  <div>
+                                    <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState({
+                                      mediaAnchorEl: event.currentTarget,
+                                      imageName: key,
+                                      editSection: true,
+                                    })}>
+                                      <Preview />
+                                      <Typography>
+                                        {this.props.info.sections.entryFormat.images[key].label}
+                                      </Typography>
+                                    </Button>
+                                    <Menu
+                                      id="media-menu"
+                                      anchorEl={this.state.mediaAnchorEl}
+                                      keepMounted
+                                      open={Boolean(this.state.mediaAnchorEl) && this.state.editSection && this.state.imageName === key}
+                                      onClose={() => this.setState({ mediaAnchorEl: null })}
+                                    >
+                                      {this.props.info.sections.entryFormat.images[key].format.map((format) => {
+                                        // TODO: debug change format errors
+                                        switch (format) {
+                                          case 'image':
+                                            return (<MenuItem onClick={() => {
+                                              this.fileUploadRef.current.click()
+                                            }}
+                                            >{format}</MenuItem>)
+                                          case 'icon':
+                                            const category = item.src.split('/');
+                                            return (<MenuItem onClick={() => this.setState(
+                                              {
+                                                showIcon: true,
+                                                iconCategory: category[0],
+                                              })}
+                                            >{format}</MenuItem>);
+                                          case 'colour':
+                                            return (<MenuItem onClick={
+                                              this.imgColPickerRef.current.click()
+                                            }>{format}</MenuItem>);
+                                          default:
+                                            break;
+                                        }
+                                      })}
+                                    </Menu>
+                                  </div>
+                                );
                               })}
                             </div>
                             <div className={classes.textGrid}>
@@ -802,7 +782,7 @@ class EntryEditor extends Component {
                                       value={item}
                                       margin="normal"
                                       variant="outlined"
-                                      onChange={(event) => this.handleEditSectionText(event)}
+                                      onChange={(event) => this.handleChange(event, 'texts', true)}
                                       multiline
                                       rowsMax={3}
                                     />

@@ -33,7 +33,7 @@ class IntroTemplateMinimalist extends Component {
   static info = {
     fonts: { titleFont: { label: "title font" } },
     colours: { primary: { label: "primary" }, secondary: { label: "secondary" } },
-    images: { dp: { label: "Your portrait photo", format: ['image'] }, bg: { label: "Entry background", format: ['image'] } },
+    images: { dp: { label: "Your portrait photo", format: ['image'] }, bg: { label: "Entry background", format: ['image', 'colour'] } },
     texts: { name: { label: "Your full name" }, status: { label: "your current position" } },
     sections: {}
   };
@@ -45,7 +45,7 @@ class IntroTemplateMinimalist extends Component {
     height: "80vh",
     fonts: { titleFont: "Roboto" },
     colours: { primary: "#d19a19", secondary: "#000000" },
-    images: { dp: { src: "https://bit.ly/3fRv2Y2", format: 'image' }, bg: { src: "https://bit.ly/2RWO4Ei", format: 'iamge' } },
+    images: { dp: { src: "https://bit.ly/3fRv2Y2", format: 'image' }, bg: { src: "https://bit.ly/2RWO4Ei", format: 'image' } },
     texts: { name: "Port Folio", status: "UI/UX developer" },
     sections: []
   };
@@ -55,7 +55,8 @@ class IntroTemplateMinimalist extends Component {
     return (
       <div className={classes.root} style={{
         backgroundRepeat: false,
-        backgroundImage: `url("${fields.images.bg.src}")`,
+        backgroundImage: fields.images.bg.format === 'image' ? `url("${fields.images.bg.src}")` : '',
+        backgroundColor: fields.images.bg.format === 'colour' ? fields.images.bg.src : '',
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         width: fields.width,

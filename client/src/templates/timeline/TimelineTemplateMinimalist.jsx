@@ -111,7 +111,7 @@ class TimelineTemplateMinimalist extends Component {
         {fields.sections.map((section, index) => {
           return (
             <div className={classes.section}>
-              <img src={section.images.timelineImage} className={classes.timelineImg} />
+              <img src={section.images.timelineImage.src} className={classes.timelineImg} />
               <div className={classes.sectionTextDiv}>
                 <Typography
                   style={{ color: fields.colours.secondary }}
