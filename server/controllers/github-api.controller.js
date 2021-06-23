@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 import FormData from 'form-data';
 import axios from 'axios';
 import jwt from "jsonwebtoken";
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, JWT_SECRET } from '../utils/config.js';
+import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, JWT_SECRET, ENCRYPT_KEY } from '../utils/config.js';
+import crypto from 'crypto';
 
 
 
@@ -28,16 +29,49 @@ const DESCRIPTION = "Portfolio website hosted by ghpages created by Portfolio.io
  *  ensures cookies can be trusted.
  * maxAge: sets a relative time from cookie's creation to its expiry when it will be removed from browser.
  */
-const cookieParams = {
-    httpOnly: true,
-    secure: true,
-    SameSite: "strict",
-    signed: true,
-    maxAge: 6 * 60 * 60 * 1000,
+// const cookieParams = {
+//     httpOnly: true,
+//     secure: true,
+//     SameSite: "strict",
+//     signed: true,
+//     maxAge: 6 * 60 * 60 * 1000,
+// }
+
+
+const sha1 = (input) => {
+    return crypto.createHash('sha1').update(input).digest();
 }
+
+const password_derive_bytes = (password, salt, iterations, len) => {
+    var key = Buffer.from(password + salt);
+    for (var i = 0; i < iterations; i++) {
+        key = sha1(key);
+    }
+    if (key.length < len) {
+        var hx = password_derive_bytes(password, salt, iterations - 1, 20);
+        for (var counter = 1; key.length < len; ++counter) {
+            key = Buffer.concat([key, sha1(Buffer.concat([Buffer.from(counter.toString()), hx]))]);
+        }
+    }
+    return Buffer.alloc(len, key);
+}
+
+
+const encode = async (string) => {
+    const iv = crypto.randomBytes(16);
+    var key = password_derive_bytes(ENCRYPT_KEY, '', 100, 32);
+    var cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    var part1 = cipher.update(string, 'utf8');
+    var part2 = cipher.final();
+    const encrypted = Buffer.concat([part1, part2]).toString('base64');
+    return { iv: iv.toString('hex'), encrypted: encrypted };
+}
+
+
 
 export const getToken = async (req, res) => {
     try {
+        console.log(req.body.code)
         const code = req.body.code;
         const data = new FormData();
         data.append("client_id", client_id);
@@ -62,6 +96,8 @@ export const getToken = async (req, res) => {
                     return response.data;
                 })
 
+                const encrypted_ghToken = await encode(ghToken);
+
                 /**
                  * Using JWT encryption allows us to not store user sessions and enables us to freely expand our number
                  * of servers if we choose to in the future, since only the secret is required for JWTs to work.
@@ -70,16 +106,29 @@ export const getToken = async (req, res) => {
                  * caution to not store any sensitive data in JWT regardless.
                  */
                 const jwtoken = jwt.sign(
-                    {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: ghToken }, 
+                    {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: encrypted_ghToken }, 
                     JWT_SECRET,
                     // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
 
-                /**
-                 * JWTs are stored in a HTTPonly cookie to mitigate token theft. Even in the case of stolen tokens, we
-                 * offer the logout option to invalidate the user's access token.
-                 */
-                res.cookie("authorization", jwtoken, cookieParams);
+                // /**
+                //  * JWTs are stored in a HTTPonly cookie to mitigate token theft. Even in the case of stolen tokens, we
+                //  * offer the logout option to invalidate the user's access token.
+                //  */
+                // res.cookie("authorization", jwtoken, cookieParams);
+
+                req.session.user = {
+                    details: jwtoken
+                }
+
+                req.session.save(err => {
+                    if (err) console.log(err);
+                    console.log("session saved")
+                })
+
+                
+
+
                 // TODO: check if name == null, replace login otherwise.
                 // TODO: update db if user not found/query db for userdata instead.
                 return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });

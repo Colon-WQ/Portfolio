@@ -18,6 +18,7 @@ import { Prompt, withRouter } from 'react-router-dom';
 import { theme } from '../styles/styles';
 import html2canvas from 'html2canvas';
 import FormData from 'form-data';
+import { handleErrors } from '../handlers/errorHandler';
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -119,9 +120,12 @@ class Portfolio extends Component {
   async componentDidMount() {
     if (!this.props.loggedIn) {
       const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-      const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
-      await this.props.repopulate_state(userLocalStorageItem);
-      await this.props.saveCurrentWork(portfolioLocalStorageItem);
+      if (userLocalStorageItem !== null) {
+        const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+        await this.props.repopulate_state(userLocalStorageItem);
+        await this.props.saveCurrentWork(portfolioLocalStorageItem);
+      }
+      
     }
 
     //The rationale behind using this.state.name as the check is that name would be set before the user enters
@@ -430,11 +434,7 @@ class Portfolio extends Component {
         //After _id is fetched, we then update the preview.
         await this.handleUploadPreview();
       }).catch(err => {
-        if (err.response) {
-          console.log(err.response.data);
-        } else {
-          console.log(err.message);
-        }
+        handleErrors(err, this.props.history);
 
         //If code comes to here, it means _id is not fetched after save is successful. We bring the user
         //back to dashboard to force him to reopen and fetch the portfolio again.
@@ -442,11 +442,7 @@ class Portfolio extends Component {
       })
 
     }).catch(err => {
-      if (err.response) {
-        console.log(err.response.data);
-      } else {
-        console.log(err.message);
-      }
+      handleErrors(err, this.props.history);
     })
   }
 
@@ -542,11 +538,7 @@ class Portfolio extends Component {
               }).then(res => {
                 console.log(res.data.message);
               }).catch(err => {
-                if (err.response) {
-                  console.log(err.response.data);
-                } else {
-                  console.log(err.message);
-                }
+                handleErrors(err, this.props.history);
               })
             } else {
               console.log("uploading image");
@@ -559,20 +551,12 @@ class Portfolio extends Component {
               }).then(res => {
                 console.log(res.data.message);
                 console.log(res.data.refs);
-              }).catch(async err => {
-                if (err.response) {
-                  console.log(err.response.data);
-                } else {
-                  console.log(err.message);
-                }
+              }).catch(err => {
+                handleErrors(err, this.props.history);
               });
             }
           }).catch(err => {
-            if (err.response) {
-              console.log(err.response.data);
-            } else {
-              console.log(err.message);
-            }
+            handleErrors(err, this.props.history);
           })
         }
         )
