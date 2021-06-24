@@ -107,17 +107,31 @@ const styles = (theme) => ({
   gridDiv: {
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, 250px)',
+    gridTemplateColumns: 'repeat(auto-fill, 6em)',
     gridGap: '10px',
     justifyContent: 'center',
     height: '80%',
     overflowY: 'auto',
     overflowX: 'hidden'
   },
-  svgIcon: {
-    width: 100,
-    height: 100
+  iconBtn: {
+    width: '4em',
+    height: '3em'
   },
+  iconDiv: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 'inherit',
+    height: 'inherit'
+  },
+  subModal: {
+    width: '80%',
+    height: '80%',
+    margin: 'auto',
+    backgroundColor: '#222222'
+  }
 })
 
 /**
@@ -496,9 +510,10 @@ class EntryEditor extends Component {
               open={this.state.showIcon}
               aria-labelledby="icon selection modal"
               aria-describedby="a modal for users to pick an icon"
-              className={classes.modal}
+              className={`${classes.modal} ${classes.subModal}`}
+              onClose={() => this.setState({ showIcon: false, mediaAnchorEl: null })}
             >
-              <div>
+              <div style={{ width: '100%', height: '100%' }}>
                 <Tabs
                   name="iconCategory"
                   value={this.state.iconCategory}
@@ -507,18 +522,20 @@ class EntryEditor extends Component {
                   scrollButtons="auto"
                 >
                   {Object.entries(icons).map(([key, icon]) => {
-                    return (<Tab label={icon.label} value={key} />)
+                    return (<Tab label={icon.label} value={key} style={{ height: 'inherit' }} />)
                   })}
                 </Tabs>
-                <div className={classes.gridDiv}>
+                <div role='tabpanel' className={classes.gridDiv}>
                   {Object.entries(icons[this.state.iconCategory].icons).map(([iconName, value]) => {
                     const PreviewIcon = value;
                     return (
-                      <IconButton onClick={() => this.handleIconSelect(iconName)}>
-                        <PreviewIcon />
-                        <Typography>
-                          {iconName}
-                        </Typography>
+                      <IconButton onClick={() => this.handleIconSelect(iconName)} >
+                        <div className={classes.iconDiv}>
+                          <PreviewIcon size='1.5em' />
+                          <Typography noWrap variant='h6' component='h6' style={{ width: 'inherit', fontSize: '0.5em' }}  >
+                            {iconName}
+                          </Typography>
+                        </div>
                       </IconButton>);
                   })}
                 </div>
@@ -639,7 +656,6 @@ class EntryEditor extends Component {
                             onClose={() => this.setState({ mediaAnchorEl: null })}
                           >
                             {this.props.info.images[key].format.map((format) => {
-                              // TODO: debug change format errors
                               switch (format) {
                                 case 'image':
                                   return (<MenuItem onClick={() => {
@@ -714,7 +730,8 @@ class EntryEditor extends Component {
                                     break;
                                   case 'icon':
                                     const category = item.src.split('/');
-                                    Preview = icons[category[0]].icons[category[1]];
+                                    const SvgIcon = icons[category[0]].icons[category[1]];
+                                    Preview = (props) => <SvgIcon size='3em' />
                                     break;
                                   case 'colour':
                                     Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
@@ -729,10 +746,12 @@ class EntryEditor extends Component {
                                       imageName: key,
                                       editSection: true,
                                     })}>
-                                      <Preview />
-                                      <Typography>
-                                        {this.props.info.sections.entryFormat.images[key].label}
-                                      </Typography>
+                                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Preview />
+                                        <Typography>
+                                          {this.props.info.sections.entryFormat.images[key].label}
+                                        </Typography>
+                                      </div>
                                     </Button>
                                     <Menu
                                       id="media-menu"
