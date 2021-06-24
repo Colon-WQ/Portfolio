@@ -40,10 +40,10 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://resumate.xyz:5000",
+        url: "http://localhost:5000/api",
         description: "Development backend server"
       },
-    ]
+    ],
   },
   apis: ["./routes/*.js"],
 };

@@ -71,7 +71,6 @@ const encode = async (string) => {
 
 export const getToken = async (req, res) => {
     try {
-        console.log(req.body.code)
         const code = req.body.code;
         const data = new FormData();
         data.append("client_id", client_id);
@@ -162,10 +161,7 @@ export const checkGitCreated = async (req, res) => {
         }
     })
 };
-
-// TODO: research updating multiple files at a time to make undo easier
-// TODO: deploy to ghpages if not a .io repo
-// TODO: handle pagination for extra large files
+    
 // req.body must contain: route, content, repo. 
 export const publishGithub = async (req, res) => {
     console.log("pushing to repository " + req.body.repo)
