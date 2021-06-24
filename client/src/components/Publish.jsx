@@ -55,8 +55,6 @@ const styles = (theme) => ({
  * The publish component renders functionalities to allow user to publish their
  * portfolio to ghpages.
  * 
- * The component contains state variables repositoryHTML, repositoryCSS, repositoryJS.
- * 
  * @component
  */
 class Publish extends Component {
@@ -107,7 +105,8 @@ class Publish extends Component {
     }
 
     /**
-     * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.
+     * Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true. Also creates
+     * the html, css and js files and pushes them into state array repositoryContent.
      * 
      * @return void
      * @memberof Publish
@@ -183,14 +182,15 @@ class Publish extends Component {
 
 
     /**
-     * Sends a PUT request to backend API which will take over and handle the pushing to specified Github
+     * First starts a interval task to send a request to backend to retrieve github page deployment status at an interval of
+     * 15s. Sets the interval task to state pageCheckIntervalTask.
+     * 
+     * Then sends a PUT request to backend API which will take over and handle the pushing to specified Github
      * repository and its deployment to ghpages if not already done so. 
      * 
      * The PUT request requires route (The path relative to Github repository root to push to), repo (The
      * name of Github repository to push to) and content (An array of objects representing files to be pushed).
      * 
-     * For testing purposes, route is fixed to "" for now so that pushing will be done to the root of specified 
-     * Github repository.
      * 
      * Note: For files within sub directories, the path can be prepended to the filename like so "folder/index.html"
      * 
@@ -290,12 +290,28 @@ class Publish extends Component {
         })
 
         //Intentional: closes finalizeDialog but doesn't remove repository name.
-        //TODO: Repository name should not be set in dialog, but in some easily visible spot.
         this.setState({
             finalizeDialogState: false
         })
     }
 
+    /**
+     * Sends a request to backend to retrieve the status of the deployed page. Sets state publishLoading to true to show loading indicator.
+     * 
+     * If status is "building", the page is being built.
+     * 
+     * If status is "built", the page is built. Set state publishLoading to false to remove loading indicator. 
+     * State pageCheckIntervalTask will be cleared.
+     * Then set state pageUrl to the url of newly deployed github page and set state statusState to true to show
+     * a snackbar allowing user to copy the newly deployed github page url to clipboard.
+     * 
+     * If status is "errored", the page encountered errors in the process of building and deployment has failed.
+     * Set state publishLoading to false to remove loading indicator. Then set state publishError to true and state publishErrorMessage
+     * to appropriate error message to showcase errors.
+     * 
+     * @returns void
+     * @memberof Publish
+     */
     async handleCheckPageStatus() {
         if (this.state.repositoryName !== "") {
             await axios({
@@ -333,6 +349,14 @@ class Publish extends Component {
         }
     }
 
+    /**
+     * Handles hiding of snackbar.
+     * 
+     * @param {Object} event 
+     * @param {string} reason detail of event
+     * @returns void
+     * @memberof Publish
+     */
     handleStatusClose(event, reason) {
         if (reason === 'clickaway') {
             return;
@@ -345,6 +369,12 @@ class Publish extends Component {
         })
     }
 
+    /**
+     * Handles copying state pageUrl to clipboard
+     * 
+     * @returns void
+     * @memberof Publish
+     */
     handleCopyClipboard() {
         navigator.clipboard.writeText(this.state.pageUrl)
     }
