@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -93,6 +93,7 @@ import LoginResult from './components/LoginResult';
 import Dashboard from './components/Dashboard';
 import Portfolio from './components/Portfolio';
 import Publish from './components/Publish';
+import UserConfirmation from './components/UserConfirmation';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -101,6 +102,7 @@ import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
 import { theme } from './styles/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
+
 
 /**
  * @file index.js is the root file for this Portfol.io app
@@ -113,18 +115,12 @@ const store = createStore(
   applyMiddleware(thunk)
 )
 
-const portfolioFields = {
-  finalizeDialogState: false,
-  overrideDialogState: false,
-  repositoryName: "",
-  repositoryHTML: "",
-  repositoryCSS: ""
-}
-
 ReactDOM.render(
   &lt;React.StrictMode>
     &lt;ThemeProvider theme = {theme}>
-      &lt;BrowserRouter>
+      &lt;BrowserRouter
+        getUserConfirmation={(message, callback) => UserConfirmation(message, callback)}
+      >
         &lt;Provider store = {store}>
           &lt;Switch>
             &lt;Route exact path = '/' component = {Home}>&lt;/Route>
@@ -147,7 +143,8 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-</code></pre>
+
+export default store;</code></pre>
         </article>
     </section>
 

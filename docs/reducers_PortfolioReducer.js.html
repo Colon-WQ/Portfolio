@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -98,7 +98,8 @@ import {
     FETCH_PORTFOLIOS_SUCCESS,
     FETCH_PORTFOLIOS_FAILURE,
     SAVE_CURRENT_WORK,
-    CLEAR_CURRENT_WORK
+    CLEAR_CURRENT_WORK,
+    TOGGLE_UNSAVED_WORK
 } from '../actions/PortfolioAction'
 
 /** 
@@ -106,14 +107,15 @@ import {
  * @property {Array.&lt;Object>} portfolios - Array containing objects containing details about user portfolios.
  * @property {boolean} loading - boolean indicating loading status
  * @property {Object} error - error object from a failed request
- * @property {Object} currentWork - object containing details about user's current portfolio work.
+ * @property {Object} currentPortfolio - object containing details about user's current portfolio work.
  * @member initialState
  */
 const initialState = {
     portfolios: [],
     loading: false,
     error: null,
-    currentWork: null
+    currentPortfolio: null,
+    isUnsaved: false
 }
 
 /**
@@ -123,10 +125,10 @@ const initialState = {
  * @param {Object} [state=initialState] - initialState is fixed.
  * @param {Object} action - Action object.
  * @return void 
- * @member portfolioReducer
+ * @member portfolio
  * @function
  */
-export default function portfolioReducer(state = initialState, action) {
+export default function portfolio(state = initialState, action) {
     switch(action.type) {
         case FETCH_PORTFOLIOS_BEGIN:
             return {
@@ -145,18 +147,23 @@ export default function portfolioReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 portfolios: [],
-                currentWork: null,
+                currentPortfolio: null,
                 error: action.payload.err
             }
         case SAVE_CURRENT_WORK:
             return {
                 ...state,
-                currentWork: action.payload.curr
+                currentPortfolio: action.payload.curr
             }
         case CLEAR_CURRENT_WORK:
             return {
                 ...state,
-                currentWork: null
+                currentPortfolio: null
+            }
+        case TOGGLE_UNSAVED_WORK:
+            return {
+                ...state,
+                isUnsaved: action.payload.bool
             }
         default:
             return state;
