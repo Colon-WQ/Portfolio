@@ -66,7 +66,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -90,8 +90,7 @@
         </h2>
         
             <div class="class-description"><p>The publish component renders functionalities to allow user to publish their
-portfolio to ghpages.</p>
-<p>The component contains state variables repositoryHTML, repositoryCSS, repositoryJS.</p></div>
+portfolio to ghpages.</p></div>
         
     
 </header>
@@ -173,7 +172,7 @@ portfolio to ghpages.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line72">line 72</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line60">line 60</a>
             </span>
         </p>
     
@@ -352,7 +351,7 @@ portfolio to ghpages.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line36">line 36</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line39">line 39</a>
             </span>
         </p>
     
@@ -384,12 +383,16 @@ portfolio to ghpages.</p>
 
 
     
-    <h4 class="name" id="componentDidMount">
-        <a class="href-link" href="#componentDidMount">#</a>
+    <h4 class="name" id="handleCheckPageStatus">
+        <a class="href-link" href="#handleCheckPageStatus">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
         
         <span class="code-name">
             
-                componentDidMount<span class="signature">()</span><span class="type-signature"></span>
+                handleCheckPageStatus<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -398,7 +401,15 @@ portfolio to ghpages.</p>
     
     
     <div class="description">
-        <p>Attempts to fetch user details and logged in status from localStorage after component is rendered.</p>
+        <p>Sends a request to backend to retrieve the status of the deployed page. Sets state publishLoading to true to show loading indicator.</p>
+<p>If status is &quot;building&quot;, the page is being built.</p>
+<p>If status is &quot;built&quot;, the page is built. Set state publishLoading to false to remove loading indicator.
+State pageCheckIntervalTask will be cleared.
+Then set state pageUrl to the url of newly deployed github page and set state statusState to true to show
+a snackbar allowing user to copy the newly deployed github page url to clipboard.</p>
+<p>If status is &quot;errored&quot;, the page encountered errors in the process of building and deployment has failed.
+Set state publishLoading to false to remove loading indicator. Then set state publishError to true and state publishErrorMessage
+to appropriate error message to showcase errors.</p>
     </div>
     
 
@@ -449,174 +460,7 @@ portfolio to ghpages.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line117">line 117</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>void</p></div>
-    
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="handleAddFileContent">
-        <a class="href-link" href="#handleAddFileContent">#</a>
-        
-        <span class="code-name">
-            
-                handleAddFileContent<span class="signature">(event)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Handles addition of files in the form of objects to the state variable repositoryContent. If file to be added
-share the same name as an existing file in repositoryContent, the fileContent of the exisitng file will be
-overwritten by the new file's contents.</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>event</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">Object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="components_Publish.jsx.html" class="button">View Source</a>
-            <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line146">line 146</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line315">line 315</a>
             </span>
         </p>
     
@@ -665,12 +509,12 @@ overwritten by the new file's contents.</p>
 
 
     
-    <h4 class="name" id="handleAddToFileContent">
-        <a class="href-link" href="#handleAddToFileContent">#</a>
+    <h4 class="name" id="handleCopyClipboard">
+        <a class="href-link" href="#handleCopyClipboard">#</a>
         
         <span class="code-name">
             
-                handleAddToFileContent<span class="signature">(files)</span><span class="type-signature"></span>
+                handleCopyClipboard<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -679,7 +523,7 @@ overwritten by the new file's contents.</p>
     
     
     <div class="description">
-        <p>Test function to be passed down as props to child components.</p>
+        <p>Handles copying state pageUrl to clipboard</p>
     </div>
     
 
@@ -690,57 +534,6 @@ overwritten by the new file's contents.</p>
 
 
 
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>files</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">Array.&lt;Object></span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
 
 
 
@@ -781,157 +574,7 @@ overwritten by the new file's contents.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line178">line 178</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="handleAnchorMenu">
-        <a class="href-link" href="#handleAnchorMenu">#</a>
-        
-        <span class="code-name">
-            
-                handleAnchorMenu<span class="signature">(event)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Handles the expanding of menu by setting state variable with name matching component prop 'componentname' of the component
-which fired the event to the component itself.
-Note: Usage of 'componentname' prop to store the name of state variable to be changed via this method.</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>event</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">Object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="components_Publish.jsx.html" class="button">View Source</a>
-            <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line263">line 263</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line378">line 378</a>
             </span>
         </p>
     
@@ -1045,7 +688,7 @@ Note: Usage of 'componentname' prop to store the name of state variable to be ch
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line224">line 224</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line135">line 135</a>
             </span>
         </p>
     
@@ -1108,7 +751,8 @@ Note: Usage of 'componentname' prop to store the name of state variable to be ch
     
     
     <div class="description">
-        <p>Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true.</p>
+        <p>Handles the opening of finalize dialog by setting state boolean finalizeDialogState to true. Also creates
+the html, css and js files and pushes them into state array repositoryContent.</p>
     </div>
     
 
@@ -1159,7 +803,7 @@ Note: Usage of 'componentname' prop to store the name of state variable to be ch
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line211">line 211</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line114">line 114</a>
             </span>
         </p>
     
@@ -1283,7 +927,7 @@ exisiting Github repository's content.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line362">line 362</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line257">line 257</a>
             </span>
         </p>
     
@@ -1448,7 +1092,7 @@ exisiting Github repository's content.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line131">line 131</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line101">line 101</a>
             </span>
         </p>
     
@@ -1567,7 +1211,7 @@ wait for handlePushToGithub() to complete before closing the override dialog.</p
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line295">line 295</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line174">line 174</a>
             </span>
         </p>
     
@@ -1681,7 +1325,7 @@ wait for handlePushToGithub() to complete before closing the override dialog.</p
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line248">line 248</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line159">line 159</a>
             </span>
         </p>
     
@@ -1795,7 +1439,7 @@ wait for handlePushToGithub() to complete before closing the override dialog.</p
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line236">line 236</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line147">line 147</a>
             </span>
         </p>
     
@@ -1862,12 +1506,12 @@ wait for handlePushToGithub() to complete before closing the override dialog.</p
     
     
     <div class="description">
-        <p>Sends a PUT request to backend API which will take over and handle the pushing to specified Github
+        <p>First starts a interval task to send a request to backend to retrieve github page deployment status at an interval of
+15s. Sets the interval task to state pageCheckIntervalTask.</p>
+<p>Then sends a PUT request to backend API which will take over and handle the pushing to specified Github
 repository and its deployment to ghpages if not already done so.</p>
 <p>The PUT request requires route (The path relative to Github repository root to push to), repo (The
 name of Github repository to push to) and content (An array of objects representing files to be pushed).</p>
-<p>For testing purposes, route is fixed to &quot;&quot; for now so that pushing will be done to the root of specified
-Github repository.</p>
 <p>Note: For files within sub directories, the path can be prepended to the filename like so &quot;folder/index.html&quot;</p>
 <p>Note: This clears out the repositoryContent after the PUT request is completed.</p>
     </div>
@@ -1920,7 +1564,7 @@ Github repository.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line321">line 321</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line202">line 202</a>
             </span>
         </p>
     
@@ -1969,12 +1613,12 @@ Github repository.</p>
 
 
     
-    <h4 class="name" id="handleReleaseMenu">
-        <a class="href-link" href="#handleReleaseMenu">#</a>
+    <h4 class="name" id="handleStatusClose">
+        <a class="href-link" href="#handleStatusClose">#</a>
         
         <span class="code-name">
             
-                handleReleaseMenu<span class="signature">(event)</span><span class="type-signature"></span>
+                handleStatusClose<span class="signature">(event, reason)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1983,8 +1627,7 @@ Github repository.</p>
     
     
     <div class="description">
-        <p>Handles the closing of menu by setting state variable with name matching component prop 'componentname' of the component
-which fired the event to null.</p>
+        <p>Handles hiding of snackbar.</p>
     </div>
     
 
@@ -2043,6 +1686,31 @@ which fired the event to null.</p>
 
 
         
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>reason</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>detail of event</p></td>
+</tr>
+
+
+        
         </tbody>
     </table>
 </div>
@@ -2086,7 +1754,7 @@ which fired the event to null.</p>
         <p class="tag-source">
             <a href="components_Publish.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line279">line 279</a>
+                <a href="components_Publish.jsx.html">components/Publish.jsx</a>, <a href="components_Publish.jsx.html#line360">line 360</a>
             </span>
         </p>
     

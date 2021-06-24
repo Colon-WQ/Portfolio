@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> components/DirectoryManager.jsx</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/DirectoryManager.jsx</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { repopulate_state } from '../actions/LoginAction';
+import { withStyles } from '@material-ui/core/styles';
+import TreeView from '@material-ui/lab/TreeView';
+import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab, TextField } from '@material-ui/core';
+import { TreeItem } from '@material-ui/lab';
+import { templates } from '../templates/Templates';
+import { FaPlus, FaSave, FaTimes, FaLink } from 'react-icons/fa';
+
+
+/**
+ * @file User Interface to allow users to switch between views.
+ * 
+ * @author Chuan Hao
+ * 
+ * @see DirectoryManager
+ */
+
+/**
+ * Style generator to dynamically adjust styles based on theme provided
+ * @param theme 
+ * @returns classes passed as props to the component, with values provided by parameter theme
+ */
+const styles = (theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '2%',
+    textAlign: 'center',
+    backgroundColor: '#444444',
+    opacity: '90%',
+    height: '100%',
+  },
+  modal: {
+    overflow: 'scroll',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '5%',
+    height: '100%'
+  },
+  controlFAB: {
+    position: 'static',
+    marginRight: '0.5vw',
+    marginBottom: '0.5vw'
+  },
+  treeItem: {
+    '&amp;$treeItemSelected > $treeItemContent': {
+      backgroundColor: '#F00'
+    }
+  },
+  treeItemSelected: {
+  },
+  treeItemExpanded: {
+    // borderLeft: '1px dashed #FFF',
+  },
+  treeItemGroup: {
+    marginLeft: 7,
+    paddingLeft: 18,
+    borderLeft: '1px dashed #FFF'
+  },
+  treeItemContent: {},
+  treeView: {
+    textAlign: 'left'
+  },
+  textField: {},
+  hide: {
+    display: 'none'
+  }
+})
+
+const RENAME = 0;
+const CREATE = 1;
+
+/**
+ * User interface to allow users to select templates for each entry.
+ * 
+ * @component
+ */
+class DirectoryManager extends Component {
+  /**
+   * Populates state with fields passed in as attribute fields.
+   * @constructor
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPage: this.props.dirTree,
+      currentPath: [],
+      showInput: false,
+      dirTree: this.props.dirTree,
+      showDirectory: false,
+      dirName: "",
+      inputMode: RENAME,
+      expanded: []
+    }
+    this.handleSelectPage = this.handleSelectPage.bind(this);
+    this.renderTree = this.renderTree.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDeletePage = this.handleDeletePage.bind(this);
+    this.handleRenameDirectory = this.handleRenameDirectory.bind(this);
+  }
+
+  /**
+   * Attempts to fetch entry details where possible so settings are saved.
+   * 
+   * @property {Function} componentDidMount
+   * @return void
+   * @memberof DirectoryManager
+   */
+  componentDidMount() {
+    // is this necessary if template is a widget
+    if (!this.props.loggedIn) {
+      const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+      this.props.repopulate_state(localStorageItem)
+    }
+  }
+
+  /**
+   * Event handler to update states to reflect the selected page.
+   * 
+   * @param {*} event 
+   * @param {object} node The id of the page selected. 
+   * MUI api indicates node is supposed to be a string but object seems to work.
+   */
+  handleSelectPage(event, node, path) {
+    // preventDefault prevents onNodeToggle from being called.
+    event.preventDefault();
+    this.setState({
+      currentPage: node,
+      currentPath: path
+    });
+  }
+
+  /**
+   * A function to recursively render the directory tree
+   * @param {Map} dirTree the directory tree map to be used
+   * @param {*} folder the name of the current folder
+   * @returns JSX component containing the TreeItem to be rendered
+   */
+  renderTree(dirTree, folder, classes, directoryArray) {
+
+    return (
+      &lt;TreeItem
+        value={folder}
+        nodeId={folder}
+        label={folder}
+        classes={{
+          root: classes.treeItem,
+          selected: classes.treeItemSelected,
+          // expanded: classes.treeItemExpanded,
+          content: classes.treeItemContent,
+          group: classes.treeItemGroup
+        }}
+        onLabelClick={(event) => this.handleSelectPage(event, dirTree, directoryArray)}
+      >
+        {Object.entries(dirTree.directories).map(([key, item]) => {
+          return this.renderTree(item, key, classes, [...directoryArray, key]);
+        })}
+      &lt;/TreeItem>
+    );
+  }
+
+  // TODO: can combine with other directory tree traversals to imporve code reuse
+  /**
+   * Auxillary function to get a directory from a path array
+   * 
+   * @param {[string]} pageArray the array of directories to be traversed
+   * @param {{map}} dirTree the current directory
+   * @param {number} index the index of the current durectory in pageArray
+   * @returns {object} The parent directory if successful, undefined otherwise.
+   */
+  getPage(pageArray, dirTree, index) {
+    // TODO: test if === causes any bugs -- >= might cause unexpected behaviour down the line
+    if (index >= pageArray.length) {
+      // prevent overwriting
+      if (dirTree === undefined) return undefined;
+      return dirTree;
+    }
+    else {
+      return this.getPage(pageArray, dirTree.directories[pageArray[index]], index + 1);
+    }
+  }
+
+  /**
+   * Event handler to create a new page
+   * 
+   * @param {string} newName the name of the new page
+   */
+  handleCreatePage(newName) {
+    const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
+    const parent = this.getPage(this.state.currentPath, newDirTree, 0);
+    console.log(this.state.currentPath)
+    console.log(parent);
+    console.log(newDirTree);
+    const newPage = {
+      directory: newName,
+      entries: [],
+      directories: {},
+      id: undefined
+    };
+    parent.directories[newName] = newPage;
+
+    this.props.onUpdate(newDirTree);
+    console.log(this.state)
+    this.setState({
+      dirTree: newDirTree,
+      currentPage: parent,
+      showInput: false
+    })
+  }
+
+  /**
+   * Event handler to update portfolio preview on directory change
+   * @param {boolean} save whether the user wishes to change the view to the selected directory
+   */
+  handleCloseDirectory(save) {
+    this.props.onClose(this.state.currentPage, this.state.currentPath);
+    this.setState({
+      showDirectory: false
+    })
+  }
+
+  /**
+   * Generic event handler for updating state via componenent name
+   * @param {*} event 
+   */
+  handleChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    })
+  }
+
+  /**
+   * Event handler for renaming a directory
+   */
+  handleRenameDirectory() {
+    const pageArray = [...this.state.currentPath];
+    const oldName = pageArray.pop();
+    const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
+    const parent = this.getPage(pageArray, newDirTree, 0);
+
+    parent.directories[this.state.dirName] = parent.directories[oldName];
+    delete parent.directories[oldName]
+    // const from = [];
+    // const to = [];
+    // this.renameDirectory(parent.directories[this.state.dirName], this.state.dirName, from, to);
+
+    this.props.onUpdate(newDirTree);
+    this.setState({
+      dirTree: newDirTree,
+      currentPath: [...pageArray, this.state.dirName],
+      currentPage: parent.directories[this.state.dirName],
+      dirName: '',
+      showInput: false
+    })
+  }
+
+  handleDeletePage() {
+    const newDirTree = JSON.parse(JSON.stringify(this.state.dirTree));
+    const directoryArray = [...this.state.currentPath];
+
+    if (directoryArray === []) {
+      alert('Root directory cannot be deleted.')
+    }
+
+    const pageName = directoryArray.pop();
+    const parent = this.getPage(directoryArray, newDirTree, 0);
+
+    // TODO: send flattened delete array to check if mongo needs to delete anything
+    // const child = parent.directories[pageName];
+    // const flatten = (page) => {
+    //   Object.entries(page.directories).map(([key, item]) => flatten(item));
+    // }
+    // flatten(child);
+
+    // TODO: offer option to merge child subdirectories to parent
+    const copy = { ...parent.directories };
+    // TODO: change mutations in this file to use fp via filter and Object.entries
+    delete copy[pageName];
+    parent.directories = copy;
+    this.props.onUpdate(newDirTree);
+    console.log(directoryArray)
+    this.setState({
+      dirTree: newDirTree,
+      currentPage: parent,
+      currentPath: directoryArray
+    })
+  }
+
+  // TODO: add props dirTree={name:"", directory:"", id:number, directories:[]}
+  // root page should not be renamed, since directory.root is hardcoded.
+  render() {
+    const { classes } = this.props;
+    // should only have 1 root element for object.keys[0] to work
+    return (
+      &lt;div>
+        &lt;Fab
+          className={classes.controlFAB}
+          onClick={() => this.setState({
+            showDirectory: true,
+            currentPage: this.props.dirTree,
+            currentPath: [],
+            ...this.props.getState()
+          })}>
+          &lt;FaLink />
+        &lt;/Fab>
+        &lt;Modal className={classes.modal}
+          open={this.state.showDirectory}
+          onClose={() => this.handleCloseDirectory(true)}
+          aria-labelledby="Directory Manager"
+          aria-describedby="Select a page."
+        >
+          &lt;div className={classes.root}>
+            &lt;Fab variant="extended" onClick={() => { this.handleCloseDirectory(false) }}>
+              &lt;FaTimes />
+            &lt;/Fab>
+            &lt;TreeView
+              defaultCollapseIcon={&lt;FaTimes />}
+              defaultExpandIcon={&lt;FaSave />}
+              expanded={this.state.expanded}
+              // onNodeSelect={this.handleSelectPage}
+              onNodeToggle={(event, nodeIds) => this.setState({ expanded: nodeIds })}
+              className={classes.treeView}
+            >
+              {this.renderTree(this.state.dirTree, "root", classes, [])}
+            &lt;/TreeView>
+            &lt;TextField
+              id="dirName"
+              label="directory name"
+              name="dirName"
+              value={this.state.dirName}
+              margin="normal"
+              variant="outlined"
+              onChange={this.handleChange}
+              className={this.state.showInput ? classes.textField : classes.hide}
+            />
+            &lt;Fab
+              variant="extended"
+              onClick={(event) => this.setState({ showInput: true, inputMode: CREATE })}
+              className={!this.state.showInput || this.state.inputMode !== CREATE ? classes.controlFAB : classes.hide}>
+              &lt;FaPlus />
+              New page
+            &lt;/Fab>
+            &lt;Fab
+              variant="extended"
+              onClick={(event) => this.setState({ showInput: true, inputMode: RENAME })}
+              className={!this.state.showInput || this.state.inputMode !== RENAME ? classes.controlFAB : classes.hide}>
+              &lt;FaPlus />
+              Rename page
+            &lt;/Fab>
+            &lt;Fab
+              variant="extended"
+              onClick={(event) => this.handleCreatePage(this.state.dirName)}
+              className={this.state.showInput &amp;&amp; this.state.inputMode === CREATE ? classes.controlFAB : classes.hide}>
+              Create
+            &lt;/Fab>
+            &lt;Fab
+              variant="extended"
+              onClick={(event) => this.handleRenameDirectory(this.state.dirName)}
+              className={this.state.showInput &amp;&amp; this.state.inputMode === RENAME ? classes.controlFAB : classes.hide}>
+              Rename
+            &lt;/Fab>
+            &lt;Fab
+              variant="extended"
+              onClick={this.handleDeletePage}>
+              Delete page
+            &lt;/Fab>
+          &lt;/div>
+        &lt;/Modal>
+      &lt;/div>
+    )
+  }
+}
+
+
+/**
+ * Function that maps variables from Redux Store to Home component's props.
+ *
+ * @param {Object} state - Redux Store
+ * @memberof TemplateSelector
+ */
+const mapStateToProps = state => ({
+  loggedIn: state.login.loggedIn
+})
+
+/** 
+ * Provides action creators to Home component's props.
+ * 
+ * @type {Object.&lt;Function>} 
+ * @memberof TemplateSelector
+ */
+const mapDispatchToProps = {
+  repopulate_state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DirectoryManager))</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

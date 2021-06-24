@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -136,6 +136,14 @@ export const SAVE_CURRENT_WORK = "SAVE_CURRENT_WORK"
 export const CLEAR_CURRENT_WORK = "CLEAR_CURRENT_WORK"
 
 /**
+ * string that identifies a TOGGLE_UNSAVED_WORK action
+ * 
+ * @type {string}
+ * @member TOGGLE_UNSAVED_WORK
+ */
+export const TOGGLE_UNSAVED_WORK = "TOGGLE_UNSAVED_WORK"
+
+/**
  * SAVE_CURRENT_WORK action creator. This action saves user's current portfolio work
  * to localStorage.
  * 
@@ -162,6 +170,19 @@ export const clearCurrentWork = () => ({
 })
 
 /**
+ * TOGGLE_UNSAVED_WORK action creator. This action sets the isUnsaved boolean in redux store.
+ * 
+ * @param {boolean} bool - Boolean indicating if unsaved work exists.
+ * @returns {{type: string}} - TOGGLE_UNSAVED_WORK action object.
+ * @member toggleUnsavedWork
+ * @function
+ */
+export const toggleUnsavedWork = (bool) => ({
+    type: TOGGLE_UNSAVED_WORK,
+    payload: { bool }
+})
+
+/**
  * Action creator that returns a function, which is only possible with redux-thunk.
  * 
  * The function receives the store's dispatch method, which is then used to dispatch regular
@@ -175,11 +196,11 @@ export const clearCurrentWork = () => ({
  * @function
  * @requires NPM:redux-thunk
  */
-export async function saveCurrentWorkToLocal(curr) {
+export function saveCurrentWorkToLocal(curr) {
     return dispatch => {
-        window.localStorage.setItem(process.emv.REACT_APP_AUTOSAVE_LOCALSTORAGE, JSON.stringify(curr))
+        window.localStorage.setItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE, JSON.stringify(curr))
         dispatch(saveCurrentWork(curr))
-        console.log("portfolio work saved temporarily")
+        //console.log("portfolio work saved temporarily")
     }
 }
 
@@ -196,11 +217,11 @@ export async function saveCurrentWorkToLocal(curr) {
  * @function
  * @requires NPM:redux-thunk
  */
-export async function clearCurrentWorkFromLocal() {
+export function clearCurrentWorkFromLocal() {
     return dispatch => {
-        window.localStorage.removeItem(process.emv.REACT_APP_AUTOSAVE_LOCALSTORAGE)
+        window.localStorage.removeItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE)
         dispatch(clearCurrentWork())
-        console.log("portfolio work cleared")
+        //console.log("portfolio work cleared")
     }
 }
 
@@ -254,7 +275,7 @@ export const fetchPortfoliosFailure = err => ({
  * a user's portfolio by its id. If the request succeeds, the function then dispatches a
  * FETCH_PORTFOLIOS_SUCCESS action. Otherwise, it dispatches a FETCH_PORTFOLIOS_FAILURE action.
  *
- * @param {string} id - id of specific portfolio to be fetched from mongoDB.
+ * @param {string} id - id of user whose portfolios are to be fetched from mongoDB.
  * @return {Function} - a function that receives the store's dispatch method.
  * @member fetchPortfolios
  * @function
@@ -265,12 +286,17 @@ export function fetchPortfolios(id) {
         dispatch(fetchPortfoliosBegin());
         return axios({
             method: 'GET',
-            url: process.env.REACT_APP_REACT_APP_BACKEND + "/portfolio" + id,
-            withCredentials: true
+            url: process.env.REACT_APP_BACKEND + "/portfolio",
+            withCredentials: true,
+            params: {
+                id: id
+            }
         }).then(res => res.data)
         .then(data => {
             //TODO PROBABLY HAVE TO CONVERT DATA INTO AN ARRAY DEPENDING ON THE RESULT
-            dispatch(fetchPortfoliosSuccess(data))
+            if (data.portfolios !== undefined) {
+                dispatch(fetchPortfoliosSuccess(data.portfolios))
+            } 
         }).catch(err => dispatch(fetchPortfoliosFailure(err)))
     }
 }</code></pre>

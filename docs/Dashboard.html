@@ -66,7 +66,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -171,7 +171,7 @@
         <p class="tag-source">
             <a href="components_Dashboard.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line54">line 54</a>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line85">line 85</a>
             </span>
         </p>
     
@@ -350,7 +350,7 @@
         <p class="tag-source">
             <a href="components_Dashboard.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line135">line 135</a>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line701">line 701</a>
             </span>
         </p>
     
@@ -502,7 +502,7 @@
         <p class="tag-source">
             <a href="components_Dashboard.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line27">line 27</a>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line43">line 43</a>
             </span>
         </p>
     
@@ -537,6 +537,10 @@
     <h4 class="name" id="componentDidMount">
         <a class="href-link" href="#componentDidMount">#</a>
         
+            
+                <span class='tag'>async</span>
+            
+        
         <span class="code-name">
             
                 componentDidMount<span class="signature">()</span><span class="type-signature"></span>
@@ -549,6 +553,7 @@
     
     <div class="description">
         <p>Attempts to fetch user details and logged in status from localStorage after component is rendered.</p>
+<p>repopulateState takes a while to run, so it is necessary to await it, then fetchPortfolios again.</p>
     </div>
     
 
@@ -599,7 +604,7 @@
         <p class="tag-source">
             <a href="components_Dashboard.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line61">line 61</a>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line125">line 125</a>
             </span>
         </p>
     
@@ -648,12 +653,12 @@
 
 
     
-    <h4 class="name" id="testEdit">
-        <a class="href-link" href="#testEdit">#</a>
+    <h4 class="name" id="handleAddPortfolio">
+        <a class="href-link" href="#handleAddPortfolio">#</a>
         
         <span class="code-name">
             
-                testEdit<span class="signature">()</span><span class="type-signature"></span>
+                handleAddPortfolio<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -662,7 +667,9 @@
     
     
     <div class="description">
-        <p>Testing purposes only. Changes route to /edit.</p>
+        <p>Checks for duplicate and empty Portfolio names. Then saves selected Portfolio name to localStorage and redux state.
+Then if portfolio name passes check, changes route to /edit to render a fresh Portfolio creation screen.
+Otherwise, error will be indicated and appropriate error message will be set.</p>
     </div>
     
 
@@ -713,7 +720,7 @@
         <p class="tag-source">
             <a href="components_Dashboard.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line102">line 102</a>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line217">line 217</a>
             </span>
         </p>
     
@@ -762,12 +769,12 @@
 
 
     
-    <h4 class="name" id="testPublish">
-        <a class="href-link" href="#testPublish">#</a>
+    <h4 class="name" id="handleChangeNameDialogState">
+        <a class="href-link" href="#handleChangeNameDialogState">#</a>
         
         <span class="code-name">
             
-                testPublish<span class="signature">()</span><span class="type-signature"></span>
+                handleChangeNameDialogState<span class="signature">(bool)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -776,7 +783,178 @@
     
     
     <div class="description">
-        <p>Testing purposes only. Changes route to /publish.</p>
+        <p>Handles the opening and closing of change name dialog for changing portfolio name. If true, closes edit menu. If false,
+resets changedName, error boolean and error message.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>bool</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>boolean indicating state of change name dialog. true to show and false to hide.</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line345">line 345</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleChangePortfolioName">
+        <a class="href-link" href="#handleChangePortfolioName">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                handleChangePortfolioName<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Checks for duplicate or empty portfolio name. If check passes, a request will be made to backend to change portfolio name.
+If check fails, error boolean will be set to true and appropriate error message will be set.</p>
     </div>
     
 
@@ -827,7 +1005,1413 @@
         <p class="tag-source">
             <a href="components_Dashboard.jsx.html" class="button">View Source</a>
             <span>
-                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line92">line 92</a>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line372">line 372</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleCloseEditMenu">
+        <a class="href-link" href="#handleCloseEditMenu">#</a>
+        
+        <span class="code-name">
+            
+                handleCloseEditMenu<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Handles the closing of edit menu for a portfolio. Does not reset the currentPortfolio_Id since it could be used in changing
+portfolio name or deleting portfolio.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line331">line 331</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleDeleteDialogState">
+        <a class="href-link" href="#handleDeleteDialogState">#</a>
+        
+        <span class="code-name">
+            
+                handleDeleteDialogState<span class="signature">(bool)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Handles the opening and closing of delete portfolio dialog for deleting portfolios. If true, delete dialog will be set to open.
+Edit menu will be set to hide. If false, delete dialog will hide and the portfolio name, error boolean and error message will be reset.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>bool</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>boolean indicating state of delete dialog. true to show and false to hide.</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line193">line 193</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleDeleteImage">
+        <a class="href-link" href="#handleDeleteImage">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                handleDeleteImage<span class="signature">(label)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Sends a request to backend to delete an image with given label that is attached to the portfolio with _id that is the state field currentPortfolio_id.
+The image is then deleted from state object images.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>label</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>image's label</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line466">line 466</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleDeletePortfolio">
+        <a class="href-link" href="#handleDeletePortfolio">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                handleDeletePortfolio<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Handles the deletion of portfolio from mongodb as well as attached images.
+Then sets delete dialog to hide.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line283">line 283</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleGetImage">
+        <a class="href-link" href="#handleGetImage">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                handleGetImage<span class="signature">(portfolio_id)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Takes in a string portfolio_id and first sends a request to backend to retrieve an array of _id representing image documents attached
+to the portfolio. Then for each of these _ids, send a request to backend to retrieve the image. The image will then be added to
+state object images.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>portfolio_id</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>portfolio's _id</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line418">line 418</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleNameDialog">
+        <a class="href-link" href="#handleNameDialog">#</a>
+        
+        <span class="code-name">
+            
+                handleNameDialog<span class="signature">(bool)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Handles the opening and closing of name dialog for setting new portfolio names.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>bool</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>boolean indicating state of name dialog. true to show and false to hide.</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line179">line 179</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleOnChange">
+        <a class="href-link" href="#handleOnChange">#</a>
+        
+        <span class="code-name">
+            
+                handleOnChange<span class="signature">(event)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Handles changes in change name dialog textfield. Also resets any errors due to duplicate or empty name input.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>event</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">Object</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line162">line 162</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleOpenEditMenu">
+        <a class="href-link" href="#handleOpenEditMenu">#</a>
+        
+        <span class="code-name">
+            
+                handleOpenEditMenu<span class="signature">(event)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Handles the opening of edit menu for a portfolio. Also sets the state field currentPortfolio_Id to the selected Portfolio's _id.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>event</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">Object</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line317">line 317</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>void</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="handleOpenPortfolio">
+        <a class="href-link" href="#handleOpenPortfolio">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                handleOpenPortfolio<span class="signature">(event)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Fetches the requested portfolio from mongoDB, then saves it to localStorage and redux state.
+Then changes route to /edit to render the Portfolio.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>event</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">Object</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="components_Dashboard.jsx.html" class="button">View Source</a>
+            <span>
+                <a href="components_Dashboard.jsx.html">components/Dashboard.jsx</a>, <a href="components_Dashboard.jsx.html#line255">line 255</a>
             </span>
         </p>
     
