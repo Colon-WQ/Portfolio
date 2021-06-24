@@ -103,8 +103,7 @@ class Dashboard extends Component {
         this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
         this.handleOpenPortfolio = this.handleOpenPortfolio.bind(this);
         this.handleOnChange = this.handleOnChange.bind(this);
-        this.handleNameDialogClose = this.handleNameDialogClose.bind(this);
-        this.handleNameDialogOpen = this.handleNameDialogOpen.bind(this);
+        this.handleNameDialog = this.handleNameDialog.bind(this);
         this.handleDeletePortfolio = this.handleDeletePortfolio.bind(this);
         this.handleOpenEditMenu = this.handleOpenEditMenu.bind(this);
         this.handleCloseEditMenu = this.handleCloseEditMenu.bind(this);
@@ -153,6 +152,13 @@ class Dashboard extends Component {
         });
     }
 
+    /**
+     * Handles changes in change name dialog textfield. Also resets any errors due to duplicate or empty name input.
+     * 
+     * @param {Object} event 
+     * @returns void
+     * @memberof Dashboard
+     */
     handleOnChange(event) {
         this.setState({
             duplicateKeyError: false,
@@ -163,24 +169,26 @@ class Dashboard extends Component {
         });
     }
 
-    handleNameDialogOpen() {
+    /**
+     * Handles the opening and closing of name dialog for setting new portfolio names.
+     * 
+     * @param {boolean} bool boolean indicating state of name dialog. true to show and false to hide.
+     * @returns void
+     * @memberof Dashboard
+     */
+    handleNameDialog(bool) {
         this.setState({
-            nameDialogState: true
-        })
-    }
-
-    handleNameDialogClose() {
-        this.setState({
-            nameDialogState: false
-        })
+            nameDialogState: bool
+        });
     }
 
     /**
-     * This function handles changes to deleteDialogState
+     * Handles the opening and closing of delete portfolio dialog for deleting portfolios. If true, delete dialog will be set to open.
+     * Edit menu will be set to hide. If false, delete dialog will hide and the portfolio name, error boolean and error message will be reset.
      *
-     * @param {boolean} bool
+     * @param {boolean} bool boolean indicating state of delete dialog. true to show and false to hide.
      * @returns void
-     * @memberof Portfolio
+     * @memberof Dashboard
      */
     handleDeleteDialogState(bool) {
         if (bool) {
@@ -191,15 +199,17 @@ class Dashboard extends Component {
                 portfolioName: "",
                 duplicateKeyError: false,
                 duplicateKeyHelperText: ""
-            })
+            });
         }
         this.setState({
             deleteDialogState: bool
-        })
+        });
     }
 
     /**
-     * Changes route to /edit to render a fresh Portfolio creation screen.
+     * Checks for duplicate and empty Portfolio names. Then saves selected Portfolio name to localStorage and redux state. 
+     * Then if portfolio name passes check, changes route to /edit to render a fresh Portfolio creation screen.
+     * Otherwise, error will be indicated and appropriate error message will be set.
      * 
      * @return void
      * @memberof Dashboard
@@ -235,9 +245,10 @@ class Dashboard extends Component {
     }
 
     /**
-     * Fetches the requested portfolio from mongoDB, then saves it to redux state.
+     * Fetches the requested portfolio from mongoDB, then saves it to localStorage and redux state.
      * Then changes route to /edit to render the Portfolio.
      * 
+     * @param {Object} event
      * @return void
      * @memberof Dashboard
      */
@@ -262,11 +273,12 @@ class Dashboard extends Component {
         });
     }
 
-        /**
-     * A function to delete the current portfolio from mongodb
+    /**
+     * Handles the deletion of portfolio from mongodb as well as attached images.
+     * Then sets delete dialog to hide.
      *
      * @returns void
-     * @memberof Portfolio
+     * @memberof Dashboard
      */
     async handleDeletePortfolio() {
         await axios({
@@ -286,7 +298,7 @@ class Dashboard extends Component {
             delete temp[this.state.currentPortfolio_Id];
             this.setState({
                 images: temp
-            })
+            });
 
         }).catch(err => {
             handleErrors(err, this.props.history);
@@ -295,19 +307,41 @@ class Dashboard extends Component {
         this.handleDeleteDialogState(false);
     }
 
+    /**
+     * Handles the opening of edit menu for a portfolio. Also sets the state field currentPortfolio_Id to the selected Portfolio's _id.
+     * 
+     * @param {Object} event
+     * @return void
+     * @memberof Dashboard
+     */
     handleOpenEditMenu(event) {
         this.setState({
             anchorEl: event.currentTarget,
             currentPortfolio_Id: event.currentTarget.id
-        })
+        });
     }
 
+    /**
+     * Handles the closing of edit menu for a portfolio. Does not reset the currentPortfolio_Id since it could be used in changing
+     * portfolio name or deleting portfolio.
+     * 
+     * @return void
+     * @memberof Dashboard
+     */
     handleCloseEditMenu() {
         this.setState({
             anchorEl: null
-        })
+        });
     }
 
+    /**
+     * Handles the opening and closing of change name dialog for changing portfolio name. If true, closes edit menu. If false,
+     * resets changedName, error boolean and error message.
+     * 
+     * @param {boolean} bool boolean indicating state of change name dialog. true to show and false to hide.
+     * @returns void
+     * @memberof Dashboard
+     */
     handleChangeNameDialogState(bool) {
         if (bool) {
             this.handleCloseEditMenu();
@@ -317,7 +351,7 @@ class Dashboard extends Component {
                 changedName: "",
                 duplicateKeyError: false,
                 duplicateKeyHelperText: ""
-            })
+            });
         }
 
         this.setState({
@@ -327,12 +361,20 @@ class Dashboard extends Component {
 
     //currentPortfolio_Id will be set to the _id of the selected portfolio when menu is opened, so once in the dialog,
     //currentPortfolio_Id will be the correct one.
+
+    /**
+     * Checks for duplicate or empty portfolio name. If check passes, a request will be made to backend to change portfolio name.
+     * If check fails, error boolean will be set to true and appropriate error message will be set.
+     * 
+     * @returns void
+     * @memberof Dashboard
+     */
     async handleChangePortfolioName() {
         if (this.state.changedName === "") {
             this.setState({
                 duplicateKeyError: true,
                 duplicateKeyHelperText: "Portfolio name cannot be empty"
-            })
+            });
         } else {
             if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.changedName).length === 0) {
                 const originalPortfolio = this.props.portfolios.find(element => element._id === this.state.currentPortfolio_Id);
@@ -358,13 +400,21 @@ class Dashboard extends Component {
                 this.setState({
                     duplicateKeyError: true,
                     duplicateKeyHelperText: "Portfolio name already exists"
-                })
+                });
             }
         }
         
     }
 
-    //If wish to test, please change the hardcoded _id with one from one of your portfolio documents.
+    /**
+     * Takes in a string portfolio_id and first sends a request to backend to retrieve an array of _id representing image documents attached
+     * to the portfolio. Then for each of these _ids, send a request to backend to retrieve the image. The image will then be added to
+     * state object images.
+     * 
+     * @param {string} portfolio_id portfolio's _id
+     * @returns void
+     * @memberof Dashboard
+     */
     async handleGetImage(portfolio_id) {
         await axios({
             method: "GET",
@@ -405,6 +455,14 @@ class Dashboard extends Component {
         });
     }
 
+    /**
+     * Sends a request to backend to delete an image with given label that is attached to the portfolio with _id that is the state field currentPortfolio_id.
+     * The image is then deleted from state object images.
+     * 
+     * @param {string} label image's label
+     * @returns void
+     * @memberof Dashboard
+     */
     async handleDeleteImage(label) {
         await axios({
             method: "DELETE",
@@ -506,9 +564,7 @@ class Dashboard extends Component {
                                         })
                     }
                 </Grid>
-                {/* <Button onClick={this.checkCookie} className={classes.portfolioButton}>Check Cookie</Button> */}
-                <Button onClick={this.handleNameDialogOpen} className={classes.portfolioButton}>Add a Portfolio</Button>
-                
+                <Button onClick={() => this.handleNameDialog(true)} className={classes.portfolioButton}>Add a Portfolio</Button>
                 <Menu
                     id="edit-menu"
                     anchorEl={this.state.anchorEl}
@@ -525,7 +581,7 @@ class Dashboard extends Component {
                 </Menu>
                 <Dialog
                     open={this.state.nameDialogState}
-                    onClose={this.handleNameDialogClose}
+                    onClose={() => this.handleNameDialog(false)}
                     aria-labelledby="portfolio name dialog"
                     fullWidth
                 >
