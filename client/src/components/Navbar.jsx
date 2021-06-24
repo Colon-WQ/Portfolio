@@ -267,7 +267,7 @@ class Navbar extends Component {
                     <ToolBar className={classes.toolbar}>
                         <Button className={classes.homeButton} onClick={this.handleReturnHome}>
                           <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
-                              <Box fontWeight="bold">Portfol.<span style={{color: "#FF0000"}}>io</span></Box>
+                              <Box fontWeight="bold">Resum<span style={{color: "#FF0000"}}>ate</span></Box>
                           </Typography>
                         </Button>
                         <Button startIcon={<Avatar src={avatar_url}/>} 

@@ -54,13 +54,17 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser(SIGN_COOKIE_SECRET));
+
+//uncomment for production
 app.use(session({
   secret: SIGN_COOKIE_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    //secure: true,
-  },
+  // proxy: true,
+  // cookie: {
+  //   secure: true,
+  //   sameSite: true
+  // },
   store: MongoStore.create({
     mongoUrl: MONGO_URL,
     ttl: 6 * 60 * 60,

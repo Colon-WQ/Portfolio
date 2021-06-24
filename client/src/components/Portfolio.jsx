@@ -156,37 +156,32 @@ class Portfolio extends Component {
    * 
    * After timer is up, saves current portfolio to localStorage and redux state. 
    * 
-   * The timer is now set to 3s after any edit is done.
+   * The timer is now set to 30s after any edit is done.
    * 
    * @return void
    * @memberof Portfolio
    */
-  // componentDidUpdate() {
-  //   if (this.props.isUnsaved && !this.state.isTimerExist) {
-  //     setTimeout(async () => {
-  //       console.log("Autosaving")
+  componentDidUpdate() {
+    if (this.props.isUnsaved && !this.state.isTimerExist) {
+      setTimeout(async () => {
+        console.log("Autosaving")
 
-  //       await this.handleSavePortfolio();
+        await this.handleSavePortfolio();
 
-  //       // this.props.saveCurrentWorkToLocal({
-  //       //   _id: this.state.portfolio_id,
-  //       //   name: this.state.name,
-  //       //   pages: this.state.pages
-  //       // });
-  //       this.props.toggleUnsavedWork(false);
+        this.props.toggleUnsavedWork(false);
 
-  //       //Sets isTimerExist to false after saving so new timers can be set.
-  //       this.setState({
-  //         isTimerExist: false
-  //       })
-  //     }, 3000);
+        //Sets isTimerExist to false after saving so new timers can be set.
+        this.setState({
+          isTimerExist: false
+        })
+      }, 30000);
 
-  //     //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
-  //     this.setState({
-  //       isTimerExist: true
-  //     });
-  //   }
-  // }
+      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
+      this.setState({
+        isTimerExist: true
+      });
+    }
+  }
 
   /**
    * Function to enter entries based on the entry's type and template style.
@@ -211,7 +206,7 @@ class Portfolio extends Component {
   /**
    * Event handler to open/close the template selector and update states if necessary
    * 
-   * @param {*} selection - the fields to update, or null if no changes are needed
+   * @param {Object} selection - the fields to update, or null if no changes are needed
    */
   handleSelector(selection) {
     const entryType = selection.type;
@@ -382,7 +377,9 @@ class Portfolio extends Component {
   }
 
   /**
-   * Handles saving portfolio to mongoDB
+   * Sends a request to backend to save Portfolio. It then sends a request to fetch the same portfolio from backend, now populated with
+   * relevant _ids and other required data and saves it to redux state and localStorage. If this is not possible, the user
+   * will be directed to /dashboard so that another attempt can be made to fetch the portfolio from backend.
    * 
    * @returns void
    * @memberof Portfolio
@@ -450,7 +447,9 @@ class Portfolio extends Component {
 
   /**
    * A function to generate all files needed to be pushed to github.
+   * 
    * @returns {(Map|Array)} An array of maps each containing the relative paths to each file and their contents.
+   * @memberof Portfolio
    */
   handleProduction() {
 
@@ -509,7 +508,14 @@ class Portfolio extends Component {
     this.forceUpdate();
   }
 
-
+  /**
+   * renders html element with id "preview" to a canvas and ignores html elements marked with data-html2canvas-ignore="true"
+   * that are present within the preview element. The canvas is then converted into a png and a request is made to backend
+   * to save the png file under current portfolio with label "preview"
+   * 
+   * @return void
+   * @memberof Portfolio
+   */
   async handleUploadPreview() {
     await html2canvas(document.querySelector("#preview"), { backgroundColor: null, useCORS: true })
       .then(canvas => {
@@ -565,7 +571,6 @@ class Portfolio extends Component {
       })
   }
 
-  // TODO: move editor components and logic into component files
   render() {
     const { classes } = this.props;
 
