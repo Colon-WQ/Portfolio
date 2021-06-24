@@ -19,15 +19,16 @@ const styles = (theme) => ({
     margin: '5%'
   },
   socialButton: {
-    height: '7vh',
-    width: '7vh',
+    height: '3em',
+    width: '3em',
     borderRadius: '50%',
     opacity: '60%',
     marginInline: '0.5vh',
     '&:hover': {
       opacity: '80%',
-      width: '9vh',
-      height: '9vh'
+      width: '3.5em',
+      height: '3.5em',
+      transition: '0.5s'
     }
   },
   socialIcon: {
@@ -127,7 +128,7 @@ class IntroTemplateRedline extends Component {
                 const category = section.images.socialIcon.src.split('/');
                 SocialIcon = icons[category[0]].icons[category[1]];
               } else {
-                SocialIcon = <img src={section.images.socialIcon.src} />;
+                SocialIcon = (props) => <img src={section.images.socialIcon.src} />;
               }
               return (
                 <div className={classes.section}>
@@ -135,7 +136,7 @@ class IntroTemplateRedline extends Component {
                     onClick={() => window.open(section.texts.socialLink)}
                     className={classes.socialButton}
                   >
-                    {<SocialIcon />}
+                    {<SocialIcon size='100%' color='red' />}
                   </IconButton>
                 </div>
               );
