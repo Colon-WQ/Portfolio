@@ -9,29 +9,6 @@ const router = express.Router();
  *  description: API to login user using Github Oauth API.
  * 
  * 
- * components:
- *  schemas: 
- *      User:
- *          type: object
- *          properties:
- *              data:
- *                  type: object
- *                  properties:
- *                      id: 
- *                          type: integer
- *                          description: User's unique Github account ID.
- *                      login:
- *                          type: string
- *                          description: User's Github account username.
- *                      name:
- *                          type: string
- *                          description: User's Github account name.
- *                      avatar_url:
- *                          type: string
- *                          description: User's Github avatar image url.
- *                      gravatar_id:
- *                          type: string
- *                          description: User's globally recognized avatar url.
  *          
  * /login/authenticate:
  *  post:
@@ -67,11 +44,30 @@ const router = express.Router();
  *                  Set-Cookie:
  *                      schema:
  *                          type: apiKey
- *                          example: authorization=JWT; Path=/; HttpOnly; secure; signed; SameSite=Strict; maxAge:6 * 60 * 60 * 1000
+ *                          example: connect.sid=session _id; Path=/; HttpOnly; secure; signed; SameSite=Strict; maxAge:6 * 60 * 60 * 1000
  *              content: 
  *                  application/json:
  *                      schema: 
- *                          $ref: '#/components/schemas/User'
+ *                          type: object
+ *                          properties:
+ *                              data:
+ *                                  type: object
+ *                                  properties:
+ *                                      id: 
+ *                                          type: integer
+ *                                          description: User's unique Github account ID.
+ *                                      login:
+ *                                          type: string
+ *                                          description: User's Github account username.
+ *                                      name:
+ *                                          type: string
+ *                                          description: User's Github account name.
+ *                                      avatar_url:
+ *                                          type: string
+ *                                          description: User's Github avatar image url.
+ *                                      gravatar_id:
+ *                                          type: string
+ *                                          description: User's globally recognized avatar url.
  *                          
  *          401:
  *              description: Authorization information is missing or invalid.
