@@ -125,7 +125,7 @@ class Portfolio extends Component {
         await this.props.repopulate_state(userLocalStorageItem);
         await this.props.saveCurrentWork(portfolioLocalStorageItem);
       }
-      
+
     }
 
     //The rationale behind using this.state.name as the check is that name would be set before the user enters
@@ -633,7 +633,7 @@ class Portfolio extends Component {
             dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
-          <Publish createPushables={this.handleProduction}/>
+          <Publish createPushables={this.handleProduction} />
         </div>
       </div>);
   }
