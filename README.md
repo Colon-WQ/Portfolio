@@ -61,51 +61,81 @@ to Heroku.
 4. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
 change in browser tabs.
 
+5. Any HTTP connection sent from client to server will be redirected to a HTTPS connection to ensure that data is transmitted securely
+
 ## Showcase
 
 - - - -
 
-### Pushing to Github repository and deploying the repository to Github Pages.
+### Creating a portfolio and deploying a Github pages site based off of the created portfolio. 
 
-1. To view the site in progress, you can visit http://13.228.174.76/
+1. To view the site in progress, you can visit https://resumate.xyz/
+
+![ScreenShot](Orbital/welcome_page.png)
 
 2. In the Home page, you will see the **Login with Github** button. Click that to be redirected to Github to login.
 
 3. You will then have to grant the OAuth application permission to make changes to your repositories if you have not done so.
 
+![ScreenShot](Orbital/authorization_screen.png)
+
 4. Once done, you will be redirected to DashBoard.
 
-5. Click on test Publish to be taken to the Publish Overlay, where you will see a Publish button on the bottom right.
+5. If you have not created any portfolio yet, click on `ADD A PORTFOLIO` button to start creating a portfolio. If you have already created a portfolio and wish to edit it,
+click on the `open` button belonging to the portfolio.
 
-6. Click on it to expand the menu. Click on **Finalize and Push** to spawn a dialog prompting you to input a Github repository name.
+![ScreenShot](Orbital/dashboard_screen.png)
 
-7. You will also be prompted to add a file. For example, input `index.html` for file name and `<h1>hello world!</h1>` for file content
+6. If you clicked on `ADD A PORTFOLIO` button, you will need to pick a unique, non-empty portfolio name. 
+Thereafter, you will be redirected to `/edit` path, where you can begin creating/editing your portfolio.
 
-8. If you choose to input a repository name that **you do not have** and click on **Finalize**, a new Github repository will be created for you. The index.txt file
-will be pushed to the Github repository and that repository will be deployed to Pages.
+![ScreenShot](Orbital/select_name_dialog.png)
 
-9. If you choose to input a repository name that **you already have**, a dialog will appear to prompt you for permission to overwrite. To accept, click **Allow Override** button. To cancel, click **Cancel** button. **Note: If you accept, your files in the existing repository will be overwritten.**
+7. Once in the `/edit` path, you will see a panel at the bottom right with 4 buttons. Click on `+` button and you will be shown an overlay to select a template. Templates
+are prebuilt components on which you can customize to suit your needs. For example, select the `Minimalist` under `INTRODUCTION` tab.
 
-10. Visit https://`USERNAME`.github.io/`REPOSITORYNAME`/ where USERNAME and REPOSITORYNAME should be replaced by your Github username and Github repository name respectively.
+![ScreenShot](Orbital/edit_page.png)
 
-11. Once done, remember to click the profile on the top right of the navbar, then click the **logout** button to invalidate your access token and delete the cookie containing
-the access token.
+![ScreenShot](Orbital/template_selection.png)
+
+8. The Minimalist template will appear on your screen and you will see two buttons on the top left hand corner of the component. The `edit` button will open an overlay allowing you
+to edit your name, current job position, colors, profile picture, etc. Edit as you like.
+
+![ScreenShot](Orbital/edited_template.png)
+
+9. Once done editing, you can either click away from the overlay or click on `save` button on the overlay. Autosave will happen in 30s but if you wish, you may click on the `save` button
+represented by the floppy disk in the bottom right panel to save immediately. If you attempt to navigate away from the page by clicking `<-` back navigator button on your browser before autosave or manual save, a dialog will pop up to prompt you to either save or discard your save.
+
+![ScreenShot](Orbital/alert_prompt.png)
+
+10. `Optional`: You can add more components downwards by repeating steps 7 to 9. You can also click on the `directory` button represented by a chain link to create additional pages. Your base
+page will be called `root`. For example, click on `+NEW PAGE` to create a new page called `test`, then click on the `root` button. This will expand downwards to show the `test` button.
+Click on that to edit the `test` page instead, which should be an empty page for now. You may create multiple nested pages if you wish to.
+
+![ScreenShot](Orbital/new_page.png)
+
+11. Once satisfied with edits, remember to save again or wait for autosave. Click on the `publish` button in the bottom right panel, which will open a dialog asking you to choose
+a name for the Github repository that your files will be pushed to. Once done, click on `FINALIZE` button.
+
+![ScreenShot](Orbital/finalize_dialog.png)
+
+12. If you have chosen an existing Github repository, another dialog will show asking for your permission to overwrite the existing Github repository. If you do not wish to overwrite, 
+click on `CANCEL` button to cancel the publish operation. Otherwise, click on `ALLOW OVERRIDE` button and the publish operation will begin.
+
+![ScreenShot](Orbital/override_dialog.png)
+
+13. You will see a circular loading indicator in the `publish` button in the bottom right panel. Wait patiently while your Github page is being built. Once done, a white snackbar will
+appear from the bottom of the screen, from which you can click on the `copy` button to copy the URL of your Github page to the clipboard.
+
+![ScreenShot](Orbital/loading_indicator.png)
+
+![ScreenShot](Orbital/snack_bar.png)
+
+14. Open a browser tab and paste in the copied URL to see your Github page.
+
+![ScreenShot](Orbital/github_page.png)
 
 - - - -
-
-### See the Editor in testing.
-
-1. To view the site in progress, you can visit http://13.228.174.76/edit
-
-2. You will be shown 3 templates. Click on any template and you will be shown a preview of the template component.
-
-3. There will be an **edit** icon on the top left with which you can edit parts of the template. It is under development.
-
-4. Once the portfolio is finished, the code for each file can be generated by clicking the save button on the bottom right corner. Alerts will pop up displaying the filename and code for each file. Enable pop up dialogs if nothing happens.
-
-5. Once done, remember to click the profile on the top right of the navbar, then click the **logout** button to invalidate your access token and delete the cookie containing
-the access token.
-
 
 ## Further Development
 
