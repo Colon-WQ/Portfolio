@@ -1,9 +1,49 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import * as fonts from './fonts';
 
-//visit here to see what to override 
-//https://material-ui.com/customization/default-theme/
-export const theme = createMuiTheme({
+export const light = {
+  palette: {
+      type: 'light',
+      primary: {
+        main: '#F7882F',
+      },
+      secondary: {
+        main: '#F7C331',
+      },
+      tertiary: {
+        light: '#687A8F',
+        main: '#2a9d8f',
+        dark: '#e76f51',
+        contrastText: '#fff'
+      },
+      background: {
+        default: '#faf7e3',
+        light: '#faf7e3',
+        dark: '#687A8F'
+      },
+      text: {
+        primary: '#264653',
+        secondary: '#2a9d8f'
+      }
+    },
+    typography: {
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto'
+      ].join(',')
+    },
+    overrides: {
+      MuiCssBaseline: {
+        '@global': {
+          '@font-face': Object.values(fonts)
+        }
+      }
+    }
+}
+
+export const dark = {
     palette: {
       type: 'dark',
       primary: {
@@ -43,4 +83,7 @@ export const theme = createMuiTheme({
         }
       }
     }
-  })
+  };
+//visit here to see what to override 
+//https://material-ui.com/customization/default-theme/
+export const theme = createMuiTheme(light);

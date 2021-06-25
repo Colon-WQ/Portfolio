@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, List, ListItem } from '@material-ui/core';
 import { theme } from '../styles/styles';
+import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
 
 
 /**
@@ -26,76 +27,76 @@ import { theme } from '../styles/styles';
  * @param {Object} theme 
  */
 const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-    },
-    centeredDiv: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    welcomeDiv: {
-        width: '100%',
-        height: '100vh',
-        backgroundImage: `url("${"https://miro.medium.com/max/1100/1*OlgqUIhvl5-9dZISlZ2-yQ.jpeg"}")`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-    },
-    welcomeText: {
-        flexGrow: 1,
+  root: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  centeredDiv: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  welcomeDiv: {
+    width: '100%',
+    height: '100vh',
+    backgroundImage: `url("${"https://miro.medium.com/max/1100/1*OlgqUIhvl5-9dZISlZ2-yQ.jpeg"}")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+  },
+  welcomeText: {
+    flexGrow: 1,
 
-    },
-    multiline: {
-        whiteSpace: 'pre-line',
-    },
-    portfolioIcon: {
-        width: '40vh',
-        height: '40vh',
-        borderRadius: '20vh',
-    },
-    featuresDiv: {
-        position: 'relative',
-        width: '100%',
-        height: '60vh',
-        flexDirection: 'row',
-    },
-    featureTextDiv: {
-        position: 'absolute',
-        top: 0,
-        right : 0,
-        width: '55vw',
-        height: '100%',
-        padding: '10%',
-    },
-    featureImgDiv: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '45vw',
-        height: '100%'
-    },
-    fullSize: {
-        width: '100%',
-        height: '100%',
-    },
-    floating: {
-        zIndex: 1,
-    },
-    featureButtonLeft: {
-        height: '100%',
-        position: 'absolute',
-        left: 0,
-    },
-    featureButtonRight: {
-        height: '100%',
-        position: 'absolute',
-        right: 0,
-    }
+  },
+  multiline: {
+    whiteSpace: 'pre-line',
+  },
+  portfolioIcon: {
+    width: '40vh',
+    height: '40vh',
+    borderRadius: '20vh',
+  },
+  featuresDiv: {
+    position: 'relative',
+    width: '100%',
+    height: '60vh',
+    flexDirection: 'row',
+  },
+  featureTextDiv: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: '55vw',
+    height: '100%',
+    padding: '10%',
+  },
+  featureImgDiv: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '45vw',
+    height: '100%'
+  },
+  fullSize: {
+    width: '100%',
+    height: '100%',
+  },
+  floating: {
+    zIndex: 1,
+  },
+  featureButtonLeft: {
+    height: '100%',
+    position: 'absolute',
+    left: 0,
+  },
+  featureButtonRight: {
+    height: '100%',
+    position: 'absolute',
+    right: 0,
+  }
 });
 
 /** 
@@ -113,9 +114,9 @@ const featureMaxIndex = 2;
  * @memberof Home
  */
 const featureImage = [
-    'https://media.edutopia.org/styles/responsive_2000px_original/s3/masters/d7_images/cover_media/robinson-169hero-portfolio-shutterstock.jpg', 
-    'https://assets-global.website-files.com/6009ec8cda7f305645c9d91b/603823eca4b46344229b30f8_portfolio_course.png', 
-    'https://cdn-japantimes.com/wp-content/uploads/2020/06/np_file_16250.jpeg'
+  'https://media.edutopia.org/styles/responsive_2000px_original/s3/masters/d7_images/cover_media/robinson-169hero-portfolio-shutterstock.jpg',
+  'https://assets-global.website-files.com/6009ec8cda7f305645c9d91b/603823eca4b46344229b30f8_portfolio_course.png',
+  'https://cdn-japantimes.com/wp-content/uploads/2020/06/np_file_16250.jpeg'
 ];
 
 /** 
@@ -125,9 +126,9 @@ const featureImage = [
  * @memberof Home
  */
 const featureTitle = [
-    'Your Design. Your Website.',
-    'Visualize your personality',
-    'Stay Ahead'
+  'Your Design. Your Website.',
+  'Visualize your personality',
+  'Stay Ahead'
 ];
 
 /** 
@@ -136,10 +137,10 @@ const featureTitle = [
  * @type {Array.<string>} 
  * @memberof Home
  */
-const featureText=[
-    'No watermarks, no restrictions — you own your website',
-    'Choose your style',
-    'Stay Relevant'
+const featureText = [
+  'No watermarks, no restrictions — you own your website',
+  'Choose your style',
+  'Stay Relevant'
 ];
 
 /** 
@@ -148,7 +149,7 @@ const featureText=[
  * @type {Array.<string>} 
  * @memberof Home
  */
-const faqQuestions=['FAQ1?', 'FAQ2?', 'FAQ3?'];
+const faqQuestions = ['FAQ1?', 'FAQ2?', 'FAQ3?'];
 
 /** 
  * Array of FAQ answers corresponding to the questions represented as strings.
@@ -156,7 +157,7 @@ const faqQuestions=['FAQ1?', 'FAQ2?', 'FAQ3?'];
  * @type {Array.<string>} 
  * @memberof Home
  */
-const faqAnswers=['yes\nof\ncourse', 'no', 'yes' ];
+const faqAnswers = ['yes\nof\ncourse', 'no', 'yes'];
 
 /**
  * Home component of Portfolio.
@@ -168,143 +169,141 @@ const faqAnswers=['yes\nof\ncourse', 'no', 'yes' ];
  */
 class Home extends Component {
 
-    /**
-     * @constructor
-     */
-    constructor() {
-        super();
-        this.handleFeatureClick = this.handleFeatureClick.bind(this);
-        this.handleFeatureNext = this.handleFeatureNext.bind(this);
-        this.handleFeaturePrev = this.handleFeaturePrev.bind(this);
-
-        /**
-         * @typedef {Object} state
-         * @property {number} featureIndex - index of feature elements to be rendered.
-         * @property {number} featureTitle - string representing feature title.
-         * @property {string} featureText - string representing feature text.
-         * @property {string} featureImage - string representing url of feature image to be rendered.
-         * @memberof Home
-         */
-        this.state = {
-            featureIndex: 0,
-            featureText: featureText[0],
-            featureTitle: featureTitle[0],
-            featureImage: featureImage[0]
-        }
-    }
+  /**
+   * @constructor
+   */
+  constructor() {
+    super();
+    this.handleFeatureClick = this.handleFeatureClick.bind(this);
+    this.handleFeatureNext = this.handleFeatureNext.bind(this);
+    this.handleFeaturePrev = this.handleFeaturePrev.bind(this);
 
     /**
-     * Attempts to fetch user details and logged in status from localStorage after component is rendered.
-     * 
-     * @returns void
+     * @typedef {Object} state
+     * @property {number} featureIndex - index of feature elements to be rendered.
+     * @property {number} featureTitle - string representing feature title.
+     * @property {string} featureText - string representing feature text.
+     * @property {string} featureImage - string representing url of feature image to be rendered.
      * @memberof Home
      */
-    async componentDidMount() {
-        if (!this.props.loggedIn) {
-            const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-            if (localStorageItem !== null) {
-                this.props.repopulate_state(localStorageItem);
-            } 
-        }
+    this.state = {
+      featureIndex: 0,
+      featureText: featureText[0],
+      featureTitle: featureTitle[0],
+      featureImage: featureImage[0]
     }
+  }
 
-    /**
-     * Changes feature title, text and image in state to be rendered on button click.
-     * 
-     * @param {number} newIndex -Index of array elements to be rendered.
-     * @returns void
-     * @memberof Home
-     */
-    handleFeatureClick(newIndex) {
-        this.setState({
-            featureIndex: newIndex,
-            featureTitle: featureTitle[newIndex],
-            featureText: featureText[newIndex],
-            featureImage: featureImage[newIndex]
-        })
+  /**
+   * Attempts to fetch user details and logged in status from localStorage after component is rendered.
+   * 
+   * @returns void
+   * @memberof Home
+   */
+  async componentDidMount() {
+    if (!this.props.loggedIn) {
+      const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+      if (localStorageItem !== null) {
+        this.props.repopulate_state(localStorageItem);
+      }
     }
+  }
 
-    // TODO: merge handlers
-    /**
-     * Increments featureIndex by 1 or wraps around to 0 if featureIndex is equals to featureMaxIndex before increment.
-     * 
-     * @returns void
-     * @memberof Home
-     */
-    handleFeatureNext() {
-        const newIndex = this.state.featureIndex === featureMaxIndex ? 0 : this.state.featureIndex + 1;
-        this.handleFeatureClick(newIndex);
-    }
+  /**
+   * Changes feature title, text and image in state to be rendered on button click.
+   * 
+   * @param {number} newIndex -Index of array elements to be rendered.
+   * @returns void
+   * @memberof Home
+   */
+  handleFeatureClick(newIndex) {
+    this.setState({
+      featureIndex: newIndex,
+      featureTitle: featureTitle[newIndex],
+      featureText: featureText[newIndex],
+      featureImage: featureImage[newIndex]
+    })
+  }
 
-    /**
-     * Decrements featureIndex by 1 or wraps around to featureMaxIndex if featureIndex is equals to 0 before decrement.
-     * 
-     * @returns void
-     * @memberof Home
-     */
-    handleFeaturePrev() {
-        const newIndex = this.state.featureIndex === 0 ? featureMaxIndex : this.state.featureIndex - 1;
-        this.handleFeatureClick(newIndex);
-    }
+  // TODO: merge handlers
+  /**
+   * Increments featureIndex by 1 or wraps around to 0 if featureIndex is equals to featureMaxIndex before increment.
+   * 
+   * @returns void
+   * @memberof Home
+   */
+  handleFeatureNext() {
+    const newIndex = this.state.featureIndex === featureMaxIndex ? 0 : this.state.featureIndex + 1;
+    this.handleFeatureClick(newIndex);
+  }
 
-    render() {
-        const { loggedIn, classes } = this.props;
-        return (
-            <div className = {classes.root}>
-                <CssBaseline/>
-                <div className={`${classes.welcomeDiv} ${classes.centeredDiv}`}>
-                    <img src={'https://blog.corp-site.envato.com/cdn-cgi/image/width=1200,quality=95,format=auto/uploads/2020/06/SOC101_Portfolio_Guide.png'} 
-                    className={classes.portfolioIcon} alt={'Portfol.io icon'}></img>
-                    <Typography component="h1" variant="h2" color="inherit" noWrap className={classes.title}>
-                        Welcome to Portfol.io
-                    </Typography>
-                    {/* must use \n to make multiline */}
-                    <Typography component="h1" variant="h6" color="inherit" className={classes.multiline}>
-                        {"Where dreams\nturn\ninto reality"}
-                    </Typography>
-                    {loggedIn 
-                        ?
-                        <Link to = '/dashboard'>You're logged in already! Lets go to dashboard</Link>
-                        :
-                        <Button 
-                            href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID} 
-                            color="primary" 
-                            variant="contained"
-                        >
-                            Login with Github
-                        </Button>
-                    }
-                    
-                </div>
-                <div className={`${classes.featuresDiv} ${classes.centeredDiv}`}>
-                    <Button onClick={this.handleFeaturePrev} className={`${classes.floating} ${classes.featureButtonLeft}`}>
-                        <FaChevronLeft/>
-                    </Button>
-                    <div className={classes.featureImgDiv}>
-                        <img src={this.state.featureImage} className={classes.fullSize} alt={`feature ${this.state.featureSection}`}></img>
-                    </div>
-                    <div className={`${classes.featureTextDiv} ${classes.centeredDiv}`}>
-                        <Typography component="h2" variant="h2" color="inherit" noWrap className={classes.title}>
-                            {this.state.featureTitle}
-                        </Typography>
-                        <Typography component="h6" variant="h6" color="inherit" noWrap className={classes.title}>
-                            {this.state.featureText}
-                        </Typography>
-                    </div>
-                    <Button onClick={this.handleFeatureNext} className={`${classes.floating} ${classes.featureButtonRight}`}>
-                        <FaChevronRight/>
-                    </Button>
-                </div>
-                <div className={`${classes.faqDiv} ${classes.centeredDiv}`}>
-                    <List>
-                        <ListItem>
-                            {/*  */}
-                        </ListItem>
-                    </List>
-                </div>
-            </div>
-        )
-    }
+  /**
+   * Decrements featureIndex by 1 or wraps around to featureMaxIndex if featureIndex is equals to 0 before decrement.
+   * 
+   * @returns void
+   * @memberof Home
+   */
+  handleFeaturePrev() {
+    const newIndex = this.state.featureIndex === 0 ? featureMaxIndex : this.state.featureIndex - 1;
+    this.handleFeatureClick(newIndex);
+  }
+
+  render() {
+    const { loggedIn, classes } = this.props;
+    return (
+      <div className={classes.root}>
+        <CssBaseline />
+        <div className={`${classes.welcomeDiv} ${classes.centeredDiv}`}>
+          <ResumateSVG />
+          <Typography component="h1" variant="h2" color="inherit" className={classes.title}>
+            Welcome to Portfol.io
+          </Typography>
+          <Typography component="h1" variant="h6" color="inherit" className={classes.multiline}>
+            {"Where dreams\nturn\ninto reality"}
+          </Typography>
+          {loggedIn
+            ?
+            <Link to='/dashboard'>You're logged in already! Lets go to dashboard</Link>
+            :
+            <Button
+              href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
+              color="primary"
+              variant="contained"
+            >
+              Login with Github
+            </Button>
+          }
+
+        </div>
+        <div className={`${classes.featuresDiv} ${classes.centeredDiv}`}>
+          <Button onClick={this.handleFeaturePrev} className={`${classes.floating} ${classes.featureButtonLeft}`}>
+            <FaChevronLeft />
+          </Button>
+          <div className={classes.featureImgDiv}>
+            <img src={this.state.featureImage} className={classes.fullSize} alt={`feature ${this.state.featureSection}`}></img>
+          </div>
+          <div className={`${classes.featureTextDiv} ${classes.centeredDiv}`}>
+            <Typography component="h2" variant="h2" color="inherit" className={classes.title}>
+              {this.state.featureTitle}
+            </Typography>
+            <Typography component="h6" variant="h6" color="inherit" className={classes.title}>
+              {this.state.featureText}
+            </Typography>
+          </div>
+          <Button onClick={this.handleFeatureNext} className={`${classes.floating} ${classes.featureButtonRight}`}>
+            <FaChevronRight />
+          </Button>
+        </div>
+        <div className={`${classes.faqDiv} ${classes.centeredDiv}`}>
+          <List>
+            <ListItem>
+              {/*  */}
+            </ListItem>
+          </List>
+        </div>
+      </div>
+    )
+  }
 }
 
 /**
@@ -314,12 +313,12 @@ class Home extends Component {
  * @memberof Home
  */
 const mapStateToProps = state => ({
-    loggedIn: state.login.loggedIn,
-    name: state.login.name,
-    id: state.login.id,
-    avatar_url: state.login.avatar_url,
-    gravatar_id: state.login.gravatar_id,
-    error: state.login.error
+  loggedIn: state.login.loggedIn,
+  name: state.login.name,
+  id: state.login.id,
+  avatar_url: state.login.avatar_url,
+  gravatar_id: state.login.gravatar_id,
+  error: state.login.error
 })
 
 /** 
@@ -329,7 +328,7 @@ const mapStateToProps = state => ({
  * @memberof Home
  */
 const mapDispatchToProps = {
-    repopulate_state
+  repopulate_state
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Home));

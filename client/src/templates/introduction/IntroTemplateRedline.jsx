@@ -83,18 +83,23 @@ class IntroTemplateRedline extends Component {
   render() {
     const { classes, fields } = this.props;
     return (
-      <div className={classes.root} style={{
-        backgroundRepeat: false,
-        backgroundImage: `url("${fields.images.bg.src}")`,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: 'fixed',
-        width: fields.width,
-        height: fields.height,
-        display: "flex",
-        flexDirection: "column",
-        textAlign: "center"
-      }}>
+      <div
+        className={classes.root}
+        style={
+          {
+            backgroundRepeat: false,
+            backgroundImage: `url("${fields.images.bg.src}")`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: 'fixed',
+            width: fields.width,
+            height: fields.height,
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "center"
+          }
+        }
+      >
         <CssBaseline />
         <div
           style={{

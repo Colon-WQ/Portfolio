@@ -29,8 +29,8 @@ const styles = (theme) => ({
     alignItems: 'center',
     padding: '5%',
     textAlign: 'center',
-    backgroundColor: '#444444',
-    opacity: '90%'
+    backgroundColor: theme.palette.background.default,
+    opacity: '70%'
   },
   modal: {
     overflowX: 'hidden',
