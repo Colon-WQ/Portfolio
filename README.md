@@ -45,6 +45,16 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
+### Network Design
+
+![ScreenShot](Orbital/Network_design.png)
+
+### Login Flow
+
+![ScreenShot](Orbital/Login_Flow.png)
+
+### Application Flow
+
 ![ScreenShot](Orbital/ProgramFlow.png)
 
 ## Features
@@ -139,21 +149,21 @@ appear from the bottom of the screen, from which you can click on the `copy` but
 
 ## Milestone 2 goals
 
-* Work on backend API routes to handle functionality that involves mongoDB. - [x]
+- [x] Work on backend API routes to handle functionality that involves mongoDB
 
-* Portfolio creation flow is currently being tested in separate components and need to be combined together. - [x]
+- [x] Portfolio creation flow is currently being tested in separate components and need to be combined together
 
-* User Interface has to be improved to provide a more professional look. - [x]
+- [x] User Interface has to be improved to provide a more professional look
 
-* Upgrade http to https to ensure secure connection between server and browser. - [x]
+- [x] Upgrade http to https to ensure secure connection between server and browser
 
-* Domain name would have to be acquired to obtain an SSL certificate. - [x]
+- [x] Domain name would have to be acquired to obtain an SSL certificate
 
-* Development of more entry templates for the user to customize and add to their portfolio websites - [x]
+- [x] Development of more entry templates for the user to customize and add to their portfolio websites
 
-* Development of web development guides for html/js/css - [ ] In Progress
+- [ ] Development of web development guides for html/js/css - In Progress
 
-* Development of code editor for users to develop sub directories - [x]
+- [x] Development of code editor for users to develop sub directories
 
 ## Further Development
 
