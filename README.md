@@ -53,9 +53,13 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ![ScreenShot](Orbital/Login_Flow.png)
 
-### Application Flow
+### Portfolio Creation Flow
 
 ![ScreenShot](Orbital/ProgramFlow.png)
+
+### Logout Flow
+
+![ScreenShot](Orbital/Logout_Flow.png)
 
 ## Features
 
@@ -64,14 +68,20 @@ site has as well as to define routing. This can then be pushed to a Github repos
 a functioning website. With the help of Github API and OAuth, the above process can be done automatically, leaving only design to be done by the user.
 
 2. Using Amazon EC2 instance to host our MERN application allows us to handle a decent number of requests simultaneously and ensures faster application load times compared
-to Heroku.
+to Heroku. Heroku runs applications via dyno and actually puts the dyno to sleep if the application is inactive for 30 mins to save on the dyno's runtime hours. However, this
+means that once the dyno goes to sleep, it takes a long time to start it again, leading to very slow application loading times. 
 
-3. No sensitive data, such as the user's Github account password is stored or passed around.
+3. No sensitive data, such as the user's Github account password is stored or passed around. Access token is encrypted using strong algorithm and stored in a session in the database. Only
+the session _id is given to the user in a secure, httpOnly, same-site and signed cookie. Secure ensures that the cookie is only sent to the server via https connection.
+httpOnly ensures that the content of the cookie cannot be accessed by client-side scripts and is only accessible by the backend server. Same-site ensures that the cookie will
+not be sent if the user visits the site via a third party link, which prevents a bad actor acting on the user's behalf, or a CSRF attack. Signed ensures that if the cookie's contents
+are tampered with, it will be known and an error will be raised. 
 
 4. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
 change in browser tabs.
 
-5. Any HTTP connection sent from client to server will be redirected to a HTTPS connection to ensure that data is transmitted securely
+5. HSTS ensures that web browsers will automatically interact with the Nginx server via secure https connection only. Even if http requests make it through, the Nginx server
+will redirect any http traffic to https.
 
 ## Showcase
 
