@@ -137,27 +137,33 @@ appear from the bottom of the screen, from which you can click on the `copy` but
 
 - - - -
 
+## Milestone 2 goals
+
+* Work on backend API routes to handle functionality that involves mongoDB. - [x]
+
+* Portfolio creation flow is currently being tested in separate components and need to be combined together. - [x]
+
+* User Interface has to be improved to provide a more professional look. - [x]
+
+* Upgrade http to https to ensure secure connection between server and browser. - [x]
+
+* Domain name would have to be acquired to obtain an SSL certificate. - [x]
+
+* Development of more entry templates for the user to customize and add to their portfolio websites - [x]
+
+* Development of web development guides for html/js/css - [ ] In Progress
+
+* Development of code editor for users to develop sub directories - [x]
+
 ## Further Development
-
-* Work on backend API routes to handle functionality that involves mongoDB.
-
-* Portfolio creation flow is currently being tested in separate components and need to be combined together.
-
-* User Interface has to be improved to provide a more professional look.
-
-* Upgrade http to https to ensure secure connection between server and browser.
-
-* Domain name would have to be acquired to obtain an SSL certificate.
 
 * Development of more entry templates for the user to customize and add to their portfolio websites
 
-* Development of web development guides for html/js/css
-
-* Development of code editor for users to develop sub directories
+* Adding functionalities to the deployed Github page site
 
 
 ## Documentation
 
 Visit https://colon-wq.github.io/Portfolio/ to view documentation for Frontend React application.
 
-Visit http://13.228.174.76:5000/docs to view documentation for Backend Express application.
+Visit http://resumate.xyz/api/docs to view documentation for Backend Express application.
