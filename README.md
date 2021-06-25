@@ -72,10 +72,13 @@ to Heroku. Heroku runs applications via dyno and actually puts the dyno to sleep
 means that once the dyno goes to sleep, it takes a long time to start it again, leading to very slow application loading times. 
 
 3. No sensitive data, such as the user's Github account password is stored or passed around. Access token is encrypted using strong algorithm and stored in a session in the database. Only
-the session _id is given to the user in a secure, httpOnly, same-site and signed cookie. Secure ensures that the cookie is only sent to the server via https connection.
-httpOnly ensures that the content of the cookie cannot be accessed by client-side scripts and is only accessible by the backend server. Same-site ensures that the cookie will
-not be sent if the user visits the site via a third party link, which prevents a bad actor acting on the user's behalf, or a CSRF attack. Signed ensures that if the cookie's contents
-are tampered with, it will be known and an error will be raised. 
+the session _id is given to the user in a secure, httpOnly, same-site and signed cookie.
+
+    * Secure ensures that the cookie is only sent to the server via https connection.
+    * httpOnly ensures that the content of the cookie cannot be accessed by client-side scripts and is only accessible by the backend server. 
+    * Same-site ensures that the cookie will not be sent if the user visits the site via a third party link, which prevents a bad actor acting on the user's behalf, or a CSRF attack. 
+    * Signed ensures that if the cookie's contents are tampered with, it will be known and an error will be raised. 
+
 
 4. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
 change in browser tabs.
