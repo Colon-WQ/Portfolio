@@ -12,12 +12,17 @@ Artemis
 
 Building a **personal website** can seem daunting, and many people are put off from the fact that it requires **programming experience** and design know how. 
 However, having personal portfolio websites can really make individuals **stand out** from the crowd, giving them the attention they deserve. 
-Our project aims to act as a middleman, helping job seekers convert their resumes into interactive, appealing personal portfolio websites that will impress their hopeful employers. 
+Our project aims to act as a middleman, helping job seekers convert their resumes into interactive, appealing personal portfolio websites that will impress their hopeful employers.
+
+As a secondary aim, we also hope to show people that web development isn't as difficult as many may believe. To accomplish this, we will provide 
+some simple web development guides to allow our users to get started on web development using the portfolio app they created as a foundation.
 
 ## Aim
 
 We hope to make a website portfolio generator to **convert** resumes into **customizable** web pages that we will also facilitate in **bringing online**. 
-Themes and pre-sets will be further provided to give the website a professional look and feel.
+Themes and templates will be further provided to give the website a professional look and feel.
+
+Web development guides will also be provided to help users add functionalities to and further customize their newly created portfolio website.
 
 ## User Stories
 
@@ -45,6 +50,8 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
+![ScreenShot](Orbital/Program_Flow.png)
+
 ### Network Design
 
 ![ScreenShot](Orbital/Network_design.png)
@@ -55,7 +62,11 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ### Portfolio Creation Flow
 
-![ScreenShot](Orbital/ProgramFlow.png)
+![ScreenShot](Orbital/Portfolio_Creation_Flow.png)
+
+### Publish Flow
+
+![ScreenShot](Orbital/Publish_Flow.png)
 
 ### Logout Flow
 
@@ -72,10 +83,13 @@ to Heroku. Heroku runs applications via dyno and actually puts the dyno to sleep
 means that once the dyno goes to sleep, it takes a long time to start it again, leading to very slow application loading times. 
 
 3. No sensitive data, such as the user's Github account password is stored or passed around. Access token is encrypted using strong algorithm and stored in a session in the database. Only
-the session _id is given to the user in a secure, httpOnly, same-site and signed cookie. Secure ensures that the cookie is only sent to the server via https connection.
-httpOnly ensures that the content of the cookie cannot be accessed by client-side scripts and is only accessible by the backend server. Same-site ensures that the cookie will
-not be sent if the user visits the site via a third party link, which prevents a bad actor acting on the user's behalf, or a CSRF attack. Signed ensures that if the cookie's contents
-are tampered with, it will be known and an error will be raised. 
+the session _id is given to the user in a secure, httpOnly, same-site and signed cookie.
+
+    * Secure ensures that the cookie is only sent to the server via https connection.
+    * httpOnly ensures that the content of the cookie cannot be accessed by client-side scripts and is only accessible by the backend server. 
+    * Same-site ensures that the cookie will not be sent if the user visits the site via a third party link, which prevents a bad actor acting on the user's behalf, or a CSRF attack. 
+    * Signed ensures that if the cookie's contents are tampered with, it will be known and an error will be raised. 
+
 
 4. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
 change in browser tabs.
@@ -180,6 +194,9 @@ appear from the bottom of the screen, from which you can click on the `copy` but
 * Development of more entry templates for the user to customize and add to their portfolio websites
 
 * Adding functionalities to the deployed Github page site
+
+* Web development guides can be made with a typical portfolio app generated as a basis for instructions so that it is
+easier for users to follow
 
 
 ## Documentation
