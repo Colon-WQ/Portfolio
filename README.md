@@ -12,12 +12,17 @@ Artemis
 
 Building a **personal website** can seem daunting, and many people are put off from the fact that it requires **programming experience** and design know how. 
 However, having personal portfolio websites can really make individuals **stand out** from the crowd, giving them the attention they deserve. 
-Our project aims to act as a middleman, helping job seekers convert their resumes into interactive, appealing personal portfolio websites that will impress their hopeful employers. 
+Our project aims to act as a middleman, helping job seekers convert their resumes into interactive, appealing personal portfolio websites that will impress their hopeful employers.
+
+As a secondary aim, we also hope to show people that web development isn't as difficult as many may believe. To accomplish this, we will provide 
+some simple web development guides to allow our users to get started on web development using the portfolio app they created as a foundation.
 
 ## Aim
 
 We hope to make a website portfolio generator to **convert** resumes into **customizable** web pages that we will also facilitate in **bringing online**. 
-Themes and pre-sets will be further provided to give the website a professional look and feel.
+Themes and templates will be further provided to give the website a professional look and feel.
+
+Web development guides will also be provided to help users add functionalities to and further customize their newly created portfolio website.
 
 ## User Stories
 
@@ -45,6 +50,8 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
+![ScreenShot](Orbital/Program_Flow.png)
+
 ### Network Design
 
 ![ScreenShot](Orbital/Network_design.png)
@@ -55,7 +62,11 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ### Portfolio Creation Flow
 
-![ScreenShot](Orbital/ProgramFlow.png)
+![ScreenShot](Orbital/Portfolio_Creation_Flow.png)
+
+### Publish Flow
+
+![ScreenShot](Orbital/Publish_Flow.png)
 
 ### Logout Flow
 
@@ -183,6 +194,9 @@ appear from the bottom of the screen, from which you can click on the `copy` but
 * Development of more entry templates for the user to customize and add to their portfolio websites
 
 * Adding functionalities to the deployed Github page site
+
+* Web development guides can be made with a typical portfolio app generated as a basis for instructions so that it is
+easier for users to follow
 
 
 ## Documentation
