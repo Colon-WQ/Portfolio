@@ -50,6 +50,8 @@ aim to leverage on Github Pages to help users build their very own Portfolio web
 
 ## Program flow
 
+**Note**: The legends help to showcase in general which server is performing the tasks.
+
 ![ScreenShot](Orbital/Program_Flow.png)
 
 ### Network Design
