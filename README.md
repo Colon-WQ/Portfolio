@@ -206,3 +206,40 @@ easier for users to follow
 Visit https://colon-wq.github.io/Portfolio/ to view documentation for Frontend React application.
 
 Visit http://resumate.xyz/api/docs to view documentation for Backend Express application.
+
+## Setup for local testing
+
+Prerequisites: 
+    * Your own Github OAuth application
+    * A mongodb atlas database url
+
+1. Clone the repository and `cd` into both `client` and `server` directories. Then run 
+
+```
+npm install
+```
+
+2. `cd` into the `client` directory, create a new `.env` file and copy the fields from `.sample-env` in the same directory
+
+    * REACT_APP_CLIENT_ID is the client id of your Github OAuth application
+    * REACT_APP_BACKEND is http://localhost:5000/api
+    * REACT_APP_USER_LOCALSTORAGE can be set to any name. For example, `user_store`
+    * REACT_APP_AUTOSAVE_LOCALSTORAGE can be set to any name. For example, `portfolio_store`
+
+3. `cd` into the `server` directory, create a new `.env` file and copy the fields from `.sample-env` in the same directory
+
+    * CLIENT_ID is the client id of your Github OAuth application
+    * CLIENT_SECRET is the client secret of your Github OAuth application
+    * REDIRECT_URI is the URI that your Github OAuth application redirects users to. It should be set to http://localhost:3000/login/callback
+    * JWT_SECRET can be any random string
+    * SIGN_COOKIE_SECRET can be any random string
+    * FRONT_END is http://localhost:3000
+    * BACK_END is http://localhost:5000/api
+    * MONGO_URL is your mongodb atlas database url
+    * ENCRYPT_KEY can be any random string
+
+4. Then `cd` into the root directory. Then run
+
+```
+npm run dev
+```
