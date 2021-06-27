@@ -32,6 +32,8 @@ Web development guides will also be provided to help users add functionalities t
 
 3. As a job seeker I want to better impress my employers and stand out from the other applicants.
 
+4. As a student with interest in web development, I want to learn some basic web development and showcase to others the substantial results of my learning.
+
 ## Scope of project
 
 The Resumate web application provides an interface for users to login via Github and grant us permissions to make changes to their Github repositories. We
@@ -84,7 +86,10 @@ a functioning website. With the help of Github API and OAuth, the above process 
 to Heroku. Heroku runs applications via dyno and actually puts the dyno to sleep if the application is inactive for 30 mins to save on the dyno's runtime hours. However, this
 means that once the dyno goes to sleep, it takes a long time to start it again, leading to very slow application loading times. 
 
-3. No sensitive data, such as the user's Github account password is stored or passed around. Access token is encrypted using strong algorithm and stored in a session in the database. Only
+3. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
+change in browser tabs.
+
+4. No sensitive data, such as the user's Github account password is stored or passed around. Access token is encrypted using strong algorithm and stored in a session in the database. Only
 the session _id is given to the user in a secure, httpOnly, same-site and signed cookie.
 
     * Secure ensures that the cookie is only sent to the server via https connection.
@@ -93,11 +98,10 @@ the session _id is given to the user in a secure, httpOnly, same-site and signed
     * Signed ensures that if the cookie's contents are tampered with, it will be known and an error will be raised. 
 
 
-4. User peripherals, logged in status and current Portfolio work will be stored in the localStorage to enable re-login and saving of current work after page refreshes or
-change in browser tabs.
-
 5. HSTS ensures that web browsers will automatically interact with the Nginx server via secure https connection only. Even if http requests make it through, the Nginx server
 will redirect any http traffic to https.
+
+6. We will only update existing files or add new files to the user's Github repository to minimize changes to the user's own contributions to his portfolio website.
 
 ## Showcase
 
@@ -172,6 +176,12 @@ appear from the bottom of the screen, from which you can click on the `copy` but
 ![ScreenShot](Orbital/github_page.png)
 
 - - - -
+
+### Security Test
+
+The website is tested to be safe to user. You may run the same test for the website here https://www.ssltrust.com.au/ssl-tools/website-security-check
+
+![ScreenShot](Orbital/security_test.png)
 
 ## Milestone 2 goals
 
