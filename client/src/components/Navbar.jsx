@@ -268,7 +268,7 @@ class Navbar extends Component {
             ? `${classes.appBar} ${classes.appBarShift}`
             : classes.appBar}>
           <ToolBar className={classes.toolbar}>
-            <IconButton className={classes.homeButton} onClick={this.handleReturnHome}>
+            <IconButton className={classes.homeButton} onClick={this.handleReturnHome} style={{ borderRadius: '5px' }}>
               <ResumateSVG width="1em" height="1em" />
               <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
                 <Box fontWeight="bold">Resu<span style={{ color: "#FF0000" }} >mate</span></Box>

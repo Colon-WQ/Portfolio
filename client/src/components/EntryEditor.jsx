@@ -30,7 +30,7 @@ const styles = (theme) => ({
     padding: '5%',
     textAlign: 'center',
     backgroundColor: theme.palette.background.default,
-    opacity: '70%'
+    opacity: '85%'
   },
   modal: {
     overflowX: 'hidden',
@@ -130,7 +130,7 @@ const styles = (theme) => ({
     width: '80%',
     height: '80%',
     margin: 'auto',
-    backgroundColor: '#222222'
+    backgroundColor: theme.palette.primary.main
   }
 })
 

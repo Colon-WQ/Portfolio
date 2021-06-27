@@ -9,6 +9,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button, List, ListItem } from '@material-ui/core';
 import { theme } from '../styles/styles';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
+import homeWelcome from '../res/assets/homeWelcome.png';
+import sunsetBackground from '../res/assets/sunset.png';
+import { RiFileCodeLine } from 'react-icons/ri';
 
 
 /**
@@ -32,10 +35,14 @@ const styles = (theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
+    overflowX: 'auto',
+    backgroundImage: `url(${sunsetBackground})`,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed'
   },
   centeredDiv: {
     display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
@@ -43,17 +50,33 @@ const styles = (theme) => ({
   welcomeDiv: {
     width: '100%',
     height: '100vh',
-    backgroundImage: `url("${"https://miro.medium.com/max/1100/1*OlgqUIhvl5-9dZISlZ2-yQ.jpeg"}")`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
+    display: 'flex',
+    flexDirection: 'row',
+    textAlign: 'left',
+    justifyContent: 'center',
+    alignItems: 'left',
+    position: 'relative'
+  },
+  tutorialDiv: {
+    width: '90%',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'row',
+    textAlign: 'left',
+    justifyContent: 'center',
+    alignItems: 'left',
+    position: 'relative'
   },
   welcomeText: {
     flexGrow: 1,
 
   },
-  multiline: {
-    whiteSpace: 'pre-line',
+  typoHeader: {
   },
+  typoSubtitle: {
+
+  },
+
   portfolioIcon: {
     width: '40vh',
     height: '40vh',
@@ -61,25 +84,30 @@ const styles = (theme) => ({
   },
   featuresDiv: {
     position: 'relative',
-    width: '100%',
-    height: '60vh',
+    width: '80vw',
+    height: '70vh',
     flexDirection: 'row',
+    marginBlock: '10vh',
+    backgroundColor: 'transparent',
+    borderWidth: '1px',
+    borderStyle: 'solid'
   },
-  featureTextDiv: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: '55vw',
+  boxShadow: {
+    zIndex: '-1',
+    top: '5vh',
+    left: '-5vh',
+    width: '100%',
     height: '100%',
-    padding: '10%',
+    position: 'absolute'
   },
-  featureImgDiv: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '45vw',
-    height: '100%'
-  },
+  // boxShadowLeft: {
+  //   marginLeft: 'auto',
+  //   boxShadow: '-5vh 5vh #00000044, calc(80vw - 5vh) 5vh #00000044',
+  // },
+  // boxShadowRight: {
+  //   marginRight: 'auto',
+  //   boxShadow: '-5vh 5vh #00000044',
+  // },
   fullSize: {
     width: '100%',
     height: '100%',
@@ -87,77 +115,31 @@ const styles = (theme) => ({
   floating: {
     zIndex: 1,
   },
-  featureButtonLeft: {
-    height: '100%',
-    position: 'absolute',
-    left: 0,
+  featureRight: {
+    marginLeft: 'auto',
+    borderRight: 'none'
   },
-  featureButtonRight: {
-    height: '100%',
-    position: 'absolute',
-    right: 0,
+  featureLeft: {
+    marginRight: 'auto',
+    borderLeft: 'none'
+  },
+  featureImg: {
+    width: '50%',
+    height: 'inherit',
+    objectFit: 'cover',
+    maxHeight: '90%',
+    maxWidth: '90%',
+    margin: '5vh'
+  },
+  flexColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row'
   }
 });
-
-/** 
- * Integer representing size of feature elements.
- * 
- * @type {number} 
- * @memberof Home
- */
-const featureMaxIndex = 2;
-
-/** 
- * Array of strings containing links/paths to images to be used in the features section.
- * 
- * @type {Array.<string>} 
- * @memberof Home
- */
-const featureImage = [
-  'https://media.edutopia.org/styles/responsive_2000px_original/s3/masters/d7_images/cover_media/robinson-169hero-portfolio-shutterstock.jpg',
-  'https://assets-global.website-files.com/6009ec8cda7f305645c9d91b/603823eca4b46344229b30f8_portfolio_course.png',
-  'https://cdn-japantimes.com/wp-content/uploads/2020/06/np_file_16250.jpeg'
-];
-
-/** 
- * Array of strings representing feature titles.
- * 
- * @type {Array.<string>} 
- * @memberof Home
- */
-const featureTitle = [
-  'Your Design. Your Website.',
-  'Visualize your personality',
-  'Stay Ahead'
-];
-
-/** 
- * Array of strings representing feature texts.
- * 
- * @type {Array.<string>} 
- * @memberof Home
- */
-const featureText = [
-  'No watermarks, no restrictions — you own your website',
-  'Choose your style',
-  'Stay Relevant'
-];
-
-/** 
- * Array of FAQ's represented as strings.
- * 
- * @type {Array.<string>} 
- * @memberof Home
- */
-const faqQuestions = ['FAQ1?', 'FAQ2?', 'FAQ3?'];
-
-/** 
- * Array of FAQ answers corresponding to the questions represented as strings.
- * 
- * @type {Array.<string>} 
- * @memberof Home
- */
-const faqAnswers = ['yes\nof\ncourse', 'no', 'yes'];
 
 /**
  * Home component of Portfolio.
@@ -174,24 +156,6 @@ class Home extends Component {
    */
   constructor() {
     super();
-    this.handleFeatureClick = this.handleFeatureClick.bind(this);
-    this.handleFeatureNext = this.handleFeatureNext.bind(this);
-    this.handleFeaturePrev = this.handleFeaturePrev.bind(this);
-
-    /**
-     * @typedef {Object} state
-     * @property {number} featureIndex - index of feature elements to be rendered.
-     * @property {number} featureTitle - string representing feature title.
-     * @property {string} featureText - string representing feature text.
-     * @property {string} featureImage - string representing url of feature image to be rendered.
-     * @memberof Home
-     */
-    this.state = {
-      featureIndex: 0,
-      featureText: featureText[0],
-      featureTitle: featureTitle[0],
-      featureImage: featureImage[0]
-    }
   }
 
   /**
@@ -209,97 +173,171 @@ class Home extends Component {
     }
   }
 
-  /**
-   * Changes feature title, text and image in state to be rendered on button click.
-   * 
-   * @param {number} newIndex -Index of array elements to be rendered.
-   * @returns void
-   * @memberof Home
-   */
-  handleFeatureClick(newIndex) {
-    this.setState({
-      featureIndex: newIndex,
-      featureTitle: featureTitle[newIndex],
-      featureText: featureText[newIndex],
-      featureImage: featureImage[newIndex]
-    })
-  }
-
-  // TODO: merge handlers
-  /**
-   * Increments featureIndex by 1 or wraps around to 0 if featureIndex is equals to featureMaxIndex before increment.
-   * 
-   * @returns void
-   * @memberof Home
-   */
-  handleFeatureNext() {
-    const newIndex = this.state.featureIndex === featureMaxIndex ? 0 : this.state.featureIndex + 1;
-    this.handleFeatureClick(newIndex);
-  }
-
-  /**
-   * Decrements featureIndex by 1 or wraps around to featureMaxIndex if featureIndex is equals to 0 before decrement.
-   * 
-   * @returns void
-   * @memberof Home
-   */
-  handleFeaturePrev() {
-    const newIndex = this.state.featureIndex === 0 ? featureMaxIndex : this.state.featureIndex - 1;
-    this.handleFeatureClick(newIndex);
-  }
-
   render() {
     const { loggedIn, classes } = this.props;
     return (
       <div className={classes.root}>
         <CssBaseline />
-        <div className={`${classes.welcomeDiv} ${classes.centeredDiv}`}>
-          <ResumateSVG />
-          <Typography component="h1" variant="h2" color="inherit" className={classes.title}>
-            Welcome to Portfol.io
-          </Typography>
-          <Typography component="h1" variant="h6" color="inherit" className={classes.multiline}>
-            {"Where dreams\nturn\ninto reality"}
-          </Typography>
-          {loggedIn
-            ?
-            <Link to='/dashboard'>You're logged in already! Lets go to dashboard</Link>
-            :
-            <Button
-              href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
-              color="primary"
-              variant="contained"
-            >
-              Login with Github
-            </Button>
+        <Button
+          style={
+            {
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'absolute',
+              backgroundColor: 'transparent',
+              top: 0,
+              left: 0,
+              padding: '1%'
+            }
           }
+          href="/"
+        >
+          <ResumateSVG width="2em" height="2em" />
+          <Typography component="h1" variant="h2" color="inherit" className={classes.title} style={{ fontFamily: 'Helvetica', fontSize: '1.5em', fontWeight: 'bold' }}>
+            RESUMATE
+          </Typography>
+        </Button>
+        <div className={classes.welcomeDiv}>
+          <div
+            style={
+              {
+                margin: 'auto'
+              }
+            }>
+            <Typography component="h2" variant="h2" color="inherit" gutterBottom className={classes.typoHeader} style={{ fontWeight: 'bold' }}>
+              {'Show, not tell.'}
+            </Typography>
+            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom style={{ whiteSpace: 'pre-line' }}>
+              {'Sometimes words don\'t do your accomplishments justice.\nShowcase your best work in a visual, interactive website.'}
+            </Typography>
+            <Button
+              href={loggedIn
+                ? '/dashboard'
+                : `https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
+              variant="outlined"
+              style={{ width: 'max-content' }}
+            >
+              GET STARTED
+          </Button>
+          </div>
+          <img src={homeWelcome} style={{ marginRight: 'auto', maxWidth: '50%', minHeight: '50%', maxHeight: '100%' }} />
+        </div>
+        <div
+          className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureRight}`}
+        >
+          <img
+            className={classes.featureImg}
+            style={{ marginInline: '5vh' }}
+            src="https://edut.to/2TeoUBz"
+            alt="feature"
+          />
+          <div
+            style={{ marginInline: 'auto', maxWidth: '50%', padding: '6vh' }}
+            className={classes.flexColumn}
+          >
+            <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
+              Pre-Built templates
+            </Typography>
+            <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
+              Not a designer? No worries, choose from a selection of templates
+            </Typography>
+          </div>
+          <div
+            className={classes.boxShadow}
+            style={{
+              backgroundColor: '#FEF9C7'
+            }}
+          />
+        </div>
+        <div
+          className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureLeft}`}
+        >
+          <div
+            style={{ marginInline: 'auto', maxWidth: '50%', padding: '6vh' }}
+            className={classes.flexColumn}
+          >
+            <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
+              Free forever, no watermarks
+          </Typography>
+            <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
+              You own your website. No watermarks, no restrictions. Take full control of your website.
+          </Typography>
+          </div>
+          <img
+            className={classes.featureImg}
+            style={{ marginInline: '5vh' }}
+            src="https://edut.to/2TeoUBz"
+            alt="feature"
+          />
+          <div
+            className={classes.boxShadow}
+            style={{
+              backgroundColor: '#FCE181'
+            }}
+          />
+        </div>
+        <div
+          className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureRight}`}
+        >
+          <img
+            className={classes.featureImg}
+            style={{ marginInline: '5vh' }}
+            src="https://edut.to/2TeoUBz"
+            alt="feature"
+          />
+          <div
+            style={{ marginInline: 'auto', maxWidth: '50%', padding: '6vh' }}
+            className={classes.flexColumn}
+          >
+            <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
+              Fuss free process
+          </Typography>
+            <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
+              Pick your templates, edit your entries. We'll handle the rest — compilation and hosting all by us.
+          </Typography>
+          </div>
+          <div
+            className={classes.boxShadow}
+            style={{
+              backgroundColor: '#9FEDD7'
+            }}
+          />
+        </div>
+        <div className={`${classes.flexRow}`} style={{ borderColor: '#000', padding: '5vh', border: 'solid 1px', margin: 'auto', marginBottom: '15vh' }}>
+          <RiFileCodeLine size="20em" style={{ margin: 'auto' }} />
+          <div
+            style={
+              {
+                margin: 'auto',
+              }
+            }>
+            <Typography component="h3" variant="h3" color="inherit" gutterBottom className={classes.typoHeader} style={{ fontWeight: 'bold' }}>
+              Ready to take it a step further?
+            </Typography>
+            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom style={{ whiteSpace: 'pre-line' }}>
+              {'You\'ve got your website up and running.\n How about giving web development a shot? \n Beginner javascript projects to advanced full stack tutorials, we have it all.'}
+            </Typography>
+            <Button
+              href="/"
+              onClick={() => alert('Coming soon in the near future!')}
+              color="primary"
+              variant="outlined"
+            >
+              Browse tutorials
+          </Button>
+          </div>
 
+          <div
+            className={classes.boxShadow}
+            style={{
+              backgroundColor: '#026670'
+            }}
+          />
         </div>
-        <div className={`${classes.featuresDiv} ${classes.centeredDiv}`}>
-          <Button onClick={this.handleFeaturePrev} className={`${classes.floating} ${classes.featureButtonLeft}`}>
-            <FaChevronLeft />
-          </Button>
-          <div className={classes.featureImgDiv}>
-            <img src={this.state.featureImage} className={classes.fullSize} alt={`feature ${this.state.featureSection}`}></img>
-          </div>
-          <div className={`${classes.featureTextDiv} ${classes.centeredDiv}`}>
-            <Typography component="h2" variant="h2" color="inherit" className={classes.title}>
-              {this.state.featureTitle}
-            </Typography>
-            <Typography component="h6" variant="h6" color="inherit" className={classes.title}>
-              {this.state.featureText}
-            </Typography>
-          </div>
-          <Button onClick={this.handleFeatureNext} className={`${classes.floating} ${classes.featureButtonRight}`}>
-            <FaChevronRight />
-          </Button>
-        </div>
-        <div className={`${classes.faqDiv} ${classes.centeredDiv}`}>
-          <List>
-            <ListItem>
-              {/*  */}
-            </ListItem>
-          </List>
+        <div style={{ backgroundColor: '#000', height: '50vh', width: '100%' }} className={classes.centeredDiv}>
+          <ResumateSVG width="7em" height="7em" style={{ fill: "#fff" }} />
         </div>
       </div>
     )

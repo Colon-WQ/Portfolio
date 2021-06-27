@@ -1,23 +1,29 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import * as fonts from './fonts';
 
 export const light = {
   palette: {
       type: 'light',
       primary: {
-        main: '#F7882F',
+        main: '#FEF9C7',
       },
       secondary: {
-        main: '#F7C331',
+        main: '#FCE181',
+      },
+      contrastPrimary: {
+        main: '#9FEDD7'
+      },
+      contrastSecondary: {
+        main: '#026670'
       },
       tertiary: {
         light: '#687A8F',
-        main: '#2a9d8f',
+        main: '#9FEDD7',
         dark: '#e76f51',
         contrastText: '#fff'
       },
       background: {
-        default: '#faf7e3',
+        default: '#fff',
         light: '#faf7e3',
         dark: '#687A8F'
       },
@@ -86,4 +92,4 @@ export const dark = {
   };
 //visit here to see what to override 
 //https://material-ui.com/customization/default-theme/
-export const theme = createMuiTheme(light);
+export const theme = responsiveFontSizes(createMuiTheme(light));
