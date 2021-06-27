@@ -30,8 +30,8 @@ const styles = (theme) => ({
     alignItems: 'center',
     padding: '2%',
     textAlign: 'center',
-    backgroundColor: '#444444',
-    opacity: '90%',
+    backgroundColor: theme.palette.background.default,
+    opacity: '85%',
     height: '100%',
   },
   modal: {
@@ -48,7 +48,7 @@ const styles = (theme) => ({
   },
   treeItem: {
     '&$treeItemSelected > $treeItemContent': {
-      backgroundColor: '#F00'
+      backgroundColor: theme.palette.contrastPrimary.main
     }
   },
   treeItemSelected: {
@@ -59,7 +59,7 @@ const styles = (theme) => ({
   treeItemGroup: {
     marginLeft: 7,
     paddingLeft: 18,
-    borderLeft: '1px dashed #FFF'
+    borderLeft: `1px dashed ${theme.palette.text.primary}`
   },
   treeItemContent: {},
   treeView: {

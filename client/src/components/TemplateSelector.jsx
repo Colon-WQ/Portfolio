@@ -28,8 +28,8 @@ const styles = (theme) => ({
     alignItems: 'center',
     padding: '2%',
     textAlign: 'center',
-    backgroundColor: '#444444',
-    opacity: '90%',
+    backgroundColor: theme.palette.background.default,
+    opacity: '85%',
     height: '100%',
     overflowX: 'hidden',
     overflowY: 'auto'
