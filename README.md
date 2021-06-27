@@ -1,4 +1,4 @@
-# Portfol.io
+# Resumate
 
 This is a MERN application that aims to simplify the creation of Portfolio websites for users.
 
@@ -34,7 +34,7 @@ Web development guides will also be provided to help users add functionalities t
 
 ## Scope of project
 
-The Portfol.io web application provides an interface for users to login via Github and grant us permissions to make changes to their Github repositories. We
+The Resumate web application provides an interface for users to login via Github and grant us permissions to make changes to their Github repositories. We
 aim to leverage on Github Pages to help users build their very own Portfolio website, which will be hosted for free via Github Pages.
 
 ## What separates us from similar platforms?
@@ -210,8 +210,11 @@ Visit http://resumate.xyz/api/docs to view documentation for Backend Express app
 ## Setup for local testing
 
 Prerequisites: 
-    * Your own Github OAuth application
-    * A mongodb atlas database url
+
+* Your own Github OAuth application
+    * You can follow this guide https://tina.io/guides/nextjs/github/github-oauth-app/ to set up one
+* A mongodb atlas database url
+    * You can follow this guide https://docs.atlas.mongodb.com/getting-started/ to set up one
 
 1. Clone the repository and `cd` into both `client` and `server` directories. Then run 
 
