@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import LoginResult from './components/LoginResult';
+import Logout from './components/Logout';
 import Dashboard from './components/Dashboard';
 import Portfolio from './components/Portfolio';
 import Publish from './components/Publish';
@@ -43,6 +44,7 @@ ReactDOM.render(
                 <Route exact path = '/dashboard' component = {Dashboard}></Route>
                 <Route exact path = '/edit' component = {Portfolio}></Route>
                 <Route exact path = '/publish' component = {Publish}></Route>
+                <Route exact path = '/logout' component = {Logout}></Route>
             </>
           </Switch>
         </Provider>
