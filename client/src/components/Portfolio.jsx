@@ -20,9 +20,10 @@ import html2canvas from 'html2canvas';
 import FormData from 'form-data';
 import { handleErrors } from '../handlers/errorHandler';
 
-import { jssPreset } from '@material-ui/styles';
-import { create } from 'jss';
 
+import { create } from 'jss';
+import { jssPreset } from '@material-ui/styles';
+const jss = create().setup({ ...jssPreset(), Renderer: null });
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -320,8 +321,9 @@ class Portfolio extends Component {
       }
     }
 
-    const jss = create().setup({ ...jssPreset(), Renderer: null });
-    const sheets = new ServerStyleSheets({ jss });
+
+    const sheets = new ServerStyleSheets({jss});
+
     // TODO: test renderToStaticMarkup
     //NOTE: sheets.collect will look for mui styling in the provided component.
     //We also need to wrap that component with the theme we are using so that the style can reference it properly
@@ -333,6 +335,8 @@ class Portfolio extends Component {
         </div>
       </ThemeProvider>
     ));
+
+
     // TODO: add title
     // TODO: remove empty files
     const html = Base64.encode(`

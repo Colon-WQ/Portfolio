@@ -205,21 +205,8 @@ class Navbar extends Component {
    * @return void
    * @memberof Navbar
    */
-  async handleLogout() {
-    console.log("logging out")
-    this.props.log_out_user()
-    this.props.clearCurrentWorkFromLocal();
-    localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE)
-    console.log("successfully cleared localStorage")
-    await axios({
-      method: 'GET',
-      url: process.env.REACT_APP_BACKEND + '/logout',
-      withCredentials: true
-    }).then(res => {
-      this.props.history.push("/");
-    }).catch(err => {
-      handleErrors(err, this.props.history);
-    })
+  handleLogout() {
+    this.props.history.push("/logout")
   }
 
   /**
