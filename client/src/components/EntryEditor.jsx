@@ -143,14 +143,14 @@ const styles = (theme) => ({
     height: 'inherit'
   },
   entryIconName: {
-    width: 'inherit', 
+    width: 'inherit',
     fontSize: '0.5em'
   },
   maxWidth: {
     width: '100%'
   },
   entryInfoDiv: {
-    display: 'flex', 
+    display: 'flex',
     flexDirection: 'column'
   }
 })
@@ -462,6 +462,7 @@ class EntryEditor extends Component {
         data-html2canvas-ignore="true"
       >
         <Fab
+          variant="extended"
           className={classes.editFAB}
           onClick={() => {
             const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
@@ -473,6 +474,7 @@ class EntryEditor extends Component {
           }}
         >
           <FaEdit />
+          edit
         </Fab>
         <Modal className={classes.modal}
           // open always set to true, open/close logic handled by portfolio

@@ -45,9 +45,9 @@ class IntroTemplateRedline extends Component {
 
   static templateName = "Redline";
 
-  static script = (index) => "";
+  static preview = "https://bit.ly/3fwsFKX";
 
-  // static preview = "https://bit.ly/3fwsFKX";
+  static script = (index) => "";
 
   static info = {
     fonts: { titleFont: { label: 'title font' } },
