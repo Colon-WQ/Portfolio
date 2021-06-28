@@ -48,7 +48,17 @@ const styles = (theme) => ({
         marginRight: '0.5vw',
         marginBottom: '0.5vw',
         textAlign: 'center'
-    }
+    },
+    textPrimaryColor: {
+        color: theme.palette.text.primary,
+        '&.Mui-focused': {
+            color: theme.palette.text.primary
+        }
+    },
+    snackbar: {
+        backgroundColor: '#303030', 
+        color: 'white'
+    },
 })
 
 /**
@@ -406,7 +416,7 @@ class Publish extends Component {
                     TransitionComponent={props => <Slide {...props} direction="up" />}
                 >
                     <SnackbarContent
-                        style={{backgroundColor: '#303030', color: 'white'}}
+                        className={classes.snackbar}
                         message={this.state.publishError ? this.state.publishErrorMessage : this.state.pageUrl}
                         action={
                             <React.Fragment>
@@ -451,12 +461,6 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
-                            InputLabelProps={{
-                                style: { color: "black" },
-                            }}
-                            InputProps={{
-                                color: 'black'
-                            }}
                         />
                     </DialogContent>
                     <DialogActions>

@@ -37,7 +37,7 @@ class AboutTemplateMinimalist extends Component {
         fonts: {titleFont: "title font", bodyFont: "body font"},
         colours: {primary: "#ffffff", secondary: "#d5d5d5", header: "#e30000"},
         images: {},
-        texts: {about: "Send Help"},
+        texts: {about: "Me"},
         sections: []
     };
 

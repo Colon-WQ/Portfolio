@@ -62,6 +62,7 @@ const styles = (theme) => ({
   },
   homeButton: {
     marginRight: 'auto',
+    borderRadius: '5px'
   },
   homeButtonHidden: {
     display: 'none',
@@ -148,6 +149,9 @@ const styles = (theme) => ({
   },
   avatar_button: {
     width: 'auto'
+  },
+  logoTextDecor: {
+    color: "#FF0000"
   }
 });
 
@@ -270,10 +274,10 @@ class Navbar extends Component {
             ? `${classes.appBar} ${classes.appBarShift}`
             : classes.appBar}>
           <ToolBar className={classes.toolbar}>
-            <IconButton className={classes.homeButton} onClick={this.handleReturnHome} style={{ borderRadius: '5px' }}>
+            <IconButton className={classes.homeButton} onClick={this.handleReturnHome}>
               <ResumateSVG width="1em" height="1em" />
               <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
-                <Box fontWeight="bold">Resu<span style={{ color: "#FF0000" }} >mate</span></Box>
+                <Box fontWeight="bold">Resu<span className={classes.logoTextDecor} >mate</span></Box>
               </Typography>
             </IconButton>
             <Button 
