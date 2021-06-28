@@ -220,8 +220,13 @@ export const publishGithub = async (req, res) => {
         return fetchedContentObject;
     }).catch(err => {
         // TODO: error handling, stop publishing/undo all publishes.
-        console.log(err.message);
-        return res.status(404).send("error encountered when checking repository");
+        if (err.response.data.message === "This repository is empty." && err.response.status === 404) {
+            console.log("repository is empty");
+            return {};
+        } else {
+            console.log(err.message);
+            return res.status(404).send("error encountered when checking repository");
+        }
     });
 
     //TODO: committer object might be required
