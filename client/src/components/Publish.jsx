@@ -392,7 +392,7 @@ class Publish extends Component {
                     className={classes.actionFAB}
                     onClick={this.handleFinalizeDialogOpen}
                 >
-                    {this.state.publishLoading ? <CircularProgress size="2rem"/> : <FaUpload />}
+                    {this.state.publishLoading ? <CircularProgress color="black" size="2rem"/> : <FaUpload />}
                 </Fab>
 
                 <Snackbar
@@ -413,7 +413,7 @@ class Publish extends Component {
                                 {!this.state.publishError
                                     ?
                                         <Button onClick={this.handleCopyClipboard}>
-                                            <FaRegCopy/>
+                                            <FaRegCopy color="white"/>
                                         </Button>
                                     :
                                         <div/>
@@ -421,7 +421,7 @@ class Publish extends Component {
                                 <Button
                                     onClick={this.handleStatusClose}
                                 >
-                                    <FaTimes/>
+                                    <FaTimes color="white"/>
                                 </Button>
                             </React.Fragment>
                         }
@@ -439,7 +439,7 @@ class Publish extends Component {
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText style={{ color: "white" }}>
+                        <DialogContentText >
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -452,10 +452,10 @@ class Publish extends Component {
                             fullWidth
                             onChange={this.handleOnChange}
                             InputLabelProps={{
-                                style: { color: "whitesmoke" },
+                                style: { color: "black" },
                             }}
                             InputProps={{
-                                color: 'secondary'
+                                color: 'black'
                             }}
                         />
                     </DialogContent>

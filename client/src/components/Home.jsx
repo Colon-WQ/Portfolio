@@ -3,10 +3,8 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction'
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, List, ListItem } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { theme } from '../styles/styles';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
 import homeWelcome from '../res/assets/homeWelcome.png';
