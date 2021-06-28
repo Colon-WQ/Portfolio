@@ -96,7 +96,19 @@ const styles = (theme) => ({
     left: '-5vh',
     width: '100%',
     height: '100%',
-    position: 'absolute'
+    position: 'absolute',
+  },
+  boxShadowColor1: {
+    backgroundColor: '#FEF9C7'
+  },
+  boxShadowColor2: {
+    backgroundColor: '#FCE181'
+  },
+  boxShadowColor3: {
+    backgroundColor: '#9FEDD7'
+  },
+  boxShadowColor4: {
+    backgroundColor: '#026670'
   },
   // boxShadowLeft: {
   //   marginLeft: 'auto',
@@ -127,7 +139,8 @@ const styles = (theme) => ({
     objectFit: 'cover',
     maxHeight: '90%',
     maxWidth: '90%',
-    margin: '5vh'
+    margin: '5vh',
+    marginInline: '5vh'
   },
   flexColumn: {
     display: 'flex',
@@ -136,6 +149,63 @@ const styles = (theme) => ({
   flexRow: {
     display: 'flex',
     flexDirection: 'row'
+  },
+  homeButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    top: 0,
+    left: 0,
+    padding: '1%'
+  },
+  logoFont: {
+    fontFamily: 'Helvetica', 
+    fontSize: '1.5em', 
+    fontWeight: 'bold'
+  },
+  autoMargin: {
+    margin: 'auto'
+  },
+  boldFont: {
+    fontWeight: 'bold'
+  },
+  whiteSpacePreLine: {
+    whiteSpace: 'pre-line'
+  },
+  loginButton: {
+    width: 'max-content'
+  },
+  welcomeImage: {
+    marginRight: 'auto', 
+    maxWidth: '50%', 
+    minHeight: '50%', 
+    maxHeight: '100%'
+  },
+  featureDiv: {
+    marginInline: 'auto', 
+    maxWidth: '50%', 
+    padding: '6vh'
+  },
+  messageDiv: {
+    borderColor: '#000', 
+    padding: '5vh', 
+    border: 'solid 1px', 
+    margin: 'auto', 
+    marginBottom: '15vh'
+  },
+  riFileCodeLine: {
+    margin: 'auto'
+  },
+  bottomLogoDiv: {
+    backgroundColor: '#000', 
+    height: '50vh', 
+    width: '100%'
+  },
+  bottomLogoFill: {
+    fill: "#fff"
   }
 });
 
@@ -177,37 +247,20 @@ class Home extends Component {
       <div className={classes.root}>
         <CssBaseline />
         <Button
-          style={
-            {
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              backgroundColor: 'transparent',
-              top: 0,
-              left: 0,
-              padding: '1%'
-            }
-          }
+          className={classes.homeButton}
           href="/"
         >
           <ResumateSVG width="2em" height="2em" />
-          <Typography component="h1" variant="h2" color="inherit" className={classes.title} style={{ fontFamily: 'Helvetica', fontSize: '1.5em', fontWeight: 'bold' }}>
+          <Typography component="h1" variant="h2" color="inherit" className={`${classes.title} ${classes.logoFont}`}>
             RESUMATE
           </Typography>
         </Button>
         <div className={classes.welcomeDiv}>
-          <div
-            style={
-              {
-                margin: 'auto'
-              }
-            }>
-            <Typography component="h2" variant="h2" color="inherit" gutterBottom className={classes.typoHeader} style={{ fontWeight: 'bold' }}>
+          <div className={classes.autoMargin}>
+            <Typography component="h2" variant="h2" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
               {'Show, not tell.'}
             </Typography>
-            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom style={{ whiteSpace: 'pre-line' }}>
+            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
               {'Sometimes words don\'t do your accomplishments justice.\nShowcase your best work in a visual, interactive website.'}
             </Typography>
             <Button
@@ -215,25 +268,23 @@ class Home extends Component {
                 ? '/dashboard'
                 : `https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
               variant="outlined"
-              style={{ width: 'max-content' }}
+              className={classes.loginButton}
             >
               GET STARTED
           </Button>
           </div>
-          <img src={homeWelcome} style={{ marginRight: 'auto', maxWidth: '50%', minHeight: '50%', maxHeight: '100%' }} />
+          <img src={homeWelcome} className={classes.welcomeImage} />
         </div>
         <div
           className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureRight}`}
         >
           <img
             className={classes.featureImg}
-            style={{ marginInline: '5vh' }}
             src="https://edut.to/2TeoUBz"
             alt="feature"
           />
           <div
-            style={{ marginInline: 'auto', maxWidth: '50%', padding: '6vh' }}
-            className={classes.flexColumn}
+            className={`${classes.flexColumn} ${classes.featureDiv}`}
           >
             <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
               Pre-Built templates
@@ -243,18 +294,14 @@ class Home extends Component {
             </Typography>
           </div>
           <div
-            className={classes.boxShadow}
-            style={{
-              backgroundColor: '#FEF9C7'
-            }}
+            className={`${classes.boxShadow} ${classes.boxShadowColor1}`}
           />
         </div>
         <div
           className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureLeft}`}
         >
           <div
-            style={{ marginInline: 'auto', maxWidth: '50%', padding: '6vh' }}
-            className={classes.flexColumn}
+            className={`${classes.flexColumn} ${classes.featureDiv}`}
           >
             <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
               Free forever, no watermarks
@@ -265,15 +312,11 @@ class Home extends Component {
           </div>
           <img
             className={classes.featureImg}
-            style={{ marginInline: '5vh' }}
             src="https://edut.to/2TeoUBz"
             alt="feature"
           />
           <div
-            className={classes.boxShadow}
-            style={{
-              backgroundColor: '#FCE181'
-            }}
+            className={`${classes.boxShadow} ${classes.boxShadowColor2}`}
           />
         </div>
         <div
@@ -281,13 +324,11 @@ class Home extends Component {
         >
           <img
             className={classes.featureImg}
-            style={{ marginInline: '5vh' }}
             src="https://edut.to/2TeoUBz"
             alt="feature"
           />
           <div
-            style={{ marginInline: 'auto', maxWidth: '50%', padding: '6vh' }}
-            className={classes.flexColumn}
+            className={`${classes.flexColumn} ${classes.featureDiv}`}
           >
             <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
               Fuss free process
@@ -297,24 +338,16 @@ class Home extends Component {
           </Typography>
           </div>
           <div
-            className={classes.boxShadow}
-            style={{
-              backgroundColor: '#9FEDD7'
-            }}
+            className={`${classes.boxShadow} ${classes.boxShadowColor3}`}
           />
         </div>
-        <div className={`${classes.flexRow}`} style={{ borderColor: '#000', padding: '5vh', border: 'solid 1px', margin: 'auto', marginBottom: '15vh' }}>
-          <RiFileCodeLine size="20em" style={{ margin: 'auto' }} />
-          <div
-            style={
-              {
-                margin: 'auto',
-              }
-            }>
-            <Typography component="h3" variant="h3" color="inherit" gutterBottom className={classes.typoHeader} style={{ fontWeight: 'bold' }}>
+        <div className={`${classes.flexRow} ${classes.messageDiv}`}>
+          <RiFileCodeLine size="20em" className={classes.riFileCodeLine} />
+          <div className={classes.autoMargin}>
+            <Typography component="h3" variant="h3" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
               Ready to take it a step further?
             </Typography>
-            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom style={{ whiteSpace: 'pre-line' }}>
+            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
               {'You\'ve got your website up and running.\n How about giving web development a shot? \n Beginner javascript projects to advanced full stack tutorials, we have it all.'}
             </Typography>
             <Button
@@ -328,14 +361,11 @@ class Home extends Component {
           </div>
 
           <div
-            className={classes.boxShadow}
-            style={{
-              backgroundColor: '#026670'
-            }}
+            className={`${classes.boxShadow} ${classes.boxShadowColor4}`}
           />
         </div>
-        <div style={{ backgroundColor: '#000', height: '50vh', width: '100%' }} className={classes.centeredDiv}>
-          <ResumateSVG width="7em" height="7em" style={{ fill: "#fff" }} />
+        <div className={`${classes.centeredDiv} ${classes.bottomLogoDiv}`}>
+          <ResumateSVG width="7em" height="7em" className={classes.bottomLogoFill} />
         </div>
       </div>
     )
