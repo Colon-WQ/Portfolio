@@ -20,6 +20,7 @@ import html2canvas from 'html2canvas';
 import FormData from 'form-data';
 import { handleErrors } from '../handlers/errorHandler';
 
+
 import { create } from 'jss';
 import { jssPreset } from '@material-ui/styles';
 const jss = create().setup({ ...jssPreset(), Renderer: null });
@@ -68,7 +69,7 @@ const styles = (theme) => ({
     left: "auto"
   },
   entryEditorDiv: {
-    display: "flex", 
+    display: "flex",
     flexDirection: "row"
   }
 })
@@ -320,7 +321,9 @@ class Portfolio extends Component {
       }
     }
 
+
     const sheets = new ServerStyleSheets({jss});
+
     // TODO: test renderToStaticMarkup
     //NOTE: sheets.collect will look for mui styling in the provided component.
     //We also need to wrap that component with the theme we are using so that the style can reference it properly
@@ -461,7 +464,7 @@ class Portfolio extends Component {
   handleProduction() {
 
     const fileArray = this.handleCreateFile(this.state.pages, '');
-    //fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
+    fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     let renameArray = [];
     fileArray.map((obj) => {
       renameArray.push({
@@ -628,9 +631,11 @@ class Portfolio extends Component {
         </div>
         <div className={classes.staticDiv}>
           <Fab
+            variant="extended"
             className={classes.controlFAB}
             onClick={() => console.log(this.handleSavePortfolio())}>
             <FaSave />
+            save
           </Fab>
           <TemplateSelector
             onClose={this.handleSelector}

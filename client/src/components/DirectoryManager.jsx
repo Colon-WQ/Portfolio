@@ -6,7 +6,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab, TextField } from '@material-ui/core';
 import { TreeItem } from '@material-ui/lab';
 import { templates } from '../templates/Templates';
-import { FaPlus, FaSave, FaTimes, FaLink } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaLink } from 'react-icons/fa';
 
 
 /**
@@ -65,9 +65,21 @@ const styles = (theme) => ({
   treeView: {
     textAlign: 'left'
   },
-  textField: {},
+  textField: {
+    marginBlock: 0,
+  },
   hide: {
     display: 'none'
+  },
+  controlDiv: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: 'auto',
+    marginLeft: 'auto'
+  },
+  closeBtn: {
+    marginLeft: 'auto',
+    marginBottom: 'auto'
   }
 })
 
@@ -298,6 +310,7 @@ class DirectoryManager extends Component {
     return (
       <div>
         <Fab
+          variant="extended"
           className={classes.controlFAB}
           onClick={() => this.setState({
             showDirectory: true,
@@ -306,6 +319,7 @@ class DirectoryManager extends Component {
             ...this.props.getState()
           })}>
           <FaLink />
+          directories
         </Fab>
         <Modal className={classes.modal}
           open={this.state.showDirectory}
@@ -314,12 +328,12 @@ class DirectoryManager extends Component {
           aria-describedby="Select a page."
         >
           <div className={classes.root}>
-            <Fab variant="extended" onClick={() => { this.handleCloseDirectory(false) }}>
+            <Fab variant="extended" onClick={() => { this.handleCloseDirectory(false) }} className={classes.closeBtn}>
               <FaTimes />
             </Fab>
             <TreeView
               defaultCollapseIcon={<FaTimes />}
-              defaultExpandIcon={<FaSave />}
+              defaultExpandIcon={<FaPlus />}
               expanded={this.state.expanded}
               // onNodeSelect={this.handleSelectPage}
               onNodeToggle={(event, nodeIds) => this.setState({ expanded: nodeIds })}
@@ -327,47 +341,50 @@ class DirectoryManager extends Component {
             >
               {this.renderTree(this.state.dirTree, "root", classes, [])}
             </TreeView>
-            <TextField
-              id="dirName"
-              label="directory name"
-              name="dirName"
-              value={this.state.dirName}
-              margin="normal"
-              variant="outlined"
-              onChange={this.handleChange}
-              className={this.state.showInput ? classes.textField : classes.hide}
-            />
-            <Fab
-              variant="extended"
-              onClick={(event) => this.setState({ showInput: true, inputMode: CREATE })}
-              className={!this.state.showInput || this.state.inputMode !== CREATE ? classes.controlFAB : classes.hide}>
-              <FaPlus />
+            <div className={classes.controlDiv}>
+              <TextField
+                id="dirName"
+                label="directory name"
+                name="dirName"
+                value={this.state.dirName}
+                margin="normal"
+                variant="outlined"
+                onChange={this.handleChange}
+                className={this.state.showInput ? classes.textField : classes.hide}
+              />
+              <Fab
+                variant="extended"
+                onClick={(event) => this.setState({ showInput: true, inputMode: CREATE })}
+                className={!this.state.showInput || this.state.inputMode !== CREATE ? classes.controlFAB : classes.hide}>
+                <FaPlus />
               New page
             </Fab>
-            <Fab
-              variant="extended"
-              onClick={(event) => this.setState({ showInput: true, inputMode: RENAME })}
-              className={!this.state.showInput || this.state.inputMode !== RENAME ? classes.controlFAB : classes.hide}>
-              <FaPlus />
+              <Fab
+                variant="extended"
+                onClick={(event) => this.handleCreatePage(this.state.dirName)}
+                className={this.state.showInput && this.state.inputMode === CREATE ? classes.controlFAB : classes.hide}>
+                Create
+            </Fab>
+              <Fab
+                variant="extended"
+                onClick={(event) => this.setState({ showInput: true, inputMode: RENAME })}
+                className={!this.state.showInput || this.state.inputMode !== RENAME ? classes.controlFAB : classes.hide}>
+                <FaPlus />
               Rename page
             </Fab>
-            <Fab
-              variant="extended"
-              onClick={(event) => this.handleCreatePage(this.state.dirName)}
-              className={this.state.showInput && this.state.inputMode === CREATE ? classes.controlFAB : classes.hide}>
-              Create
+
+              <Fab
+                variant="extended"
+                onClick={(event) => this.handleRenameDirectory(this.state.dirName)}
+                className={this.state.showInput && this.state.inputMode === RENAME ? classes.controlFAB : classes.hide}>
+                Rename
             </Fab>
-            <Fab
-              variant="extended"
-              onClick={(event) => this.handleRenameDirectory(this.state.dirName)}
-              className={this.state.showInput && this.state.inputMode === RENAME ? classes.controlFAB : classes.hide}>
-              Rename
+              <Fab
+                variant="extended"
+                onClick={this.handleDeletePage}>
+                Delete page
             </Fab>
-            <Fab
-              variant="extended"
-              onClick={this.handleDeletePage}>
-              Delete page
-            </Fab>
+            </div>
           </div>
         </Modal>
       </div>
