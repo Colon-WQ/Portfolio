@@ -13,7 +13,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
-import { FaEdit } from 'react-icons/fa';
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -146,6 +145,9 @@ const styles = (theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.error.dark
     }
+  },
+  avatar_button: {
+    width: 'auto'
   }
 });
 
@@ -251,7 +253,7 @@ class Navbar extends Component {
 
   render() {
 
-    const { loggedIn, name, id, avatar_url, gravatar_id, error } = this.props
+    const { loggedIn, name, avatar_url, error } = this.props
 
     if (error) {
       return <div>Error! {error.message}</div>
@@ -274,9 +276,10 @@ class Navbar extends Component {
                 <Box fontWeight="bold">Resu<span style={{ color: "#FF0000" }} >mate</span></Box>
               </Typography>
             </IconButton>
-            <Button startIcon={<Avatar src={avatar_url} />}
+            <Button 
+              startIcon={<Avatar src={avatar_url} />}
               onClick={this.handleUserMenu}
-              className={loggedIn && !this.state.user_drawer_open ? "" : classes.hide}>
+              className={loggedIn && !this.state.user_drawer_open ? classes.avatar_button : classes.hide}>
               {name}
             </Button>
           </ToolBar>
@@ -325,7 +328,6 @@ class Navbar extends Component {
 const mapStateToProps = state => ({
   loggedIn: state.login.loggedIn,
   name: state.login.name,
-  id: state.login.id,
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
   error: state.login.error

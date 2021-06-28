@@ -489,11 +489,11 @@ class Dashboard extends Component {
 
 
   render() {
-    const { name, portfolios, classes } = this.props
+    const { portfolios, classes } = this.props
     return (
       <div className={classes.root}>
         <div className={classes.appBarSpacer} />
-        <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
+        <Typography variant="h2" component="h3">Here is your dashboard {this.props.name}!</Typography>
         <Grid container direction='row' justify='center' alignItems='center'>
           {
             this.props.loading
