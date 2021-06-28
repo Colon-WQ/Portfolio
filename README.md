@@ -150,7 +150,7 @@ Resumate provides an interface for users to create static pages using our provid
 
 2. Click GET STARTED button
 
-![ScreenShot](Orbital/welcome_page.png)
+![ScreenShot](Orbital/home_page.png)
 
 3. You will be automatically redirected to Github API’s login callback, after which click authorize to continue.
 
