@@ -13,7 +13,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
-import { FaEdit } from 'react-icons/fa';
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -63,6 +62,7 @@ const styles = (theme) => ({
   },
   homeButton: {
     marginRight: 'auto',
+    borderRadius: '5px'
   },
   homeButtonHidden: {
     display: 'none',
@@ -146,6 +146,12 @@ const styles = (theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.error.dark
     }
+  },
+  avatar_button: {
+    width: 'auto'
+  },
+  logoTextDecor: {
+    color: "#FF0000"
   }
 });
 
@@ -251,7 +257,7 @@ class Navbar extends Component {
 
   render() {
 
-    const { loggedIn, name, id, avatar_url, gravatar_id, error } = this.props
+    const { loggedIn, name, avatar_url, error } = this.props
 
     if (error) {
       return <div>Error! {error.message}</div>
@@ -268,15 +274,16 @@ class Navbar extends Component {
             ? `${classes.appBar} ${classes.appBarShift}`
             : classes.appBar}>
           <ToolBar className={classes.toolbar}>
-            <IconButton className={classes.homeButton} onClick={this.handleReturnHome} style={{ borderRadius: '5px' }}>
+            <IconButton className={classes.homeButton} onClick={this.handleReturnHome}>
               <ResumateSVG width="1em" height="1em" />
               <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
-                <Box fontWeight="bold">Resu<span style={{ color: "#FF0000" }} >mate</span></Box>
+                <Box fontWeight="bold">Resu<span className={classes.logoTextDecor} >mate</span></Box>
               </Typography>
             </IconButton>
-            <Button startIcon={<Avatar src={avatar_url} />}
+            <Button 
+              startIcon={<Avatar src={avatar_url} />}
               onClick={this.handleUserMenu}
-              className={loggedIn && !this.state.user_drawer_open ? "" : classes.hide}>
+              className={loggedIn && !this.state.user_drawer_open ? classes.avatar_button : classes.hide}>
               {name}
             </Button>
           </ToolBar>
@@ -325,7 +332,6 @@ class Navbar extends Component {
 const mapStateToProps = state => ({
   loggedIn: state.login.loggedIn,
   name: state.login.name,
-  id: state.login.id,
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
   error: state.login.error

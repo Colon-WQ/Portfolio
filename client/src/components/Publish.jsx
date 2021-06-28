@@ -48,7 +48,17 @@ const styles = (theme) => ({
         marginRight: '0.5vw',
         marginBottom: '0.5vw',
         textAlign: 'center'
-    }
+    },
+    textPrimaryColor: {
+        color: theme.palette.text.primary,
+        '&.Mui-focused': {
+            color: theme.palette.text.primary
+        }
+    },
+    snackbar: {
+        backgroundColor: '#303030', 
+        color: 'white'
+    },
 })
 
 /**
@@ -392,7 +402,7 @@ class Publish extends Component {
                     className={classes.actionFAB}
                     onClick={this.handleFinalizeDialogOpen}
                 >
-                    {this.state.publishLoading ? <CircularProgress size="2rem"/> : <FaUpload />}
+                    {this.state.publishLoading ? <CircularProgress color="black" size="2rem"/> : <FaUpload />}
                 </Fab>
 
                 <Snackbar
@@ -406,14 +416,14 @@ class Publish extends Component {
                     TransitionComponent={props => <Slide {...props} direction="up" />}
                 >
                     <SnackbarContent
-                        style={{backgroundColor: '#303030', color: 'white'}}
+                        className={classes.snackbar}
                         message={this.state.publishError ? this.state.publishErrorMessage : this.state.pageUrl}
                         action={
                             <React.Fragment>
                                 {!this.state.publishError
                                     ?
                                         <Button onClick={this.handleCopyClipboard}>
-                                            <FaRegCopy/>
+                                            <FaRegCopy color="white"/>
                                         </Button>
                                     :
                                         <div/>
@@ -421,7 +431,7 @@ class Publish extends Component {
                                 <Button
                                     onClick={this.handleStatusClose}
                                 >
-                                    <FaTimes/>
+                                    <FaTimes color="white"/>
                                 </Button>
                             </React.Fragment>
                         }
@@ -439,7 +449,7 @@ class Publish extends Component {
                         Repository Name
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText style={{ color: "white" }}>
+                        <DialogContentText >
                             Choose a Github repository name to save portfolio edits
                         </DialogContentText>
                         <TextField
@@ -451,12 +461,6 @@ class Publish extends Component {
                             defaultValue={this.state.repositoryName}
                             fullWidth
                             onChange={this.handleOnChange}
-                            InputLabelProps={{
-                                style: { color: "whitesmoke" },
-                            }}
-                            InputProps={{
-                                color: 'secondary'
-                            }}
                         />
                     </DialogContent>
                     <DialogActions>

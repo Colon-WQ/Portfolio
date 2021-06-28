@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Components</h3><ul><li><a href="Dashboard.html">Dashboard</a></li><li><a href="DirectoryManager.html">DirectoryManager</a></li><li><a href="EntryEditor.html">EntryEditor</a></li><li><a href="Home.html">Home</a></li><li><a href="LoginResult.html">LoginResult</a></li><li><a href="Navbar.html">Navbar</a></li><li><a href="Portfolio.html">Portfolio</a></li><li><a href="Publish.html">Publish</a></li><li><a href="TemplateSelector.html">TemplateSelector</a></li></ul><h3>Global</h3><ul><li><a href="global.html#styles">styles</a></li></ul></div><div class="category"><h2>Action</h2><h3>Modules</h3><ul><li><a href="module-LoginAction.html">LoginAction</a></li><li><a href="module-PortfolioAction.html">PortfolioAction</a></li></ul></div><div class="category"><h2>Auxiliary Functions</h2><h3>Modules</h3><ul><li><a href="module-errorHandler.html">errorHandler</a></li></ul></div><div class="category"><h2>Reducer</h2><h3>Modules</h3><ul><li><a href="module-LoginReducer.html">LoginReducer</a></li><li><a href="module-PortfolioReducer.html">PortfolioReducer</a></li><li><a href="module-RootReducer.html">RootReducer</a></li></ul></div>
                 
             </nav>
         </div>
@@ -88,15 +88,18 @@
             <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { log_out_user, repopulate_state } from '../actions/LoginAction';
+import { clearCurrentWorkFromLocal } from '../actions/PortfolioAction';
 import axios from 'axios';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
-
+import { handleErrors } from '../handlers/errorHandler';
 import { withStyles } from '@material-ui/core/styles';
-import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
+import { Avatar, Box, Button, Divider, Drawer, Hidden } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
+
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -116,7 +119,7 @@ import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@mater
  */
 const styles = (theme) => ({
     root: {
-      display: 'flex',
+      display: 'flex'
     },
     toolbar: {
       paddingRight: 24, // keep right padding when drawer closed
@@ -223,6 +226,12 @@ const styles = (theme) => ({
         backgroundColor: theme.palette.error.dark
       }
     },
+    dashboardButton: {
+      color: theme.palette.error.main,
+      '&amp;:hover': {
+        backgroundColor: theme.palette.error.dark
+      }
+    }
 });
 
 
@@ -247,6 +256,11 @@ class Navbar extends Component {
             menu_open: false,
             user_drawer_open: false
         }
+
+        this.handleLogout = this.handleLogout.bind(this);
+        this.handleReturnDashboard = this.handleReturnDashboard.bind(this);
+        this.handleUserMenu = this.handleUserMenu.bind(this);
+        this.handleReturnHome = this.handleReturnHome.bind(this);
     }
 
     /**
@@ -255,10 +269,12 @@ class Navbar extends Component {
      * @return void
      * @memberof Navbar
      */
-    componentDidMount() {
+    async componentDidMount() {
       if (!this.props.loggedIn) {
-        const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-        this.props.repopulate_state(localStorageItem)
+        const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+        if (localStorageItem !== null) {
+          await this.props.repopulate_state(localStorageItem);
+        }
       }
     }
     
@@ -268,21 +284,45 @@ class Navbar extends Component {
      * @return void
      * @memberof Navbar
      */
-    handleLogout() {
+    async handleLogout() {
         console.log("logging out")
         this.props.log_out_user()
+        this.props.clearCurrentWorkFromLocal();
         localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE)
         console.log("successfully cleared localStorage")
-        axios({
+        await axios({
             method: 'GET',
             url: process.env.REACT_APP_BACKEND + '/logout',
             withCredentials: true
         }).then(res => {
-            window.location.pathname = '/'
+            this.props.history.push("/");
         }).catch(err => {
-            console.log(err.message)
+            handleErrors(err, this.props.history);
         })
     }
+
+    /**
+     * Function to return user to the Dashboard
+     * 
+     * @return void
+     * @memberof Navbar
+     */
+    handleReturnDashboard() {
+      this.props.history.push("/dashboard");
+      this.handleUserMenu();
+    }
+
+    /**
+     * Function to return user to the homepage.
+     * 
+     * @return void
+     * @memberof Navbar
+     */
+    handleReturnHome() {
+      this.props.history.push("/")
+      this.handleUserMenu();
+    }
+
 
     /**
      * Logout function to clear cookies and invalidate the github authorization.
@@ -307,14 +347,14 @@ class Navbar extends Component {
         return (
             &lt;div className = {classes.root}>
                 &lt;CssBaseline />
-                &lt;AppBar position="absolute" 
+                &lt;AppBar position="fixed" 
                 className={this.state.user_drawer_open 
                     ? `${classes.appBar} ${classes.appBarShift}` 
                     : classes.appBar}>
                     &lt;ToolBar className={classes.toolbar}>
-                        &lt;Button className={classes.homeButton} href="/">
+                        &lt;Button className={classes.homeButton} onClick={this.handleReturnHome}>
                           &lt;Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
-                              &lt;Box fontWeight="bold">Portfol.&lt;span style={{color: "#FF0000"}}>io&lt;/span>&lt;/Box>
+                              &lt;Box fontWeight="bold">Resum&lt;span style={{color: "#FF0000"}}>ate&lt;/span>&lt;/Box>
                           &lt;/Typography>
                         &lt;/Button>
                         &lt;Button startIcon={&lt;Avatar src={avatar_url}/>} 
@@ -346,6 +386,9 @@ class Navbar extends Component {
                           &lt;List className={classes.flexDown}>
                             &lt;Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
                               LOGOUT
+                            &lt;/Button>
+                            &lt;Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
+                              DASHBOARD
                             &lt;/Button>
                         &lt;/List>
                     &lt;/div>
@@ -379,10 +422,11 @@ const mapStateToProps = state => ({
  */
 const mapDispatchToProps = {
   log_out_user,
-  repopulate_state
+  repopulate_state,
+  clearCurrentWorkFromLocal
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Navbar))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Navbar)))
 </code></pre>
         </article>
     </section>

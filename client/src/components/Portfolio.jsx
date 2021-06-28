@@ -37,10 +37,7 @@ import { handleErrors } from '../handlers/errorHandler';
 const styles = (theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'start',
-    alignItems: 'center',
-    paddingTop: '7%',
+    flexDirection: 'column'
   },
   entryDiv: {
     position: 'relative'
@@ -65,6 +62,10 @@ const styles = (theme) => ({
     right: "5%",
     top: "auto",
     left: "auto"
+  },
+  entryEditorDiv: {
+    display: "flex", 
+    flexDirection: "row"
   }
 })
 
@@ -454,7 +455,7 @@ class Portfolio extends Component {
   handleProduction() {
 
     const fileArray = this.handleCreateFile(this.state.pages, '');
-    fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
+    //fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     let renameArray = [];
     fileArray.map((obj) => {
       renameArray.push({
@@ -462,7 +463,7 @@ class Portfolio extends Component {
         fileContent: obj.contents
       })
     });
-    console.log(renameArray);
+    //console.log(renameArray);
 
     return renameArray;
   }
@@ -575,7 +576,7 @@ class Portfolio extends Component {
     const { classes } = this.props;
 
     return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div className={classes.root}>
         <Prompt
           when={this.props.isUnsaved}
           message={JSON.stringify({
@@ -597,7 +598,7 @@ class Portfolio extends Component {
         <div id="preview">
           {this.state.currentPage.entries.map((entry, index) => {
             // Key MUST be unique -> component will be reinitialized if key is different.
-            return (<div style={{ display: "flex", flexDirection: "row" }}>
+            return (<div className={classes.entryEditorDiv}>
               <EntryEditor
                 fields={entry}
                 info={templates[entry.type][entry.style].info}

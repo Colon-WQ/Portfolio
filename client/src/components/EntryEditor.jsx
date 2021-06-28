@@ -131,6 +131,27 @@ const styles = (theme) => ({
     height: '80%',
     margin: 'auto',
     backgroundColor: theme.palette.primary.main
+  },
+  hide: {
+    display: 'none'
+  },
+  maxHeightWidth: {
+    width: '100%',
+    height: '100%'
+  },
+  entryIcon: {
+    height: 'inherit'
+  },
+  entryIconName: {
+    width: 'inherit', 
+    fontSize: '0.5em'
+  },
+  maxWidth: {
+    width: '100%'
+  },
+  entryInfoDiv: {
+    display: 'flex', 
+    flexDirection: 'column'
   }
 })
 
@@ -465,8 +486,7 @@ class EntryEditor extends Component {
             <Typography component="h3" variant="h3">Entry editor</Typography>
             <input
               accept="image/*"
-              className={classes.imgInput}
-              style={{ display: "none" }}
+              className={`${classes.imgInput} ${classes.hide}`}
               ref={this.fileUploadRef}
               type="file"
               onChange={this.handleImageUpload}
@@ -504,7 +524,7 @@ class EntryEditor extends Component {
                 }
               }}
               onBlur={() => console.log("asda")}
-              style={{ display: "none" }}
+              className={classes.hide}
             />
             <Modal
               open={this.state.showIcon}
@@ -513,7 +533,7 @@ class EntryEditor extends Component {
               className={`${classes.modal} ${classes.subModal}`}
               onClose={() => this.setState({ showIcon: false, mediaAnchorEl: null })}
             >
-              <div style={{ width: '100%', height: '100%' }}>
+              <div className={classes.maxHeightWidth}>
                 <Tabs
                   name="iconCategory"
                   value={this.state.iconCategory}
@@ -522,7 +542,7 @@ class EntryEditor extends Component {
                   scrollButtons="auto"
                 >
                   {Object.entries(icons).map(([key, icon]) => {
-                    return (<Tab label={icon.label} value={key} style={{ height: 'inherit' }} />)
+                    return (<Tab label={icon.label} value={key} className={classes.entryIcon} />)
                   })}
                 </Tabs>
                 <div role='tabpanel' className={classes.gridDiv}>
@@ -532,7 +552,7 @@ class EntryEditor extends Component {
                       <IconButton onClick={() => this.handleIconSelect(iconName)} >
                         <div className={classes.iconDiv}>
                           <PreviewIcon size='1.5em' />
-                          <Typography noWrap variant='h6' component='h6' style={{ width: 'inherit', fontSize: '0.5em' }}  >
+                          <Typography noWrap variant='h6' component='h6' className={classes.entryIconName}  >
                             {iconName}
                           </Typography>
                         </div>
@@ -599,7 +619,7 @@ class EntryEditor extends Component {
                         id={key}
                         value={item}
                         onChange={(event) => this.handleChange(event, "colours")}
-                        style={{ width: "100%" }}
+                        className={classes.maxWidth}
                       />
                       <TextField
                         name={key}
@@ -746,7 +766,7 @@ class EntryEditor extends Component {
                                       imageName: key,
                                       editSection: true,
                                     })}>
-                                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <div className={classes.entryInfoDiv}>
                                         <Preview />
                                         <Typography>
                                           {this.props.info.sections.entryFormat.images[key].label}

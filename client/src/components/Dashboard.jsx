@@ -75,6 +75,18 @@ const styles = (theme) => ({
     width: 151,
     height: 151,
   },
+  cardGap: {
+    width: '15vh'
+  },
+  portfolioMenu: {
+    display: "inline-block"
+  },
+  portfolioMenuItem: {
+    display: "inline"
+  },
+  textPrimaryColor: {
+    color: theme.palette.text.primary
+  },
   appBarSpacer: theme.mixins.toolbar
 });
 
@@ -489,11 +501,11 @@ class Dashboard extends Component {
 
 
   render() {
-    const { name, portfolios, classes } = this.props
+    const { portfolios, classes } = this.props
     return (
       <div className={classes.root}>
         <div className={classes.appBarSpacer} />
-        <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
+        <Typography variant="h2" component="h3">Here is your dashboard {this.props.name}!</Typography>
         <Grid container direction='row' justify='center' alignItems='center'>
           {
             this.props.loading
@@ -532,7 +544,7 @@ class Dashboard extends Component {
                             >
                               <FaRegEdit />
                             </Button>
-                            <span style={{ width: "15vh" }} />
+                            <span className={classes.cardGap} />
                             <Button
                               id={element._id}
                               className={classes.portfolioButton}
@@ -569,7 +581,7 @@ class Dashboard extends Component {
         <Menu
           id="edit-menu"
           anchorEl={this.state.anchorEl}
-          style={{ display: 'inline-block' }}
+          className={classes.portfolioMenu}
           keepMounted
           open={Boolean(this.state.anchorEl)}
           onClose={this.handleCloseEditMenu}
@@ -577,8 +589,8 @@ class Dashboard extends Component {
           anchorOrigin={{ vertical: 'center', horizontal: 'left' }}
           transformOrigin={{ vertical: 'center', horizontal: 'left' }}
         >
-          <MenuItem style={{ display: 'inline' }} onClick={() => this.handleDeleteDialogState(true)}>Delete</MenuItem>
-          <MenuItem style={{ display: 'inline' }} onClick={() => this.handleChangeNameDialogState(true)}>Change Name</MenuItem>
+          <MenuItem className={classes.portfolioMenuItem} onClick={() => this.handleDeleteDialogState(true)}>Delete</MenuItem>
+          <MenuItem className={classes.portfolioMenuItem} onClick={() => this.handleChangeNameDialogState(true)}>Change Name</MenuItem>
         </Menu>
         <Dialog
           open={this.state.nameDialogState}
@@ -602,19 +614,13 @@ class Dashboard extends Component {
               defaultValue={this.state.portfolioName}
               fullWidth
               onChange={this.handleOnChange}
-              InputLabelProps={{
-                style: { color: "whitesmoke" },
-              }}
-              InputProps={{
-                color: 'secondary'
-              }}
               error={this.state.duplicateKeyError}
               helperText={this.state.duplicateKeyHelperText}
             />
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={this.handleNameDialogClose}
+              onClick={() => this.handleNameDialog(false)}
             >
               Cancel
                         </Button>
@@ -634,7 +640,7 @@ class Dashboard extends Component {
         >
           <DialogTitle id="delete-confirmation-title">Delete Portfolio Confirmation</DialogTitle>
           <DialogContent>
-            <DialogContentText id="delete-confirmation-description" style={{ color: "white" }}>
+            <DialogContentText id="delete-confirmation-description" className={classes.textPrimaryColor}>
               Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
                             </DialogContentText>
           </DialogContent>
@@ -668,12 +674,6 @@ class Dashboard extends Component {
               defaultValue={this.state.changedName}
               fullWidth
               onChange={this.handleOnChange}
-              InputLabelProps={{
-                style: { color: "whitesmoke" },
-              }}
-              InputProps={{
-                color: 'secondary'
-              }}
               error={this.state.duplicateKeyError}
               helperText={this.state.duplicateKeyHelperText}
             />
