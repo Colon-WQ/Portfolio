@@ -152,9 +152,11 @@ class TemplateSelector extends Component {
     return (
       <div>
         <Fab
+          variant="extended"
           className={classes.controlFAB}
           onClick={() => this.setState({ showSelector: true })}>
           <FaPlus />
+          new entry
         </Fab>
         <Modal className={classes.modal}
           // open always set to true, open/close logic handled by portfolio
