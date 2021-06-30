@@ -104,11 +104,13 @@ class TemplateSelector extends Component {
    * @return void
    * @memberof TemplateSelector
    */
-  componentDidMount() {
+  async componentDidMount() {
     // is this necessary if template is a widget
     if (!this.props.loggedIn) {
-      const localStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-      this.props.repopulate_state(localStorageItem)
+      const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+      if (localStorageItem !== null) {
+        this.props.repopulate_state(localStorageItem)
+      }
     }
   }
 

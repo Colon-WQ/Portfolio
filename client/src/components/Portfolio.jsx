@@ -29,6 +29,7 @@ const jss = create().setup({ ...jssPreset(), Renderer: null });
  * @file Portfolio component representing a user created portfolio
  * 
  * @author Chuan Hao
+ * @author Chen En
  * 
  * @see Portfolio
  */
@@ -115,6 +116,7 @@ class Portfolio extends Component {
     this.handleDirectory = this.handleDirectory.bind(this);
     this.handleSavePortfolio = this.handleSavePortfolio.bind(this);
     this.handleUploadPreview = this.handleUploadPreview.bind(this);
+    this.handleSaveLocalPortfolio = this.handleSaveLocalPortfolio.bind(this);
   }
 
   /**
@@ -126,30 +128,28 @@ class Portfolio extends Component {
   async componentDidMount() {
     if (!this.props.loggedIn) {
       const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+      console.log(userLocalStorageItem)
       if (userLocalStorageItem !== null) {
-        const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
-        await this.props.repopulate_state(userLocalStorageItem);
-        await this.props.saveCurrentWork(portfolioLocalStorageItem);
+        const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+        this.props.repopulate_state(userLocalStorageItem);
+        this.props.saveCurrentWork(portfolioLocalStorageItem);
       }
-
     }
 
-    //The rationale behind using this.state.name as the check is that name would be set before the user enters
-    if (this.props.loggedIn) {
-      if (this.props.currentPortfolio !== null) {
-        //Need to set the relevant _id, name, pages if portfolio exists.
-        //Redux state currentPortfolio is set such that if its not null, it will have name.
-        this.setState({
-          name: this.props.currentPortfolio.name
-        })
+    //currentPortfolio should be set with an object before reaching this page and it would have a name.
+    if (this.props.currentPortfolio !== null) {
+      //Need to set the relevant _id, name, pages if portfolio exists.
+      //Redux state currentPortfolio is set such that if its not null, it will have name.
+      this.setState({
+        name: this.props.currentPortfolio.name
+      })
 
-        if (this.props.currentPortfolio._id !== undefined && this.props.currentPortfolio.pages !== undefined) {
-          this.setState({
-            portfolio_id: this.props.currentPortfolio._id,
-            pages: this.props.currentPortfolio.pages,
-            currentPage: this.props.currentPortfolio.pages
-          })
-        }
+      if (this.props.currentPortfolio._id !== undefined && this.props.currentPortfolio.pages !== undefined) {
+        this.setState({
+          portfolio_id: this.props.currentPortfolio._id,
+          pages: this.props.currentPortfolio.pages,
+          currentPage: this.props.currentPortfolio.pages
+        })
       }
     }
   }
@@ -168,11 +168,16 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   componentDidUpdate() {
+    
     if (this.props.isUnsaved && !this.state.isTimerExist) {
       setTimeout(async () => {
-        console.log("Autosaving")
 
-        await this.handleSavePortfolio();
+        if (this.props.loggedIn) {
+          console.log("Autosaving")
+          await this.handleSavePortfolio();
+        } else {
+          await this.handleSaveLocalPortfolio();
+        }
 
         this.props.toggleUnsavedWork(false);
 
@@ -581,13 +586,23 @@ class Portfolio extends Component {
       })
   }
 
-  render() {
-    const { classes } = this.props;
+  async handleSaveLocalPortfolio() {
+    console.log("Autosaving locally");
 
+    //saving current work to localStorage and redux store
+    await this.props.saveCurrentWorkToLocal({
+      name: this.state.name,
+      user: '',
+      pages: this.state.pages
+    });
+  }
+
+  render() {
+    const { loggedIn, classes } = this.props;
     return (
       <div className={classes.root}>
         <Prompt
-          when={this.props.isUnsaved}
+          when={loggedIn && this.props.isUnsaved}
           message={JSON.stringify({
             message: "Are you sure you want to leave? You have unsaved work.",
             portfolio: {
@@ -633,7 +648,7 @@ class Portfolio extends Component {
           <Fab
             variant="extended"
             className={classes.controlFAB}
-            onClick={() => console.log(this.handleSavePortfolio())}>
+            onClick={() => loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()}>
             <FaSave />
             save
           </Fab>
@@ -650,7 +665,7 @@ class Portfolio extends Component {
             dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
-          <Publish createPushables={this.handleProduction} />
+          <Publish createPushables={this.handleProduction} portfolioName={this.state.name}/>
         </div>
       </div>);
   }

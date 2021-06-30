@@ -194,7 +194,7 @@ class Navbar extends Component {
     if (!this.props.loggedIn) {
       const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
       if (localStorageItem !== null) {
-        await this.props.repopulate_state(localStorageItem);
+        this.props.repopulate_state(localStorageItem);
       }
     }
   }
@@ -232,6 +232,7 @@ class Navbar extends Component {
   }
 
 
+
   /**
    * Logout function to clear cookies and invalidate the github authorization.
    * 
@@ -244,13 +245,11 @@ class Navbar extends Component {
 
   render() {
 
-    const { loggedIn, name, avatar_url, error } = this.props
+    const { loggedIn, name, avatar_url, error, classes } = this.props;
 
     if (error) {
       return <div>Error! {error.message}</div>
     }
-
-    const { classes } = this.props;
 
     // CssBaseline gets the default body style and applies it (background colour etc.)
     return (
@@ -267,12 +266,19 @@ class Navbar extends Component {
                 <Box fontWeight="bold">Resu<span className={classes.logoTextDecor} >mate</span></Box>
               </Typography>
             </IconButton>
-            <Button 
-              startIcon={<Avatar src={avatar_url} />}
-              onClick={this.handleUserMenu}
-              className={loggedIn && !this.state.user_drawer_open ? classes.avatar_button : classes.hide}>
-              {name}
-            </Button>
+            {loggedIn 
+              ?
+                <Button 
+                  startIcon={<Avatar src={avatar_url} />}
+                  onClick={this.handleUserMenu}
+                  className={!this.state.user_drawer_open ? classes.avatar_button : classes.hide}>
+                  {name}
+                </Button>
+              :
+                <Button onClick={() => this.props.history.push('/dashboard')} className={classes.dashboardButton}>
+                  DASHBOARD
+                </Button>
+            }
           </ToolBar>
         </AppBar>
         <Drawer

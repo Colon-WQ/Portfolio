@@ -18,7 +18,15 @@ import {
  * @type {string}
  * @member GUEST
  */
-const GUEST = "Guest"
+export const GUEST = "Guest"
+
+/**
+ * string representing absent user.
+ * 
+ * @type {string}
+ * @member MISSING
+ */
+ export const MISSING = ''
 
 /** 
  * state that the login reducer is initialized with.
@@ -35,19 +43,11 @@ const GUEST = "Guest"
 const initialState = {
     loggedIn: false,
     name: GUEST,
-    id: '',
-    avatar_url: '',
-    gravatar_id: '',
+    id: MISSING,
+    avatar_url: MISSING,
+    gravatar_id: MISSING,
     error: null
 }
-
-/**
- * string representing absent user.
- * 
- * @type {string}
- * @member MISSING
- */
-export const MISSING = ''
 
 //TODO handle actions for GUEST
 
