@@ -37,7 +37,6 @@ const DESCRIPTION = "Portfolio website hosted by ghpages created by Portfolio.io
 //     maxAge: 6 * 60 * 60 * 1000,
 // }
 
-
 const sha1 = (input) => {
     return crypto.createHash('sha1').update(input).digest();
 }
@@ -125,10 +124,6 @@ export const getToken = async (req, res) => {
                     if (err) console.log(err);
                     console.log("session saved")
                 })
-
-                
-
-
                 // TODO: check if name == null, replace login otherwise.
                 // TODO: update db if user not found/query db for userdata instead.
                 return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });

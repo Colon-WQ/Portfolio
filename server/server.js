@@ -18,6 +18,7 @@ import swaggerUi from 'swagger-ui-express';
 import loginRoutes from './routes/login-callback.route.js';
 import portfolioRoutes from './routes/portfolio.route.js';
 import logoutRoutes from './routes/logout.route.js';
+import imageRoutes from './routes/image-resource.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,6 +87,7 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 app.use("/api/login", loginRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/logout", logoutRoutes);
+app.use("/api/images", imageRoutes);
 
 const PORT_CONFIG = PORT || 5000;
 
