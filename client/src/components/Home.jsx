@@ -10,6 +10,7 @@ import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
 import homeWelcome from '../res/assets/homeWelcome.png';
 import sunsetBackground from '../res/assets/sunset.png';
 import { RiFileCodeLine } from 'react-icons/ri';
+import { withRouter } from 'react-router';
 
 
 /**
@@ -263,15 +264,32 @@ class Home extends Component {
             <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
               {'Sometimes words don\'t do your accomplishments justice.\nShowcase your best work in a visual, interactive website.'}
             </Typography>
+            {loggedIn
+              ?
+                <Button
+                  variant="outlined"
+                  className={classes.loginButton}
+                  onClick={() => this.props.history.push('/dashboard')}
+                >
+                  To Dashboard
+                </Button>    
+              :
+                <Button
+                  href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
+                  variant="outlined"
+                  className={classes.loginButton}
+                >
+                  GET STARTED
+                </Button>
+            }
+            
             <Button
-              href={loggedIn
-                ? '/dashboard'
-                : `https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
+              onClick={() => this.props.history.push('/dashboard')}
               variant="outlined"
               className={classes.loginButton}
             >
-              GET STARTED
-          </Button>
+              LOGIN AS GUEST
+            </Button>
           </div>
           <img src={homeWelcome} className={classes.welcomeImage} />
         </div>
@@ -397,4 +415,4 @@ const mapDispatchToProps = {
   repopulate_state
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Home));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Home)));

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { log_in_user, repopulate_state } from '../actions/LoginAction';
+import { log_in_user, log_out_user, repopulate_state } from '../actions/LoginAction';
 import { fetchPortfolios } from '../actions/PortfolioAction';
 import { withStyles } from '@material-ui/core/styles';
 import { BeatLoader } from 'react-spinners';
@@ -65,7 +65,7 @@ class LoginResult extends Component {
                 let params = new URLSearchParams(search);
                 let ghCode = params.get('code');
 
-                if (ghCode !== "") {
+                if (ghCode !== null) {
                     axios({
                         method: "POST",
                         url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
@@ -101,7 +101,10 @@ class LoginResult extends Component {
                         console.log(err.message);
                     })
                 } else {
-                    console.log("gh code missing");
+                    //At this point, there's no localStorage user data, and user does not want to authorize.
+                    //Can only proceed as Guest. Using log_out_user to replicate the Guest data.
+                    console.log("gh code not found, proceeding as Guest");
+                    this.props.history.push('/dashboard');
                 }
             } else { //If localStorage does return an item, then user is already logged in
                 this.props.repopulate_state(localStorageItem)

@@ -9,9 +9,18 @@ import { handleErrors } from '../handlers/errorHandler';
 import { connect } from 'react-redux';
 
 /**
+ * @file Portfolio component representing a user created portfolio
+ * 
+ * @author Chuan Hao
+ * @author Chen En
+ * 
+ * @see Logout
+ */
+
+/**
  * Style generator to dynamically adjust styles based on theme provided
  * 
- * @memberof LoginResult
+ * @memberof Logout
  * @param {Object} theme 
  */
  const styles = (theme) => ({
