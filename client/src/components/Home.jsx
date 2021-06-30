@@ -269,8 +269,7 @@ class Home extends Component {
                 <Button
                   variant="outlined"
                   className={classes.loginButton}
-                  href={'/dashboard'}
-                  // onClick={() => this.props.history.push('/dashboard')}
+                  onClick={() => this.props.history.push('/dashboard')}
                 >
                   To Dashboard
                 </Button>    
