@@ -71,7 +71,8 @@ export default function portfolio(state = initialState, action) {
         case CLEAR_CURRENT_WORK:
             return {
                 ...state,
-                currentPortfolio: null
+                currentPortfolio: null,
+                portfolios: []
             }
         case TOGGLE_UNSAVED_WORK:
             return {

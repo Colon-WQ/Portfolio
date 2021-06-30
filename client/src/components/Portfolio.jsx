@@ -126,15 +126,15 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   async componentDidMount() {
-    if (!this.props.loggedIn) {
-      const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-      console.log(userLocalStorageItem)
-      if (userLocalStorageItem !== null) {
-        const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
-        this.props.repopulate_state(userLocalStorageItem);
-        this.props.saveCurrentWork(portfolioLocalStorageItem);
-      }
+ 
+    const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
+    
+    if (userLocalStorageItem !== null) {
+      const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+      this.props.repopulate_state(userLocalStorageItem);
+      this.props.saveCurrentWork(portfolioLocalStorageItem);
     }
+    
 
     //currentPortfolio should be set with an object before reaching this page and it would have a name.
     if (this.props.currentPortfolio !== null) {
