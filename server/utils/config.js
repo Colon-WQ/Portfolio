@@ -12,3 +12,4 @@ export const BACK_END = process.env.BACK_END;
 export const MONGO_URL = process.env.MONGO_URL;
 export const PORT = process.env.PORT;
 export const ENCRYPT_KEY = process.env.ENCRYPT_KEY;
+export const PEXELS_API_KEY = process.env.PEXELS_API_KEY;

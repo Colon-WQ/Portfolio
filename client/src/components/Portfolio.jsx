@@ -464,7 +464,7 @@ class Portfolio extends Component {
   handleProduction() {
 
     const fileArray = this.handleCreateFile(this.state.pages, '');
-    fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
+    // fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     let renameArray = [];
     fileArray.map((obj) => {
       renameArray.push({
