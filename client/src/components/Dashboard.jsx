@@ -136,19 +136,19 @@ class Dashboard extends Component {
    * @memberof Dashboard
    */
   async componentDidMount() {
-    console.log(this.props.loggedIn)
-    if (!this.props.loggedIn) {
+    
       const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
       if (localStorageItem !== null) {
-        this.props.repopulate_state(localStorageItem);
+        await this.props.repopulate_state(localStorageItem);
       }
-    } else {
 
-      await this.props.fetchPortfolios(this.props.id);
 
-      this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
-    }
-    
+      if (this.props.loggedIn) {
+        await this.props.fetchPortfolios(this.props.id);
+
+        this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+      }
+      
   }
 
   /**
