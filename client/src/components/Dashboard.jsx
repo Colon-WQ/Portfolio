@@ -136,15 +136,19 @@ class Dashboard extends Component {
    * @memberof Dashboard
    */
   async componentDidMount() {
+    console.log(this.props.loggedIn)
     if (!this.props.loggedIn) {
       const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
       if (localStorageItem !== null) {
-        await this.props.repopulate_state(localStorageItem);
+        this.props.repopulate_state(localStorageItem);
       }
-    }
-    await this.props.fetchPortfolios(this.props.id);
+    } else {
 
-    this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+      await this.props.fetchPortfolios(this.props.id);
+
+      this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+    }
+    
   }
 
   /**
@@ -501,80 +505,85 @@ class Dashboard extends Component {
 
 
   render() {
-    const { portfolios, classes } = this.props
+    const { portfolios, classes } = this.props;
+
     return (
       <div className={classes.root}>
         <div className={classes.appBarSpacer} />
         <Typography variant="h2" component="h3">Here is your dashboard {this.props.name}!</Typography>
         <Grid container direction='row' justify='center' alignItems='center'>
           {
-            this.props.loading
+            this.props.loggedIn
               ?
-              <BeatLoader />
-              :
-              this.props.error
+              this.props.loading
                 ?
-                this.props.error.response.status === 404
-                  ?
-                  <Typography variant="h6">Create your first Portfolio!</Typography>
-                  :
-                  <Typography variant="h6">{this.props.error.message}</Typography>
+                <BeatLoader />
                 :
-                portfolios.length === 0
+                this.props.error
                   ?
-                  <Typography variant="h6">Oops. It appears that you have no saved Portfolios</Typography>
+                  this.props.error.response.status === 404
+                    ?
+                    <Typography variant="h6">Create your first Portfolio!</Typography>
+                    :
+                    <Typography variant="h6">{this.props.error.message}</Typography>
                   :
-                  portfolios.map((element, idx) => {
-                    return (
-                      <Card
-                        className={classes.cardRoot}
-                        key={idx}
-                      >
-                        <div className={classes.cardDetails}>
-                          <CardContent>
-                            <Typography component="h5" variant="h5">{element.name}</Typography>
-                          </CardContent>
-                          <CardActions className={classes.cardControls}>
-                            <Button
-                              id={element._id}
-                              className={classes.portfolioButton}
-                              aria-controls="edit-menu"
-                              aria-haspopup="true"
-                              onClick={this.handleOpenEditMenu}
-                            >
-                              <FaRegEdit />
-                            </Button>
-                            <span className={classes.cardGap} />
-                            <Button
-                              id={element._id}
-                              className={classes.portfolioButton}
-                              onClick={this.handleOpenPortfolio}
-                            >
-                              Open
-                                                            </Button>
-                          </CardActions>
-                        </div>
+                  portfolios.length === 0
+                    ?
+                    <Typography variant="h6">Oops. It appears that you have no saved Portfolios</Typography>
+                    :
+                    portfolios.map((element, idx) => {
+                      return (
+                        <Card
+                          className={classes.cardRoot}
+                          key={idx}
+                        >
+                          <div className={classes.cardDetails}>
+                            <CardContent>
+                              <Typography component="h5" variant="h5">{element.name}</Typography>
+                            </CardContent>
+                            <CardActions className={classes.cardControls}>
+                              <Button
+                                id={element._id}
+                                className={classes.portfolioButton}
+                                aria-controls="edit-menu"
+                                aria-haspopup="true"
+                                onClick={this.handleOpenEditMenu}
+                              >
+                                <FaRegEdit />
+                              </Button>
+                              <span className={classes.cardGap} />
+                              <Button
+                                id={element._id}
+                                className={classes.portfolioButton}
+                                onClick={this.handleOpenPortfolio}
+                              >
+                                Open
+                                                              </Button>
+                            </CardActions>
+                          </div>
 
-                        <CardMedia
-                          component="img"
-                          className={classes.cardMedia}
-                          height='150'
-                          width='150'
-                          src={this.state.images[element._id] === undefined
-                            ?
-                            this.state.defaultPreviewSrc
-                            :
-                            this.state.images[element._id]["preview"] === undefined
+                          <CardMedia
+                            component="img"
+                            className={classes.cardMedia}
+                            height='150'
+                            width='150'
+                            src={this.state.images[element._id] === undefined
                               ?
                               this.state.defaultPreviewSrc
                               :
-                              this.state.images[element._id]["preview"]
-                          }
-                        />
-                      </Card>
+                              this.state.images[element._id]["preview"] === undefined
+                                ?
+                                this.state.defaultPreviewSrc
+                                :
+                                this.state.images[element._id]["preview"]
+                            }
+                          />
+                        </Card>
 
-                    );
-                  })
+                      );
+                    })
+              :
+              <Typography variant="h6">Please authorize to enable portfolio saving features.</Typography>
           }
         </Grid>
         <Button onClick={() => this.handleNameDialog(true)} className={classes.portfolioButton}>Add a Portfolio</Button>

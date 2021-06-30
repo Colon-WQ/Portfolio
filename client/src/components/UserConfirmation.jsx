@@ -33,6 +33,7 @@ const UserConfirmation = (message, callback) => {
         document.body.removeChild(container);
         //if callbackState is true, then user wants to leave portfolio. Save for him.
         if (isSave) {
+            console.log("saving to mongoDB")
             await axios({
                 method: "PUT",
                 url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
@@ -56,7 +57,6 @@ const UserConfirmation = (message, callback) => {
         } else {
             callback(callbackState);
         }
-        
      };
 
     

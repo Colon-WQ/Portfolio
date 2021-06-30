@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import axios from 'axios';
+import { saveAs } from 'file-saver';
+import jszip from 'jszip';
+import { Base64 } from 'js-base64';
 
 //MUI component imports
 import Fab from '@material-ui/core/Fab';
@@ -17,7 +20,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Slide from '@material-ui/core/Slide';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { FaUpload, FaTimes, FaRegCopy } from 'react-icons/fa';
+import { FaUpload, FaTimes, FaRegCopy, FaDownload } from 'react-icons/fa';
 import { handleErrors } from '../handlers/errorHandler';
 
 
@@ -98,6 +101,7 @@ class Publish extends Component {
     this.handleCheckPageStatus = this.handleCheckPageStatus.bind(this);
     this.handleStatusClose = this.handleStatusClose.bind(this);
     this.handleCopyClipboard = this.handleCopyClipboard.bind(this);
+    this.handleGuestDownload = this.handleGuestDownload.bind(this);
   }
 
 
@@ -389,8 +393,33 @@ class Publish extends Component {
     navigator.clipboard.writeText(this.state.pageUrl)
   }
 
+
+  handleGuestDownload() {
+    this.setState({
+      publishLoading: true
+    })
+    const pushables = this.props.createPushables();
+    console.log(pushables)
+
+    const zip = new jszip();
+
+    for (let obj of pushables) {
+      zip.file(obj.fileName, Base64.decode(obj.fileContent));
+    }
+
+    console.log(this.props.portfolioName)
+    const zipName = `${this.props.portfolioName}.zip`;
+
+    zip.generateAsync({type: "blob"}).then(content => {
+      saveAs(content, zipName);
+      this.setState({
+        publishLoading: false
+      })
+    });
+  }
+
   render() {
-    const { classes } = this.props;
+    const { loggedIn, classes } = this.props;
 
     return (
       <div className={classes.root}>
@@ -401,11 +430,20 @@ class Publish extends Component {
           aria-controls='simple-menu'
           aria-haspopup='true'
           className={classes.actionFAB}
-          onClick={this.handleFinalizeDialogOpen}
+          onClick={loggedIn ? this.handleFinalizeDialogOpen : this.handleGuestDownload}
         >
-          {this.state.publishLoading ? <CircularProgress color="black" size="2rem" /> : <FaUpload />}
-                    Publish
-                </Fab>
+          {this.state.publishLoading 
+            ? 
+              <CircularProgress color="black" size="2rem" /> 
+            : 
+              loggedIn
+                ?
+                  <FaUpload />
+                :
+                  <FaDownload />
+          }
+          Publish
+        </Fab>
 
         <Snackbar
           key="Github Page Status"
@@ -510,7 +548,6 @@ class Publish extends Component {
  */
 const mapStateToProps = state => ({
   loggedIn: state.login.loggedIn,
-
 })
 
 /** 

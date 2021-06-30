@@ -114,7 +114,7 @@ export const upsertPortfolio = async (req, res) => {
     if (portfolio._id === undefined) {
 
         //This will handle duplicate names chosen before anything is actually saved.
-        await Portfolio.findOne({ name: portfolio.name })
+        await Portfolio.findOne({ name: portfolio.name, user: user._id })
         .then(isExist => {
             if (isExist === null) {
                 portfolio._id = new mongoose.Types.ObjectId();
@@ -122,7 +122,7 @@ export const upsertPortfolio = async (req, res) => {
                 //This is allowed since original array is empty to begin with.
                 user.portfolios.push(portfolio._id);
             } else {
-                return handleErrors(res, err, "Duplicate Portfolio Name Chosen");
+                return response.status(400).send("error encountered");
             }
         }).catch(err => {
             return handleErrors(res, err, null);
