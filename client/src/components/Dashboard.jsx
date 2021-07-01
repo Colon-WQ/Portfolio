@@ -110,7 +110,8 @@ class Dashboard extends Component {
       changeNameDialogState: false,
       changedName: "",
       images: {},
-      defaultPreviewSrc: "https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png"
+      defaultPreviewSrc: "https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png",
+      guestPortfolioName: ""
     }
 
     this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -147,6 +148,13 @@ class Dashboard extends Component {
         await this.props.fetchPortfolios(this.props.id);
 
         this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+      } else {
+        const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
+        if (portfolioLocalStorageItem !== null) {
+          this.setState({
+            guestPortfolioName: portfolioLocalStorageItem.name
+          });
+        }
       }
       
   }
@@ -583,7 +591,15 @@ class Dashboard extends Component {
                       );
                     })
               :
-              <Typography variant="h6">Please authorize to enable portfolio saving features.</Typography>
+                this.state.guestPortfolioName === ""
+                  ?
+                    <Typography variant="h6">You have no saved Portfolio</Typography>
+                  :
+                    <Button
+                      onClick={() => this.props.history.push('/edit')}
+                    >
+                      {`continue editing ${this.state.guestPortfolioName}`}
+                    </Button>
           }
         </Grid>
         <Button onClick={() => this.handleNameDialog(true)} className={classes.portfolioButton}>Add a Portfolio</Button>
@@ -651,7 +667,7 @@ class Dashboard extends Component {
           <DialogContent>
             <DialogContentText id="delete-confirmation-description" className={classes.textPrimaryColor}>
               Are you sure you want to delete this Portfolio? This action is irreversible and your portfolio will be deleted permanently.
-                            </DialogContentText>
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => this.handleDeleteDialogState(false)}>

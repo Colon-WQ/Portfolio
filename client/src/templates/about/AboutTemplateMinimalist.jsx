@@ -9,7 +9,7 @@ const styles = (theme) => ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "start",
-        padding: "1rem",
+        padding: "0px",
         alignItems: "center",
         width: "100%",
         height: 'auto'
@@ -35,9 +35,9 @@ class AboutTemplateMinimalist extends Component {
         width: "60%", 
         height: "80vh", 
         fonts: {titleFont: "title font", bodyFont: "body font"},
-        colours: {primary: "#ffffff", secondary: "#d5d5d5", header: "#e30000"},
+        colours: {primary: "#ffffff", secondary: "#000000", header: "#000000"},
         images: {},
-        texts: {about: "Me"},
+        texts: {about: "I am a UI/UX developer living in New York. My favourite leisurely activity is playing video games"},
         sections: []
     };
 
@@ -50,20 +50,28 @@ class AboutTemplateMinimalist extends Component {
                 className={classes.root}
             >
                 <Card
-                    style={{ textAlign: "center" }}
+                    style={{ textAlign: "center", width: '100%', border: 'none', boxShadow: 'none', borderRadius: '0px' }}
                 >
-                        <CardContent>
+                        <CardContent
+                            style={{ padding: '0px' }}
+                        >
                         <Typography 
-                            variant="h1"
-                            component="h2" 
+                            variant="h3"
+                            component="h3" 
                             style={{color: fields.colours.primary, backgroundColor: fields.colours.header, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}
                         >
                             About Me
                         </Typography>
                         <Typography
-                            variant="h3"
-                            component="h4"
-                            style={{color: fields.colours.secondary, backgroundColor: "white", fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`}}
+                            variant="h5"
+                            component="h5"
+                            style={{
+                                color: fields.colours.secondary, 
+                                backgroundColor: "white", 
+                                fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`, 
+                                paddingLeft: '10%',
+                                paddingRight: '10%'
+                            }}
                         >
                             {fields.texts.about}
                         </Typography>
