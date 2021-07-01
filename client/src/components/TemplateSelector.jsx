@@ -97,22 +97,6 @@ class TemplateSelector extends Component {
     this.handleCloseSelector = this.handleCloseSelector.bind(this);
   }
 
-  /**
-   * Attempts to fetch entry details where possible so settings are saved.
-   * 
-   * @property {Function} componentDidMount
-   * @return void
-   * @memberof TemplateSelector
-   */
-  async componentDidMount() {
-    // is this necessary if template is a widget
-    if (!this.props.loggedIn) {
-      const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-      if (localStorageItem !== null) {
-        this.props.repopulate_state(localStorageItem)
-      }
-    }
-  }
 
   /**
    * Event handler to update states to reflect the selected category.

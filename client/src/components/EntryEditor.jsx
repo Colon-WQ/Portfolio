@@ -221,21 +221,7 @@ class EntryEditor extends Component {
 
   // TODO: elements read from state instead of props
   // TODO: unbounded mongo models
-  /**
-   * Attempts to fetch entry details where possible so settings are saved.
-   * 
-   * @return void
-   * @memberof EntryEditor
-   */
-  async componentDidMount() {
-    // is this necessary if template is a widget
-    if (!this.props.loggedIn) {
-      const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-      if (localStorageItem !== null) {
-        this.props.repopulate_state(localStorageItem);
-      }
-    }
-  }
+
 
   shouldComponentUpdate(nextProps, nextState) {
     return true;

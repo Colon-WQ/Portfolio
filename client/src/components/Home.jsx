@@ -234,12 +234,12 @@ class Home extends Component {
    * @memberof Home
    */
   async componentDidMount() {
-    if (!this.props.loggedIn) {
-      const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
-      if (localStorageItem !== null) {
-        this.props.repopulate_state(localStorageItem);
-      }
+    
+    const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
+    if (localStorageItem !== null) {
+      this.props.repopulate_state(localStorageItem);
     }
+    
   }
 
   render() {
@@ -269,7 +269,8 @@ class Home extends Component {
                 <Button
                   variant="outlined"
                   className={classes.loginButton}
-                  onClick={() => this.props.history.push('/dashboard')}
+                  href={'/dashboard'}
+                  // onClick={() => this.props.history.push('/dashboard')}
                 >
                   To Dashboard
                 </Button>    
