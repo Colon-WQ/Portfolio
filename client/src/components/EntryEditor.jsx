@@ -6,7 +6,7 @@ import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList,
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit } from "react-icons/fa";
 import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
-
+import ImagePicker from './ImagePicker';
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
  * 
@@ -473,6 +473,7 @@ class EntryEditor extends Component {
           aria-describedby="Edit your entry fields here"
         >
           <div className={classes.root}>
+            <ImagePicker />
             <Typography component="h3" variant="h3">Entry editor</Typography>
             <input
               accept="image/*"
@@ -551,6 +552,7 @@ class EntryEditor extends Component {
                 </div>
               </div>
             </Modal>
+
             <div className={classes.rowDiv}>
               <div className={classes.styleDiv}>
                 <TextField
@@ -670,6 +672,7 @@ class EntryEditor extends Component {
                                 case 'image':
                                   return (<MenuItem onClick={() => {
                                     this.fileUploadRef.current.click()
+
                                   }}
                                   >{format}</MenuItem>)
                                 case 'icon':
