@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { log_in_user, log_out_user, repopulate_state } from '../actions/LoginAction';
+import { log_in_user, repopulate_state } from '../actions/LoginAction';
 import { fetchPortfolios } from '../actions/PortfolioAction';
 import { withStyles } from '@material-ui/core/styles';
 import { BeatLoader } from 'react-spinners';
@@ -153,4 +153,4 @@ const mapDispatchToProps = {
     fetchPortfolios
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(LoginResult))
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(LoginResult)))

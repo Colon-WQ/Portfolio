@@ -130,11 +130,16 @@ class Portfolio extends Component {
     const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
     
     if (userLocalStorageItem !== null) {
-      const portfolioLocalStorageItem = JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
-      this.props.repopulate_state(userLocalStorageItem);
-      this.props.saveCurrentWork(portfolioLocalStorageItem);
+      await this.props.repopulate_state(userLocalStorageItem);
     }
+
+    const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
     
+    if (portfolioLocalStorageItem !== null) {
+      await this.props.saveCurrentWork(portfolioLocalStorageItem);
+    }
+
+    console.log(this.props.currentPortfolio)
 
     //currentPortfolio should be set with an object before reaching this page and it would have a name.
     if (this.props.currentPortfolio !== null) {
@@ -144,7 +149,8 @@ class Portfolio extends Component {
         name: this.props.currentPortfolio.name
       })
 
-      if (this.props.currentPortfolio._id !== undefined && this.props.currentPortfolio.pages !== undefined) {
+      //this condition could be unnecessary.
+      if (this.props.currentPortfolio.pages !== undefined) {
         this.setState({
           portfolio_id: this.props.currentPortfolio._id,
           pages: this.props.currentPortfolio.pages,
@@ -587,7 +593,7 @@ class Portfolio extends Component {
   }
 
   async handleSaveLocalPortfolio() {
-    console.log("Autosaving locally");
+    console.log("Saving locally");
 
     //saving current work to localStorage and redux store
     await this.props.saveCurrentWorkToLocal({
@@ -598,13 +604,13 @@ class Portfolio extends Component {
   }
 
   render() {
-    const { loggedIn, classes } = this.props;
+    const { loggedIn, isUnsaved, classes } = this.props;
     return (
       <div className={classes.root}>
         <Prompt
-          when={loggedIn && this.props.isUnsaved}
+          when={isUnsaved}
           message={JSON.stringify({
-            message: "Are you sure you want to leave? You have unsaved work.",
+            message: "Are you sure you want to leave?",
             portfolio: {
               _id: this.state.portfolio_id,
               name: this.state.name,
@@ -615,7 +621,8 @@ class Portfolio extends Component {
               name: this.props.name,
               avatar: this.props.avatar_url,
               gravatar_id: this.props.gravatar_id
-            }
+            },
+            loggedIn: loggedIn
           })}
         />
 
