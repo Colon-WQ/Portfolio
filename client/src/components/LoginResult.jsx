@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { log_in_user, repopulate_state } from '../actions/LoginAction';
+import { log_in_user } from '../actions/LoginAction';
 import { fetchPortfolios } from '../actions/PortfolioAction';
 import { withStyles } from '@material-ui/core/styles';
 import { BeatLoader } from 'react-spinners';
@@ -41,6 +41,11 @@ import { BeatLoader } from 'react-spinners';
  * @component
  */
 class LoginResult extends Component {
+
+    constructor() {
+        super();
+        this.handleLogin = this.handleLogin.bind(this);
+      }
     
     /**
      * If user is logged in already, the user will be redirected to Dashboard. 
@@ -61,74 +66,74 @@ class LoginResult extends Component {
             const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
             //If localStorage returns null, user is not loggedIn, proceed to login
             if (localStorageItem === null) {
-                let search = window.location.search;
-                let params = new URLSearchParams(search);
-                let ghCode = params.get('code');
-
-                if (ghCode !== null) {
-                    axios({
-                        method: "POST",
-                        url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
-                        withCredentials: true,
-                        responseType: 'json',
-                        data: {
-                            code: ghCode
-                        }
-                    }).then(res => res.data)
-                    .then(data => {
-                        /** For setting to localStorage, chose not to just dump entire redux state here because
-                         * we may want to only save certain data to localStorage
-                         */
-                        const forLocalStorage = {
-                            loggedIn: true,
-                            name: data.name,
-                            id: data.id,
-                            avatar_url: data.avatar_url,
-                            gravatar_id: data.gravatar_id
-                        }
-                        window.localStorage.setItem(process.env.REACT_APP_USER_LOCALSTORAGE, JSON.stringify(forLocalStorage))
-                        /**TODO: Implement IDEA => need to create a route that fetches user's portfolios' names and images only. We store this
-                         * in localStorage just like we did user peripherals.
-                         * In the dashboard, only when we click on the portfolio to be worked on. Then we fetch the actual portfolios themselves,
-                         * In the template editor, when the user is working on the portfolio, we will save his current work to localStorage in intervals
-                         * 
-                         * When user leaves the template editor, we save his current work to the mongodb database,
-                         * then wipe the localStorage of the current portfolio's work.
-                         */
-                        this.props.fetchPortfolios(data.id)
-                        this.props.log_in_user(data)
-                    }).catch(err => {
-                        console.log(err.message);
-                    })
-                } else {
-                    //At this point, there's no localStorage user data, and user does not want to authorize.
-                    //Can only proceed as Guest. Using log_out_user to replicate the Guest data.
-                    console.log("gh code not found, proceeding as Guest");
+                await this.handleLogin();
+            } else { 
+                //If localStorage does return an item, then user can either be loggedIn or not loggedIn
+                if (localStorageItem.loggedIn) {
                     this.props.history.push('/dashboard');
+                } else {
+                    await this.handleLogin();
                 }
-            } else { //If localStorage does return an item, then user is already logged in
-                this.props.repopulate_state(localStorageItem)
             }
         }
         
     }
 
-    render() {
-        const { loggedIn, classes } = this.props
-        if (loggedIn) {
-            return (
-                <Redirect to = '/dashboard'></Redirect>
-            )
+    async handleLogin() {
+        let search = window.location.search;
+        let params = new URLSearchParams(search);
+        let ghCode = params.get('code');
+
+        if (ghCode !== null) {
+            axios({
+                method: "POST",
+                url: `${process.env.REACT_APP_BACKEND}/login/authenticate`,
+                withCredentials: true,
+                responseType: 'json',
+                data: {
+                    code: ghCode
+                }
+            }).then(res => res.data)
+            .then(data => {
+                /** For setting to localStorage, chose not to just dump entire redux state here because
+                 * we may want to only save certain data to localStorage
+                 */
+                const forLocalStorage = {
+                    loggedIn: true,
+                    name: data.name,
+                    id: data.id,
+                    avatar_url: data.avatar_url,
+                    gravatar_id: data.gravatar_id
+                }
+                window.localStorage.setItem(process.env.REACT_APP_USER_LOCALSTORAGE, JSON.stringify(forLocalStorage))
+                
+                this.props.fetchPortfolios(data.id)
+                this.props.log_in_user(data)
+            }).then(() => {
+                this.props.history.push("/dashboard");
+            }).catch(err => {
+                console.log(err.message);
+                console.log("login failed. Returning user to Home Page to relogin or login as Guest")
+                this.props.history.push('/');
+            })
         } else {
-            return (
-                <div className={classes.root}>
-                    <div className={classes.appBarSpacer}/>
-                    <BeatLoader></BeatLoader>
-                </div>
-            )
+            //At this point, there's no localStorage user data, and user does not want to authorize.
+            //Can only proceed as Guest.
+            console.log("gh code not found, proceeding as Guest");
+            this.props.history.push('/dashboard');
         }
-        
     }
+
+    render() {
+        const { classes } = this.props
+        return (
+            <div className={classes.root}>
+                <div className={classes.appBarSpacer}/>
+                <BeatLoader></BeatLoader>
+            </div>
+        )
+    }
+        
 }
 
 /**
@@ -149,7 +154,6 @@ const mapStateToProps = state => ({
  */
 const mapDispatchToProps = {
     log_in_user,
-    repopulate_state,
     fetchPortfolios
 }
 

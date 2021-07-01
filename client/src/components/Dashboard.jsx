@@ -140,7 +140,7 @@ class Dashboard extends Component {
     
       const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
       if (localStorageItem !== null) {
-        await this.props.repopulate_state(localStorageItem);
+        this.props.repopulate_state(localStorageItem);
       }
 
 
