@@ -71,7 +71,7 @@ const encode = async (string) => {
 export const getToken = async (req, res) => {
     try {
         const code = req.body.code;
-        console.log('see', code);
+        
         const data = new FormData();
         data.append("client_id", client_id);
         data.append("client_secret", client_secret);
