@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../actions/LoginAction'
+import { repopulate_state, log_out_user } from '../actions/LoginAction'
+import { clearCurrentWorkFromLocal } from '../actions/PortfolioAction';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
@@ -11,6 +12,13 @@ import homeWelcome from '../res/assets/homeWelcome.png';
 import sunsetBackground from '../res/assets/sunset.png';
 import { RiFileCodeLine } from 'react-icons/ri';
 import { withRouter } from 'react-router';
+import axios from 'axios';
+import { handleErrors } from '../handlers/errorHandler';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 /**
@@ -177,7 +185,8 @@ const styles = (theme) => ({
     whiteSpace: 'pre-line'
   },
   loginButton: {
-    width: 'max-content'
+    width: 'max-content',
+    marginRight: '0.5rem'
   },
   welcomeImage: {
     marginRight: 'auto', 
@@ -225,6 +234,12 @@ class Home extends Component {
    */
   constructor() {
     super();
+
+    this.state = {
+      guestDialogState: false
+    };
+
+    this.handleGuestLogin = this.handleGuestLogin.bind(this);
   }
 
   /**
@@ -234,12 +249,48 @@ class Home extends Component {
    * @memberof Home
    */
   async componentDidMount() {
-    
     const localStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE))
     if (localStorageItem !== null) {
       this.props.repopulate_state(localStorageItem);
     }
-    
+  }
+
+  /**
+   * Logs out user and then have the user proceed as a guest to dashboard.
+   * 
+   * @returns void
+   * @memberof Home
+   */
+  async handleGuestLogin() {
+    await axios({
+      method: 'GET',
+      url: process.env.REACT_APP_BACKEND + '/logout',
+      withCredentials: true
+    }).then(res => {
+      //Still necessary if user does not refresh the page.
+      this.props.log_out_user();
+      this.props.clearCurrentWorkFromLocal();
+      //Once cleared, the app will rely on default redux login state if refresh were to occur.
+      localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE);
+      console.log("successfully cleared localStorage");
+    }).then(() => {
+      this.props.history.push("/dashboard");
+    }).catch(err => {
+      handleErrors(err, this.props.history);
+    })
+  }
+
+  /**
+   * Handles showing and hiding of Guest dialog.
+   * 
+   * @param {boolean} bool true for show and false for hide.
+   * @return void
+   * @memberof Home
+   */
+  handleGuestDialogState(bool) {
+    this.setState({
+      guestDialogState: bool
+    });
   }
 
   render() {
@@ -271,7 +322,7 @@ class Home extends Component {
                   className={classes.loginButton}
                   onClick={() => this.props.history.push('/dashboard')}
                 >
-                  To Dashboard
+                  TO DASHBOARD
                 </Button>    
               :
                 <Button
@@ -284,7 +335,7 @@ class Home extends Component {
             }
             
             <Button
-              onClick={() => this.props.history.push('/dashboard')}
+              onClick={() => loggedIn ? this.handleGuestDialogState(true) : this.props.history.push('/dashboard')}
               variant="outlined"
               className={classes.loginButton}
             >
@@ -385,6 +436,30 @@ class Home extends Component {
         <div className={`${classes.centeredDiv} ${classes.bottomLogoDiv}`}>
           <ResumateSVG width="7em" height="7em" className={classes.bottomLogoFill} />
         </div>
+        
+        <Dialog
+          open={this.state.guestDialogState}
+          onClose={() => this.handleGuestDialogState(false)}
+          aria-labelledby="guest change permission input"
+        >
+          <DialogTitle id="guest change permission input">
+            Are you sure?
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Login in as Guest will log you out of your current session. Do you still wish to continue?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.handleGuestDialogState(false)}>
+              Cancel
+            </Button>
+            <Button onClick={this.handleGuestLogin}>
+              Continue as Guest
+            </Button>
+          </DialogActions>
+        </Dialog>
+        
       </div>
     )
   }
@@ -412,7 +487,9 @@ const mapStateToProps = state => ({
  * @memberof Home
  */
 const mapDispatchToProps = {
-  repopulate_state
+  repopulate_state,
+  log_out_user,
+  clearCurrentWorkFromLocal
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Home)));

@@ -59,46 +59,83 @@ const UserConfirmation = (message, callback) => {
         }
      };
 
-    
-    ReactDOM.render(
-        <Dialog
-            open={true}
-            aria-labelledby="prompt-dialog"
-            aria-describedby="prompt-dialog"
-            fullWidth
-        >
-            <DialogTitle
-                id="promp-title"
+    if (textObj.loggedIn) {
+        ReactDOM.render(
+            <Dialog
+                open={true}
+                aria-labelledby="prompt-dialog"
+                aria-describedby="prompt-dialog"
+                fullWidth
             >
-                Alert
-            </DialogTitle>
-            <DialogContent>
-                <DialogContentText
-                    id="prompt-text"
+                <DialogTitle
+                    id="promp-title"
                 >
-                    {textObj.message}
-                </DialogContentText>
-                <DialogActions>
-                    <Button
-                        onClick={() => closeModal(false, false)}
+                    Alert
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText
+                        id="prompt-text"
                     >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={() => closeModal(true, false)}
+                        {textObj.message}
+                    </DialogContentText>
+                    <DialogActions>
+                        <Button
+                            onClick={() => closeModal(false, false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={() => closeModal(true, false)}
+                        >
+                            Discard unsaved work
+                        </Button>
+                        <Button
+                            onClick={() => closeModal(true, true)}
+                        >
+                            Save work
+                        </Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>,
+            container
+        )
+    } else {
+        ReactDOM.render(
+            <Dialog
+                open={true}
+                aria-labelledby="prompt-dialog"
+                aria-describedby="prompt-dialog"
+                fullWidth
+            >
+                <DialogTitle
+                    id="promp-title"
+                >
+                    Alert
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText
+                        id="prompt-text"
                     >
-                        Discard unsaved work
-                    </Button>
-                    <Button
-                        onClick={() => closeModal(true, true)}
-                    >
-                        Save work
-                    </Button>
-                </DialogActions>
-            </DialogContent>
-        </Dialog>,
-        container
-    )
+                        {textObj.message}
+                    </DialogContentText>
+                    <DialogActions>
+                        <Button
+                            onClick={() => closeModal(false, false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={() => closeModal(true, false)}
+                        >
+                            Leave
+                        </Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>,
+            container
+        )
+    }
+    
     
 }
 
