@@ -1,5 +1,5 @@
 import express from 'express';
-import { getImages } from '../controllers/pexels-api.controller';
+import { getImages } from '../controllers/pexels-api.controller.js';
 
 
 const router = express.Router();
