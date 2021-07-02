@@ -99,6 +99,8 @@ class ImagePicker extends Component {
       attribution: ''
     }
     this.queryImages = this.queryImages.bind(this);
+    this.handleImageUpload = this.handleImageUpload.bind(this);
+    this.handleClose = this.handleClose.bind(this);
 
     this.fileUploadRef = React.createRef();
   }
