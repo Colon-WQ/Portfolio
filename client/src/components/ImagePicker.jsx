@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, ButtonBase, Card, CardContent, CardMedia, Modal, Typography } from '@material-ui/core';
+import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, Typography } from '@material-ui/core';
 import axios from 'axios';
+import { FaFileUpload, FaSave, FaTimes, FaTrash } from 'react-icons/fa';
+import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
 
 /**
  * @file ImagePicker component to provide a user interface for users to browse royalty free images
@@ -31,31 +33,47 @@ const styles = (theme) => ({
     opacity: '85%'
   },
   modal: {
-    overflowX: 'hidden',
-    overflowY: 'auto',
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     padding: '1%',
+    width: '80%',
+    height: '80%',
+    margin: 'auto',
+    backgroundColor: theme.palette.primary.main,
+    textAlign: 'center',
   },
   cardDiv: {
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, 345px)',
-    gridGap: '55px',
+    height: '80%',
+    gridTemplateColumns: 'repeat(auto-fill, 290px)',
     justifyContent: 'center',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    marginBlock: 'auto'
   },
   cardMedia: {
     maxHeight: 200,
-    overflow: 'hidden'
+    overflowY: 'hidden'
   },
-  modal: {
-    overflowX: 'hidden',
-    overflowY: 'auto',
+  root: {
+    height: '100%',
     display: 'flex',
-    flexDirection: 'column',
-    padding: '1%',
+    flexDirection: 'column'
   },
+  controlsDiv: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center'
+  },
+  subtitle: {
+    marginRight: 'auto'
+  },
+  hide: {
+    display: 'none'
+  }
 });
 
 class ImagePicker extends Component {
@@ -76,17 +94,48 @@ class ImagePicker extends Component {
         page: 1,
         per_page: 30,
       },
-      photos: []
+      photos: [],
+      image: '',
+      attribution: ''
     }
     this.queryImages = this.queryImages.bind(this);
+
+    this.fileUploadRef = React.createRef();
   }
 
   componentDidMount() {
-    console.log("mount")
+    // TODO: Add special route for initialization to memoize in backend for api call saving
     this.queryImages();
   }
 
+  /**
+     * Event handler for text fields. 
+     * Text fields should be named after their keys in the state.
+     * 
+     * @param {*} event 
+     * @return void
+     * @memberof EntryEditor
+     */
+  handleImageUpload(event) {
+    const freader = new FileReader();
+    freader.readAsDataURL(event.target.files[0]);
+    // TODO: add full attribution with photographer links etc.
+    freader.onloadend = (e) => this.setState({
+      image: e.target.result,
+      attribution: ''
+    })
+  }
 
+  handleClose(save) {
+    if (save && this.state.image) {
+      this.props.onClose(true, {
+        image: this.state.image,
+        attribution: this.state.attribution
+      });
+    } else {
+      this.props.onClose(false);
+    }
+  }
 
   queryImages(event) {
     let queryParams = {};
@@ -99,7 +148,7 @@ class ImagePicker extends Component {
       this.setState({
         photos: res.data.pexels.photos
       })
-      console.log(res.data.pexels.photos);
+      console.log('Request completed');
     }).catch(err => {
       console.log(err);
     })
@@ -112,13 +161,22 @@ class ImagePicker extends Component {
       <Modal
         className={classes.modal}
         // open always set to true, open/close logic handled by portfolio
-        open={false}
+        open={this.props.open}
         // TODO: add onClose save logic
-        onClose={() => this.handlePickImage(true)}
+        onClose={() => this.handleClose(true)}
         aria-labelledby="Image gallery"
         aria-describedby="Select any image"
       >
-        <div>
+        <div className={classes.root}>
+          <input
+            accept="image/*"
+            className={classes.hide}
+            ref={this.fileUploadRef}
+            type="file"
+            onChange={this.handleImageUpload}
+          // value={item}
+          />
+          <Typography>Image Gallery</Typography>
           <div className={classes.cardDiv}>
             {this.state.photos !== undefined && this.state.photos !== []
               ? this.state.photos.map((photo) => {
@@ -128,7 +186,7 @@ class ImagePicker extends Component {
                 const id = photo.id;
                 return (
                   <div>
-                    <Button>
+                    <Button onClick={() => this.setState({ image: photo.src.original, attribution: photo.photographer })}>
                       <img src={thumbnail} alt={photographer} />
                     </Button>
                   </div>
@@ -137,8 +195,26 @@ class ImagePicker extends Component {
               : null
             }
           </div>
+          <div className={classes.controlsDiv}>
+            <Typography className={classes.subtitle}>
+              Images provided by Pexels
+            </Typography>
+            <Fab variant="extended" onClick={() => this.fileUploadRef.current.click()}>
+              <FaFileUpload />
+              UPLOAD
+            </Fab>
+            <Fab variant="extended" onClick={() => this.handleClose(true)}>
+              <FaSave />
+              SAVE
+            </Fab>
+            <Fab variant="extended" onClick={() => this.handleClose(false)}>
+              <FaTrash />
+              CANCEL
+            </Fab>
+          </div>
         </div>
-      </Modal>)
+      </Modal>
+    )
   }
 }
 

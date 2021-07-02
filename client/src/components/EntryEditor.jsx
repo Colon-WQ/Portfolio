@@ -7,6 +7,7 @@ import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaE
 import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
 import ImagePicker from './ImagePicker';
+
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
  * 
@@ -198,14 +199,20 @@ class EntryEditor extends Component {
     this.state = {
       data: copied_fields,
       showEditor: false,
+
       anchorEl: null,
 
       mediaAnchorEl: null,
+
       showIcon: false,
       iconCategory: 'ai',
+
       editSection: false,
       currentSection: 0,
-      imageName: ''
+
+      imageName: '',
+
+      showImage: false,
     }
     this.handleCreateEntry = this.handleCreateEntry.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -236,8 +243,7 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleChange(event, category, section) {
-    console.log(event)
-    if (category === '') {
+    if (!category) {
       this.setState({
         data: {
           ...this.state.data,
@@ -245,7 +251,7 @@ class EntryEditor extends Component {
         }
       });
     } else {
-      if (section === undefined || section === false) {
+      if (!section) {
         const originalCat = { ...this.state.data[category] };
         originalCat[event.target.name] = event.target.value;
         this.setState({
@@ -386,7 +392,7 @@ class EntryEditor extends Component {
    * @param {string} font the font family to be changed to
    */
   handleFont(event, field, font) {
-    if (field === undefined) {
+    if (!field) {
       this.setState({
         anchorEl: event.currentTarget
       })
@@ -473,16 +479,51 @@ class EntryEditor extends Component {
           aria-describedby="Edit your entry fields here"
         >
           <div className={classes.root}>
-            <ImagePicker />
+            <ImagePicker open={this.state.showImage} onClose={(save, data) => {
+              if (!save) {
+                this.setState({ showImage: false });
+                return null;
+              }
+
+              // TODO: Add attribution support
+              if (this.state.editSection) {
+                const newSections = [...this.state.data.sections];
+                newSections[this.state.currentSection].images[this.state.imageName].src = data.image;
+                newSections[this.state.currentSection].images[this.state.imageName].format = 'image';
+                this.setState({
+                  data: {
+                    ...this.state.data,
+                    sections: newSections
+                  },
+                  showImage: false,
+                  mediaAnchorEl: null
+                });
+              } else {
+                this.setState({
+                  data: {
+                    ...this.state.data,
+                    images: {
+                      ...this.state.data.images,
+                      [this.state.imageName]: {
+                        src: data.image,
+                        format: 'image'
+                      }
+                    }
+                  },
+                  showImage: false,
+                  mediaAnchorEl: null
+                })
+              }
+            }} />
             <Typography component="h3" variant="h3">Entry editor</Typography>
-            <input
+            {/* <input
               accept="image/*"
-              className={`${classes.imgInput} ${classes.hide}`}
+              className={classes.hide}
               ref={this.fileUploadRef}
               type="file"
               onChange={this.handleImageUpload}
             // value={item}
-            />
+            /> */}
             <input
               type="color"
               ref={this.imgColPickerRef}
@@ -514,7 +555,6 @@ class EntryEditor extends Component {
                   })
                 }
               }}
-              onBlur={() => console.log("asda")}
               className={classes.hide}
             />
             <Modal
@@ -671,8 +711,9 @@ class EntryEditor extends Component {
                               switch (format) {
                                 case 'image':
                                   return (<MenuItem onClick={() => {
-                                    this.fileUploadRef.current.click()
-
+                                    this.setState({
+                                      showImage: true,
+                                    })
                                   }}
                                   >{format}</MenuItem>)
                                 case 'icon':
@@ -777,9 +818,10 @@ class EntryEditor extends Component {
                                         // TODO: debug change format errors
                                         switch (format) {
                                           case 'image':
-                                            return (<MenuItem onClick={() => {
-                                              this.fileUploadRef.current.click()
-                                            }}
+                                            return (<MenuItem onClick={() => this.setState(
+                                              {
+                                                showImage: true,
+                                              })}
                                             >{format}</MenuItem>)
                                           case 'icon':
                                             const category = item.src.split('/');
