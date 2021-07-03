@@ -46,6 +46,11 @@ export const light = {
           '@font-face': Object.values(fonts)
         }
       }
+    },
+    props: {
+      MuiButtonBase: {
+        disableRipple: true
+      }
     }
 }
 
@@ -87,6 +92,11 @@ export const dark = {
         '@global': {
           '@font-face': Object.values(fonts)
         }
+      }
+    },
+    props: {
+      MuiButtonBase: {
+        disableRipple: true
       }
     }
   };
