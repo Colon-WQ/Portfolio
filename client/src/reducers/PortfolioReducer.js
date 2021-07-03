@@ -12,7 +12,7 @@ import {
     FETCH_PORTFOLIOS_FAILURE,
     SAVE_CURRENT_WORK,
     CLEAR_CURRENT_WORK,
-    TOGGLE_UNSAVED_WORK
+    DELETE_PORTFOLIO
 } from '../actions/PortfolioAction'
 
 /** 
@@ -46,7 +46,8 @@ export default function portfolio(state = initialState, action) {
         case FETCH_PORTFOLIOS_BEGIN:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
         case FETCH_PORTFOLIOS_SUCCESS:
             return {
@@ -74,10 +75,11 @@ export default function portfolio(state = initialState, action) {
                 currentPortfolio: null,
                 portfolios: []
             }
-        case TOGGLE_UNSAVED_WORK:
+        case DELETE_PORTFOLIO:
+            const temp = state.portfolios.filter(portfolio => portfolio._id !== action.payload.id);
             return {
                 ...state,
-                isUnsaved: action.payload.bool
+                portfolios: temp
             }
         default:
             return state;
