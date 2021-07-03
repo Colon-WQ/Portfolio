@@ -185,8 +185,6 @@ class Portfolio extends Component {
           await this.handleSaveLocalPortfolio();
         }
 
-        this.props.toggleUnsavedWork(false);
-
         //Sets isTimerExist to false after saving so new timers can be set.
         this.setState({
           isTimerExist: false
@@ -451,6 +449,9 @@ class Portfolio extends Component {
 
         //After _id is fetched, we then update the preview.
         await this.handleUploadPreview();
+
+        //toggle unsaved to false after saving is succesful
+        this.props.toggleUnsavedWork(false);
       }).catch(err => {
         handleErrors(err, this.props.history);
 
@@ -601,6 +602,8 @@ class Portfolio extends Component {
       user: '',
       pages: this.state.pages
     });
+
+    this.props.toggleUnsavedWork(false);
   }
 
   render() {
