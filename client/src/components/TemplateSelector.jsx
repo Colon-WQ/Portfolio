@@ -68,11 +68,6 @@ const styles = (theme) => ({
     gridGap: '55px',
     justifyContent: 'center',
     overflowY: 'auto'
-  },
-  controlFAB: {
-    position: 'static',
-    marginRight: '0.5vw',
-    marginBottom: '0.5vw'
   }
 })
 
@@ -139,7 +134,6 @@ class TemplateSelector extends Component {
       <div>
         <Fab
           variant="extended"
-          className={classes.controlFAB}
           onClick={() => this.setState({ showSelector: true })}>
           <FaPlus />
           new entry

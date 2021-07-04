@@ -47,9 +47,6 @@ const styles = (theme) => ({
     alignItems: 'center'
   },
   actionFAB: {
-    position: 'static',
-    marginRight: '0.5vw',
-    marginBottom: '0.5vw',
     textAlign: 'center'
   },
   textPrimaryColor: {
@@ -410,7 +407,7 @@ class Publish extends Component {
     console.log(this.props.portfolioName)
     const zipName = `${this.props.portfolioName}.zip`;
 
-    zip.generateAsync({type: "blob"}).then(content => {
+    zip.generateAsync({ type: "blob" }).then(content => {
       saveAs(content, zipName);
       this.setState({
         publishLoading: false
@@ -432,15 +429,15 @@ class Publish extends Component {
           className={classes.actionFAB}
           onClick={loggedIn ? this.handleFinalizeDialogOpen : this.handleGuestDownload}
         >
-          {this.state.publishLoading 
-            ? 
-              <CircularProgress color="black" size="2rem" /> 
-            : 
-              loggedIn
-                ?
-                  <FaUpload />
-                :
-                  <FaDownload />
+          {this.state.publishLoading
+            ?
+            <CircularProgress color="black" size="2rem" />
+            :
+            loggedIn
+              ?
+              <FaUpload />
+              :
+              <FaDownload />
           }
           Publish
         </Fab>
