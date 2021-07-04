@@ -57,6 +57,14 @@ export const CLEAR_CURRENT_WORK = "CLEAR_CURRENT_WORK"
 export const TOGGLE_UNSAVED_WORK = "TOGGLE_UNSAVED_WORK"
 
 /**
+ * string that identifies a DELETE_PORTFOLIO action
+ * 
+ * @type {string}
+ * @member DELETE_PORTFOLIO
+ */
+ export const DELETE_PORTFOLIO = "DELETE_PORTFOLIO"
+
+/**
  * SAVE_CURRENT_WORK action creator. This action saves user's current portfolio work
  * to localStorage.
  * 
@@ -80,19 +88,6 @@ export const saveCurrentWork = curr => ({
  */
 export const clearCurrentWork = () => ({
     type: CLEAR_CURRENT_WORK
-})
-
-/**
- * TOGGLE_UNSAVED_WORK action creator. This action sets the isUnsaved boolean in redux store.
- * 
- * @param {boolean} bool - Boolean indicating if unsaved work exists.
- * @returns {{type: string}} - TOGGLE_UNSAVED_WORK action object.
- * @member toggleUnsavedWork
- * @function
- */
-export const toggleUnsavedWork = (bool) => ({
-    type: TOGGLE_UNSAVED_WORK,
-    payload: { bool }
 })
 
 /**
@@ -137,6 +132,11 @@ export function clearCurrentWorkFromLocal() {
         //console.log("portfolio work cleared")
     }
 }
+
+export const deletePortfolio = id => ({
+    type: DELETE_PORTFOLIO,
+    paylod: { id }
+})
 
 /**
  * FETCH_PORTFOLIOS_BEGIN action creator. This action sets boolean loading in Redux Store to true.
@@ -206,7 +206,6 @@ export function fetchPortfolios(id) {
             }
         }).then(res => res.data)
         .then(data => {
-            //TODO PROBABLY HAVE TO CONVERT DATA INTO AN ARRAY DEPENDING ON THE RESULT
             if (data.portfolios !== undefined) {
                 dispatch(fetchPortfoliosSuccess(data.portfolios))
             } 

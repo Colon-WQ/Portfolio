@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
-import { fetchPortfolios, saveCurrentWorkToLocal, clearCurrentWorkFromLocal } from '../actions/PortfolioAction';
+import { fetchPortfolios, saveCurrentWorkToLocal, clearCurrentWorkFromLocal, deletePortfolio } from '../actions/PortfolioAction';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -149,6 +149,7 @@ class Dashboard extends Component {
 
         this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
       } else {
+        //check for current portfolio work for guest users
         const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
         if (portfolioLocalStorageItem !== null) {
           this.setState({
@@ -325,6 +326,8 @@ class Dashboard extends Component {
         images: temp
       });
 
+      this.props.deletePortfolio(this.state.currentPortfolio_Id)
+
     }).catch(err => {
       handleErrors(err, this.props.history);
     })
@@ -446,7 +449,7 @@ class Dashboard extends Component {
       url: process.env.REACT_APP_BACKEND + "/portfolio/getImageRefs/" + portfolio_id,
       withCredentials: true
     }).then(async res => {
-      console.log(res.data.message);
+      //console.log(res.data.message);
       const imageRefs = res.data.images;
       const images = this.state.images;
       for (let imageRef of imageRefs) {
@@ -459,7 +462,7 @@ class Dashboard extends Component {
             label: imageRef.label
           }
         }).then(res => {
-          console.log(`image ${imageRef.label} fetched`);
+          //console.log(`image ${imageRef.label} fetched`);
           const temp = {};
           temp[imageRef.label] = URL.createObjectURL(res.data);
           images[portfolio_id] = temp;
@@ -497,7 +500,7 @@ class Dashboard extends Component {
         label: label
       }
     }).then(res => {
-      console.log(res.data.message);
+      //console.log(res.data.message);
       const temp = this.state.images
       const tempPortfolioImages = temp[this.state.currentPortfolio_Id];
       if (tempPortfolioImages !== undefined) {
@@ -513,27 +516,31 @@ class Dashboard extends Component {
 
 
   render() {
-    const { portfolios, classes } = this.props;
+    const { error, loading, name, loggedIn, portfolios, classes } = this.props;
+    
+    if (error) {
+      handleErrors(error, this.props.history);
+    }
 
     return (
       <div className={classes.root}>
         <div className={classes.appBarSpacer} />
-        <Typography variant="h2" component="h3">Here is your dashboard {this.props.name}!</Typography>
+        <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
         <Grid container direction='row' justify='center' alignItems='center'>
           {
-            this.props.loggedIn
+            loggedIn
               ?
-              this.props.loading
+              loading
                 ?
                 <BeatLoader />
                 :
-                this.props.error
+                error
                   ?
-                  this.props.error.response.status === 404
+                  error.response.status === 404
                     ?
                     <Typography variant="h6">Create your first Portfolio!</Typography>
                     :
-                    <Typography variant="h6">{this.props.error.message}</Typography>
+                    <Typography variant="h6">{error.message}</Typography>
                   :
                   portfolios.length === 0
                     ?
@@ -743,7 +750,8 @@ const mapDispatchToProps = {
   repopulate_state,
   fetchPortfolios,
   saveCurrentWorkToLocal,
-  clearCurrentWorkFromLocal
+  clearCurrentWorkFromLocal,
+  deletePortfolio
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Dashboard)));

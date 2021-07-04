@@ -441,6 +441,7 @@ class Home extends Component {
           open={this.state.guestDialogState}
           onClose={() => this.handleGuestDialogState(false)}
           aria-labelledby="guest change permission input"
+          disableScrollLock
         >
           <DialogTitle id="guest change permission input">
             Are you sure?

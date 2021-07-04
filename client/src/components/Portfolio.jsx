@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
-import { saveCurrentWork, saveCurrentWorkToLocal, toggleUnsavedWork } from '../actions/PortfolioAction.js';
+import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
 import { Fab } from '@material-ui/core';
 import { FaSave, FaTrash } from "react-icons/fa";
@@ -105,7 +105,8 @@ class Portfolio extends Component {
       //   pages:
       //     {}
       // },
-      isTimerExist: false
+      autosaveTimer: null,
+      isUnsaved: false
     }
     this.state.currentPage = this.state.pages
     this.handleEditorClose = this.handleEditorClose.bind(this);
@@ -175,8 +176,8 @@ class Portfolio extends Component {
    */
   componentDidUpdate() {
     
-    if (this.props.isUnsaved && !this.state.isTimerExist) {
-      setTimeout(async () => {
+    if (this.state.isUnsaved && this.state.autosaveTimer === null) {
+      this.state.autosaveTimer = setTimeout(async () => {
 
         if (this.props.loggedIn) {
           console.log("Autosaving")
@@ -184,22 +185,24 @@ class Portfolio extends Component {
         } else {
           await this.handleSaveLocalPortfolio();
         }
-
-        this.props.toggleUnsavedWork(false);
-
-        //Sets isTimerExist to false after saving so new timers can be set.
-        this.setState({
-          isTimerExist: false
-        })
       }, 30000);
 
-      //Sets isTimerExist to true so we don't queue multiple unnecessary save timers
-      this.setState({
-        isTimerExist: true
-      });
     }
   }
 
+  /**
+   * Autosave needs to be cancelled if user has already left the portfolio page.
+   * 
+   * @return void
+   * @memberof Portfolio
+   */
+  componentWillUnmount() {
+    if (this.state.autosaveTimer !== null) {
+      console.log("unmount clear autosave")
+      clearTimeout(this.state.autosaveTimer);
+    }
+  }
+ 
   /**
    * Function to enter entries based on the entry's type and template style.
    * 
@@ -244,7 +247,9 @@ class Portfolio extends Component {
     })
 
     //triggers Autosave
-    this.props.toggleUnsavedWork(true);
+    this.setState({
+      isUnsaved: true
+    });
   }
 
   /**
@@ -266,7 +271,9 @@ class Portfolio extends Component {
       })
 
       //triggers Autosave
-      this.props.toggleUnsavedWork(true);
+      this.setState({
+        isUnsaved: true
+      });
     } else {
       this.forceUpdate();
     }
@@ -451,6 +458,20 @@ class Portfolio extends Component {
 
         //After _id is fetched, we then update the preview.
         await this.handleUploadPreview();
+
+        //toggle unsaved to false after saving is succesful
+        this.setState({
+          isUnsaved: false
+        })
+        
+        //After toggling unsaved to false, we need to clear the autosave timeout if any
+        if (this.state.autosaveTimer !== null) {
+          console.log("autosave cleared");
+          clearTimeout(this.state.autosaveTimer);
+          this.setState({
+            autosaveTimer: null
+          });
+        }
       }).catch(err => {
         handleErrors(err, this.props.history);
 
@@ -509,7 +530,9 @@ class Portfolio extends Component {
     });
 
     //triggers Autosave
-    this.props.toggleUnsavedWork(true);
+    this.setState({
+      isUnsaved: true
+    });
   }
 
   handleUpdatePages(newDirTree) {
@@ -518,7 +541,9 @@ class Portfolio extends Component {
     this.state.currentPath = [];
 
     //Triggers autosave
-    this.props.toggleUnsavedWork(true);
+    this.setState({
+      isUnsaved: true
+    });
   }
 
   handleDirectory(currentPage, currentPath) {
@@ -601,14 +626,27 @@ class Portfolio extends Component {
       user: '',
       pages: this.state.pages
     });
+
+    this.setState({
+      isUnsaved: false
+    });
+
+    //After toggling unsaved to false, we need to clear the autosave timeout if any
+    if (this.state.autosaveTimer !== null) {
+      console.log("autosave cleared");
+      clearTimeout(this.state.autosaveTimer);
+      this.setState({
+        autosaveTimer: null
+      });
+    }
   }
 
   render() {
-    const { loggedIn, isUnsaved, classes } = this.props;
+    const { loggedIn, classes } = this.props;
     return (
       <div className={classes.root}>
         <Prompt
-          when={isUnsaved}
+          when={this.state.isUnsaved}
           message={JSON.stringify({
             message: "Are you sure you want to leave?",
             portfolio: {
@@ -690,8 +728,7 @@ const mapStateToProps = state => ({
   id: state.login.id,
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
-  currentPortfolio: state.portfolio.currentPortfolio,
-  isUnsaved: state.portfolio.isUnsaved
+  currentPortfolio: state.portfolio.currentPortfolio
 })
 
 /** 
@@ -703,8 +740,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   repopulate_state,
   saveCurrentWork,
-  saveCurrentWorkToLocal,
-  toggleUnsavedWork
+  saveCurrentWorkToLocal
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))
