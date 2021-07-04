@@ -35,7 +35,7 @@ const styles = (theme) => ({
     height: '100%',
   },
   modal: {
-    overflow: 'scroll',
+    overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
     padding: '5%',

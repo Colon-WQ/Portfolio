@@ -53,7 +53,7 @@ const styles = (theme) => ({
     marginTop: '5vw',
     marginLeft: '2vw'
   },
-  staticDiv: {
+  fixedDiv: {
     position: 'fixed',
     display: 'flex',
     flexDirection: 'row',
@@ -688,7 +688,7 @@ class Portfolio extends Component {
             </div>);
           })}
         </div>
-        <div className={classes.staticDiv}>
+        <div className={`${classes.fixedDiv} mui-fixed`}>
           <Fab
             variant="extended"
             className={classes.controlFAB}
