@@ -171,8 +171,8 @@ const styles = (theme) => ({
     padding: '1%'
   },
   logoFont: {
-    fontFamily: 'Helvetica', 
-    fontSize: '1.5em', 
+    fontFamily: 'Helvetica',
+    fontSize: '1.5em',
     fontWeight: 'bold'
   },
   autoMargin: {
@@ -189,29 +189,29 @@ const styles = (theme) => ({
     marginRight: '0.5rem'
   },
   welcomeImage: {
-    marginRight: 'auto', 
-    maxWidth: '50%', 
-    minHeight: '50%', 
+    marginRight: 'auto',
+    maxWidth: '50%',
+    minHeight: '50%',
     maxHeight: '100%'
   },
   featureDiv: {
-    marginInline: 'auto', 
-    maxWidth: '50%', 
+    marginInline: 'auto',
+    maxWidth: '50%',
     padding: '6vh'
   },
   messageDiv: {
-    borderColor: '#000', 
-    padding: '5vh', 
-    border: 'solid 1px', 
-    margin: 'auto', 
+    borderColor: '#000',
+    padding: '5vh',
+    border: 'solid 1px',
+    margin: 'auto',
     marginBottom: '15vh'
   },
   riFileCodeLine: {
     margin: 'auto'
   },
   bottomLogoDiv: {
-    backgroundColor: '#000', 
-    height: '50vh', 
+    backgroundColor: '#000',
+    height: '50vh',
     width: '100%'
   },
   bottomLogoFill: {
@@ -317,23 +317,23 @@ class Home extends Component {
             </Typography>
             {loggedIn
               ?
-                <Button
-                  variant="outlined"
-                  className={classes.loginButton}
-                  onClick={() => this.props.history.push('/dashboard')}
-                >
-                  TO DASHBOARD
-                </Button>    
+              <Button
+                variant="outlined"
+                className={classes.loginButton}
+                onClick={() => this.props.history.push('/dashboard')}
+              >
+                TO DASHBOARD
+                </Button>
               :
-                <Button
-                  href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
-                  variant="outlined"
-                  className={classes.loginButton}
-                >
-                  GET STARTED
+              <Button
+                href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
+                variant="outlined"
+                className={classes.loginButton}
+              >
+                GET STARTED
                 </Button>
             }
-            
+
             <Button
               onClick={() => loggedIn ? this.handleGuestDialogState(true) : this.props.history.push('/dashboard')}
               variant="outlined"
@@ -436,7 +436,6 @@ class Home extends Component {
         <div className={`${classes.centeredDiv} ${classes.bottomLogoDiv}`}>
           <ResumateSVG width="7em" height="7em" className={classes.bottomLogoFill} />
         </div>
-        
         <Dialog
           open={this.state.guestDialogState}
           onClose={() => this.handleGuestDialogState(false)}
@@ -460,7 +459,7 @@ class Home extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-        
+
       </div>
     )
   }
