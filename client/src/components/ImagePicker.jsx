@@ -69,6 +69,10 @@ const styles = (theme) => ({
     marginLeft: '5px',
     marginBlock: '5px',
   },
+  searchBar: {
+    width: '30%',
+    minWidth: '300px'
+  },
   controlsDiv: {
     display: 'flex',
     flexDirection: 'row',
@@ -222,6 +226,7 @@ class ImagePicker extends Component {
               variant="outlined"
               value={this.state.queryParams.query}
               onChange={this.handleQueryChange}
+              className={classes.searchBar}
             />
             <Fab
               variant="extended"

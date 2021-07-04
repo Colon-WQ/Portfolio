@@ -41,11 +41,6 @@ const styles = (theme) => ({
     padding: '5%',
     height: '100%'
   },
-  controlFAB: {
-    position: 'static',
-    marginRight: '0.5vw',
-    marginBottom: '0.5vw'
-  },
   treeItem: {
     '&$treeItemSelected > $treeItemContent': {
       backgroundColor: theme.palette.contrastPrimary.main
@@ -296,7 +291,6 @@ class DirectoryManager extends Component {
       <div>
         <Fab
           variant="extended"
-          className={classes.controlFAB}
           onClick={() => this.setState({
             showDirectory: true,
             currentPage: this.props.dirTree,

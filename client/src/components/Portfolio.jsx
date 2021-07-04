@@ -53,11 +53,6 @@ const styles = (theme) => ({
     marginTop: '5vw',
     marginLeft: '2vw'
   },
-  controlFAB: {
-    position: 'static',
-    marginRight: '0.5vw',
-    marginBottom: '0.5vw'
-  },
   staticDiv: {
     position: 'fixed',
     display: 'flex',
@@ -67,7 +62,11 @@ const styles = (theme) => ({
     bottom: "5%",
     right: "5%",
     top: "auto",
-    left: "auto"
+    left: "auto",
+    '& > *': {
+      marginRight: '0.2vw',
+      marginBottom: '0.2vh'
+    }
   },
   entryEditorDiv: {
     display: "flex",
@@ -127,15 +126,15 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   async componentDidMount() {
- 
+
     const userLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_USER_LOCALSTORAGE));
-    
+
     if (userLocalStorageItem !== null) {
       await this.props.repopulate_state(userLocalStorageItem);
     }
 
     const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
-    
+
     if (portfolioLocalStorageItem !== null) {
       await this.props.saveCurrentWork(portfolioLocalStorageItem);
     }
@@ -175,7 +174,7 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   componentDidUpdate() {
-    
+
     if (this.state.isUnsaved && this.state.autosaveTimer === null) {
       this.state.autosaveTimer = setTimeout(async () => {
 
@@ -202,7 +201,7 @@ class Portfolio extends Component {
       clearTimeout(this.state.autosaveTimer);
     }
   }
- 
+
   /**
    * Function to enter entries based on the entry's type and template style.
    * 
@@ -340,7 +339,7 @@ class Portfolio extends Component {
     }
 
 
-    const sheets = new ServerStyleSheets({jss});
+    const sheets = new ServerStyleSheets({ jss });
 
     // TODO: test renderToStaticMarkup
     //NOTE: sheets.collect will look for mui styling in the provided component.
@@ -463,7 +462,7 @@ class Portfolio extends Component {
         this.setState({
           isUnsaved: false
         })
-        
+
         //After toggling unsaved to false, we need to clear the autosave timeout if any
         if (this.state.autosaveTimer !== null) {
           console.log("autosave cleared");
@@ -710,7 +709,7 @@ class Portfolio extends Component {
             dirTree={this.state.pages}
             onUpdate={this.handleUpdatePages}
           />
-          <Publish createPushables={this.handleProduction} portfolioName={this.state.name}/>
+          <Publish createPushables={this.handleProduction} portfolioName={this.state.name} />
         </div>
       </div>);
   }
