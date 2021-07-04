@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
+import { Node } from 'slate';
 
 const styles = (theme) => ({
     root: {
@@ -15,6 +16,17 @@ const styles = (theme) => ({
         height: 'auto'
     }
 })
+
+const initialText = [
+    {
+        type: 'paragraph',
+        children: [{ text: 'Describe yourself' }],
+    },
+    {
+        type: 'paragraph',
+        children: [{ text: 'I love to code' }],
+    }
+]
 
 class AboutTemplateMinimalist extends Component {
     static templateName = "Minimalist";
@@ -37,7 +49,7 @@ class AboutTemplateMinimalist extends Component {
         fonts: {titleFont: "title font", bodyFont: "body font"},
         colours: {primary: "#ffffff", secondary: "#000000", header: "#000000"},
         images: {},
-        texts: {about: "I am a UI/UX developer living in New York. My favourite leisurely activity is playing video games"},
+        texts: {about: initialText.map(n => Node.string(n)).join('\n')},
         sections: []
     };
 
