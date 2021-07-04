@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, Typography } from '@material-ui/core';
+import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, TextField, Typography } from '@material-ui/core';
 import axios from 'axios';
-import { FaFileUpload, FaSave, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
 
 /**
@@ -31,6 +31,10 @@ const styles = (theme) => ({
     textAlign: 'center',
     backgroundColor: theme.palette.background.default,
     opacity: '85%'
+  },
+  title: {
+    marginRight: 'auto',
+    fontWeight: 'bold'
   },
   modal: {
     overflow: 'hidden',
@@ -61,6 +65,10 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'column'
   },
+  fab: {
+    marginLeft: '5px',
+    marginBlock: '5px',
+  },
   controlsDiv: {
     display: 'flex',
     flexDirection: 'row',
@@ -73,6 +81,14 @@ const styles = (theme) => ({
   },
   hide: {
     display: 'none'
+  },
+  imageHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'center',
+    textAlign: 'center',
+    alignItems: 'center'
   }
 });
 
@@ -92,7 +108,7 @@ class ImagePicker extends Component {
         color: '',
         locale: '',
         page: 1,
-        per_page: 30,
+        per_page: 80,
       },
       photos: [],
       image: '',
@@ -101,6 +117,7 @@ class ImagePicker extends Component {
     this.queryImages = this.queryImages.bind(this);
     this.handleImageUpload = this.handleImageUpload.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleQueryChange = this.handleQueryChange.bind(this);
 
     this.fileUploadRef = React.createRef();
   }
@@ -125,6 +142,15 @@ class ImagePicker extends Component {
     freader.onloadend = (e) => this.setState({
       image: e.target.result,
       attribution: ''
+    })
+  }
+
+  handleQueryChange(event) {
+    this.setState({
+      queryParams: {
+        ...this.state.queryParams,
+        [event.target.name]: event.target.value
+      }
     })
   }
 
@@ -178,7 +204,35 @@ class ImagePicker extends Component {
             onChange={this.handleImageUpload}
           // value={item}
           />
-          <Typography>Image Gallery</Typography>
+          <div className={classes.imageHeader}>
+            <Typography
+              component="h1"
+              variant="h6"
+              color="inherit"
+              fontWeight="bold"
+              noWrap
+              className={classes.title}
+            >
+              Image Gallery
+            </Typography>
+            <TextField
+              name="query"
+              id="query"
+              label="Search images"
+              variant="outlined"
+              value={this.state.queryParams.query}
+              onChange={this.handleQueryChange}
+            />
+            <Fab
+              variant="extended"
+              onClick={this.queryImages}
+              className={classes.fab}
+            >
+              <FaSearch />
+              Search
+            </Fab>
+
+          </div>
           <div className={classes.cardDiv}>
             {this.state.photos !== undefined && this.state.photos !== []
               ? this.state.photos.map((photo) => {
@@ -201,15 +255,25 @@ class ImagePicker extends Component {
             <Typography className={classes.subtitle}>
               Images provided by Pexels
             </Typography>
-            <Fab variant="extended" onClick={() => this.fileUploadRef.current.click()}>
+            <Fab
+              variant="extended"
+              onClick={() => this.fileUploadRef.current.click()}
+              className={classes.fab}
+            >
               <FaFileUpload />
               UPLOAD
             </Fab>
-            <Fab variant="extended" onClick={() => this.handleClose(true)}>
+            <Fab
+              variant="extended"
+              onClick={() => this.handleClose(true)}
+              className={classes.fab}>
               <FaSave />
               SAVE
             </Fab>
-            <Fab variant="extended" onClick={() => this.handleClose(false)}>
+            <Fab
+              variant="extended"
+              onClick={() => this.handleClose(false)}
+              className={classes.fab}>
               <FaTrash />
               CANCEL
             </Fab>
