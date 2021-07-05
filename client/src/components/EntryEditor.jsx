@@ -474,6 +474,7 @@ class EntryEditor extends Component {
     return (
       <div
         data-html2canvas-ignore="true"
+        className
       >
         <Fab
           variant="extended"
