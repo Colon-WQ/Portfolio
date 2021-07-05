@@ -1,9 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
-import { Node } from 'slate';
+import { ContentState, convertToRaw } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import { Markup } from 'interweave';
+
 
 const styles = (theme) => ({
     root: {
@@ -14,28 +17,42 @@ const styles = (theme) => ({
         alignItems: "center",
         width: "100%",
         height: 'auto'
-    }
-})
-
-const initialText = [
-    {
-        type: 'paragraph',
-        children: [{ text: 'Describe yourself' }],
     },
-    {
-        type: 'paragraph',
-        children: [{ text: 'I love to code' }],
+});
+
+const initialTitle = convertToRaw(ContentState.createFromText("About me"))
+
+const initialContent = convertToRaw(ContentState.createFromText("Describe yourself!"));
+
+const convertToHtml = (htmlString) => {
+    const placeholder = document.createElement('div');
+    placeholder.innerHTML = htmlString;
+    const paragraphs = placeholder.getElementsByTagName("p");
+    if (paragraphs.length === 1) {
+        paragraphs[0].style.marginBlockStart = "0px";
+        paragraphs[0].style.marginBlockEnd = "0px";
+    } else if (paragraphs.length > 1) {
+        paragraphs[0].style.marginBlockStart = "0px";
+        paragraphs[paragraphs.length - 1].style.marginBlockEnd = "0px";
     }
-]
+    return placeholder.innerHTML;
+}
 
 class AboutTemplateMinimalist extends Component {
+    constructor(props) {
+        super(props);
+    }
+
     static templateName = "Minimalist";
 
     static info = {
-        fonts: {titleFont: {label: "title font"}, bodyFont: {label: "body font"}},
-        colours: {primary: {label: "primary"}, secondary: {label: "secondary"}, header: {label: "header"}},
+        fonts: {},
+        colours: { 
+            headerBackgroundFill: {label: "header background fill"},
+            bodyBackgroundFill: {label: "body background fill"}
+        },
         images: {},
-        texts: {about: {label: "Self Introduction"}},
+        texts: {title: {label: "Title"}, about: {label: "Description"}},
         sections: {}
     };
 
@@ -46,47 +63,49 @@ class AboutTemplateMinimalist extends Component {
     static defaultField = {
         width: "60%", 
         height: "80vh", 
-        fonts: {titleFont: "title font", bodyFont: "body font"},
-        colours: {primary: "#ffffff", secondary: "#000000", header: "#000000"},
+        fonts: {},
+        colours: {
+            headerBackgroundFill: "whitesmoke",
+            bodyBackgroundFill: "#FFFFFF"
+        },
         images: {},
-        texts: {about: initialText.map(n => Node.string(n)).join('\n')},
+        texts: {
+            title: initialTitle,
+            content: initialContent
+        },
         sections: []
     };
 
 
-
     render() {
-        const {classes, fields} = this.props
+        const {classes, fields} = this.props; 
         return (
             <div 
                 className={classes.root}
             >
                 <Card
-                    style={{ textAlign: "center", width: '100%', border: 'none', boxShadow: 'none', borderRadius: '0px' }}
+                    style={{ width: '100%', border: 'none', boxShadow: 'none', borderRadius: '0px' }}
                 >
                         <CardContent
                             style={{ padding: '0px' }}
                         >
                         <Typography 
-                            variant="h3"
-                            component="h3" 
-                            style={{color: fields.colours.primary, backgroundColor: fields.colours.header, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`}}
-                        >
-                            About Me
-                        </Typography>
-                        <Typography
-                            variant="h5"
-                            component="h5"
                             style={{
-                                color: fields.colours.secondary, 
-                                backgroundColor: "white", 
-                                fontFamily: `${fields.fonts.bodyFont}, Arial, Helvetica, sans-serif`, 
-                                paddingLeft: '10%',
-                                paddingRight: '10%'
+                                textAlign: 'center',
+                                backgroundColor: fields.colours.headerBackgroundFill, 
                             }}
                         >
-                            {fields.texts.about}
+                            <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.title))}/>
                         </Typography>
+                        <Typography 
+                            style={{
+                                backgroundColor: fields.colours.bodyBackgroundFill, 
+                                paddingInline: '10%',
+                            }}
+                        >
+                            <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.content))}/>
+                        </Typography>
+                        
                         </CardContent>
 
                 </Card>

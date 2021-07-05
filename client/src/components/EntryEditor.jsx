@@ -54,7 +54,7 @@ const styles = (theme) => ({
     margin: '1vw',
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, 200px)'
+    gridTemplateRows: 'auto'
   },
   imgGrid: {
     margin: '1vw',
@@ -247,7 +247,7 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleChange(event, category, section) {
-    console.log(category)
+    
     if (!category) {
       this.setState({
         data: {
@@ -760,13 +760,13 @@ class EntryEditor extends Component {
                   </div>
                   <div className={classes.textGrid}>
                     {Object.entries(this.state.data.texts).map(([key, item]) => {
-                      console.log(Object.entries(this.state.data.texts))
+                      
                       return (
                         
                         <div>
                           {/* Preview icon that changes according to selected colour */}
                           {/* <Button id="colourPreview"/> */}
-                          <TextEditor item={item} name={key} category={"texts"} handleChange={this.handleChange}/>
+                          <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange}/>
                           
                           {/* <TextField
                             name={key}
@@ -874,7 +874,8 @@ class EntryEditor extends Component {
                                 // TODO: make maxRow field in info?
                                 return (
                                   <div>
-                                    <TextField
+                                    <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange}/>
+                                    {/* <TextField
                                       name={key}
                                       id={key}
                                       label={this.props.info.sections.entryFormat.texts[key].label}
@@ -884,7 +885,7 @@ class EntryEditor extends Component {
                                       onChange={(event) => this.handleChange(event, 'texts', true)}
                                       multiline
                                       rowsMax={3}
-                                    />
+                                    /> */}
                                   </div>
                                 );
                               })}
