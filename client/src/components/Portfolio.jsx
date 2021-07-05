@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
-import { Fab } from '@material-ui/core';
-import { FaSave, FaTrash } from "react-icons/fa";
+import { Fab, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
+import { FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import { ServerStyleSheets } from '@material-ui/core/styles'
@@ -103,11 +103,16 @@ class Portfolio extends Component {
       currentPath: [],
 
       currentEntry: 0,
-      showEdit: false,
+      showSettings: false,
+      showEntryMenu: false,
+      currentEntryAnchor: null,
 
       autosaveTimer: null,
       isUnsaved: false
     }
+
+    this.entryEditorRef = React.createRef();
+
     this.state.currentPage = this.state.pages
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
@@ -139,8 +144,6 @@ class Portfolio extends Component {
     if (portfolioLocalStorageItem !== null) {
       await this.props.saveCurrentWork(portfolioLocalStorageItem);
     }
-
-    console.log(this.props.currentPortfolio)
 
     //currentPortfolio should be set with an object before reaching this page and it would have a name.
     if (this.props.currentPortfolio !== null) {
@@ -178,7 +181,6 @@ class Portfolio extends Component {
 
     if (this.state.isUnsaved && this.state.autosaveTimer === null) {
       this.state.autosaveTimer = setTimeout(async () => {
-
         if (this.props.loggedIn) {
           console.log("Autosaving")
           await this.handleSavePortfolio();
@@ -258,24 +260,25 @@ class Portfolio extends Component {
    * @param {*} fields
    * @param {boolean} changed - Whether the fields have been changed/ if the user intends to save the changes.
    */
-  handleEditorClose(fields, changed, index) {
+  handleEditorClose(fields, changed) {
     if (changed) {
       const newPages = { ...this.state.pages };
       const entries = [...this.state.currentPage.entries];
-      entries[index] = fields;
+      entries[this.state.currentEntry] = fields;
       const currentPage = this.traverseDirectory(newPages, this.state.currentPath)
       currentPage.entries = entries;
       this.setState({
         pages: newPages,
-        currentPage: currentPage
-      })
-
-      //triggers Autosave
-      this.setState({
+        showEntryMenu: false,
+        currentEntryAnchor: null,
+        currentPage: currentPage,
         isUnsaved: true
-      });
+      })
     } else {
-      this.forceUpdate();
+      this.setState({
+        showEntryMenu: false,
+        currentEntryAnchor: null
+      })
     }
   }
 
@@ -663,6 +666,20 @@ class Portfolio extends Component {
             loggedIn: loggedIn
           })}
         />
+        <EntryEditor
+          // fields={entry}
+          // info={templates[entry.type][entry.style].info}
+          onClose={(data, changed) => {
+            this.handleEditorClose(data, changed);
+          }}
+          // key={
+          //   `${this.state.currentPath === []
+          //     ? 'root'
+          //     : this.state.currentPath[this.state.currentPath.length - 1]
+          //   }-${index}-${entry.type}-${entry.style}`
+          // }
+          ref={this.entryEditorRef}
+        />
 
         <div id="preview">
           {this.state.currentPage.entries.map((entry, index) => {
@@ -670,31 +687,49 @@ class Portfolio extends Component {
             return (
               <div
                 className={classes.entryEditorDiv}
-                onMouseEnter={(event) => this.setState({ showEdit: true, currentEntry: index })}
-                onMouseLeave={(event) => this.setState({ showEdit: false })}
+                onMouseEnter={(event) => this.setState({ showSettings: true, currentEntry: index })}
+                onMouseLeave={(event) => this.setState({ showSettings: false })}
               >
-                <div className={this.state.showEdit && index === this.state.currentEntry ? null : classes.hide}>
-                  <EntryEditor
-                    fields={entry}
-                    info={templates[entry.type][entry.style].info}
-                    onClose={(data, changed) => {
-                      this.handleEditorClose(data, changed, index);
+                <Fab
+                  className={this.state.showSettings && index === this.state.currentEntry ? classes.delFAB : classes.hide}
+                  variant="extended"
+                  onClick={(event) => this.setState({
+                    currentEntryAnchor: event.currentTarget,
+                    currentEntry: index,
+                    showEntryMenu: true
+                  })}
+                >
+                  <FaCog />
+                  Settings
+                </Fab>
+                <Menu
+                  data-html2canvas-ignore="true"
+                  open={this.state.showEntryMenu && index === this.state.currentEntry}
+                  onClose={(event) => this.setState({ showEntryMenu: false, currentEntryAnchor: null })}
+                  anchorEl={this.state.currentEntryAnchor}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      this.handleDeleteEntry(index);
+                      this.setState({ showEntryMenu: false, currentEntryAnchor: null });
                     }}
-                    key={`${this.state.currentPath === []
-                      ? 'root'
-                      : this.state.currentPath[this.state.currentPath.length - 1]
-                      }-${index}-${entry.type}-${entry.style}`}
-                  />
-                  <Fab
-                    data-html2canvas-ignore="true"
-                    className={classes.delFAB}
-                    onClick={() => this.handleDeleteEntry(index)}
-                    variant="extended"
                   >
-                    <FaTrash />
-                    Delete
-                  </Fab>
-                </div>
+                    <ListItemIcon>
+                      <FaTrash />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Delete entry</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      this.entryEditorRef.current.openWith(entry, templates[entry.type][entry.style].info)
+                    }}
+                  >
+                    <ListItemIcon>
+                      <FaEdit />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Edit entry</Typography>
+                  </MenuItem>
+                </Menu>
                 {this.renderEntry(entry)}
               </div>);
           })}

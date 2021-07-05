@@ -195,11 +195,12 @@ class EntryEditor extends Component {
    * @constructor
    */
   constructor(props) {
+    console.log("const")
     super(props);
-    const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
-    
+    // const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
     this.state = {
-      data: copied_fields,
+      data: null,
+      info: null,
       showEditor: false,
 
       anchorEl: null,
@@ -350,7 +351,7 @@ class EntryEditor extends Component {
    */
   handleCreateEntry() {
     // JSON used for deep copy
-    const copy = JSON.parse(JSON.stringify(this.props.info.sections.defaultEntry));
+    const copy = JSON.parse(JSON.stringify(this.state.info.sections.defaultEntry));
     this.setState({
       data: {
         ...this.state.data,
@@ -452,7 +453,15 @@ class EntryEditor extends Component {
       });
     }
   }
-
+  
+  openWith(fields, info) {
+    console.log("ref func");
+    this.setState({
+      showEditor: true,
+      data: fields,
+      info: info
+    })
+  }
   serializeSlate(value) {
     return (
       value.map(n => Node.string(n)).join('\n')
@@ -467,30 +476,19 @@ class EntryEditor extends Component {
     })
   }
 
-  
   render() {
     const { classes } = this.props;
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
+    if (!this.state.data) {
+      return null;
+    }
+
     return (
       <div
         data-html2canvas-ignore="true"
         className
       >
-        <Fab
-          variant="extended"
-          className={classes.editFAB}
-          onClick={() => {
-            const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
-            this.setState({
-              data: copied_fields,
-              currentSection: 0,
-              showEditor: true
-            })
-          }}
-        >
-          <FaEdit />
-          edit
-        </Fab>
+
         <Modal className={classes.modal}
           // open always set to true, open/close logic handled by portfolio
           open={this.state.showEditor}
@@ -641,7 +639,7 @@ class EntryEditor extends Component {
                     <div>
                       <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event)}>
                         <Typography variant="inherit" style={{ fontFamily: item }}>
-                          {this.props.info.fonts[key].label}
+                          {this.state.info.fonts[key].label}
                         </Typography>
                       </Button>
                       <Menu
@@ -683,7 +681,7 @@ class EntryEditor extends Component {
                         onChange={(event) => this.handleChange(event, "colours")}
                       />
                       <Typography component="h6" variant="h6">
-                        {this.props.info.colours[key].label}
+                        {this.state.info.colours[key].label}
                       </Typography>
                     </div>
                   )
@@ -718,7 +716,7 @@ class EntryEditor extends Component {
                             })}>
                             <Preview />
                             <Typography>
-                              {this.props.info.images[key].label}
+                              {this.state.info.images[key].label}
                             </Typography>
                           </Button>
                           <Menu
@@ -728,7 +726,7 @@ class EntryEditor extends Component {
                             open={Boolean(this.state.mediaAnchorEl) && !this.state.editSection && this.state.imageName === key}
                             onClose={() => this.setState({ mediaAnchorEl: null })}
                           >
-                            {this.props.info.images[key].format.map((format) => {
+                            {this.state.info.images[key].format.map((format) => {
                               switch (format) {
                                 case 'image':
                                   return (<MenuItem onClick={() => {
@@ -771,7 +769,7 @@ class EntryEditor extends Component {
                           {/* <TextField
                             name={key}
                             id={key}
-                            label={this.props.info.texts[key].label}
+                            label={this.state.info.texts[key].label}
                             value={item}
                             margin="normal"
                             variant="outlined"
@@ -782,7 +780,7 @@ class EntryEditor extends Component {
                     })}
                   </div>
                 </div>
-                {this.props.info.sections.enabled &&
+                {this.state.info.sections.enabled &&
                   <div className={classes.sectionDiv}>
                     <IconButton id="left" onClick={() => this.handleSectionView(-1)}>
                       <FaChevronLeft />
@@ -828,7 +826,7 @@ class EntryEditor extends Component {
                                       <div className={classes.entryInfoDiv}>
                                         <Preview />
                                         <Typography>
-                                          {this.props.info.sections.entryFormat.images[key].label}
+                                          {this.state.info.sections.entryFormat.images[key].label}
                                         </Typography>
                                       </div>
                                     </Button>
@@ -839,7 +837,7 @@ class EntryEditor extends Component {
                                       open={Boolean(this.state.mediaAnchorEl) && this.state.editSection && this.state.imageName === key}
                                       onClose={() => this.setState({ mediaAnchorEl: null })}
                                     >
-                                      {this.props.info.sections.entryFormat.images[key].format.map((format) => {
+                                      {this.state.info.sections.entryFormat.images[key].format.map((format) => {
                                         // TODO: debug change format errors
                                         switch (format) {
                                           case 'image':
@@ -878,7 +876,7 @@ class EntryEditor extends Component {
                                     {/* <TextField
                                       name={key}
                                       id={key}
-                                      label={this.props.info.sections.entryFormat.texts[key].label}
+                                      label={this.state.info.sections.entryFormat.texts[key].label}
                                       value={item}
                                       margin="normal"
                                       variant="outlined"
@@ -931,4 +929,4 @@ const mapDispatchToProps = {
   repopulate_state
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(EntryEditor))
+export default connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(withStyles(styles)(EntryEditor))
