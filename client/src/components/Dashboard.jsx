@@ -518,6 +518,7 @@ class Dashboard extends Component {
   render() {
     const { error, loading, name, loggedIn, portfolios, classes } = this.props;
     
+    //Handles errors from portfolio fetching.
     if (error) {
       handleErrors(error, this.props.history);
     }
