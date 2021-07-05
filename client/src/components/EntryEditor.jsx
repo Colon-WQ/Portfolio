@@ -7,7 +7,7 @@ import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaE
 import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
 import ImagePicker from './ImagePicker';
-import TextEditor from './TextEditor';
+// import TextEditor from './TextEditor';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -225,15 +225,16 @@ class EntryEditor extends Component {
     this.handleIconSelect = this.handleIconSelect.bind(this);
     this.handleFont = this.handleFont.bind(this);
 
-    this.fileUploadRef = React.createRef();
-    this.imgColPickerRef = React.createRef();
     this.serializeSlate = this.serializeSlate.bind(this);
     this.deserializeSlate = this.deserializeSlate.bind(this);
+
+    this.fileUploadRef = React.createRef();
+    this.imgColPickerRef = React.createRef();
   }
 
   // TODO: elements read from state instead of props
   // TODO: unbounded mongo models
-  
+
 
   shouldComponentUpdate(nextProps, nextState) {
     return true;
@@ -248,7 +249,7 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleChange(event, category, section) {
-    
+
     if (!category) {
       this.setState({
         data: {
@@ -453,7 +454,7 @@ class EntryEditor extends Component {
       });
     }
   }
-  
+
   openWith(fields, info) {
     console.log("ref func");
     this.setState({
@@ -462,6 +463,7 @@ class EntryEditor extends Component {
       info: info
     })
   }
+
   serializeSlate(value) {
     return (
       value.map(n => Node.string(n)).join('\n')
@@ -758,15 +760,15 @@ class EntryEditor extends Component {
                   </div>
                   <div className={classes.textGrid}>
                     {Object.entries(this.state.data.texts).map(([key, item]) => {
-                      
+
                       return (
-                        
+
                         <div>
                           {/* Preview icon that changes according to selected colour */}
                           {/* <Button id="colourPreview"/> */}
-                          <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange}/>
-                          
-                          {/* <TextField
+                          {/* <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} /> */}
+
+                          <TextField
                             name={key}
                             id={key}
                             label={this.state.info.texts[key].label}
@@ -774,7 +776,7 @@ class EntryEditor extends Component {
                             margin="normal"
                             variant="outlined"
                             onChange={(event) => this.handleChange(event, "texts")}
-                          /> */}
+                          />
                         </div>
                       )
                     })}
@@ -872,8 +874,8 @@ class EntryEditor extends Component {
                                 // TODO: make maxRow field in info?
                                 return (
                                   <div>
-                                    <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange}/>
-                                    {/* <TextField
+                                    {/* <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange} /> */}
+                                    <TextField
                                       name={key}
                                       id={key}
                                       label={this.state.info.sections.entryFormat.texts[key].label}
@@ -883,7 +885,7 @@ class EntryEditor extends Component {
                                       onChange={(event) => this.handleChange(event, 'texts', true)}
                                       multiline
                                       rowsMax={3}
-                                    /> */}
+                                    />
                                   </div>
                                 );
                               })}
