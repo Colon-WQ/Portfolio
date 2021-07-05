@@ -24,7 +24,7 @@ const initialTitle = convertToRaw(ContentState.createFromText("About me"))
 
 const initialContent = convertToRaw(ContentState.createFromText("Describe yourself!"));
 
-const convertToHtml = (htmlString) => {
+export const convertToHtml = (htmlString) => {
   const placeholder = document.createElement('div');
   placeholder.innerHTML = htmlString;
   const paragraphs = placeholder.getElementsByTagName("p");
@@ -52,7 +52,7 @@ class AboutTemplateMinimalist extends Component {
       bodyBackgroundFill: { label: "body background fill" }
     },
     images: {},
-    texts: { title: { label: "Title" }, about: { label: "Description" } },
+    texts: { title: { label: "Title", type: "complexText" }, content: { label: "Description", type: "complexText" } },
     sections: {}
   };
 

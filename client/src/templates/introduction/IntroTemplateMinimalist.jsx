@@ -3,7 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
-import preview from '../../res/preview/introduction/IntroMinimalist.JPG'
+import preview from '../../res/preview/introduction/IntroMinimalist.JPG';
 
 const styles = (theme) => ({
   root: {
@@ -34,7 +34,7 @@ class IntroTemplateMinimalist extends Component {
     fonts: { titleFont: { label: "title font" } },
     colours: { primary: { label: "primary" }, secondary: { label: "secondary" } },
     images: { dp: { label: "Your portrait photo", format: ['image'] }, bg: { label: "Entry background", format: ['image', 'colour'] } },
-    texts: { name: { label: "Your full name" }, status: { label: "your current position" } },
+    texts: { name: { label: "Your full name", type: "simpleText" }, status: { label: "your current position", type: "simpleText" } },
     sections: {}
   };
 
@@ -46,7 +46,10 @@ class IntroTemplateMinimalist extends Component {
     fonts: { titleFont: "Roboto" },
     colours: { primary: "#d19a19", secondary: "#000000" },
     images: { dp: { src: "https://bit.ly/3fRv2Y2", format: 'image' }, bg: { src: "https://bit.ly/2RWO4Ei", format: 'image' } },
-    texts: { name: "Port Folio", status: "UI/UX developer" },
+    texts: { 
+      name: "Port Folio", 
+      status: "UI/UX developer"
+    },
     sections: []
   };
 
