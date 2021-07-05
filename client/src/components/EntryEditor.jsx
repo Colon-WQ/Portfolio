@@ -7,7 +7,7 @@ import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaE
 import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
 import ImagePicker from './ImagePicker';
-// import TextEditor from './TextEditor';
+import TextEditor from './TextEditor';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -760,14 +760,14 @@ class EntryEditor extends Component {
                   </div>
                   <div className={classes.textGrid}>
                     {Object.entries(this.state.data.texts).map(([key, item]) => {
-
-                      return (
-
-                        <div>
-                          {/* Preview icon that changes according to selected colour */}
-                          {/* <Button id="colourPreview"/> */}
-                          {/* <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} /> */}
-
+                      if (this.state.info.texts[key].type === "complexText") {
+                        // {/* Preview icon that changes according to selected colour */}
+                        // {/* <Button id="colourPreview"/> */}
+                        return (
+                          <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} />
+                        );
+                      } else {
+                        return (
                           <TextField
                             name={key}
                             id={key}
@@ -777,8 +777,8 @@ class EntryEditor extends Component {
                             variant="outlined"
                             onChange={(event) => this.handleChange(event, "texts")}
                           />
-                        </div>
-                      )
+                        );
+                      }
                     })}
                   </div>
                 </div>
@@ -872,9 +872,12 @@ class EntryEditor extends Component {
                             <div className={classes.textGrid}>
                               {Object.entries(this.state.data.sections[this.state.currentSection].texts).map(([key, item]) => {
                                 // TODO: make maxRow field in info?
-                                return (
-                                  <div>
-                                    {/* <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange} /> */}
+                                if (this.state.info.sections.entryFormat.texts[key].type === "complexText") {
+                                  return (
+                                    <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange} />
+                                  );
+                                } else {
+                                  return (
                                     <TextField
                                       name={key}
                                       id={key}
@@ -886,8 +889,8 @@ class EntryEditor extends Component {
                                       multiline
                                       rowsMax={3}
                                     />
-                                  </div>
-                                );
+                                  );
+                                }
                               })}
                             </div>
                           </div>

@@ -53,7 +53,7 @@ class IntroTemplateRedline extends Component {
     fonts: { titleFont: { label: 'title font' } },
     colours: { primary: { label: 'primary' }, secondary: { label: 'secondary' } },
     images: { bg: { label: 'Entry background', format: ['image'] } },
-    texts: { name: { label: 'Your name' }, status: { label: 'Your current status' } },
+    texts: { name: { label: 'Your name', type: "simpleText" }, status: { label: 'Your current status', type: "simpleText" } },
     sections: {
       enabled: true,
       defaultEntry: {
@@ -62,7 +62,7 @@ class IntroTemplateRedline extends Component {
       },
       entryFormat: {
         images: { socialIcon: { label: 'Icon', format: ['image', 'icon'] } },
-        texts: { socialLink: { label: 'Link' } }
+        texts: { socialLink: { label: 'Link', type: "simpleText" } }
       }
     }
   };
@@ -73,7 +73,9 @@ class IntroTemplateRedline extends Component {
     fonts: { titleFont: 'Roboto' },
     colours: { primary: '#dd0000', secondary: '#FFFFFF' },
     images: { bg: { src: 'https://bit.ly/3gSDGpJ', format: 'image' } },
-    texts: { name: 'Lorem Ipsum', status: 'Developer' },
+    texts: { 
+      name: "Lorem Ipsum", 
+      status: "Developer" },
     sections: [{
       images: { socialIcon: { src: 'fa/FaGithub', format: 'icon' } },
       texts: { socialLink: 'https://github.com' }
@@ -138,6 +140,7 @@ class IntroTemplateRedline extends Component {
               return (
                 <div className={classes.section}>
                   <IconButton
+                    //need to get the string
                     onClick={() => window.open(section.texts.socialLink)}
                     className={classes.socialButton}
                   >
