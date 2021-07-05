@@ -71,6 +71,9 @@ const styles = (theme) => ({
   entryEditorDiv: {
     display: "flex",
     flexDirection: "row"
+  },
+  hide: {
+    display: 'none'
   }
 })
 
@@ -98,12 +101,10 @@ class Portfolio extends Component {
       },
       currentPage: undefined,
       currentPath: [],
-      // dirTree: {
-      //   directory: 'root',
-      //   id: "root_mongo_id",
-      //   pages:
-      //     {}
-      // },
+
+      currentEntry: 0,
+      showEdit: false,
+
       autosaveTimer: null,
       isUnsaved: false
     }
@@ -666,26 +667,36 @@ class Portfolio extends Component {
         <div id="preview">
           {this.state.currentPage.entries.map((entry, index) => {
             // Key MUST be unique -> component will be reinitialized if key is different.
-            return (<div className={classes.entryEditorDiv}>
-              <EntryEditor
-                fields={entry}
-                info={templates[entry.type][entry.style].info}
-                onClose={(data, changed) => {
-                  this.handleEditorClose(data, changed, index);
-                }}
-                key={`${this.state.currentPath === []
-                  ? 'root'
-                  : this.state.currentPath[this.state.currentPath.length - 1]
-                  }-${index}-${entry.type}-${entry.style}`}
-              />
-              <Fab
-                data-html2canvas-ignore="true"
-                className={classes.delFAB}
-                onClick={() => this.handleDeleteEntry(index)}>
-                <FaTrash />
-              </Fab>
-              {this.renderEntry(entry)}
-            </div>);
+            return (
+              <div
+                className={classes.entryEditorDiv}
+                onMouseEnter={(event) => this.setState({ showEdit: true, currentEntry: index })}
+                onMouseLeave={(event) => this.setState({ showEdit: false })}
+              >
+                <div className={this.state.showEdit && index === this.state.currentEntry ? null : classes.hide}>
+                  <EntryEditor
+                    fields={entry}
+                    info={templates[entry.type][entry.style].info}
+                    onClose={(data, changed) => {
+                      this.handleEditorClose(data, changed, index);
+                    }}
+                    key={`${this.state.currentPath === []
+                      ? 'root'
+                      : this.state.currentPath[this.state.currentPath.length - 1]
+                      }-${index}-${entry.type}-${entry.style}`}
+                  />
+                  <Fab
+                    data-html2canvas-ignore="true"
+                    className={classes.delFAB}
+                    onClick={() => this.handleDeleteEntry(index)}
+                    variant="extended"
+                  >
+                    <FaTrash />
+                    Delete
+                  </Fab>
+                </div>
+                {this.renderEntry(entry)}
+              </div>);
           })}
         </div>
         <div className={`${classes.fixedDiv} mui-fixed`}>
