@@ -48,10 +48,10 @@ const styles = (theme) => ({
   entryDiv: {
     position: 'relative'
   },
-  delFAB: {
+  settingsFab: {
     position: 'absolute',
-    marginTop: '5vw',
-    marginLeft: '2vw'
+    marginTop: '10px',
+    marginLeft: '10px'
   },
   fixedDiv: {
     position: 'fixed',
@@ -691,7 +691,7 @@ class Portfolio extends Component {
                 onMouseLeave={(event) => this.setState({ showSettings: false })}
               >
                 <Fab
-                  className={this.state.showSettings && index === this.state.currentEntry ? classes.delFAB : classes.hide}
+                  className={this.state.showSettings && index === this.state.currentEntry ? classes.settingsFab : classes.hide}
                   variant="extended"
                   onClick={(event) => this.setState({
                     currentEntryAnchor: event.currentTarget,
