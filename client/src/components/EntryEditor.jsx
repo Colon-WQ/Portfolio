@@ -154,6 +154,12 @@ const styles = (theme) => ({
   entryInfoDiv: {
     display: 'flex',
     flexDirection: 'column'
+  },
+  complexTextDiv: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'start'
   }
 })
 
@@ -764,7 +770,10 @@ class EntryEditor extends Component {
                         // {/* Preview icon that changes according to selected colour */}
                         // {/* <Button id="colourPreview"/> */}
                         return (
-                          <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} />
+                          <div className={classes.complexTextDiv}>
+                            <Typography variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
+                            <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} />
+                          </div>
                         );
                       } else {
                         return (
@@ -874,7 +883,10 @@ class EntryEditor extends Component {
                                 // TODO: make maxRow field in info?
                                 if (this.state.info.sections.entryFormat.texts[key].type === "complexText") {
                                   return (
-                                    <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange} />
+                                    <div className={classes.complexTextDiv}>
+                                      <Typography variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
+                                      <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange} />
+                                    </div>
                                   );
                                 } else {
                                   return (
