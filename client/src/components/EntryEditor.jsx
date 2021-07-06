@@ -771,7 +771,7 @@ class EntryEditor extends Component {
                         // {/* <Button id="colourPreview"/> */}
                         return (
                           <div className={classes.complexTextDiv}>
-                            <Typography variant="h6" component="h6">{this.state.info.texts[key]}</Typography>
+                            <Typography variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
                             <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} />
                           </div>
                         );
