@@ -19,6 +19,7 @@ import { theme } from '../styles/styles';
 import html2canvas from 'html2canvas';
 import FormData from 'form-data';
 import { handleErrors } from '../handlers/errorHandler';
+import ErrorBoundary from './ErrorBoundary';
 
 
 import { create } from 'jss';
@@ -647,6 +648,7 @@ class Portfolio extends Component {
   render() {
     const { loggedIn, classes } = this.props;
     return (
+      <ErrorBoundary>
       <div className={classes.root}>
         <Prompt
           when={this.state.isUnsaved}
@@ -757,7 +759,8 @@ class Portfolio extends Component {
           />
           <Publish createPushables={this.handleProduction} portfolioName={this.state.name} />
         </div>
-      </div>);
+      </div>
+      </ErrorBoundary>);
   }
 }
 
