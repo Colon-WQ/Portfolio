@@ -32,8 +32,8 @@ const TextEditor = props => {
                 setHideToolbar(true);
             }}
             onContentStateChange={newContentState => {
-                console.log(newContentState.blocks)
-                console.log(newContentState.entityMap)
+                // console.log(newContentState.blocks)
+                // console.log(newContentState.entityMap)
                 const target = {
                     name: props.name,
                     value: newContentState

@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard';
 import Portfolio from './components/Portfolio';
 import Publish from './components/Publish';
 import UserConfirmation from './components/UserConfirmation';
+import ErrorDisplay from './components/ErrorDisplay';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -36,10 +37,12 @@ ReactDOM.render(
         getUserConfirmation={(message, callback) => UserConfirmation(message, callback)}
       >
         <Provider store = {store}>
+          <ErrorDisplay/>
           <Switch>
             <Route exact path = '/' component = {Home}></Route>
             <>
               <Navbar/>
+              
                 <Route exact path = '/login/callback' component = {LoginResult}></Route>
                 <Route exact path = '/dashboard' component = {Dashboard}></Route>
                 <Route exact path = '/edit' component = {Portfolio}></Route>

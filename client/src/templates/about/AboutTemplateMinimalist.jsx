@@ -1,9 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
-import { ContentState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Markup } from 'interweave';
 
@@ -20,9 +19,81 @@ const styles = (theme) => ({
   },
 });
 
-const initialTitle = convertToRaw(ContentState.createFromText("About me"))
+const initialTitle = {
+  entityMap: {},
+  blocks: [
+    {
+      key: "e4brl",
+      text: "About Me",
+      type: "unstyled",
+      depth: 0,
+      inlineStyleRanges: [
+        {
+          offset: 0,
+          length: 8,
+          style: "BOLD"
+        },
+        {
+          offset: 0,
+          length: 8,
+          style: "fontsize-30"
+        },
+        {
+          offset: 0,
+          length: 8,
+          style: "fontfamily-Tahoma"
+        }
+      ],
+      entityRanges: [],
+      data: {}
+    }
+  ]
+};
 
-const initialContent = convertToRaw(ContentState.createFromText("Describe yourself!"));
+initialTitle.blocks.map(block => block.data['text-align'] = "center");
+
+const initialContent = {
+  entityMap: {},
+  blocks: [
+    {
+      key: "70ge9",
+      text: "Describe Yourself! 😀",
+      type: "unstyled",
+      depth: 0,
+      inlineStyleRanges: [
+        {
+          length: 20,
+          offset: 0,
+          style: "fontfamily-Tahoma"
+        }
+      ],
+      entityRanges: [],
+      data: {}
+    },
+    {
+      key: "apr5k",
+      text: "I am a hard worker.",
+      type: "unstyled",
+      depth: 0,
+      inlineStyleRanges: [
+        {
+          length: 19,
+          offset: 0,
+          style: "fontfamily-Tahoma"
+        },
+        {
+          length: 4,
+          offset: 7,
+          style: "BOLD"
+        }
+      ],
+      entityRanges: [],
+      data: {}
+    }
+  ]
+};
+
+initialContent.blocks.map(block => block.data['text-align'] = "center");
 
 export const convertToHtml = (htmlString) => {
   const placeholder = document.createElement('div');
