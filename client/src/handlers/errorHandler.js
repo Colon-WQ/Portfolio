@@ -1,4 +1,5 @@
 import { log_out_user } from '../actions/LoginAction';
+import { add_error } from '../actions/ErrorAction';
 import store from '../index';
 
 /**
@@ -21,15 +22,21 @@ import store from '../index';
  * @member handleErrors
  * @function
  */
-export const handleErrors = async (err, history) => {
+export const handleErrors = (err, history) => {
     if (err.response) {
         console.log(err.response.data);
+        
+        //could be improved
+        const message = err.response.data !== undefined ? err.response.data : "error encountered"
+        store.dispatch(add_error(message, err.response.status));
+
         if (err.response.status === 401 && err.response.data === 'unauthorized user') {
             localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE);
             store.dispatch(log_out_user());
             history.push('/');
         }
     } else {
+        store.dispatch(add_error(err.message));
         console.log(err.message);
     }
 }
