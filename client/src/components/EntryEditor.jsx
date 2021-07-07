@@ -254,7 +254,7 @@ class EntryEditor extends PureComponent {
     this.deserializeSlate = this.deserializeSlate.bind(this);
 
     this.fileUploadRef = React.createRef();
-    this.imgColPickerRef = React.createRef();
+    // this.imgColPickerRef = React.createRef();
   }
 
   // TODO: elements read from state instead of props
@@ -597,7 +597,7 @@ class EntryEditor extends PureComponent {
                 <Button onClick={() => this.setState({ colAnchorEl: null, showColour: false })}>CANCEL</Button>
               </div>
             </Popover>
-            <input
+            {/* <input
               type="color"
               ref={this.imgColPickerRef}
               onChange={(event) => {
@@ -624,7 +624,7 @@ class EntryEditor extends PureComponent {
               }}
               onBlur={console.log}
               className={classes.hide}
-            />
+            /> */}
             <Modal
               open={this.state.showIcon}
               aria-labelledby="icon selection modal"
@@ -761,7 +761,9 @@ class EntryEditor extends PureComponent {
                             {
                               mediaAnchorEl: event.currentTarget,
                               editField: key,
-                              editSection: false
+                              editSection: false,
+                              editCategory: 'images',
+                              initColour: item.format === 'colour' ? item.src : this.state.initColour
                             })}>
                             <Preview />
                             <Typography>
@@ -793,9 +795,14 @@ class EntryEditor extends PureComponent {
                                     })}
                                   >{format}</MenuItem>);
                                 case 'colour':
-                                  return (<MenuItem onClick={
-                                    () => this.imgColPickerRef.current.click()
-                                  }>{format}</MenuItem>);
+                                  return (
+                                    <MenuItem
+                                      onClick={(event) => this.setState({
+                                        colAnchorEl: event.currentTarget,
+                                        showColour: true,
+                                      })
+                                      }
+                                    > { format}</MenuItem>);
                                 default:
                                   break;
                               }
@@ -872,6 +879,7 @@ class EntryEditor extends PureComponent {
                                       mediaAnchorEl: event.currentTarget,
                                       editField: key,
                                       editSection: true,
+                                      initColour: item.format === 'colour' ? item.src : this.state.initColour
                                     })}>
                                       <div className={classes.entryInfoDiv}>
                                         <Preview />
@@ -905,8 +913,10 @@ class EntryEditor extends PureComponent {
                                               })}
                                             >{format}</MenuItem>);
                                           case 'colour':
-                                            return (<MenuItem onClick={
-                                              this.imgColPickerRef.current.click()
+                                            return (<MenuItem onClick={(event) => this.setState({
+                                              colAnchorEl: event.currentTarget,
+                                              showColour: true,
+                                            })
                                             }>{format}</MenuItem>);
                                           default:
                                             break;
@@ -959,7 +969,7 @@ class EntryEditor extends PureComponent {
             </div>
           </div>
         </Modal>
-      </div>
+      </div >
     )
   }
 }
