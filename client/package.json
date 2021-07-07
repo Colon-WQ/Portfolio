@@ -20,6 +20,7 @@
     "jszip": "^3.6.0",
     "pexels": "^1.2.1",
     "react": "^17.0.2",
+    "react-color": "^2.19.3",
     "react-dom": "^17.0.2",
     "react-draft-wysiwyg": "^1.14.7",
     "react-icons": "^4.2.0",
