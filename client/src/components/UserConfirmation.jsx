@@ -46,6 +46,7 @@ const UserConfirmation = (message, callback) => {
                 console.log(res.data.message);
                 callback(true);
             }).catch(err => {
+                //Do not need handleErrors here since we need to deploy another logic to prevent user from navigating out of page.
                 if (err.response) {
                     console.log(err.response.data);
                 } else {

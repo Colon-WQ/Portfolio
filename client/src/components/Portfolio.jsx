@@ -617,7 +617,7 @@ class Portfolio extends Component {
         }
         )
       }).catch(err => {
-        console.log(err);
+        handleErrors(err);
       })
   }
 

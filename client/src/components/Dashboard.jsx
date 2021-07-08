@@ -467,11 +467,7 @@ class Dashboard extends Component {
           temp[imageRef.label] = URL.createObjectURL(res.data);
           images[portfolio_id] = temp;
         }).catch(err => {
-          if (err.response) {
-            console.log(err.response.data);
-          } else {
-            console.log(err.message);
-          }
+          handleErrors(err, this.props.history);
         })
       }
 
