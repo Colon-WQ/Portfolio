@@ -6,25 +6,10 @@ import Page from '../models/page.model.js';
 import Entry from '../models/entry.model.js';
 import Image from '../models/image.model.js';
 import connect from '../server.js';
-
+import { handleErrors } from '../handlers/errorHandler.js';
+import { handleSuccess } from '../handlers/successHandler.js';
 
 const router = express.Router();
-
-//standard error handling. Note: still need to return this function
-const handleErrors = (response, err, message) => {
-    console.log(err);
-    if (message === null) {
-        return response.status(400).send("error encountered");
-    } else {
-        return response.status(400).send(message);
-    }
-}
-
-//standard success handling. Note: still need to return this function
-const handleSuccess = (response, log, data) => {
-    console.log(log);
-    return response.status(200).json(data);
-}
 
 /**
  * String of objectId of portfolio required. Get using objectId.toHexString()
@@ -37,7 +22,6 @@ export const getPortfolio = async (req, res) => {
         
         const deepPopulate = async (currPage) => {
             for (let key of Object.keys(currPage.directories)) {
-                console.log(key)
                 const page = await Page.findById(currPage.directories[key]).lean().populate("entries");
                 currPage.directories[key] = page;
                 await deepPopulate(page);
@@ -46,9 +30,9 @@ export const getPortfolio = async (req, res) => {
 
         await deepPopulate(portfolio.pages);
 
-        return handleSuccess(res, portfolio, { portfolio: portfolio });
+        return handleSuccess(res, { portfolio: portfolio }, portfolio);
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to retrieve portfolio");
     });
 }
 
@@ -56,9 +40,9 @@ export const updatePortfolio = async (req, res) => {
     const portfolio = req.body.portfolio;
     await Portfolio.findByIdAndUpdate(portfolio._id, portfolio)
     .then(() => {
-        return handleSuccess(res, "portfolio updated", { message: "portfolio updated" });
+        return handleSuccess(res, { message: "portfolio updated" }, "portfolio updated");
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to update portfolio");
     })
 }
 
@@ -80,7 +64,7 @@ export const upsertPortfolio = async (req, res) => {
     const requestPortfolio = req.body.portfolio;
 
     if (requestPortfolio.name === "") {
-        return handleErrors(res, err, "Portfolio Name cannot be empty");
+        return handleErrors(res, 400, err, "Portfolio Name cannot be empty");
     }
 
     const user = new User({
@@ -101,7 +85,7 @@ export const upsertPortfolio = async (req, res) => {
             }
         }
     ).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch user by _id");
     })
 
     const portfolio = new Portfolio({
@@ -122,10 +106,10 @@ export const upsertPortfolio = async (req, res) => {
                 //This is allowed since original array is empty to begin with.
                 user.portfolios.push(portfolio._id);
             } else {
-                return response.status(400).send("error encountered");
+                return handleErrors(res, 400, undefined, "portfolio name provided does not exist");
             }
         }).catch(err => {
-            return handleErrors(res, err, null);
+            return handleErrors(res, 400, err, "failed to fetch portfolio by name");
         })
         
     } else {
@@ -163,10 +147,10 @@ export const upsertPortfolio = async (req, res) => {
                             if (obj[key]._id !== undefined) {
                                 if (typeof obj[key]._id === "object") {
                                     incomingPageIds.add(obj[key]._id.toHexString());
-                                    console.log("incoming pages added " + obj[key]._id.toHexString());
+                                    console.log(`incoming pages added ${obj[key]._id.toHexString()}`);
                                 } else {
                                     incomingPageIds.add(obj[key]._id);
-                                    console.log("incoming pages added " + obj[key]._id);
+                                    console.log(`incoming pages added ${obj[key]._id}`);
                                 }
                                 
                             }
@@ -186,7 +170,7 @@ export const upsertPortfolio = async (req, res) => {
                 .then(page => {
                     return page.directories;
                 }).catch(err => {
-                    return handleErrors(res, err, null)
+                    return handleErrors(res, 400, err, "failed to fetch page by _id")
                 })
                 
                 //for some reason this gives [ '$__parent', '$__path', '$__schemaType' ] which is 3 keys without anything in the map if lean() is not used.
@@ -204,10 +188,10 @@ export const upsertPortfolio = async (req, res) => {
                             let directories = await Page.findById(obj[key]._id).lean()
                             .then(page => {
                                 //TODO: DEVELOP LOGIC TO HANDLE IF PAGE THAT'S SUPPOSED TO EXIST DOES NOT IN FACT EXIST.
-                                if (!page) return handleErrors(res, err, null);
+                                if (!page) return handleErrors(res, 400, err, "referenced page does not exist");
                                 return page.directories;
                             }).catch(err => {
-                                return handleErrors(res, err, null);
+                                return handleErrors(res, 400, err, "error encountered when fetching page");
                             })
 
                             await collectExisting(directories);
@@ -221,16 +205,16 @@ export const upsertPortfolio = async (req, res) => {
                                     for (let entryId of page.entries) {
                                         await Entry.findByIdAndDelete(entryId)
                                         .then(deletedEntry => console.log(`${deletedEntry._id} entry deleted`))
-                                        .catch(err => console.log(err));
+                                        .catch(err => console.log(err, "referenced entry does not exist and cannot be deleted"));
                                     }
                                 }).catch(err => {
-                                    return handleErrors(res, err, null);
+                                    return handleErrors(res, 400, err, "error encountered when filtering out and deleting unused entries");
                                 });
                                 //Then delete the page document
                                 await Page.findByIdAndDelete(obj[key]._id)
                                 .then(deletedPage => console.log(`${deletedPage._id} page deleted`))
                                 .catch(err => {
-                                    return handleErrors(res, err, null);
+                                    return handleErrors(res, 400, err, "failed to delete existing page");
                                 });
                             }
                             
@@ -242,7 +226,7 @@ export const upsertPortfolio = async (req, res) => {
 
             }
         }).catch(err => {
-            return handleErrors(res, err, null);
+            return handleErrors(res, 400, err, "failed to fetch portfolio using _id");
         })
         
     }
@@ -318,7 +302,7 @@ export const upsertPortfolio = async (req, res) => {
                     existingEntries.push(existingEntry._id.toHexString());
                 }
             }).catch(err => {
-                return handleErrors(res, err, null);
+                return handleErrors(res, 400, err, "failed to fetch page by _id");
             });
         }
 
@@ -395,7 +379,7 @@ export const upsertPortfolio = async (req, res) => {
         if (!incomingEntries.has(entryId)) {
             await Entry.findByIdAndDelete(entryId)
             .then(deleted => {
-                console.log("deleted unwanted entry " + deleted._id);
+                console.log(`deleted unwanted entry ${deleted._id}`);
             }).catch(err => {
                 console.log(err);
             })
@@ -410,36 +394,37 @@ export const upsertPortfolio = async (req, res) => {
 
     await user.save()
     .then(async () => {   
+        console.log("user saved/updated");
         await portfolio.save()
         .then(async () => {
             for (let key of Object.keys(pages)) {
-
+                console.log("portfolio saved/updated");
                 const page = pages[key];
                 //first element will be the page to be saved, second element is the entries to be saved for that page
                 await page[0].save()
                 .then(async () => {
-
+                    console.log("page saved/updated");
                     for (let entry of page[1]) {
                         await entry.save()
                         .then(() => {
                             console.log("entry saved/updated")
                         }).catch(err => {
-                            return res.status(400).send(err);
+                            return handleErrors(res, 400, err, "failed to save entry");
                         });
                     }
 
                 }).catch(err => {
-                    return handleErrors(res, err, null);
+                    return handleErrors(res, 400, err, "failed to save page");
                 })
             }
         }).catch(err => {
-            return handleErrors(res, err, null);  
+            return handleErrors(res, 400, err, "failed to save portfolio");  
         })
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to save user");
     })
 
-    return handleSuccess(res, "portfolio created successfully", { message: "user created and portfolio created for user.", _id: portfolio._id });
+    return handleSuccess(res, { message: "user created and portfolio created for user.", _id: portfolio._id });
 }
 
 /**
@@ -451,15 +436,12 @@ export const getPortfolios = async (req, res) => {
     await User.findById(gh_id).populate("portfolios")
     .then(user => {
         if (user == null) {
-            console.log("user id not found");
-            return res.status(404).send("User id not found");
+            return handleErrors(res, 404, undefined, "User id not found");
         } else {
-            console.log("user portfolios found", user.portfolios);
-            return res.status(200).json({ portfolios: user.portfolios });
+            return handleSuccess(res, { portfolios: user.portfolios }, "user portfolios found");
         }
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, 400, err, "failed to fetch user portfolios");
     })
 }
 
@@ -474,27 +456,25 @@ export const deletePortfolio = async (req, res) => {
     .then(async (deletedPortfolio) => {
         console.log("deleted portfolio");
 
+        //removing portfolio _id from user portfolios
         await User.findById(deletedPortfolio.user)
         .then(async (user) => {
-            console.log(user.portfolios)
+            
             const temp = [];
             for (let portfolioId of user.portfolios) {
                 if (portfolioId != id) {
                     temp.push(portfolioId);
                 }
             }
-            console.log("new user refs:", temp)
             
             await user.updateOne({ portfolios: temp })
             .then(() => {
                 console.log("portfolio id removed from user refs");
             }).catch(err => {
-                console.log(err)
-                return res.status(400).send("error encountered");
+                return handleErrors(res, 400, err, "failed to update user portfolios after deletion");
             })
         }).catch(err => {
-            console.log(err)
-            return res.status(400).send("error encountered");
+            return handleErrors(res, 400, err, "failed to find portfolio for deletion");
         })
 
         //fully recurse through all the directories, then start deleting pages and their attached entries.
@@ -515,26 +495,25 @@ export const deletePortfolio = async (req, res) => {
                         .then(deletedEntry => {
                             console.log(`${deletedEntry._id.toHexString()} entry deleted`);
                         }).catch(err => {
-                            console.log(err);
-                            return res.status(400).send("error encountered");
+                            return handleErrors(res, 400, err, "failed to delete entry of deleted portfolio");
                         })
                     }
                 }).catch(err => {
-                    console.log(err);
-                    return res.status(400).send("error encountered");
+                    return handleErrors(res, 400, err, "failed to delete page of deleted portfolio");
                 })
-            }).catch(err => console.log(err));
+            }).catch(err => {
+                return handleErrors(res, 400, err, "failed to find page by _id");
+            });
   
         }
 
         //At this pt, deletedPortfolio is not populated, so pages is an ObjectId.
         await recurseDelete(deletedPortfolio.pages);
 
-        return res.status(200).json({ message: `Successfully deleted Portfolio by id ${id}` });
+        return handleSuccess(res, { message: `Successfully deleted Portfolio by id ${id}` }, "successfully deleted portfolio");
         
     }).catch(err => {
-        console.log(err)
-        return res.status(400).send("error encountered");
+        return handleErrors(res, 400, err, "failed to delete portfolio");
     })
 
 }
@@ -544,12 +523,12 @@ export const checkExistingImage = async (req, res) => {
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: req.query.label })
     .then(async image => {
         if (image) {
-            return handleSuccess(res, "existing image label found", { isExist: true });
+            return handleSuccess(res, { isExist: true }, "existing image label found");
         } else {
-            return handleSuccess(res, "existing image label not found", { isExist: false });
+            return handleSuccess(res, { isExist: false }, "existing image label not found");
         }
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch Image");
     })
 }
 
@@ -564,12 +543,12 @@ export const postImage = async (req, res) => {
     //Check if image exists already
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: req.body.label })
     .then(async image => {
-        if (image) return handleErrors(res, err, "image with same label already exists");
+        if (image) return handleErrors(res, 400, err, "image with same label already exists");
 
         //Check if portfolio exists. There could be an error with delete.
         await Portfolio.findById(portfolioId)
         .then(portfolio => {
-            if (!portfolio) return handleErrors(res, err, `portfolio ${portfolioId} does not exist`);
+            if (!portfolio) return handleErrors(res, 400, err, `portfolio ${portfolioId} does not exist`);
             const newImage = new Image({
                 _id: new mongoose.Types.ObjectId(),
                 label: req.body.label,
@@ -581,7 +560,9 @@ export const postImage = async (req, res) => {
             newImage.save()
             .then(async image => {
                 const images = portfolio.images;
-                if (images.filter(img => img == image._id).length !== 0) return handleErrors(res, err, "duplicate image objectId");
+
+                //This should be very unlikely, but checked in case there is a duplicate image _id in images.
+                if (images.filter(img => img == image._id).length !== 0) return handleErrors(res, 400, err, "duplicate image _id");
 
                 const imagesCopy = [...images];
 
@@ -591,22 +572,22 @@ export const postImage = async (req, res) => {
                 //save when called on a document will instead update if changes are made.
                 await portfolio.save()
                 .then(saved => {
-                    return handleSuccess(res, "image saved successfully", { 
+                    return handleSuccess(res, { 
                         message: `image with label: ${req.body.label} has been successfully saved with portfolio image refs updated accordingly`,
                         refs: saved.images
-                    });
+                    }, "image saved successfully");
                 }).catch(err => {
-                    return handleErrors(res, err, null);
+                    return handleErrors(res, 400, err, "failed to update portfolio images after saving Image");
                 })
 
             }).catch(err => {
-                return handleErrors(res, err, null);
+                return handleErrors(res, 400, err, "failed to save Image");
             })
         }).catch(err => {
-            return handleErrors(res, err, null);
+            return handleErrors(res, 400, err, "failed to find portfolio to which Image belongs to");
         })       
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch image to check before saving new Image");
     })
 }
 
@@ -622,7 +603,7 @@ export const updateImage = async (req, res) => {
     const label = req.body.label;
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label})
     .then(async image => {
-        if (!image) return handleErrors(res, err, `image with label ${label} does not exist`);
+        if (!image) return handleErrors(res, 400, err, `image with label ${label} does not exist`);
         const fileIdToDelete = image.fileId;
         //Need to first delete the currently stored file
         await gfs.delete(new mongoose.Types.ObjectId(fileIdToDelete))
@@ -634,17 +615,17 @@ export const updateImage = async (req, res) => {
             image.filename = req.file.filename;
             await image.save()
             .then(() => {
-                return handleSuccess(res, "image updated successfully", { message: `successfully updated file for image with label ${label}` });
+                return handleSuccess(res, { message: `successfully updated file for image with label ${label}` }, "image updated successfully");
             }).catch(err => {
-                return handleErrors(res, err, null);
+                return handleErrors(res, 400, err, "failed to update image");
             })
 
         }).catch(err => {
-            return handleErrors(res, err, null);
+            return handleErrors(res, 400, err, "failed to delete old image file before updating");
         })
 
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch image to update");
     })
 }
 
@@ -661,7 +642,7 @@ export const getImage = async (req, res) => {
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
     .then(image => {
         if (!image) {
-            return handleErrors(res, err, "image with label could not be found for the requested portfolio");
+            return handleErrors(res, 400, err, "image with label could not be found for the requested portfolio");
         } else {
             gfs.find({ _id: new mongoose.Types.ObjectId(image.fileId) }).toArray()
             .then(files => {
@@ -672,15 +653,15 @@ export const getImage = async (req, res) => {
                 if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
                     gfs.openDownloadStream(file._id).pipe(res);
                 } else {
-                    return handleSuccess(res, "file retrieved successfully", { file: file, message: "not an image" });
+                    return handleSuccess(res, { file: file, message: "not an image" });
                 }
             }).catch(err => {
-                return handleErrors(res, err, null);
+                return handleErrors(res, 400, err, "failed to fetch image file");
             })
         }
 
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch image");
     })
     
 }
@@ -692,10 +673,10 @@ export const getImages = async (req, res) => {
 
     await Portfolio.findById(portfolioId).populate("images")
     .then(portfolio => {
-        if (!portfolio) return handleErrors(res, err, "portfolio does not exist");
-        return handleSuccess(res, "images ref array retrieved successfully", { message: "successfully fetched images ref array", images: portfolio.images });
+        if (!portfolio) return handleErrors(res, 400, err, "portfolio does not exist");
+        return handleSuccess(res, { message: "successfully fetched images ref array", images: portfolio.images });
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch portfolio's images");
     })
 
 }
@@ -709,11 +690,9 @@ export const deleteImage = async (req, res) => {
     await Image.findOne({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
     .then(async image => {
         if (!image) return res.status(404).send(`image with label ${label} does not exist`);
-        console.log("deleting fileId " + image.fileId);
         
         await gfs.delete(new mongoose.Types.ObjectId(image.fileId))
         .then(async () => {
-            // if (!deletedFile) return res.status(404).send(`file ${image.fileId} does not exist`);
 
             await Image.findOneAndDelete({ portfolio: new mongoose.Types.ObjectId(portfolioId), label: label })
             .then(async deletedImage => {
@@ -730,27 +709,27 @@ export const deleteImage = async (req, res) => {
                     
                     await portfolio.save()
                     .then(() => {
-                        return handleSuccess(res, "image deleted successfully", { 
+                        return handleSuccess(res, { 
                             message: `image with label ${label} has been successfully deleted and portfolio refs have been successfully updated` 
                         });
                     }).catch(err => {
-                        return handleErrors(res, err, null);
+                        return handleErrors(res, 400, err, "failed to update portfolio images after deleting image and image file");
                     })
                     
                 }).catch(err => {
-                    return handleErrors(res, err, null);
+                    return handleErrors(res, 400, err, "failed to fetch portfolio to update its images");
                 })
 
             }).catch(err => {
-                return handleErrors(res, err, null);
+                return handleErrors(res, 400, err, "failed to delete image");
             })
 
         }).catch(err => {
-            return handleErrors(res, err, null);
+            return handleErrors(res, 400, err, "failed to delete image file");
         })
 
     }).catch(err => {
-        return handleErrors(res, err, null);
+        return handleErrors(res, 400, err, "failed to fetch image to delete");
     })
 }
 

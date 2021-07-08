@@ -1,6 +1,8 @@
 import express from 'express';
 import { CLIENT_ID, CLIENT_SECRET } from '../utils/config.js';
 import axios from 'axios';
+import { handleErrors } from '../handlers/errorHandler.js';
+import { handleSuccess } from '../handlers/successHandler.js';
 
 const router = express.Router()
 
@@ -15,7 +17,7 @@ export const logout = async (req, res) => {
          */
         await axios({
             method: "DELETE",
-            url: "https://api.github.com/applications/" + CLIENT_ID + "/token",
+            url: `https://api.github.com/applications/${CLIENT_ID}/token`,
             withCredentials: true,
             data: {
                 access_token: req.gh_token
@@ -36,15 +38,12 @@ export const logout = async (req, res) => {
         req.session.destroy(err => {
             if (err) console.log(err);
             console.log("session destroyed");
-            console.log("logout successful")
-        
-            return res.status(200).json({ message: "logout successful"})
+            return handleSuccess(res, { message: "logout successful" }, "logout successful");
         })
 
         
     } catch (err) {
-        console.log(error)
-        return res.status(401).send('unauthorized user');
+        return handleErrors(res, 401, err, "unauthorized user");
     }
 }
 

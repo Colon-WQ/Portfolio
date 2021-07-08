@@ -8,6 +8,7 @@ import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
 import ImagePicker from './ImagePicker';
 import TextEditor from './TextEditor';
+import SimpleTextEditor from './SimpleTextEditor';
 import { SketchPicker } from 'react-color';
 
 /**
@@ -206,7 +207,6 @@ class EntryEditor extends PureComponent {
    * @constructor
    */
   constructor(props) {
-    console.log(props)
     super(props);
     this.state = {
       width: '100%',
@@ -264,6 +264,7 @@ class EntryEditor extends PureComponent {
   shouldComponentUpdate(nextProps, nextState) {
     return true;
   }
+  
 
   /**
    * Event handler for text fields. 
@@ -274,17 +275,24 @@ class EntryEditor extends PureComponent {
    * @memberof EntryEditor
    */
   handleChange(event, category, section) {
+    
     if (!category) {
       this.setState({
         [event.target.name]: event.target.value
       });
     } else {
+      console.log("hello")
       if (!section) {
-        const originalCat = { ...this.state[category] };
-        originalCat[event.target.name] = event.target.value;
-        this.setState({
-          [category]: originalCat
-        });
+        console.log('changes', event.target.value);
+        //Very Problematic
+        this.state[category][event.target.name] = event.target.value;
+        // const originalCat = { ...this.state[category] };
+        // originalCat[event.target.name] = event.target.value;
+        // console.log(originalCat);
+        // this.setState({
+        //   [category]: originalCat
+        // });
+        console.log('changed to', this.state[category])
       } else {
         const newSections = [...this.state.sections];
         newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
@@ -823,15 +831,23 @@ class EntryEditor extends PureComponent {
                         );
                       } else {
                         return (
-                          <TextField
-                            name={key}
-                            id={key}
-                            label={this.state.info.texts[key].label}
-                            value={item}
-                            margin="normal"
-                            variant="outlined"
-                            onChange={(event) => this.handleChange(event, "texts")}
+                          <SimpleTextEditor 
+                            name={key} 
+                            label={this.state.info.texts[key].label} 
+                            item={item} 
+                            handleChange={this.handleChange}
+                            category={"texts"}
+                            section={false}
                           />
+                          // <TextField
+                          //   name={key}
+                          //   id={key}
+                          //   label={this.state.info.texts[key].label}
+                          //   value={item}
+                          //   margin="normal"
+                          //   variant="outlined"
+                          //   onChange={(event) => this.handleChange(event, "texts")}
+                          // />
                         );
                       }
                     })}
@@ -939,17 +955,25 @@ class EntryEditor extends PureComponent {
                                   );
                                 } else {
                                   return (
-                                    <TextField
-                                      name={key}
-                                      id={key}
-                                      label={this.state.info.sections.entryFormat.texts[key].label}
-                                      value={item}
-                                      margin="normal"
-                                      variant="outlined"
-                                      onChange={(event) => this.handleChange(event, 'texts', true)}
-                                      multiline
-                                      rowsMax={3}
+                                    <SimpleTextEditor 
+                                      name={key} 
+                                      label={this.state.info.sections.entryFormat.texts[key].label} 
+                                      item={item} 
+                                      handleChange={this.handleChange}
+                                      category={"texts"}
+                                      section={true}
                                     />
+                                    // <TextField
+                                    //   name={key}
+                                    //   id={key}
+                                    //   label={this.state.info.sections.entryFormat.texts[key].label}
+                                    //   value={item}
+                                    //   margin="normal"
+                                    //   variant="outlined"
+                                    //   onChange={(event) => this.handleChange(event, 'texts', true)}
+                                    //   multiline
+                                    //   rowsMax={3}
+                                    // />
                                   );
                                 }
                               })}

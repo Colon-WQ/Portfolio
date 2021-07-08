@@ -6,6 +6,7 @@ import { log_in_user } from '../actions/LoginAction';
 import { fetchPortfolios } from '../actions/PortfolioAction';
 import { withStyles } from '@material-ui/core/styles';
 import { BeatLoader } from 'react-spinners';
+import { handleErrors } from '../handlers/errorHandler';
 /**
  * @file LoginResult component serves as the endpoint of Github authorization request and also
  * provides visual loading display when Github authorization is in progress.
@@ -112,9 +113,7 @@ class LoginResult extends Component {
             }).then(() => {
                 this.props.history.push("/dashboard");
             }).catch(err => {
-                console.log(err.message);
-                console.log("login failed. Returning user to Home Page to relogin or login as Guest")
-                this.props.history.push('/');
+                handleErrors(err, this.props.history);
             })
         } else {
             //At this point, there's no localStorage user data, and user does not want to authorize.
