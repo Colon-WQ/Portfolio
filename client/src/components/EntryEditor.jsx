@@ -10,6 +10,7 @@ import ImagePicker from './ImagePicker';
 import TextEditor from './TextEditor';
 import SimpleTextEditor from './SimpleTextEditor';
 import { SketchPicker } from 'react-color';
+import ColourPicker from './ColourPicker';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -229,9 +230,9 @@ class EntryEditor extends PureComponent {
       showIcon: false,
       iconCategory: 'ai',
 
-      initColour: '#888',
       editCategory: 'colours',
       editField: '',
+      editFormat: '',
       colAnchorEl: null,
       showColour: false,
 
@@ -264,43 +265,46 @@ class EntryEditor extends PureComponent {
   shouldComponentUpdate(nextProps, nextState) {
     return true;
   }
-  
+
 
   /**
-   * Event handler for text fields. 
+   * Event handler for text fields.
    * Text fields should be named after their keys in the state.
-   * 
-   * @param {*} event 
-   * @return void
+   * @param {*} value 
+   * @param {string} field 
+   * @param {string} category 
+   * @param {boolean} section 
    * @memberof EntryEditor
    */
-  handleChange(event, category, section) {
-    
+  handleChange(value, field, category, section) {
+    let formatted = value;
+    switch (category) {
+      case 'images':
+        formatted = { src: value, format: this.state.editFormat }
+        break;
+      default:
+        break;
+    }
+
     if (!category) {
       this.setState({
-        [event.target.name]: event.target.value
+        [field]: formatted
       });
     } else {
       console.log("hello")
       if (!section) {
-        console.log('changes', event.target.value);
-        //Very Problematic
-        this.state[category][event.target.name] = event.target.value;
-        // const originalCat = { ...this.state[category] };
-        // originalCat[event.target.name] = event.target.value;
-        // console.log(originalCat);
-        // this.setState({
-        //   [category]: originalCat
-        // });
-        console.log('changed to', this.state[category])
-      } else {
-        const newSections = [...this.state.sections];
-        newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
+        const newObject = { ...this.state[category] };
+        newObject[field] = formatted;
         this.setState({
-          sections: newSections
+          [category]: newObject
+        });
+      } else {
+        const newObject = [...this.state.sections];
+        newObject[section][category][field] = formatted;
+        this.setState({
+          sections: newObject
         });
       }
-
     }
   }
 
@@ -549,90 +553,16 @@ class EntryEditor extends PureComponent {
               }
             }} />
             <Typography component="h3" variant="h3">Entry editor</Typography>
-            <Popover
+            <ColourPicker
               open={this.state.showColour}
               anchorEl={this.state.colAnchorEl}
-              onClose={(event) => this.setState({ colAnchorEl: null, showColour: false })}
-            >
-              <SketchPicker
-                color={this.state.initColour}
-                onChangeComplete={(color, event) => {
-                  this.setState({ initColour: color.hex });
-                }}
-                disableAlpha={true}
-              />
-              <div>
-                <Button onClick={(event) => {
-                  if (this.state.editCategory === 'colours') {
-                    this.setState({
-                      colAnchorEl: null,
-                      showColour: false,
-                      colours: {
-                        ...this.state.colours,
-                        [this.state.editField]: this.state.initColour
-                      }
-                    })
-                  } else if (this.state.editCategory === 'images') {
-                    if (this.state.editSection) {
-                      const newSections = [...this.state.sections];
-                      newSections[this.state.currentSection].images[this.state.editField].src = this.state.initColour;
-                      newSections[this.state.currentSection].images[this.state.editField].format = 'colour';
-                      this.setState({
-                        sections: newSections,
-                        mediaAnchorEl: null,
-                        colAnchorEl: null,
-                        showColour: false
-                      });
-                    } else {
-                      this.setState({
-                        images: {
-                          ...this.state.images,
-                          [this.state.editField]: {
-                            src: this.state.initColour,
-                            format: 'colour'
-                          }
-                        },
-                        mediaAnchorEl: null,
-                        colAnchorEl: null,
-                        showColour: false
-                      })
-                    }
-                  } else {
-                    // Utilise error handling?
-                    console.log('unhandled edit category in colour editor')
-                  }
-                }}>OK</Button>
-                <Button onClick={() => this.setState({ colAnchorEl: null, showColour: false })}>CANCEL</Button>
-              </div>
-            </Popover>
-            {/* <input
-              type="color"
-              ref={this.imgColPickerRef}
-              onChange={(event) => {
-                if (this.state.editSection) {
-                  const newSections = [...this.state.sections];
-                  newSections[this.state.currentSection].images[this.state.editField].src = event.target.value;
-                  newSections[this.state.currentSection].images[this.state.editField].format = 'colour';
-                  this.setState({
-                    sections: newSections,
-                    mediaAnchorEl: null
-                  });
-                } else {
-                  this.setState({
-                    images: {
-                      ...this.state.images,
-                      [this.state.editField]: {
-                        src: event.target.value,
-                        format: 'colour'
-                      }
-                    },
-                    mediaAnchorEl: null
-                  })
+              onClose={(save, colour) => {
+                if (save) {
+                  this.handleChange(colour, this.state.editField, this.state.editCategory, this.state.currentSection)
                 }
+                this.setState({ showColour: false, colAnchorEl: null })
               }}
-              onBlur={console.log}
-              className={classes.hide}
-            /> */}
+            />
             <Modal
               open={this.state.showIcon}
               aria-labelledby="icon selection modal"
@@ -678,7 +608,7 @@ class EntryEditor extends PureComponent {
                   value={this.state.width}
                   margin="normal"
                   variant="outlined"
-                  onChange={(event) => this.handleChange(event, "")}
+                  onChange={(event) => this.handleChange(event.target.value, event.target.name)}
                   className={classes.styleInput}
                 />
                 <TextField
@@ -688,7 +618,7 @@ class EntryEditor extends PureComponent {
                   value={this.state.height}
                   margin="normal"
                   variant="outlined"
-                  onChange={(event) => this.handleChange(event, "")}
+                  onChange={(event) => this.handleChange(event.target.value, event.target.name)}
                   className={classes.styleInput}
                 />
                 {Object.entries(this.state.fonts).map(([key, item]) => {
@@ -729,7 +659,6 @@ class EntryEditor extends PureComponent {
                           showColour: true,
                           editCategory: 'colours',
                           editField: key,
-                          initColour: item,
                           editSection: false
                         })}
                       >
@@ -770,8 +699,7 @@ class EntryEditor extends PureComponent {
                               mediaAnchorEl: event.currentTarget,
                               editField: key,
                               editSection: false,
-                              editCategory: 'images',
-                              initColour: item.format === 'colour' ? item.src : this.state.initColour
+                              editCategory: 'images'
                             })}>
                             <Preview />
                             <Typography>
@@ -791,6 +719,8 @@ class EntryEditor extends PureComponent {
                                   return (<MenuItem onClick={() => {
                                     this.setState({
                                       showImage: true,
+                                      editFormat: 'image',
+                                      mediaAnchorEl: null,
                                     })
                                   }}
                                   >{format}</MenuItem>)
@@ -799,7 +729,9 @@ class EntryEditor extends PureComponent {
                                   return (<MenuItem onClick={() => this.setState(
                                     {
                                       showIcon: true,
-                                      iconCategory: category[0]
+                                      iconCategory: category[0],
+                                      editFormat: 'icon',
+                                      mediaAnchorEl: null,
                                     })}
                                   >{format}</MenuItem>);
                                 case 'colour':
@@ -808,6 +740,8 @@ class EntryEditor extends PureComponent {
                                       onClick={(event) => this.setState({
                                         colAnchorEl: event.currentTarget,
                                         showColour: true,
+                                        editFormat: 'colour',
+                                        mediaAnchorEl: null,
                                       })
                                       }
                                     > { format}</MenuItem>);
@@ -826,16 +760,22 @@ class EntryEditor extends PureComponent {
                         return (
                           <div className={classes.complexTextDiv}>
                             <Typography variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
-                            <TextEditor item={item} name={key} category={"texts"} section={false} handleChange={this.handleChange} />
+                            <TextEditor
+                              item={item}
+                              name={key}
+                              category={"texts"}
+                              section={false}
+                              handleChange={(event, category) => this.handleChange(event.target.value, event.target.name, category)}
+                            />
                           </div>
                         );
                       } else {
                         return (
-                          <SimpleTextEditor 
-                            name={key} 
-                            label={this.state.info.texts[key].label} 
-                            item={item} 
-                            handleChange={this.handleChange}
+                          <SimpleTextEditor
+                            name={key}
+                            label={this.state.info.texts[key].label}
+                            item={item}
+                            handleChange={(event) => this.handleChange(event.target.value, event.target.name, "texts")}
                             category={"texts"}
                             section={false}
                           />
@@ -894,8 +834,7 @@ class EntryEditor extends PureComponent {
                                     <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState({
                                       mediaAnchorEl: event.currentTarget,
                                       editField: key,
-                                      editSection: true,
-                                      initColour: item.format === 'colour' ? item.src : this.state.initColour
+                                      editSection: true
                                     })}>
                                       <div className={classes.entryInfoDiv}>
                                         <Preview />
@@ -918,6 +857,7 @@ class EntryEditor extends PureComponent {
                                             return (<MenuItem onClick={() => this.setState(
                                               {
                                                 showImage: true,
+                                                editFormat: 'image'
                                               })}
                                             >{format}</MenuItem>)
                                           case 'icon':
@@ -926,12 +866,14 @@ class EntryEditor extends PureComponent {
                                               {
                                                 showIcon: true,
                                                 iconCategory: category[0],
+                                                editFormat: 'icon'
                                               })}
                                             >{format}</MenuItem>);
                                           case 'colour':
                                             return (<MenuItem onClick={(event) => this.setState({
                                               colAnchorEl: event.currentTarget,
                                               showColour: true,
+                                              editFormat: 'colour'
                                             })
                                             }>{format}</MenuItem>);
                                           default:
@@ -950,16 +892,21 @@ class EntryEditor extends PureComponent {
                                   return (
                                     <div className={classes.complexTextDiv}>
                                       <Typography variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
-                                      <TextEditor item={item} name={key} category={"texts"} section={true} handleChange={this.handleChange} />
+                                      <TextEditor
+                                        item={item}
+                                        name={key}
+                                        category={"texts"}
+                                        section={true}
+                                        handleChange={(event, category, section) => this.handleChange(event.target.value, event.target.name, category, section)} />
                                     </div>
                                   );
                                 } else {
                                   return (
-                                    <SimpleTextEditor 
-                                      name={key} 
-                                      label={this.state.info.sections.entryFormat.texts[key].label} 
-                                      item={item} 
-                                      handleChange={this.handleChange}
+                                    <SimpleTextEditor
+                                      name={key}
+                                      label={this.state.info.sections.entryFormat.texts[key].label}
+                                      item={item}
+                                      handleChange={(event) => this.handleChange(event.target.value, event.target.name, 'texts', true)}
                                       category={"texts"}
                                       section={true}
                                     />
