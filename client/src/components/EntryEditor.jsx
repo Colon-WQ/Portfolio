@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit } from "react-icons/fa";
 import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
 import ImagePicker from './ImagePicker';
 import TextEditor from './TextEditor';
+import { SketchPicker } from 'react-color';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -160,6 +161,10 @@ const styles = (theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'start'
+  },
+  colBtn: {
+    padding: '1px',
+    minWidth: 0
   }
 })
 
@@ -193,7 +198,7 @@ const styles = (theme) => ({
  * }
  * return (<EntryEditor fields={fields} info={info} onChange=true/>)
  */
-class EntryEditor extends Component {
+class EntryEditor extends PureComponent {
   // TODO: check if componenetDidMount can overwrite constructor
 
   /**
@@ -201,11 +206,19 @@ class EntryEditor extends Component {
    * @constructor
    */
   constructor(props) {
-    console.log("const")
+    console.log(props)
     super(props);
-    // const copied_fields = JSON.parse(JSON.stringify(this.props.fields));
     this.state = {
+      width: '100%',
+      height: '100%',
+      fonts: {},
+      colours: {},
+      images: {},
+      texts: {},
+      sections: {},
+
       data: null,
+
       info: null,
       showEditor: false,
 
@@ -216,10 +229,16 @@ class EntryEditor extends Component {
       showIcon: false,
       iconCategory: 'ai',
 
+      initColour: '#888',
+      editCategory: 'colours',
+      editField: '',
+      colAnchorEl: null,
+      showColour: false,
+
       editSection: false,
       currentSection: 0,
 
-      imageName: '',
+      editField: '',
 
       showImage: false,
     }
@@ -235,7 +254,7 @@ class EntryEditor extends Component {
     this.deserializeSlate = this.deserializeSlate.bind(this);
 
     this.fileUploadRef = React.createRef();
-    this.imgColPickerRef = React.createRef();
+    // this.imgColPickerRef = React.createRef();
   }
 
   // TODO: elements read from state instead of props
@@ -255,32 +274,22 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleChange(event, category, section) {
-
     if (!category) {
       this.setState({
-        data: {
-          ...this.state.data,
-          [event.target.name]: event.target.value
-        }
+        [event.target.name]: event.target.value
       });
     } else {
       if (!section) {
-        const originalCat = { ...this.state.data[category] };
+        const originalCat = { ...this.state[category] };
         originalCat[event.target.name] = event.target.value;
         this.setState({
-          data: {
-            ...this.state.data,
-            [category]: originalCat
-          }
+          [category]: originalCat
         });
       } else {
-        const newSections = [...this.state.data.sections];
+        const newSections = [...this.state.sections];
         newSections[this.state.currentSection].texts[event.target.name] = event.target.value;
         this.setState({
-          data: {
-            ...this.state.data,
-            sections: newSections
-          }
+          sections: newSections
         });
       }
 
@@ -297,35 +306,28 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleImageUpload(event) {
-    console.log(this.state)
     // TODO: Open a upload dialog
     const freader = new FileReader();
     freader.readAsDataURL(event.target.files[0]);
     freader.onloadend = (e) => {
       if (!this.state.editSection) {
         this.setState({
-          data: {
-            ...this.state.data,
-            images: {
-              ...this.state.data.images,
-              [this.state.imageName]: {
-                src: e.target.result,
-                format: 'image'
-              }
+          images: {
+            ...this.state.images,
+            [this.state.editField]: {
+              src: e.target.result,
+              format: 'image'
             }
           },
           mediaAnchorEl: null
         })
       } else {
-        const newSections = [...this.state.data.sections];
+        const newSections = [...this.state.sections];
         // TODO: create deep copy, mutating .src currently mutates original array elements
-        newSections[this.state.currentSection].images[this.state.imageName].src = e.target.result;
-        newSections[this.state.currentSection].images[this.state.imageName].format = 'image'
+        newSections[this.state.currentSection].images[this.state.editField].src = e.target.result;
+        newSections[this.state.currentSection].images[this.state.editField].format = 'image'
         this.setState({
-          data: {
-            ...this.state.data,
-            sections: newSections
-          },
+          sections: newSections,
           mediaAnchorEl: null
         });
       }
@@ -340,12 +342,9 @@ class EntryEditor extends Component {
    * @memberof EntryEditor
    */
   handleDeleteSection(event) {
-    const spliced = this.state.data.sections.filter((item, filterIndex) => filterIndex !== this.state.currentSection);
+    const spliced = this.state.sections.filter((item, filterIndex) => filterIndex !== this.state.currentSection);
     this.setState({
-      data: {
-        ...this.state.data,
-        sections: spliced
-      }
+      sections: spliced
     })
   }
 
@@ -360,10 +359,7 @@ class EntryEditor extends Component {
     // JSON used for deep copy
     const copy = JSON.parse(JSON.stringify(this.state.info.sections.defaultEntry));
     this.setState({
-      data: {
-        ...this.state.data,
-        sections: [...this.state.data.sections, copy]
-      }
+      sections: [...this.state.sections, copy]
     });
   }
 
@@ -374,8 +370,8 @@ class EntryEditor extends Component {
   handleSectionView(modifier) {
     let nextSection = this.state.currentSection + modifier;
     if (nextSection < 0) {
-      nextSection = this.state.data.sections.length;
-    } else if (nextSection > this.state.data.sections.length) {
+      nextSection = this.state.sections.length;
+    } else if (nextSection > this.state.sections.length) {
       nextSection = 0;
     }
     this.setState({
@@ -388,8 +384,18 @@ class EntryEditor extends Component {
    * @param {boolean} save whether the changes should be saved to state
    */
   handleCloseEditor(save) {
+
     if (save) {
-      this.props.onClose(this.state.data, true);
+      const ret = this.state.data;
+      ret.width = this.state.width;
+      ret.height = this.state.height;
+      ret.fonts = this.state.fonts;
+      ret.colours = this.state.colours;
+      ret.images = this.state.images;
+      ret.texts = this.state.texts;
+      ret.sections = this.state.sections;
+
+      this.props.onClose(ret, true);
     } else {
       this.props.onClose(null, false);
     }
@@ -411,12 +417,9 @@ class EntryEditor extends Component {
       })
     } else {
       this.setState({
-        data: {
-          ...this.state.data,
-          fonts: {
-            ...this.state.data.fonts,
-            [field]: font
-          }
+        fonts: {
+          ...this.state.fonts,
+          [field]: font
         },
         anchorEl: null
       })
@@ -429,32 +432,25 @@ class EntryEditor extends Component {
    */
   handleIconSelect(iconName) {
     const newValue = `${this.state.iconCategory}/${iconName}`;
-    console.log('test');
     if (!this.state.editSection) {
       this.setState({
-        data: {
-          ...this.state.data,
-          images: {
-            ...this.state.data.images,
-            [this.state.imageName]: {
-              src: newValue,
-              format: 'icon'
-            }
+        images: {
+          ...this.state.images,
+          [this.state.editField]: {
+            src: newValue,
+            format: 'icon'
           }
         },
         showIcon: false,
         mediaAnchorEl: null
       })
     } else {
-      const newSections = [...this.state.data.sections];
+      const newSections = [...this.state.sections];
       // TODO: create deep copy, mutating .src currently mutates original array elements
-      newSections[this.state.currentSection].images[this.state.imageName].src = newValue;
-      newSections[this.state.currentSection].images[this.state.imageName].format = 'icon';
+      newSections[this.state.currentSection].images[this.state.editField].src = newValue;
+      newSections[this.state.currentSection].images[this.state.editField].format = 'icon';
       this.setState({
-        data: {
-          ...this.state.data,
-          sections: newSections
-        },
+        sections: newSections,
         showIcon: false,
         mediaAnchorEl: null
       });
@@ -462,10 +458,18 @@ class EntryEditor extends Component {
   }
 
   openWith(fields, info) {
-    console.log("ref func");
     this.setState({
       showEditor: true,
+      width: fields.width,
+      height: fields.height,
+      fonts: fields.fonts,
+      colours: fields.colours,
+      images: fields.images,
+      texts: fields.texts,
+      sections: fields.sections,
+
       data: fields,
+
       info: info
     })
   }
@@ -487,7 +491,8 @@ class EntryEditor extends Component {
   render() {
     const { classes } = this.props;
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
-    if (!this.state.data) {
+    // Prevent from rendering if info not provided, prevent errors trying to read properties from null
+    if (!this.state.info) {
       return null;
     }
 
@@ -496,7 +501,6 @@ class EntryEditor extends Component {
         data-html2canvas-ignore="true"
         className
       >
-
         <Modal className={classes.modal}
           // open always set to true, open/close logic handled by portfolio
           open={this.state.showEditor}
@@ -514,27 +518,21 @@ class EntryEditor extends Component {
 
               // TODO: Add attribution support
               if (this.state.editSection) {
-                const newSections = [...this.state.data.sections];
-                newSections[this.state.currentSection].images[this.state.imageName].src = data.image;
-                newSections[this.state.currentSection].images[this.state.imageName].format = 'image';
+                const newSections = [...this.state.sections];
+                newSections[this.state.currentSection].images[this.state.editField].src = data.image;
+                newSections[this.state.currentSection].images[this.state.editField].format = 'image';
                 this.setState({
-                  data: {
-                    ...this.state.data,
-                    sections: newSections
-                  },
+                  sections: newSections,
                   showImage: false,
                   mediaAnchorEl: null
                 });
               } else {
                 this.setState({
-                  data: {
-                    ...this.state.data,
-                    images: {
-                      ...this.state.data.images,
-                      [this.state.imageName]: {
-                        src: data.image,
-                        format: 'image'
-                      }
+                  images: {
+                    ...this.state.images,
+                    [this.state.editField]: {
+                      src: data.image,
+                      format: 'image'
                     }
                   },
                   showImage: false,
@@ -543,47 +541,90 @@ class EntryEditor extends Component {
               }
             }} />
             <Typography component="h3" variant="h3">Entry editor</Typography>
+            <Popover
+              open={this.state.showColour}
+              anchorEl={this.state.colAnchorEl}
+              onClose={(event) => this.setState({ colAnchorEl: null, showColour: false })}
+            >
+              <SketchPicker
+                color={this.state.initColour}
+                onChangeComplete={(color, event) => {
+                  this.setState({ initColour: color.hex });
+                }}
+                disableAlpha={true}
+              />
+              <div>
+                <Button onClick={(event) => {
+                  if (this.state.editCategory === 'colours') {
+                    this.setState({
+                      colAnchorEl: null,
+                      showColour: false,
+                      colours: {
+                        ...this.state.colours,
+                        [this.state.editField]: this.state.initColour
+                      }
+                    })
+                  } else if (this.state.editCategory === 'images') {
+                    if (this.state.editSection) {
+                      const newSections = [...this.state.sections];
+                      newSections[this.state.currentSection].images[this.state.editField].src = this.state.initColour;
+                      newSections[this.state.currentSection].images[this.state.editField].format = 'colour';
+                      this.setState({
+                        sections: newSections,
+                        mediaAnchorEl: null,
+                        colAnchorEl: null,
+                        showColour: false
+                      });
+                    } else {
+                      this.setState({
+                        images: {
+                          ...this.state.images,
+                          [this.state.editField]: {
+                            src: this.state.initColour,
+                            format: 'colour'
+                          }
+                        },
+                        mediaAnchorEl: null,
+                        colAnchorEl: null,
+                        showColour: false
+                      })
+                    }
+                  } else {
+                    // Utilise error handling?
+                    console.log('unhandled edit category in colour editor')
+                  }
+                }}>OK</Button>
+                <Button onClick={() => this.setState({ colAnchorEl: null, showColour: false })}>CANCEL</Button>
+              </div>
+            </Popover>
             {/* <input
-              accept="image/*"
-              className={classes.hide}
-              ref={this.fileUploadRef}
-              type="file"
-              onChange={this.handleImageUpload}
-            // value={item}
-            /> */}
-            <input
               type="color"
               ref={this.imgColPickerRef}
               onChange={(event) => {
                 if (this.state.editSection) {
-                  const newSections = [...this.state.data.sections];
-                  newSections[this.state.currentSection].images[this.state.imageName].src = event.target.value;
-                  newSections[this.state.currentSection].images[this.state.imageName].format = 'colour';
+                  const newSections = [...this.state.sections];
+                  newSections[this.state.currentSection].images[this.state.editField].src = event.target.value;
+                  newSections[this.state.currentSection].images[this.state.editField].format = 'colour';
                   this.setState({
-                    data: {
-                      ...this.state.data,
-                      sections: newSections
-                    },
+                    sections: newSections,
                     mediaAnchorEl: null
                   });
                 } else {
                   this.setState({
-                    data: {
-                      ...this.state.data,
-                      images: {
-                        ...this.state.data.images,
-                        [this.state.imageName]: {
-                          src: event.target.value,
-                          format: 'colour'
-                        }
+                    images: {
+                      ...this.state.images,
+                      [this.state.editField]: {
+                        src: event.target.value,
+                        format: 'colour'
                       }
                     },
                     mediaAnchorEl: null
                   })
                 }
               }}
+              onBlur={console.log}
               className={classes.hide}
-            />
+            /> */}
             <Modal
               open={this.state.showIcon}
               aria-labelledby="icon selection modal"
@@ -626,7 +667,7 @@ class EntryEditor extends Component {
                   id="width"
                   label="width"
                   name="width"
-                  value={this.state.data.width}
+                  value={this.state.width}
                   margin="normal"
                   variant="outlined"
                   onChange={(event) => this.handleChange(event, "")}
@@ -636,13 +677,13 @@ class EntryEditor extends Component {
                   id="height"
                   label="height"
                   name="height"
-                  value={this.state.data.height}
+                  value={this.state.height}
                   margin="normal"
                   variant="outlined"
                   onChange={(event) => this.handleChange(event, "")}
                   className={classes.styleInput}
                 />
-                {Object.entries(this.state.data.fonts).map(([key, item]) => {
+                {Object.entries(this.state.fonts).map(([key, item]) => {
                   return (
                     <div>
                       <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event)}>
@@ -669,25 +710,25 @@ class EntryEditor extends Component {
                     </div>
                   )
                 })}
-                {Object.entries(this.state.data.colours).map(([key, item]) => {
+                {Object.entries(this.state.colours).map(([key, item]) => {
                   return (
                     <div>
-                      <Input
-                        type="color"
-                        name={key}
-                        id={key}
-                        value={item}
-                        onChange={(event) => this.handleChange(event, "colours")}
-                        className={classes.maxWidth}
-                      />
-                      <TextField
-                        name={key}
-                        id={key}
-                        value={item}
-                        margin="normal"
+                      <Button
+                        className={classes.colBtn}
                         variant="outlined"
-                        onChange={(event) => this.handleChange(event, "colours")}
-                      />
+                        onClick={(event) => this.setState({
+                          colAnchorEl: event.currentTarget,
+                          showColour: true,
+                          editCategory: 'colours',
+                          editField: key,
+                          initColour: item,
+                          editSection: false
+                        })}
+                      >
+                        <div
+                          style={{ width: '2em', height: '2em', backgroundColor: item }}
+                        />
+                      </Button>
                       <Typography component="h6" variant="h6">
                         {this.state.info.colours[key].label}
                       </Typography>
@@ -698,7 +739,7 @@ class EntryEditor extends Component {
               <div className={classes.colDiv}>
                 <div className={classes.rowDiv}>
                   <div className={classes.imgGrid}>
-                    {Object.entries(this.state.data.images).map(([key, item]) => {
+                    {Object.entries(this.state.images).map(([key, item]) => {
                       let Preview;
                       switch (item.format) {
                         case 'image':
@@ -719,8 +760,10 @@ class EntryEditor extends Component {
                           <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState(
                             {
                               mediaAnchorEl: event.currentTarget,
-                              imageName: key,
-                              editSection: false
+                              editField: key,
+                              editSection: false,
+                              editCategory: 'images',
+                              initColour: item.format === 'colour' ? item.src : this.state.initColour
                             })}>
                             <Preview />
                             <Typography>
@@ -731,7 +774,7 @@ class EntryEditor extends Component {
                             id="media-menu"
                             anchorEl={this.state.mediaAnchorEl}
                             keepMounted
-                            open={Boolean(this.state.mediaAnchorEl) && !this.state.editSection && this.state.imageName === key}
+                            open={Boolean(this.state.mediaAnchorEl) && !this.state.editSection && this.state.editField === key}
                             onClose={() => this.setState({ mediaAnchorEl: null })}
                           >
                             {this.state.info.images[key].format.map((format) => {
@@ -752,9 +795,14 @@ class EntryEditor extends Component {
                                     })}
                                   >{format}</MenuItem>);
                                 case 'colour':
-                                  return (<MenuItem onClick={
-                                    () => this.imgColPickerRef.current.click()
-                                  }>{format}</MenuItem>);
+                                  return (
+                                    <MenuItem
+                                      onClick={(event) => this.setState({
+                                        colAnchorEl: event.currentTarget,
+                                        showColour: true,
+                                      })
+                                      }
+                                    > { format}</MenuItem>);
                                 default:
                                   break;
                               }
@@ -765,10 +813,8 @@ class EntryEditor extends Component {
                     })}
                   </div>
                   <div className={classes.textGrid}>
-                    {Object.entries(this.state.data.texts).map(([key, item]) => {
+                    {Object.entries(this.state.texts).map(([key, item]) => {
                       if (this.state.info.texts[key].type === "complexText") {
-                        // {/* Preview icon that changes according to selected colour */}
-                        // {/* <Button id="colourPreview"/> */}
                         return (
                           <div className={classes.complexTextDiv}>
                             <Typography variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
@@ -797,7 +843,7 @@ class EntryEditor extends Component {
                       <FaChevronLeft />
                     </IconButton>
                     {
-                      this.state.currentSection === this.state.data.sections.length
+                      this.state.currentSection === this.state.sections.length
                         ? <div className={classes.colDiv}>
                           <Typography component="h4" variant="h4" className={classes.colDiv}>Add new section</Typography>
                           <div className={classes.addSectionSpacer} />
@@ -810,7 +856,7 @@ class EntryEditor extends Component {
                           </div>
                           <div className={classes.rowDiv}>
                             <div className={classes.imgGrid}>
-                              {Object.entries(this.state.data.sections[this.state.currentSection].images).map(([key, item]) => {
+                              {Object.entries(this.state.sections[this.state.currentSection].images).map(([key, item]) => {
                                 let Preview;
                                 switch (item.format) {
                                   case 'image':
@@ -831,8 +877,9 @@ class EntryEditor extends Component {
                                   <div>
                                     <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState({
                                       mediaAnchorEl: event.currentTarget,
-                                      imageName: key,
+                                      editField: key,
                                       editSection: true,
+                                      initColour: item.format === 'colour' ? item.src : this.state.initColour
                                     })}>
                                       <div className={classes.entryInfoDiv}>
                                         <Preview />
@@ -845,7 +892,7 @@ class EntryEditor extends Component {
                                       id="media-menu"
                                       anchorEl={this.state.mediaAnchorEl}
                                       keepMounted
-                                      open={Boolean(this.state.mediaAnchorEl) && this.state.editSection && this.state.imageName === key}
+                                      open={Boolean(this.state.mediaAnchorEl) && this.state.editSection && this.state.editField === key}
                                       onClose={() => this.setState({ mediaAnchorEl: null })}
                                     >
                                       {this.state.info.sections.entryFormat.images[key].format.map((format) => {
@@ -866,8 +913,10 @@ class EntryEditor extends Component {
                                               })}
                                             >{format}</MenuItem>);
                                           case 'colour':
-                                            return (<MenuItem onClick={
-                                              this.imgColPickerRef.current.click()
+                                            return (<MenuItem onClick={(event) => this.setState({
+                                              colAnchorEl: event.currentTarget,
+                                              showColour: true,
+                                            })
                                             }>{format}</MenuItem>);
                                           default:
                                             break;
@@ -879,7 +928,7 @@ class EntryEditor extends Component {
                               })}
                             </div>
                             <div className={classes.textGrid}>
-                              {Object.entries(this.state.data.sections[this.state.currentSection].texts).map(([key, item]) => {
+                              {Object.entries(this.state.sections[this.state.currentSection].texts).map(([key, item]) => {
                                 // TODO: make maxRow field in info?
                                 if (this.state.info.sections.entryFormat.texts[key].type === "complexText") {
                                   return (
@@ -920,7 +969,7 @@ class EntryEditor extends Component {
             </div>
           </div>
         </Modal>
-      </div>
+      </div >
     )
   }
 }
