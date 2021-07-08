@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { withStyles } from '@material-ui/styles';
+import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 
 const styles = theme => ({
     textBlock: {
@@ -9,42 +10,71 @@ const styles = theme => ({
         borderColor: "whitesmoke",
         borderWidth: "thin"
     },
-    
 })
 
-const TextEditor = props => {
+class TextEditor extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hideToolbar: true,
+            editorState: EditorState.createEmpty()
+        }
+        this.setHideToolbar = this.setHideToolbar.bind(this);
+        this.setEditorState = this.setEditorState.bind(this);
+    }
 
-    const [hideToolbar, setHideToolbar] = useState(true);
+    componentDidMount() {
+        this.setState({
+            editorState: EditorState.createWithContent(convertFromRaw(this.props.item))
+        })
+    }
 
-    const { classes } = props;
+    componentWillUnmount() {
+        console.log("finalizing");
+        const target = {
+            name: this.props.name,
+            value: convertToRaw(this.state.editorState.getCurrentContent())
+        };
+        console.log(target.value);
+        const temp = {
+            target: target
+        };
+        this.props.handleChange(temp, this.props.category, this.props.section);
+    }
+
+    setHideToolbar(bool) {
+        this.setState({
+            hideToolbar: bool
+        });
+    }
+
+    setEditorState(editorState) {
+        this.setState({
+            editorState: editorState
+        });
+    }
+
+    render() {
+        const { classes } = this.props;
+
+        return (
+            <Editor
+                editorClassName={classes.textBlock}
+                toolbarHidden={this.state.hideToolbar}
+                editorState={this.state.editorState}
+                onFocus={() => {
+                    this.setHideToolbar(false);
+                }}
+                onBlur={() => {
+                    this.setHideToolbar(true);
+                }}
+                onEditorStateChange={newEditorState => {
+                    this.setEditorState(newEditorState);
+                }}
+            />
+        )
+    }
     
-    return (
-        <Editor
-            
-            editorClassName={classes.textBlock}
-            
-            toolbarHidden={hideToolbar}
-            initialContentState={props.item}
-            onFocus={() => {
-                setHideToolbar(false);
-            }}
-            onBlur={() => {
-                setHideToolbar(true);
-            }}
-            onContentStateChange={newContentState => {
-                // console.log(newContentState.blocks)
-                // console.log(newContentState.entityMap)
-                const target = {
-                    name: props.name,
-                    value: newContentState
-                };
-                const temp = {
-                    target: target
-                };
-                props.handleChange(temp, props.category, props.section);
-            }}
-        />
-    )
     
 }
 
