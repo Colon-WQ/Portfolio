@@ -5,6 +5,8 @@ import axios from 'axios';
 import jwt from "jsonwebtoken";
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, JWT_SECRET, ENCRYPT_KEY } from '../utils/config.js';
 import crypto from 'crypto';
+import { handleErrors } from '../handlers/errorHandler.js';
+import { handleSuccess } from '../handlers/successHandler.js';
 
 
 
@@ -77,7 +79,7 @@ export const getToken = async (req, res) => {
         data.append("client_secret", client_secret);
         data.append("code", code);
         data.append("redirect_uri", redirect_uri);
-        //console.log(data.getHeaders)
+        
         axios({ 
                 method: "POST",
                 url: "https://github.com/login/oauth/access_token",
@@ -97,24 +99,10 @@ export const getToken = async (req, res) => {
 
                 const encrypted_ghToken = await encode(ghToken);
 
-                /**
-                 * Using JWT encryption allows us to not store user sessions and enables us to freely expand our number
-                 * of servers if we choose to in the future, since only the secret is required for JWTs to work.
-                 * 
-                 * JWT encryption has been proven by industry experts to be sufficiently secure. However we have taken
-                 * caution to not store any sensitive data in JWT regardless.
-                 */
                 const jwtoken = jwt.sign(
                     {login: login, id: id , avatar_url: avatar_url, gravatar_id: gravatar_id, gh_token: encrypted_ghToken }, 
                     JWT_SECRET,
-                    // TODO: what happens when jwt expires while user editing
                     { expiresIn: "6h"});
-
-                // /**
-                //  * JWTs are stored in a HTTPonly cookie to mitigate token theft. Even in the case of stolen tokens, we
-                //  * offer the logout option to invalidate the user's access token.
-                //  */
-                // res.cookie("authorization", jwtoken, cookieParams);
 
                 req.session.user = {
                     details: jwtoken
@@ -126,15 +114,12 @@ export const getToken = async (req, res) => {
                 })
                 // TODO: check if name == null, replace login otherwise.
                 // TODO: update db if user not found/query db for userdata instead.
-                return res.status(200).json({ id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login });
-            })
-            .catch((error) => {
-                console.log(error);
-                return res.status(400).json(error);
+                return handleSuccess(res, { id: id, avatar_url: avatar_url, gravatar_id: gravatar_id, name: login }, "user info fetched successfully");
+            }).catch((err) => {
+                return handleErrors(res, 401, err, "unauthorized user");
             });
-    } catch (error) {
-        console.log(error)
-        return res.status(404).json({ message: error.message });
+    } catch (err) {
+        return handleErrors(res, 401, err, "unauthorized user");
     }
 }
 
@@ -196,9 +181,10 @@ export const publishGithub = async (req, res) => {
                         await recurseContent(response.data);
                     }).catch(err => {
                         console.log(err);
+                        return handleErrors(res, 400, err, "failed to fetch files of a directory");
                     })
                 } else {
-                    //idk how to handle symlink nor what it is atm
+                    //TODO: Handle SymLink
                 }
             }
         }
@@ -218,15 +204,15 @@ export const publishGithub = async (req, res) => {
         // TODO: error handling, stop publishing/undo all publishes.
         if (err.response.data.message === "This repository is empty." && err.response.status === 404) {
             console.log("repository is empty");
+            //return empty object since it is an empty repository.
             return {};
         } else {
-            console.log(err.message);
-            return res.status(404).send("error encountered when checking repository");
+            return handleErrors(res, 404, err, "error encountered when checking repository");
         }
     });
 
     //TODO: committer object might be required
-    console.log("sha obtained preparing to push")
+    console.log("sha obtained, preparing to push")
     
     for (let obj of files) {
         //filename and filetype combined give the full path of the file.
@@ -254,8 +240,7 @@ export const publishGithub = async (req, res) => {
         }).then(response => {
             console.log(`successfully pushed ${obj.fileName}`)
         }).catch(err => {
-            console.log(err.message)
-            return res.status(400).send("error encountered");
+            return handleErrors(res, 400, err, "failed to push/overwrite file");
         });
     }
 
@@ -270,9 +255,10 @@ export const publishGithub = async (req, res) => {
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
-        console.log("ghpages already exists")
-        return res.status(200).json({ message: `successfully pushed all files and deployed to ghpages at ${response.data.html_url}
-            Please wait for ghpages to load and refresh your browser after loading is completed for changes to take place` });
+        return handleSuccess(res, { 
+            message: `successfully pushed all files and deployed to ghpages at ${response.data.html_url}
+                Please wait for ghpages to load and refresh your browser after loading is completed for changes to take place` 
+            }, "ghpages already exists");
     }).catch(err => {
         console.log("ghpages does not exist. Need to create a new ghpages site")
         //functionality to toggle ghpages is under preview and requires a custom media type in the Accept header. See docs for more information"
@@ -291,12 +277,12 @@ export const publishGithub = async (req, res) => {
                 }
             }
         }).then(responses => {
-            console.log("ghpages successfully created")
-            return res.status(200).json({ message: `successfully pushed all files and deployed to ghpages at ${responses.data.html_url}
-                Please wait for ghpages to load and refresh your browser after loading is completed for changes to take place` });
+            return handleSuccess(res, { 
+                message: `successfully pushed all files and deployed to ghpages at ${responses.data.html_url}
+                Please wait for ghpages to load and refresh your browser after loading is completed for changes to take place` 
+            }, "ghpages successfully created");
         }).catch(err => {
-            console.log(err)
-            return res.status(400).send("ghpages deployment failed");
+            return handleErrors(res, 400, err, "ghpages deployment failed");
         })
     })
     
@@ -308,24 +294,24 @@ export const publishGithub = async (req, res) => {
 export const checkExistingRepos = async (req, res) => {
     const gh_token = req.gh_token;
     const username = req.username;
-    console.log("checking if " + req.query.repo + "exists")
+    console.log(`checking if ${req.query.repo} exists`);
     await axios({
         method: "GET",
-        url: "https://api.github.com/repos/" + username + "/" + req.query.repo,
+        url: `https://api.github.com/repos/${username}/${req.query.repo}`,
         headers: {
             "Authorization": `token ${gh_token}`,
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
-        return res.status(404).send(response.data.name + " exists. Possible data loss. Requires user permission")
+        return handleErrors(res, 404, undefined, `${response.data.name} exists. Possible data loss. Requires user permission`);
     }).catch(err => {
-        return res.status(200).json({ message: "repository does not exist. Attempting to create new repository under name" + req.query.repo })
+        return handleSuccess(res, { message: `repository does not exist. Attempting to create new repository under name ${req.query.repo}` });
     })
 }
 
 export const createRepo = async (req, res) => {
     const gh_token = req.gh_token;
-    console.log("attempting to create repository under name " + req.body.repo)
+    console.log(`attempting to create repository under name ${req.body.repo}`)
     await axios({
         method: "POST",
         url: "https://api.github.com/user/repos",
@@ -340,10 +326,9 @@ export const createRepo = async (req, res) => {
             private: false
         }
     }).then(response => {
-        return res.status(200).json({ message: "successfully created repository " + response.data.name})
+        return handleSuccess(res, { message: `successfully created repository ${response.data.name}` }, "successfully created new Github repository");
     }).catch(err => {
-        console.log(err.message)
-        return res.status(404).send("repository creation failed")
+        return handleErrors(res, 404, err, "repository creation failed");
     })
 }
 
@@ -359,11 +344,9 @@ export const getRepoContent = async (req, res) => {
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
-        console.log("successfully fetched contents of repository " + req.query.repo)
-        return res.status(200).json({ content: response.data })
+        return handleSuccess(res, { content: response.data }, `successfully fetched contents of repository ${req.query.repo}`);
     }).catch(err => {
-        console.log(err.message)
-        return res.status(404).send("getting repository contents failed")
+        return handleErrors(res, 404, err, "getting repository contents failed");
     })
 }
 
@@ -381,11 +364,9 @@ export const getGithubPageStatus = async (req, res) => {
             "Accept": "application/vnd.github.v3+json"
         }
     }).then(response => {
-        console.log("github page status retrieved successfully");
-        return res.status(200).json({ status: response.data.status, url: response.data.html_url });
+        return handleSuccess(res, { status: response.data.status, url: response.data.html_url }, "github page status retrieved successfully");
     }).catch(err => {
-        console.log(err);
-        return res.status(400).send("error encountered");
+        return handleErrors(res, 400, err, "failed to obtain Github Page status");
     })
 }
 

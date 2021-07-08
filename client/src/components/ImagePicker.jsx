@@ -6,6 +6,7 @@ import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Moda
 import axios from 'axios';
 import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
+import { handleErrors } from '../handlers/errorHandler';
 
 /**
  * @file ImagePicker component to provide a user interface for users to browse royalty free images
@@ -182,7 +183,7 @@ class ImagePicker extends Component {
       })
       console.log('Request completed');
     }).catch(err => {
-      console.log(err);
+      handleErrors(err);
     })
   }
 

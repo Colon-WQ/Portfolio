@@ -30,7 +30,7 @@ export const handleErrors = (err, history) => {
         const message = err.response.data !== undefined ? err.response.data : "error encountered"
         store.dispatch(add_error(message, err.response.status));
 
-        if (err.response.status === 401 && err.response.data === 'unauthorized user') {
+        if (err.response.status === 401 && err.response.data === 'unauthorized user' && history !== undefined) {
             localStorage.removeItem(process.env.REACT_APP_USER_LOCALSTORAGE);
             store.dispatch(log_out_user());
             history.push('/');
