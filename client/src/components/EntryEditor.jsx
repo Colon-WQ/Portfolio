@@ -285,13 +285,15 @@ class EntryEditor extends PureComponent {
       default:
         break;
     }
+    console.log(value);
+    console.log(field);
+    console.log(category);
 
     if (!category) {
       this.setState({
         [field]: formatted
       });
     } else {
-      console.log("hello")
       if (!section) {
         const newObject = { ...this.state[category] };
         newObject[field] = formatted;
@@ -762,20 +764,16 @@ class EntryEditor extends PureComponent {
                             <Typography variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
                             <TextEditor
                               item={item}
-                              name={key}
-                              category={"texts"}
-                              section={false}
-                              handleChange={(event, category) => this.handleChange(event.target.value, event.target.name, category)}
+                              onClose={(value) => this.handleChange(value, key, "texts")}
                             />
                           </div>
                         );
                       } else {
                         return (
                           <SimpleTextEditor
-                            name={key}
                             label={this.state.info.texts[key].label}
                             item={item}
-                            handleChange={(event) => this.handleChange(event.target.value, event.target.name, "texts")}
+                            onClose={(value) => this.handleChange(value, key, "texts")}
                             category={"texts"}
                             section={false}
                           />
@@ -894,19 +892,15 @@ class EntryEditor extends PureComponent {
                                       <Typography variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
                                       <TextEditor
                                         item={item}
-                                        name={key}
-                                        category={"texts"}
-                                        section={true}
-                                        handleChange={(event, category, section) => this.handleChange(event.target.value, event.target.name, category, section)} />
+                                        onClose={(value, name) => this.handleChange(value, key, "texts", true)} />
                                     </div>
                                   );
                                 } else {
                                   return (
                                     <SimpleTextEditor
-                                      name={key}
                                       label={this.state.info.sections.entryFormat.texts[key].label}
                                       item={item}
-                                      handleChange={(event) => this.handleChange(event.target.value, event.target.name, 'texts', true)}
+                                      onClose={(value) => this.handleChange(value, key, "texts", true)}
                                       category={"texts"}
                                       section={true}
                                     />
