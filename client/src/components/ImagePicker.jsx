@@ -7,6 +7,7 @@ import axios from 'axios';
 import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
 import { handleErrors } from '../handlers/errorHandler';
+import { imageCache } from './ImageCache';
 
 /**
  * @file ImagePicker component to provide a user interface for users to browse royalty free images
@@ -107,7 +108,7 @@ class ImagePicker extends Component {
     super(props);
     this.state = {
       queryParams: {
-        query: 'background',
+        query: '',
         orientation: '',
         size: '',
         color: '',
@@ -172,19 +173,26 @@ class ImagePicker extends Component {
 
   queryImages(event) {
     let queryParams = {};
-    Object.entries(this.state.queryParams).map(([key, value]) => { if (value !== '') queryParams[key] = value });
-    axios({
-      method: "GET",
-      url: process.env.REACT_APP_BACKEND + "/images",
-      params: queryParams
-    }).then(res => {
-      this.setState({
-        photos: res.data.pexels.photos
+    if (Boolean(this.state.queryParams.query)) {
+      Object.entries(this.state.queryParams).map(([key, value]) => { if (value !== '') queryParams[key] = value });
+      axios({
+        method: "GET",
+        url: process.env.REACT_APP_BACKEND + "/images",
+        params: queryParams
+      }).then(res => {
+        this.setState({
+          photos: res.data.pexels.photos
+        })
+        console.log(JSON.stringify(res.data.pexels));
+      }).catch(err => {
+        handleErrors(err);
       })
-      console.log('Request completed');
-    }).catch(err => {
-      handleErrors(err);
-    })
+    } else {
+      this.setState({
+        photos: imageCache.photos
+      })
+    }
+
   }
 
   render() {
