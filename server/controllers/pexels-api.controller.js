@@ -19,9 +19,9 @@ export const getImages = async (req, res) => {
    * page: pagination number
    * per_page: images per page
    */
-  console.log('getImages');
+  console.log("Requesting images")
   let pexels = await client.photos.search({ ...req.query });
-  console.log(pexels);
+  
   if (pexels.status === undefined) {
     return res.status(200).json({ pexels: pexels });
   } else {

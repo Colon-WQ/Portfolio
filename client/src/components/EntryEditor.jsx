@@ -11,6 +11,7 @@ import TextEditor from './TextEditor';
 import SimpleTextEditor from './SimpleTextEditor';
 import { SketchPicker } from 'react-color';
 import ColourPicker from './ColourPicker';
+import DimensionSlider from './DimensionSlider';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -223,9 +224,9 @@ class EntryEditor extends PureComponent {
       info: null,
       showEditor: false,
 
-      anchorEl: null,
+      showDimension: false,
 
-      mediaAnchorEl: null,
+      anchorEl: null,
 
       showIcon: false,
       iconCategory: 'ai',
@@ -233,8 +234,9 @@ class EntryEditor extends PureComponent {
       editCategory: 'colours',
       editField: '',
       editFormat: '',
-      colAnchorEl: null,
       showColour: false,
+
+      showFont: false,
 
       editSection: false,
       currentSection: 0,
@@ -285,9 +287,6 @@ class EntryEditor extends PureComponent {
       default:
         break;
     }
-    console.log(value);
-    console.log(field);
-    console.log(category);
 
     if (!category) {
       this.setState({
@@ -333,7 +332,7 @@ class EntryEditor extends PureComponent {
               format: 'image'
             }
           },
-          mediaAnchorEl: null
+          anchorEl: null
         })
       } else {
         const newSections = [...this.state.sections];
@@ -342,7 +341,7 @@ class EntryEditor extends PureComponent {
         newSections[this.state.currentSection].images[this.state.editField].format = 'image'
         this.setState({
           sections: newSections,
-          mediaAnchorEl: null
+          anchorEl: null
         });
       }
     }
@@ -427,7 +426,8 @@ class EntryEditor extends PureComponent {
   handleFont(event, field, font) {
     if (!field) {
       this.setState({
-        anchorEl: event.currentTarget
+        anchorEl: event.currentTarget,
+        showFont: true
       })
     } else {
       this.setState({
@@ -435,7 +435,8 @@ class EntryEditor extends PureComponent {
           ...this.state.fonts,
           [field]: font
         },
-        anchorEl: null
+        anchorEl: null,
+        showFont: false,
       })
     }
   }
@@ -456,7 +457,7 @@ class EntryEditor extends PureComponent {
           }
         },
         showIcon: false,
-        mediaAnchorEl: null
+        anchorEl: null
       })
     } else {
       const newSections = [...this.state.sections];
@@ -466,7 +467,7 @@ class EntryEditor extends PureComponent {
       this.setState({
         sections: newSections,
         showIcon: false,
-        mediaAnchorEl: null
+        anchorEl: null
       });
     }
   }
@@ -538,7 +539,7 @@ class EntryEditor extends PureComponent {
                 this.setState({
                   sections: newSections,
                   showImage: false,
-                  mediaAnchorEl: null
+                  anchorEl: null
                 });
               } else {
                 this.setState({
@@ -550,19 +551,19 @@ class EntryEditor extends PureComponent {
                     }
                   },
                   showImage: false,
-                  mediaAnchorEl: null
+                  anchorEl: null
                 })
               }
             }} />
             <Typography component="h3" variant="h3">Entry editor</Typography>
             <ColourPicker
               open={this.state.showColour}
-              anchorEl={this.state.colAnchorEl}
+              anchorEl={this.state.anchorEl}
               onClose={(save, colour) => {
                 if (save) {
                   this.handleChange(colour, this.state.editField, this.state.editCategory, this.state.currentSection)
                 }
-                this.setState({ showColour: false, colAnchorEl: null })
+                this.setState({ showColour: false, anchorEl: null })
               }}
             />
             <Modal
@@ -570,7 +571,7 @@ class EntryEditor extends PureComponent {
               aria-labelledby="icon selection modal"
               aria-describedby="a modal for users to pick an icon"
               className={`${classes.modal} ${classes.subModal}`}
-              onClose={() => this.setState({ showIcon: false, mediaAnchorEl: null })}
+              onClose={() => this.setState({ showIcon: false, anchorEl: null })}
             >
               <div className={classes.maxHeightWidth}>
                 <Tabs
@@ -603,26 +604,18 @@ class EntryEditor extends PureComponent {
 
             <div className={classes.rowDiv}>
               <div className={classes.styleDiv}>
-                <TextField
-                  id="width"
-                  label="width"
-                  name="width"
-                  value={this.state.width}
-                  margin="normal"
-                  variant="outlined"
-                  onChange={(event) => this.handleChange(event.target.value, event.target.name)}
-                  className={classes.styleInput}
-                />
-                <TextField
-                  id="height"
-                  label="height"
-                  name="height"
-                  value={this.state.height}
-                  margin="normal"
-                  variant="outlined"
-                  onChange={(event) => this.handleChange(event.target.value, event.target.name)}
-                  className={classes.styleInput}
-                />
+                <div>
+                  <DimensionSlider
+                    label={'width'}
+                    defaultValue={this.state.width}
+                    onClose={(save, value) => this.handleChange(value, 'width')}
+                  />
+                  <DimensionSlider
+                    label={'height'}
+                    defaultValue={this.state.height}
+                    onClose={(save, value) => this.handleChange(value, 'width')}
+                  />
+                </div>
                 {Object.entries(this.state.fonts).map(([key, item]) => {
                   return (
                     <div>
@@ -636,7 +629,7 @@ class EntryEditor extends PureComponent {
                         id={key}
                         anchorEl={this.state.anchorEl}
                         keepMounted
-                        open={Boolean(this.state.anchorEl)}
+                        open={this.state.showFont}
                         onClose={() => this.setState({ anchorEl: null })}
                       >
                         {fonts.map((fontName) => (
@@ -657,7 +650,7 @@ class EntryEditor extends PureComponent {
                         className={classes.colBtn}
                         variant="outlined"
                         onClick={(event) => this.setState({
-                          colAnchorEl: event.currentTarget,
+                          anchorEl: event.currentTarget,
                           showColour: true,
                           editCategory: 'colours',
                           editField: key,
@@ -698,7 +691,7 @@ class EntryEditor extends PureComponent {
                         <div>
                           <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState(
                             {
-                              mediaAnchorEl: event.currentTarget,
+                              anchorEl: event.currentTarget,
                               editField: key,
                               editSection: false,
                               editCategory: 'images'
@@ -710,10 +703,10 @@ class EntryEditor extends PureComponent {
                           </Button>
                           <Menu
                             id="media-menu"
-                            anchorEl={this.state.mediaAnchorEl}
+                            anchorEl={this.state.anchorEl}
                             keepMounted
-                            open={Boolean(this.state.mediaAnchorEl) && !this.state.editSection && this.state.editField === key}
-                            onClose={() => this.setState({ mediaAnchorEl: null })}
+                            open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editField === key}
+                            onClose={() => this.setState({ anchorEl: null })}
                           >
                             {this.state.info.images[key].format.map((format) => {
                               switch (format) {
@@ -722,7 +715,7 @@ class EntryEditor extends PureComponent {
                                     this.setState({
                                       showImage: true,
                                       editFormat: 'image',
-                                      mediaAnchorEl: null,
+                                      anchorEl: null,
                                     })
                                   }}
                                   >{format}</MenuItem>)
@@ -733,17 +726,17 @@ class EntryEditor extends PureComponent {
                                       showIcon: true,
                                       iconCategory: category[0],
                                       editFormat: 'icon',
-                                      mediaAnchorEl: null,
+                                      anchorEl: null,
                                     })}
                                   >{format}</MenuItem>);
                                 case 'colour':
                                   return (
                                     <MenuItem
                                       onClick={(event) => this.setState({
-                                        colAnchorEl: event.currentTarget,
+                                        anchorEl: event.currentTarget,
                                         showColour: true,
                                         editFormat: 'colour',
-                                        mediaAnchorEl: null,
+                                        anchorEl: null,
                                       })
                                       }
                                     > { format}</MenuItem>);
@@ -830,7 +823,7 @@ class EntryEditor extends PureComponent {
                                 return (
                                   <div>
                                     <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState({
-                                      mediaAnchorEl: event.currentTarget,
+                                      anchorEl: event.currentTarget,
                                       editField: key,
                                       editSection: true
                                     })}>
@@ -843,10 +836,10 @@ class EntryEditor extends PureComponent {
                                     </Button>
                                     <Menu
                                       id="media-menu"
-                                      anchorEl={this.state.mediaAnchorEl}
+                                      anchorEl={this.state.anchorEl}
                                       keepMounted
-                                      open={Boolean(this.state.mediaAnchorEl) && this.state.editSection && this.state.editField === key}
-                                      onClose={() => this.setState({ mediaAnchorEl: null })}
+                                      open={Boolean(this.state.anchorEl) && this.state.editSection && this.state.editField === key}
+                                      onClose={() => this.setState({ anchorEl: null })}
                                     >
                                       {this.state.info.sections.entryFormat.images[key].format.map((format) => {
                                         // TODO: debug change format errors
@@ -869,7 +862,7 @@ class EntryEditor extends PureComponent {
                                             >{format}</MenuItem>);
                                           case 'colour':
                                             return (<MenuItem onClick={(event) => this.setState({
-                                              colAnchorEl: event.currentTarget,
+                                              anchorEl: event.currentTarget,
                                               showColour: true,
                                               editFormat: 'colour'
                                             })
