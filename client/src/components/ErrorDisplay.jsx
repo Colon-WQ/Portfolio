@@ -31,9 +31,11 @@ const ErrorDisplay = (props) => {
         : state.error.errors[state.error.errors.length - 1]);
 
     const handleClose = () => {
-        requestError === undefined
-            ? store.dispatch(remove_error(false))
-            : store.dispatch(remove_error(true))
+        if (requestError === undefined) {
+            store.dispatch(remove_error(false));
+        } else {
+            store.dispatch(remove_error(true));
+        }
     }
 
     const { classes } = props;
@@ -49,7 +51,7 @@ const ErrorDisplay = (props) => {
                     horizontal: 'left',
                 }}
                 open={true}
-                autoHideDuration={6000}
+                autoHideDuration={3000}
                 onClose={handleClose}
             >
                 <SnackbarContent

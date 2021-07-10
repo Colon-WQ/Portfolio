@@ -297,11 +297,13 @@ class Publish extends Component {
       //no need to wait for push to go through
       this.handlePushToGithub();
     }).catch(err => {
-      handleErrors(err, this.props.history);
-
-      this.setState({
-        overrideDialogState: true
-      })
+      if (err.response.status === 404 && err.response.data === `${this.state.repositoryName} exists. Possible data loss. Requires user permission`) {
+        this.setState({
+          overrideDialogState: true
+        })
+      } else {
+        handleErrors(err, this.props.history);
+      }
     })
 
     //Intentional: closes finalizeDialog but doesn't remove repository name.

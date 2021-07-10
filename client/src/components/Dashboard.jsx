@@ -516,7 +516,10 @@ class Dashboard extends Component {
     
     //Handles errors from portfolio fetching.
     if (error) {
-      handleErrors(error, this.props.history);
+      //user id not found is already handled by Dashboard, thus making exception here
+      if (error.response.status !== 404 && error.response.data !== "User id not found") {
+        handleErrors(error, this.props.history);
+      }
     }
 
     return (
