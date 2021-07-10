@@ -22,6 +22,7 @@ import Slide from '@material-ui/core/Slide';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FaUpload, FaTimes, FaRegCopy, FaDownload } from 'react-icons/fa';
 import { handleErrors } from '../handlers/errorHandler';
+import Typography from '@material-ui/core/Typography';
 
 
 
@@ -59,6 +60,9 @@ const styles = (theme) => ({
     backgroundColor: '#303030',
     color: 'white'
   },
+  buttonText: {
+    marginLeft: '0.25rem'
+  }
 })
 
 /**
@@ -427,7 +431,11 @@ class Publish extends Component {
           aria-controls='simple-menu'
           aria-haspopup='true'
           className={classes.actionFAB}
-          onClick={loggedIn ? this.handleFinalizeDialogOpen : this.handleGuestDownload}
+          onClick={this.state.publishLoading 
+            ? console.log("still loading") 
+            : loggedIn 
+              ? this.handleFinalizeDialogOpen 
+              : this.handleGuestDownload}
         >
           {this.state.publishLoading
             ?
@@ -439,7 +447,7 @@ class Publish extends Component {
               :
               <FaDownload />
           }
-          Publish
+          <Typography variant="body2" component="body2" className={classes.buttonText}>Publish</Typography>
         </Fab>
 
         <Snackbar

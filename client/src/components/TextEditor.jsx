@@ -3,24 +3,78 @@ import { Editor } from 'react-draft-wysiwyg';
 import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { withStyles } from '@material-ui/styles';
 import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
-  textBlock: {
+  editor: {
+    height: "auto",
+    width: "100%",
+  },
+  editorDiv: {
+    height: '92.5%',
+    width: '100%'
+  },
+  textArea: {
     borderStyle: "solid",
     borderColor: "whitesmoke",
-    borderWidth: "thin"
+    borderWidth: "thin",
+    backgroundColor: "white",
+    height: 'auto',
+    width: 'auto',
+    maxHeight: '60vh',
+    overflowY: 'auto',
+    overflowX: 'hidden'
   },
+  toolBar: {
+    height: 'auto',
+    width: "auto"
+  },
+  modalDiv: {
+    height: '100%',
+    width: '100%'
+  },
+  modal: {
+    position: 'fixed',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'start',
+    padding: '1%',
+  },
+  subModal: {
+    width: '80%',
+    height: '80%',
+    margin: 'auto',
+    backgroundColor: theme.palette.primary.main
+  },
+  modalButton: {
+    marginTop: '1%',
+    marginBottom: '1%'
+  },
+  finalizeButton: {
+    height: '5%',
+    width: '10%',
+    marginLeft: "90%",
+    marginRight: "0%",
+    marginTop: '1.5%',
+    backgroundColor: 'white',
+    '&:hover': {
+      backgroundColor: 'green',
+      color: 'white'
+    }
+  }
 })
 
 class TextEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      hideToolbar: true,
-      editorState: EditorState.createEmpty()
+      editorState: EditorState.createEmpty(),
+      modalState: false
     }
-    this.setHideToolbar = this.setHideToolbar.bind(this);
+    // this.setHideToolbar = this.setHideToolbar.bind(this);
     this.setEditorState = this.setEditorState.bind(this);
+    this.toggleModalState = this.toggleModalState.bind(this);
   }
 
   componentDidMount() {
@@ -29,37 +83,66 @@ class TextEditor extends Component {
     })
   }
 
-  setHideToolbar(bool) {
-    this.setState({
-      hideToolbar: bool
-    });
-  }
-
   setEditorState(editorState) {
     this.setState({
       editorState: editorState
     });
   }
 
+  toggleModalState(bool) {
+    this.setState({
+      modalState: bool
+    })
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, label } = this.props;
 
     return (
-      <Editor
-        editorClassName={classes.textBlock}
-        toolbarHidden={this.state.hideToolbar}
-        editorState={this.state.editorState}
-        onFocus={() => {
-          this.setHideToolbar(false);
-        }}
-        onBlur={() => {
-          this.setHideToolbar(true);
-          this.props.onClose(convertToRaw(this.state.editorState.getCurrentContent()));
-        }}
-        onEditorStateChange={newEditorState => {
-          this.setEditorState(newEditorState);
-        }}
-      />
+      <div>
+        <Button 
+          className={classes.modalButton}
+          onClick={() => this.toggleModalState(true)}
+          variant="outlined"
+        >
+          {`Edit ${label}`}
+        </Button>
+        <Modal
+          className={`${classes.modal} ${classes.subModal}`}
+          open={this.state.modalState}
+          onClose={() => {
+            this.props.onClose(convertToRaw(this.state.editorState.getCurrentContent()));
+            this.toggleModalState(false);
+          }}
+          aria-labelledby="complex-text-editor"
+          aria-describedby="complex-text-editor"
+        >
+          <div className={classes.modalDiv}>
+            <div className={classes.editorDiv}>
+              <Editor
+                wrapperClassName={classes.editor}
+                editorClassName={classes.textArea}
+                toolbarClassName={classes.toolBar}
+                editorState={this.state.editorState}
+                onEditorStateChange={newEditorState => {
+                  this.setEditorState(newEditorState);
+                }}
+              />
+            </div>
+            <Button
+              className={classes.finalizeButton}
+              onClick={() => {
+                this.props.onClose(convertToRaw(this.state.editorState.getCurrentContent()));
+                this.toggleModalState(false);
+              }}
+              variant='outlined'
+            >
+              Finalize
+            </Button>
+          </div>
+        </Modal>
+      
+      </div>
     )
   }
 

@@ -159,11 +159,14 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'column'
   },
-  complexTextDiv: {
+  textDiv: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'start'
+  },
+  textLabel: {
+    textDecoration: 'underline'
   },
   colBtn: {
     padding: '1px',
@@ -753,23 +756,27 @@ class EntryEditor extends PureComponent {
                     {Object.entries(this.state.texts).map(([key, item]) => {
                       if (this.state.info.texts[key].type === "complexText") {
                         return (
-                          <div className={classes.complexTextDiv}>
-                            <Typography variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
+                          <div className={classes.textDiv}>
+                            <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
                             <TextEditor
                               item={item}
+                              label={this.state.info.texts[key].label}
                               onClose={(value) => this.handleChange(value, key, "texts")}
                             />
                           </div>
                         );
                       } else {
                         return (
-                          <SimpleTextEditor
-                            label={this.state.info.texts[key].label}
-                            item={item}
-                            onClose={(value) => this.handleChange(value, key, "texts")}
-                            category={"texts"}
-                            section={false}
-                          />
+                          <div className={classes.textDiv}>
+                            <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
+                            <SimpleTextEditor
+                              label={this.state.info.texts[key].label}
+                              item={item}
+                              onClose={(value) => this.handleChange(value, key, "texts")}
+                              category={"texts"}
+                              section={false}
+                            />
+                          </div>
                           // <TextField
                           //   name={key}
                           //   id={key}
@@ -881,22 +888,26 @@ class EntryEditor extends PureComponent {
                                 // TODO: make maxRow field in info?
                                 if (this.state.info.sections.entryFormat.texts[key].type === "complexText") {
                                   return (
-                                    <div className={classes.complexTextDiv}>
-                                      <Typography variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
+                                    <div className={classes.textDiv}>
+                                      <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
                                       <TextEditor
                                         item={item}
+                                        label={this.state.info.sections.entryFormat.texts[key].label}
                                         onClose={(value, name) => this.handleChange(value, key, "texts", true)} />
                                     </div>
                                   );
                                 } else {
                                   return (
-                                    <SimpleTextEditor
-                                      label={this.state.info.sections.entryFormat.texts[key].label}
-                                      item={item}
-                                      onClose={(value) => this.handleChange(value, key, "texts", true)}
-                                      category={"texts"}
-                                      section={true}
-                                    />
+                                    <div className={classes.textDiv}>
+                                      <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
+                                      <SimpleTextEditor
+                                        label={this.state.info.sections.entryFormat.texts[key].label}
+                                        item={item}
+                                        onClose={(value) => this.handleChange(value, key, "texts", true)}
+                                        category={"texts"}
+                                        section={true}
+                                      />
+                                    </div>
                                     // <TextField
                                     //   name={key}
                                     //   id={key}

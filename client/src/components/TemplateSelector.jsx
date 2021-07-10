@@ -68,6 +68,9 @@ const styles = (theme) => ({
     gridGap: '55px',
     justifyContent: 'center',
     overflowY: 'auto'
+  },
+  buttonText: {
+    marginLeft: '0.25rem'
   }
 })
 
@@ -136,7 +139,7 @@ class TemplateSelector extends Component {
           variant="extended"
           onClick={() => this.setState({ showSelector: true })}>
           <FaPlus />
-          new entry
+          <Typography variant="body2" component="body2" className={classes.buttonText}>New Entry</Typography>
         </Fab>
         <Modal className={classes.modal}
           // open always set to true, open/close logic handled by portfolio

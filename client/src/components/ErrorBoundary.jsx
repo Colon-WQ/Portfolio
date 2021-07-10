@@ -28,8 +28,8 @@ class ErrorBoundary extends Component {
     }
 }
 
-const mapDispatchToProps = (
+const mapDispatchToProps = {
     add_error
-)
+}
 
 export default connect(null, mapDispatchToProps)(ErrorBoundary);
