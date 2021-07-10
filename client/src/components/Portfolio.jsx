@@ -75,6 +75,9 @@ const styles = (theme) => ({
   },
   hide: {
     display: 'none'
+  },
+  buttonText: {
+    marginLeft: '0.25rem'
   }
 })
 
@@ -742,7 +745,7 @@ class Portfolio extends Component {
             className={classes.controlFAB}
             onClick={() => loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()}>
             <FaSave />
-            save
+            <Typography variant="body2" component="body2" className={classes.buttonText}>Save</Typography>
           </Fab>
           <TemplateSelector
             onClose={this.handleSelector}
