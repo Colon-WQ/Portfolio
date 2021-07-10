@@ -97,7 +97,6 @@ class TextEditor extends Component {
 
   render() {
     const { classes, label } = this.props;
-    throw new Error("big test")
     return (
       <div>
         <Button 
