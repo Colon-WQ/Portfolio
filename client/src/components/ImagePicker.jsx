@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, TextField, Typography } from '@material-ui/core';
+import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, TextField, Tooltip, Typography } from '@material-ui/core';
 import axios from 'axios';
 import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
 import { handleErrors } from '../handlers/errorHandler';
 import { imageCache } from './ImageCache';
+import pexelsLogo from '../res/assets/pexels logo.png';
 
 /**
  * @file ImagePicker component to provide a user interface for users to browse royalty free images
@@ -256,8 +257,11 @@ class ImagePicker extends Component {
                 const id = photo.id;
                 return (
                   <div>
+
                     <Button onClick={() => this.setState({ image: photo.src.original, attribution: photo.photographer })}>
-                      <img src={thumbnail} alt={photographer} />
+                      <Tooltip arrow title={photographer} placement="top">
+                        <img src={thumbnail} alt={photographer} />
+                      </Tooltip>
                     </Button>
                   </div>
                 );
@@ -266,9 +270,11 @@ class ImagePicker extends Component {
             }
           </div>
           <div className={classes.controlsDiv}>
-            <Typography className={classes.subtitle}>
-              Images provided by Pexels
-            </Typography>
+            <Button onClick={() => window.open('https://www.pexels.com/')} className={classes.subtitle}>
+              <Typography>
+                Images provided by Pexels
+              </Typography>
+            </Button>
             <Fab
               variant="extended"
               onClick={() => this.fileUploadRef.current.click()}

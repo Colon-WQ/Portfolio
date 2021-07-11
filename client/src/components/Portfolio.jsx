@@ -4,7 +4,7 @@ import { repopulate_state } from '../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
 import { Fab, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
-import { FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import { ServerStyleSheets } from '@material-ui/core/styles'
@@ -24,6 +24,7 @@ import ErrorBoundary from './ErrorBoundary';
 
 import { create } from 'jss';
 import { jssPreset } from '@material-ui/styles';
+import { GiConsoleController } from 'react-icons/gi';
 const jss = create().setup({ ...jssPreset(), Renderer: null });
 
 /**
@@ -49,10 +50,20 @@ const styles = (theme) => ({
   entryDiv: {
     position: 'relative'
   },
-  settingsFab: {
+  absPos: {
     position: 'absolute',
+  },
+  shiftFab: {
     marginTop: '10px',
-    marginLeft: '10px'
+  },
+  shiftDiv: {
+    right: '10px',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  leftFab: {
+    marginTop: '10px',
+    left: '10px'
   },
   fixedDiv: {
     position: 'fixed',
@@ -71,7 +82,8 @@ const styles = (theme) => ({
   },
   entryEditorDiv: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    justifyContent: 'center',
   },
   hide: {
     display: 'none'
@@ -124,6 +136,7 @@ class Portfolio extends Component {
     this.handleSavePortfolio = this.handleSavePortfolio.bind(this);
     this.handleUploadPreview = this.handleUploadPreview.bind(this);
     this.handleSaveLocalPortfolio = this.handleSaveLocalPortfolio.bind(this);
+    this.handleShiftEntry = this.handleShiftEntry.bind(this);
   }
 
   /**
@@ -530,11 +543,27 @@ class Portfolio extends Component {
       );
     this.setState({
       pages: newPages,
-      currentPage: currentPage
+      currentPage: currentPage,
+      //triggers Autosave
+      isUnsaved: true
     });
+  }
 
-    //triggers Autosave
+  handleShiftEntry(modifier, index) {
+    const newPages = { ...this.state.pages };
+    let ptr = newPages;
+    const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
+
+    console.log(modifier);
+    console.log(index);
+    if (modifier + index < 0 || modifier + index >= currentPage.entries.length) return false;
+
+    const temp = this.state.currentPage.entries[index];
+    this.state.currentPage.entries[index] = this.state.currentPage.entries[index + modifier];
+    this.state.currentPage.entries[index + modifier] = temp;
     this.setState({
+      pages: newPages,
+      currentPage: currentPage,
       isUnsaved: true
     });
   }
@@ -649,117 +678,129 @@ class Portfolio extends Component {
     const { loggedIn, classes } = this.props;
     return (
       <ErrorBoundary>
-      <div className={classes.root}>
-        <Prompt
-          when={this.state.isUnsaved}
-          message={JSON.stringify({
-            message: "Are you sure you want to leave?",
-            portfolio: {
-              _id: this.state.portfolio_id,
-              name: this.state.name,
-              pages: this.state.pages
-            },
-            user: {
-              id: this.props.id,
-              name: this.props.name,
-              avatar: this.props.avatar_url,
-              gravatar_id: this.props.gravatar_id
-            },
-            loggedIn: loggedIn
-          })}
-        />
-        <EntryEditor
-          // fields={entry}
-          // info={templates[entry.type][entry.style].info}
-          onClose={(data, changed) => {
-            this.handleEditorClose(data, changed);
-          }}
-          // key={
-          //   `${this.state.currentPath === []
-          //     ? 'root'
-          //     : this.state.currentPath[this.state.currentPath.length - 1]
-          //   }-${index}-${entry.type}-${entry.style}`
-          // }
-          ref={this.entryEditorRef}
-        />
+        <div className={classes.root}>
+          <Prompt
+            when={this.state.isUnsaved}
+            message={JSON.stringify({
+              message: "Are you sure you want to leave?",
+              portfolio: {
+                _id: this.state.portfolio_id,
+                name: this.state.name,
+                pages: this.state.pages
+              },
+              user: {
+                id: this.props.id,
+                name: this.props.name,
+                avatar: this.props.avatar_url,
+                gravatar_id: this.props.gravatar_id
+              },
+              loggedIn: loggedIn
+            })}
+          />
+          <EntryEditor
+            onClose={(data, changed) => {
+              this.handleEditorClose(data, changed);
+            }}
+            // key={
+            //   `${this.state.currentPath === []
+            //     ? 'root'
+            //     : this.state.currentPath[this.state.currentPath.length - 1]
+            //   }-${index}-${entry.type}-${entry.style}`
+            // }
+            ref={this.entryEditorRef}
+          />
 
-        <div id="preview">
-          {this.state.currentPage.entries.map((entry, index) => {
-            // Key MUST be unique -> component will be reinitialized if key is different.
-            return (
-              <div
-                className={classes.entryEditorDiv}
-                onMouseEnter={(event) => this.setState({ showSettings: true, currentEntry: index })}
-                onMouseLeave={(event) => this.setState({ showSettings: false })}
-              >
-                <Fab
-                  className={this.state.showSettings && index === this.state.currentEntry ? classes.settingsFab : classes.hide}
-                  variant="extended"
-                  onClick={(event) => this.setState({
-                    currentEntryAnchor: event.currentTarget,
-                    currentEntry: index,
-                    showEntryMenu: true
-                  })}
+          <div id="preview">
+            {this.state.currentPage.entries.map((entry, index) => {
+              // Key MUST be unique -> component will be reinitialized if key is different.
+              return (
+                <div
+                  className={classes.entryEditorDiv}
+                  onMouseEnter={(event) => this.setState({ showSettings: true, currentEntry: index })}
+                  onMouseLeave={(event) => this.setState({ showSettings: false })}
                 >
-                  <FaCog />
-                  Settings
-                </Fab>
-                <Menu
-                  data-html2canvas-ignore="true"
-                  open={this.state.showEntryMenu && index === this.state.currentEntry}
-                  onClose={(event) => this.setState({ showEntryMenu: false, currentEntryAnchor: null })}
-                  anchorEl={this.state.currentEntryAnchor}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      this.handleDeleteEntry(index);
-                      this.setState({ showEntryMenu: false, currentEntryAnchor: null });
-                    }}
+                  <div className={!this.state.showSettings || index !== this.state.currentEntry ? classes.hide : `${classes.absPos} ${classes.shiftDiv}`}>
+                    <Fab
+                      className={classes.shiftFab}
+                      onClick={(event) => this.handleShiftEntry(-1, index)}
+                    >
+                      <FaChevronUp />
+                    </Fab>
+                    <Fab
+                      className={classes.shiftFab}
+                      onClick={(event) => this.handleShiftEntry(1, index)}
+                    >
+                      <FaChevronDown />
+                    </Fab>
+                  </div>
+                  <Fab
+                    className={this.state.showSettings && index === this.state.currentEntry ? `${classes.absPos} ${classes.leftFab}` : classes.hide}
+                    variant="extended"
+                    onClick={(event) => this.setState({
+                      currentEntryAnchor: event.currentTarget,
+                      currentEntry: index,
+                      showEntryMenu: true
+                    })}
                   >
-                    <ListItemIcon>
-                      <FaTrash />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete entry</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      this.entryEditorRef.current.openWith(entry, templates[entry.type][entry.style].info)
-                    }}
+                    <FaCog />
+                    Settings
+                  </Fab>
+                  <Menu
+                    data-html2canvas-ignore="true"
+                    open={this.state.showEntryMenu && index === this.state.currentEntry}
+                    onClose={(event) => this.setState({ showEntryMenu: false, currentEntryAnchor: null })}
+                    anchorEl={this.state.currentEntryAnchor}
                   >
-                    <ListItemIcon>
-                      <FaEdit />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Edit entry</Typography>
-                  </MenuItem>
-                </Menu>
-                {this.renderEntry(entry)}
-              </div>);
-          })}
-        </div>
-        <div className={`${classes.fixedDiv} mui-fixed`}>
-          <Fab
-            variant="extended"
-            className={classes.controlFAB}
-            onClick={() => loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()}>
-            <FaSave />
+                    <MenuItem
+                      onClick={() => {
+                        this.handleDeleteEntry(index);
+                        this.setState({ showEntryMenu: false, currentEntryAnchor: null });
+                      }}
+                    >
+                      <ListItemIcon>
+                        <FaTrash />
+                      </ListItemIcon>
+                      <Typography variant="inherit">Delete entry</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        this.entryEditorRef.current.openWith(entry, templates[entry.type][entry.style].info)
+                      }}
+                    >
+                      <ListItemIcon>
+                        <FaEdit />
+                      </ListItemIcon>
+                      <Typography variant="inherit">Edit entry</Typography>
+                    </MenuItem>
+                  </Menu>
+                  {this.renderEntry(entry)}
+                </div>);
+            })}
+          </div>
+          <div className={`${classes.fixedDiv} mui-fixed`}>
+            <Fab
+              variant="extended"
+              className={classes.controlFAB}
+              onClick={() => loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()}>
+              <FaSave />
             save
           </Fab>
-          <TemplateSelector
-            onClose={this.handleSelector}
-          />
-          <DirectoryManager
-            onClose={this.handleDirectory}
-            getState={() => {
-              return {
-                dirTree: this.state.pages
-              }
-            }}
-            dirTree={this.state.pages}
-            onUpdate={this.handleUpdatePages}
-          />
-          <Publish createPushables={this.handleProduction} portfolioName={this.state.name} />
+            <TemplateSelector
+              onClose={this.handleSelector}
+            />
+            <DirectoryManager
+              onClose={this.handleDirectory}
+              getState={() => {
+                return {
+                  dirTree: this.state.pages
+                }
+              }}
+              dirTree={this.state.pages}
+              onUpdate={this.handleUpdatePages}
+            />
+            <Publish createPushables={this.handleProduction} portfolioName={this.state.name} />
+          </div>
         </div>
-      </div>
       </ErrorBoundary>);
   }
 }
