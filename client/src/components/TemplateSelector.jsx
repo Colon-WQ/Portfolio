@@ -71,6 +71,9 @@ const styles = (theme) => ({
   },
   buttonText: {
     marginLeft: '0.25rem'
+  },
+  fabMain: {
+    marginLeft: '0.5rem'
   }
 })
 
@@ -136,6 +139,8 @@ class TemplateSelector extends Component {
     return (
       <div>
         <Fab
+          id='add-template-button'
+          className={classes.fabMain}
           variant="extended"
           onClick={() => this.setState({ showSelector: true })}>
           <FaPlus />
