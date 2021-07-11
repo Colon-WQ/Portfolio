@@ -75,6 +75,12 @@ const styles = (theme) => ({
   closeBtn: {
     marginLeft: 'auto',
     marginBottom: 'auto'
+  },
+  buttonText: {
+    marginLeft: '0.25rem'
+  },
+  fabMain: {
+    marginLeft: '0.5rem'
   }
 })
 
@@ -290,6 +296,8 @@ class DirectoryManager extends Component {
     return (
       <div>
         <Fab
+          id='manage-directories-button'
+          className={classes.fabMain}
           variant="extended"
           onClick={() => this.setState({
             showDirectory: true,
@@ -298,7 +306,7 @@ class DirectoryManager extends Component {
             ...this.props.getState()
           })}>
           <FaLink />
-          directories
+          <Typography variant="body2" component="body2" className={classes.buttonText}>Directories</Typography>
         </Fab>
         <Modal className={classes.modal}
           open={this.state.showDirectory}
@@ -336,33 +344,33 @@ class DirectoryManager extends Component {
                 onClick={(event) => this.setState({ showInput: true, inputMode: CREATE })}
                 className={!this.state.showInput || this.state.inputMode !== CREATE ? classes.controlFAB : classes.hide}>
                 <FaPlus />
-              New page
-            </Fab>
+                <Typography variant="body2" component="body2" className={classes.buttonText}>New Page</Typography>
+              </Fab>
               <Fab
                 variant="extended"
                 onClick={(event) => this.handleCreatePage(this.state.dirName)}
                 className={this.state.showInput && this.state.inputMode === CREATE ? classes.controlFAB : classes.hide}>
-                Create
-            </Fab>
+                <Typography variant="body2" component="body2" className={classes.buttonText}>Create</Typography>
+              </Fab>
               <Fab
                 variant="extended"
                 onClick={(event) => this.setState({ showInput: true, inputMode: RENAME })}
                 className={!this.state.showInput || this.state.inputMode !== RENAME ? classes.controlFAB : classes.hide}>
                 <FaPlus />
-              Rename page
-            </Fab>
+                <Typography variant="body2" component="body2" className={classes.buttonText}>Rename Page</Typography>
+              </Fab>
 
               <Fab
                 variant="extended"
                 onClick={(event) => this.handleRenameDirectory(this.state.dirName)}
                 className={this.state.showInput && this.state.inputMode === RENAME ? classes.controlFAB : classes.hide}>
-                Rename
-            </Fab>
+                <Typography variant="body2" component="body2" className={classes.buttonText}>Rename Page</Typography>
+              </Fab>
               <Fab
                 variant="extended"
                 onClick={this.handleDeletePage}>
-                Delete page
-            </Fab>
+                <Typography variant="body2" component="body2" className={classes.buttonText}>Delete Page</Typography>
+              </Fab>
             </div>
           </div>
         </Modal>

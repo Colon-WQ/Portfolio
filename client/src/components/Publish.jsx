@@ -22,6 +22,7 @@ import Slide from '@material-ui/core/Slide';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FaUpload, FaTimes, FaRegCopy, FaDownload } from 'react-icons/fa';
 import { handleErrors } from '../handlers/errorHandler';
+import Typography from '@material-ui/core/Typography';
 
 
 
@@ -46,9 +47,6 @@ const styles = (theme) => ({
     justifyContent: 'start',
     alignItems: 'center'
   },
-  actionFAB: {
-    textAlign: 'center'
-  },
   textPrimaryColor: {
     color: theme.palette.text.primary,
     '&.Mui-focused': {
@@ -59,6 +57,13 @@ const styles = (theme) => ({
     backgroundColor: '#303030',
     color: 'white'
   },
+  buttonText: {
+    marginLeft: '0.25rem'
+  },
+  fabMain: {
+    textAlign: 'center',
+    marginLeft: '0.5rem'
+  }
 })
 
 /**
@@ -293,11 +298,13 @@ class Publish extends Component {
       //no need to wait for push to go through
       this.handlePushToGithub();
     }).catch(err => {
-      handleErrors(err, this.props.history);
-
-      this.setState({
-        overrideDialogState: true
-      })
+      if (err.response.status === 404 && err.response.data === `${this.state.repositoryName} exists. Possible data loss. Requires user permission`) {
+        this.setState({
+          overrideDialogState: true
+        })
+      } else {
+        handleErrors(err, this.props.history);
+      }
     })
 
     //Intentional: closes finalizeDialog but doesn't remove repository name.
@@ -421,13 +428,18 @@ class Publish extends Component {
     return (
       <div className={classes.root}>
         <Fab
+          id='publish-portfolio-button'
+          className={classes.fabMain}
           variant="extended"
           size='large'
           aria-label='publish panel'
           aria-controls='simple-menu'
           aria-haspopup='true'
-          className={classes.actionFAB}
-          onClick={loggedIn ? this.handleFinalizeDialogOpen : this.handleGuestDownload}
+          onClick={this.state.publishLoading 
+            ? console.log("still loading") 
+            : loggedIn 
+              ? this.handleFinalizeDialogOpen 
+              : this.handleGuestDownload}
         >
           {this.state.publishLoading
             ?
@@ -439,7 +451,7 @@ class Publish extends Component {
               :
               <FaDownload />
           }
-          Publish
+          <Typography variant="body2" component="body2" className={classes.buttonText}>Publish</Typography>
         </Fab>
 
         <Snackbar
