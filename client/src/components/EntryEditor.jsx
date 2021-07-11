@@ -174,6 +174,14 @@ const styles = (theme) => ({
   }
 })
 
+const UI = {
+  NONE: 'none',
+  ICON: 'icon',
+  FONT: 'font',
+  COLOUR: 'colour',
+  IMAGE: 'image'
+}
+
 /**
  * The dashboard logged in users will use to navigate the page.
  * 
@@ -223,30 +231,20 @@ class EntryEditor extends PureComponent {
       sections: {},
 
       data: null,
-
       info: null,
       showEditor: false,
 
-      showDimension: false,
+      showUI: UI.NONE,
 
       anchorEl: null,
 
-      showIcon: false,
       iconCategory: 'ai',
 
       editCategory: 'colours',
       editField: '',
       editFormat: '',
-      showColour: false,
-
-      showFont: false,
-
       editSection: false,
       currentSection: 0,
-
-      editField: '',
-
-      showImage: false,
     }
     this.handleCreateEntry = this.handleCreateEntry.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -430,7 +428,7 @@ class EntryEditor extends PureComponent {
     if (!field) {
       this.setState({
         anchorEl: event.currentTarget,
-        showFont: true
+        showUI: UI.FONT
       })
     } else {
       this.setState({
@@ -439,7 +437,7 @@ class EntryEditor extends PureComponent {
           [field]: font
         },
         anchorEl: null,
-        showFont: false,
+        showUI: UI.NONE,
       })
     }
   }
@@ -459,7 +457,7 @@ class EntryEditor extends PureComponent {
             format: 'icon'
           }
         },
-        showIcon: false,
+        showUI: UI.NONE,
         anchorEl: null
       })
     } else {
@@ -469,7 +467,7 @@ class EntryEditor extends PureComponent {
       newSections[this.state.currentSection].images[this.state.editField].format = 'icon';
       this.setState({
         sections: newSections,
-        showIcon: false,
+        showUI: UI.NONE,
         anchorEl: null
       });
     }
@@ -528,9 +526,9 @@ class EntryEditor extends PureComponent {
           aria-describedby="Edit your entry fields here"
         >
           <div className={classes.root}>
-            <ImagePicker open={this.state.showImage} onClose={(save, data) => {
+            <ImagePicker open={this.state.showUI === UI.IMAGE} onClose={(save, data) => {
               if (!save) {
-                this.setState({ showImage: false });
+                this.setState({ showUI: UI.NONE });
                 return null;
               }
 
@@ -541,7 +539,7 @@ class EntryEditor extends PureComponent {
                 newSections[this.state.currentSection].images[this.state.editField].format = 'image';
                 this.setState({
                   sections: newSections,
-                  showImage: false,
+                  showUI: UI.NONE,
                   anchorEl: null
                 });
               } else {
@@ -553,28 +551,28 @@ class EntryEditor extends PureComponent {
                       format: 'image'
                     }
                   },
-                  showImage: false,
+                  showUI: UI.NONE,
                   anchorEl: null
                 })
               }
             }} />
             <Typography component="h3" variant="h3">Entry editor</Typography>
             <ColourPicker
-              open={this.state.showColour}
+              open={this.state.showUI === UI.COLOUR}
               anchorEl={this.state.anchorEl}
               onClose={(save, colour) => {
                 if (save) {
                   this.handleChange(colour, this.state.editField, this.state.editCategory, this.state.currentSection)
                 }
-                this.setState({ showColour: false, anchorEl: null })
+                this.setState({ showUI: UI.NONE, anchorEl: null })
               }}
             />
             <Modal
-              open={this.state.showIcon}
+              open={this.state.showUI === UI.ICON}
               aria-labelledby="icon selection modal"
               aria-describedby="a modal for users to pick an icon"
               className={`${classes.modal} ${classes.subModal}`}
-              onClose={() => this.setState({ showIcon: false, anchorEl: null })}
+              onClose={() => this.setState({ showUI: UI.NONE, anchorEl: null })}
             >
               <div className={classes.maxHeightWidth}>
                 <Tabs
@@ -604,7 +602,6 @@ class EntryEditor extends PureComponent {
                 </div>
               </div>
             </Modal>
-
             <div className={classes.rowDiv}>
               <div className={classes.styleDiv}>
                 <div>
@@ -616,7 +613,7 @@ class EntryEditor extends PureComponent {
                   <DimensionSlider
                     label={'height'}
                     defaultValue={this.state.height}
-                    onClose={(save, value) => this.handleChange(value, 'width')}
+                    onClose={(save, value) => this.handleChange(value, 'height')}
                   />
                 </div>
                 {Object.entries(this.state.fonts).map(([key, item]) => {
@@ -632,7 +629,7 @@ class EntryEditor extends PureComponent {
                         id={key}
                         anchorEl={this.state.anchorEl}
                         keepMounted
-                        open={this.state.showFont}
+                        open={this.state.showUI === UI.FONT}
                         onClose={() => this.setState({ anchorEl: null })}
                       >
                         {fonts.map((fontName) => (
@@ -654,7 +651,7 @@ class EntryEditor extends PureComponent {
                         variant="outlined"
                         onClick={(event) => this.setState({
                           anchorEl: event.currentTarget,
-                          showColour: true,
+                          showUI: UI.COLOUR,
                           editCategory: 'colours',
                           editField: key,
                           editSection: false
@@ -716,7 +713,7 @@ class EntryEditor extends PureComponent {
                                 case 'image':
                                   return (<MenuItem onClick={() => {
                                     this.setState({
-                                      showImage: true,
+                                      showUI: UI.IMAGE,
                                       editFormat: 'image',
                                       anchorEl: null,
                                     })
@@ -726,7 +723,7 @@ class EntryEditor extends PureComponent {
                                   const category = item.src.split('/');
                                   return (<MenuItem onClick={() => this.setState(
                                     {
-                                      showIcon: true,
+                                      showUI: UI.ICON,
                                       iconCategory: category[0],
                                       editFormat: 'icon',
                                       anchorEl: null,
@@ -737,7 +734,7 @@ class EntryEditor extends PureComponent {
                                     <MenuItem
                                       onClick={(event) => this.setState({
                                         anchorEl: event.currentTarget,
-                                        showColour: true,
+                                        showUI: UI.COLOUR,
                                         editFormat: 'colour',
                                         anchorEl: null,
                                       })
@@ -854,7 +851,7 @@ class EntryEditor extends PureComponent {
                                           case 'image':
                                             return (<MenuItem onClick={() => this.setState(
                                               {
-                                                showImage: true,
+                                                showUI: UI.IMAGE,
                                                 editFormat: 'image'
                                               })}
                                             >{format}</MenuItem>)
@@ -862,7 +859,7 @@ class EntryEditor extends PureComponent {
                                             const category = item.src.split('/');
                                             return (<MenuItem onClick={() => this.setState(
                                               {
-                                                showIcon: true,
+                                                showUI: UI.ICON,
                                                 iconCategory: category[0],
                                                 editFormat: 'icon'
                                               })}
@@ -870,7 +867,7 @@ class EntryEditor extends PureComponent {
                                           case 'colour':
                                             return (<MenuItem onClick={(event) => this.setState({
                                               anchorEl: event.currentTarget,
-                                              showColour: true,
+                                              showUI: UI.COLOUR,
                                               editFormat: 'colour'
                                             })
                                             }>{format}</MenuItem>);
