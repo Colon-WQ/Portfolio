@@ -47,9 +47,6 @@ const styles = (theme) => ({
     justifyContent: 'start',
     alignItems: 'center'
   },
-  actionFAB: {
-    textAlign: 'center'
-  },
   textPrimaryColor: {
     color: theme.palette.text.primary,
     '&.Mui-focused': {
@@ -62,6 +59,10 @@ const styles = (theme) => ({
   },
   buttonText: {
     marginLeft: '0.25rem'
+  },
+  fabMain: {
+    textAlign: 'center',
+    marginLeft: '0.5rem'
   }
 })
 
@@ -427,12 +428,13 @@ class Publish extends Component {
     return (
       <div className={classes.root}>
         <Fab
+          id='publish-portfolio-button'
+          className={classes.fabMain}
           variant="extended"
           size='large'
           aria-label='publish panel'
           aria-controls='simple-menu'
           aria-haspopup='true'
-          className={classes.actionFAB}
           onClick={this.state.publishLoading 
             ? console.log("still loading") 
             : loggedIn 

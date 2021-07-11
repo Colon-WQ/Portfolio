@@ -78,6 +78,9 @@ const styles = (theme) => ({
   },
   buttonText: {
     marginLeft: '0.25rem'
+  },
+  fabMain: {
+    marginLeft: '0.5rem'
   }
 })
 
@@ -293,6 +296,8 @@ class DirectoryManager extends Component {
     return (
       <div>
         <Fab
+          id='manage-directories-button'
+          className={classes.fabMain}
           variant="extended"
           onClick={() => this.setState({
             showDirectory: true,

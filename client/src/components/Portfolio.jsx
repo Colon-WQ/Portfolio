@@ -20,6 +20,7 @@ import html2canvas from 'html2canvas';
 import FormData from 'form-data';
 import { handleErrors } from '../handlers/errorHandler';
 import ErrorBoundary from './ErrorBoundary';
+import Joyride from 'react-joyride';
 
 
 import { create } from 'jss';
@@ -112,7 +113,31 @@ class Portfolio extends Component {
       currentEntryAnchor: null,
 
       autosaveTimer: null,
-      isUnsaved: false
+      isUnsaved: false,
+      steps: [
+        {
+          target: '#add-template-button',
+          content: 'Click this button to add a template',
+          placement: 'top'
+        },
+        {
+          target: '#save-portfolio-button',
+          content: 'Click this button to save your current portfolio',
+          placement: 'top'
+        },
+        {
+          target: '#manage-directories-button',
+          content: 'Click this button to manage your directories/pages',
+          placement: 'top'
+        },
+        {
+          target: '#publish-portfolio-button',
+          content: this.props.loggedIn 
+            ? 'Once satisfied with your current portfolio, you may click this to deploy your portfolio website. Please wait patiently for the link to be generated for you'
+            : 'Once satisfied with your current portfolio, you may click this to download a zip file of your portfolio files',
+          placement: 'top'
+        }
+      ]
     }
 
     this.entryEditorRef = React.createRef();
@@ -671,6 +696,19 @@ class Portfolio extends Component {
             loggedIn: loggedIn
           })}
         />
+        <Joyride
+          steps={this.state.steps}
+          continuous={true}
+          showSkipButton={true}
+          styles={{
+            options: {
+              beaconSize: 12
+            },
+            beacon: {
+              bottom: 10
+            }
+          }}
+        />
         <EntryEditor
           // fields={entry}
           // info={templates[entry.type][entry.style].info}
@@ -741,6 +779,7 @@ class Portfolio extends Component {
         </div>
         <div className={`${classes.fixedDiv} mui-fixed`}>
           <Fab
+            id='save-portfolio-button'
             variant="extended"
             className={classes.controlFAB}
             onClick={() => loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()}>
