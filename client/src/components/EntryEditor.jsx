@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { manualNext } from '../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover } from '@material-ui/core';
-import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit } from "react-icons/fa";
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip } from '@material-ui/core';
+import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle } from "react-icons/fa";
 import { fonts } from '../styles/fonts';
 import * as icons from '../styles/icons';
 import ImagePicker from './ImagePicker';
@@ -172,6 +172,9 @@ const styles = (theme) => ({
   colBtn: {
     padding: '1px',
     minWidth: 0
+  },
+  headerDiv: {
+    padding: '5px'
   }
 })
 
@@ -254,6 +257,7 @@ class EntryEditor extends PureComponent {
     this.handleCloseEditor = this.handleCloseEditor.bind(this);
     this.handleIconSelect = this.handleIconSelect.bind(this);
     this.handleFont = this.handleFont.bind(this);
+    this.handleShiftSection = this.handleShiftSection.bind(this);
 
     this.serializeSlate = this.serializeSlate.bind(this);
     this.deserializeSlate = this.deserializeSlate.bind(this);
@@ -289,7 +293,6 @@ class EntryEditor extends PureComponent {
       default:
         break;
     }
-
     if (!category) {
       this.setState({
         [field]: formatted
@@ -302,8 +305,9 @@ class EntryEditor extends PureComponent {
           [category]: newObject
         });
       } else {
+        console.log(this.state)
         const newObject = [...this.state.sections];
-        newObject[section][category][field] = formatted;
+        newObject[this.state.currentSection][category][field] = formatted;
         this.setState({
           sections: newObject
         });
@@ -361,6 +365,24 @@ class EntryEditor extends PureComponent {
     this.setState({
       sections: spliced
     })
+  }
+
+  handleShiftSection(modifier) {
+    const sections = [...this.state.sections];
+    const index = this.state.currentSection;
+
+    if (modifier + index < 0 || modifier + index >= sections.length) {
+      // throw 'invalid shift operation';
+      return false;
+    } else {
+      const temp = sections[index];
+      sections[index] = sections[modifier + index];
+      sections[index + modifier] = temp;
+      this.setState({
+        sections: sections,
+        currentSection: index + modifier
+      });
+    }
   }
 
   /**
@@ -430,10 +452,13 @@ class EntryEditor extends PureComponent {
    * @param {string} font the font family to be changed to
    */
   handleFont(event, field, font) {
-    if (!field) {
+    if (!font) {
       this.setState({
         anchorEl: event.currentTarget,
-        showUI: UI.FONT
+        showUI: UI.FONT,
+        editCategory: 'fonts',
+        editSection: false,
+        editField: field
       })
     } else {
       this.setState({
@@ -479,6 +504,7 @@ class EntryEditor extends PureComponent {
   }
 
   openWith(fields, info) {
+    console.log(fields)
     this.setState({
       showEditor: true,
       width: fields.width,
@@ -561,7 +587,9 @@ class EntryEditor extends PureComponent {
                 })
               }
             }} />
-            <Typography component="h3" variant="h3">Entry editor</Typography>
+            <div className={`${classes.headerDiv} ${classes.rowDiv}`}>
+              <Typography component="h3" variant="h3" style={{ marginInline: 'auto' }}>Entry editor</Typography>
+            </div>
             <ColourPicker
               open={this.state.showUI === UI.COLOUR}
               anchorEl={this.state.anchorEl}
@@ -624,7 +652,7 @@ class EntryEditor extends PureComponent {
                 {Object.entries(this.state.fonts).map(([key, item]) => {
                   return (
                     <div>
-                      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event)}>
+                      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event, key)}>
                         <Typography variant="inherit" style={{ fontFamily: item }}>
                           {this.state.info.fonts[key].label}
                         </Typography>
@@ -634,8 +662,8 @@ class EntryEditor extends PureComponent {
                         id={key}
                         anchorEl={this.state.anchorEl}
                         keepMounted
-                        open={this.state.showUI === UI.FONT}
-                        onClose={() => this.setState({ anchorEl: null })}
+                        open={this.state.showUI === UI.FONT && Boolean(this.state.anchorEl)}
+                        onClose={() => this.setState({ anchorEl: null, showUI: UI.NONE })}
                       >
                         {fonts.map((fontName) => (
                           <MenuItem onClick={(event) => this.handleFont(event, key, fontName)}>
@@ -699,7 +727,8 @@ class EntryEditor extends PureComponent {
                               anchorEl: event.currentTarget,
                               editField: key,
                               editSection: false,
-                              editCategory: 'images'
+                              editCategory: 'images',
+                              showUI: UI.NONE
                             })}>
                             <Preview />
                             <Typography>
@@ -710,7 +739,7 @@ class EntryEditor extends PureComponent {
                             id="media-menu"
                             anchorEl={this.state.anchorEl}
                             keepMounted
-                            open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editField === key}
+                            open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editCategory === 'images' && this.state.editField === key}
                             onClose={() => this.setState({ anchorEl: null })}
                           >
                             {this.state.info.images[key].format.map((format) => {
@@ -806,9 +835,25 @@ class EntryEditor extends PureComponent {
                           <IconButton onClick={this.handleCreateEntry}><FaPlus /></IconButton>
                         </div>
                         : <div className={classes.colDiv}>
-                          <div className={classes.rowDiv}>
+                          <div className={`${classes.rowDiv} ${classes.headerDiv}`}>
                             <Typography component="h4" variant="h4" className={classes.colDiv}>Section {this.state.currentSection + 1}</Typography>
-                            <IconButton onClick={(event) => this.handleDeleteSection(event)}><FaTrashAlt /></IconButton>
+                            <ButtonGroup
+                              variant="contained"
+                              color="default"
+                              size="medium"
+                            >
+                              <Button onClick={() => this.handleShiftSection(-1)}>Shift Up</Button>
+                              <Button onClick={() => this.handleShiftSection(1)}>Shift Down</Button>
+                            </ButtonGroup>
+                            <Button
+                              variant="contained"
+                              color="default"
+                              size="medium"
+                              onClick={(event) => this.handleDeleteSection(event)}
+                              startIcon={<FaTrashAlt />}
+                            >
+                              Delete
+                            </Button>
                           </div>
                           <div className={classes.rowDiv}>
                             <div className={classes.imgGrid}>
@@ -834,7 +879,8 @@ class EntryEditor extends PureComponent {
                                     <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState({
                                       anchorEl: event.currentTarget,
                                       editField: key,
-                                      editSection: true
+                                      editSection: true,
+                                      showUI: UI.NONE
                                     })}>
                                       <div className={classes.entryInfoDiv}>
                                         <Preview />

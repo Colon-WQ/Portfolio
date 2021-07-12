@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, Select } from '@material-ui/core';
-import { FaSave, FaTimes } from 'react-icons/fa';
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, Select, Tooltip } from '@material-ui/core';
+import { FaInfoCircle, FaSave, FaTimes } from 'react-icons/fa';
 import { SketchPicker } from 'react-color';
 
 /**
@@ -33,25 +33,31 @@ const styles = (theme) => ({
     marginRight: 'auto',
     fontWeight: 'bold'
   },
-  modal: {
-    overflow: 'hidden',
+  mainDiv: {
+    padding: '10px',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  rowDiv: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'left',
+    textAlign: 'center',
+    alignItems: 'center'
+  },
+  tooltipDiv: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '1%',
-    width: '80%',
-    height: '80%',
-    margin: 'auto',
-    backgroundColor: theme.palette.primary.main,
-    textAlign: 'center',
+    textAlign: 'left'
   }
 });
 
-const formats = ["auto",
-  "initial",
-  "inherit",
-  "min-content",
-  "max-content",
-  "fit-content"];
+const formats = ['auto',
+  'initial',
+  'inherit',
+  'min-content',
+  'max-content',
+  'fit-content'];
 
 class DimensionSlider extends Component {
   /**
@@ -62,7 +68,6 @@ class DimensionSlider extends Component {
     super(props);
     const isValue = !formats.includes(this.props.defaultValue);
     const regex = isValue ? this.props.defaultValue.match(/(-?[\d.]+)([a-z%]*)/) : null;
-    console.log(regex);
 
     this.state = {
       units: isValue ? regex[2] : '%',
@@ -99,14 +104,19 @@ class DimensionSlider extends Component {
 
   render() {
     const { classes } = this.props;
+    console.log(this.state);
+    console.log(this.state.anchorEL)
     return (
       <div>
         <Typography>{this.props.label}</Typography>
         <Button
-          onClick={(e) => this.setState({ showSlider: true, anchorEL: e.currentTarget })}
+          onClick={(event) => {
+            console.log(event)
+            this.setState({ showSlider: true, anchorEL: event.target })
+          }}
         >{this.state.format === 'value' ? `${this.state.value}${this.state.units}` : this.state.format}</Button>
         <Popover
-          open={this.state.showSlider}
+          open={Boolean(this.state.anchorEL) && this.state.showSlider}
           anchorEl={this.state.anchorEl}
           onClose={() => {
             this.handleClose(
@@ -115,45 +125,74 @@ class DimensionSlider extends Component {
                 ? `${this.state.value}${this.state.units}`
                 : this.state.format
             )
-            this.setState({ showSlider: false })
+            this.setState({ showSlider: false, anchorEL: null })
           }}
+          placement="bottom"
         >
-          <Select
-            value={this.state.format}
-            onChange={this.handleFormat}
-          >
-            <MenuItem value="value">value</MenuItem>
-            <MenuItem value="auto">auto</MenuItem>
-            <MenuItem value="initial">initial</MenuItem>
-            <MenuItem value="inherit">inherit</MenuItem>
-            <MenuItem value="min-content">min-content</MenuItem>
-            <MenuItem value="max-content">max-content</MenuItem>
-            <MenuItem value="fit-content">fit-content</MenuItem>
-
-          </Select>
-          <TextField
-            name="value"
-            value={this.state.value}
-            onChange={this.handleValue}
-            disabled={this.state.format !== 'value'}
-          />
-          <Select
-            value={this.state.units}
-            onChange={this.handleUnits}
-            disabled={this.state.format !== 'value'}
-          >
-            <MenuItem value="%">%</MenuItem>
-            <MenuItem value="cm">cm</MenuItem>
-            <MenuItem value="mm">mm</MenuItem>
-            <MenuItem value="in">in</MenuItem>
-            <MenuItem value="px">px</MenuItem>
-            <MenuItem value="pt">pt</MenuItem>
-            <MenuItem value="em">em</MenuItem>
-            <MenuItem value="ch">ch</MenuItem>
-            <MenuItem value="rem">rem</MenuItem>
-            <MenuItem value="vw">vw</MenuItem>
-            <MenuItem value="vh">vh</MenuItem>
-          </Select>
+          <div className={classes.mainDiv}>
+            <Tooltip title={
+              <div className={classes.tooltipDiv}>
+                <Typography variant="body1" component="body1"><b>Auto: </b>Default length derived from browser</Typography>
+                <Typography variant="body1" component="body1"><b>Initial: </b>The default value for the element</Typography>
+                <Typography variant="body1" component="body1"><b>Inherit: </b>Takes the parent values</Typography>
+                <Typography variant="body1" component="body1"><b>Min-Content: </b>The minimum length that does not cause overflow</Typography>
+                <Typography variant="body1" component="body1"><b>Max-Content: </b>The maximum length that element can take up</Typography>
+                <Typography variant="body1" component="body1"><b>Fit-Content: </b>The maximum length that does not cause overflow</Typography>
+                <Typography variant="body1" component="body1"><b>Value: </b>Fixed percentage/unit length</Typography>
+                <Typography variant="body2" component="body2">{'  '}<b>Units:</b></Typography>
+                <Typography variant="body2" component="body2">{'  '}%: The percentage of parent length to occupy</Typography>
+                <Typography variant="body2" component="body2">{'  '}em: A unit relative to font size of the current element</Typography>
+                <Typography variant="body2" component="body2">{'  '}rem: A unit relative to the root font size</Typography>
+                <Typography variant="body2" component="body2">{'  '}ch: The unit length of a character</Typography>
+                <Typography variant="body2" component="body2">{'  '}vw: % of the full browser width</Typography>
+                <Typography variant="body2" component="body2">{'  '}vh: % of the full browser height</Typography>
+              </div>
+            }>
+              <div style={{ marginLeft: 'auto' }}>
+                <FaInfoCircle />
+              </div>
+            </Tooltip>
+            <div className={classes.rowDiv}>
+              <Typography component="body1" variant="body1">Value: </Typography>
+              <Select
+                value={this.state.format}
+                onChange={this.handleFormat}
+              >
+                <MenuItem value="value">value</MenuItem>
+                <MenuItem value="auto">auto</MenuItem>
+                <MenuItem value="initial">initial</MenuItem>
+                <MenuItem value="inherit">inherit</MenuItem>
+                <MenuItem value="min-content">min-content</MenuItem>
+                <MenuItem value="max-content">max-content</MenuItem>
+                <MenuItem value="fit-content">fit-content</MenuItem>
+              </Select>
+            </div>
+            <div className={classes.rowDiv}>
+              <Typography component="body1" variant="body1">Amount: </Typography>
+              <TextField
+                name="value"
+                value={this.state.value}
+                onChange={this.handleValue}
+                disabled={this.state.format !== 'value'}
+              />
+              <Select
+                value={this.state.units}
+                onChange={this.handleUnits}
+                disabled={this.state.format !== 'value'}
+              >
+                <MenuItem value="%">%</MenuItem>
+                <MenuItem value="cm">cm</MenuItem>
+                <MenuItem value="mm">mm</MenuItem>
+                <MenuItem value="in">in</MenuItem>
+                <MenuItem value="px">px</MenuItem>
+                <MenuItem value="pt">pt</MenuItem>
+                <MenuItem value="em">em</MenuItem>
+                <MenuItem value="rem">rem</MenuItem>
+                <MenuItem value="ch">ch</MenuItem>
+                <MenuItem value="vw">vw</MenuItem>
+                <MenuItem value="vh">vh</MenuItem>
+              </Select></div>
+          </div>
         </Popover>
       </div>
     )
