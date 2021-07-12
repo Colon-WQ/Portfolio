@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../actions/LoginAction';
+import { manualNext } from '../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography, Modal, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
 import { templates } from '../templates/Templates';
@@ -124,6 +124,11 @@ class TemplateSelector extends Component {
   }
 
   handleCloseSelector(values) {
+    //To manually increment step for product tour
+    if (this.props.isTourRunning) {
+      this.props.manualNext();
+    }
+
     if (values !== undefined) {
       this.props.onClose(values)
     }
@@ -211,7 +216,8 @@ class TemplateSelector extends Component {
  * @memberof TemplateSelector
  */
 const mapStateToProps = state => ({
-  loggedIn: state.login.loggedIn
+  loggedIn: state.login.loggedIn,
+  isTourRunning: state.tour.run
 })
 
 /** 
@@ -221,7 +227,7 @@ const mapStateToProps = state => ({
  * @memberof TemplateSelector
  */
 const mapDispatchToProps = {
-  repopulate_state
+  manualNext
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TemplateSelector))
