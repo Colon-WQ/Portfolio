@@ -3,6 +3,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { fetchPortfolios, saveCurrentWorkToLocal, clearCurrentWorkFromLocal, deletePortfolio } from '../actions/PortfolioAction';
+import { beginTour, manualNext, callback } from '../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -23,6 +24,7 @@ import { withRouter } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
 import { FaRegEdit } from 'react-icons/fa';
 import { handleErrors } from '../handlers/errorHandler';
+import Joyride from 'react-joyride';
 
 /**
  * @file Dashboard component displays previews of the user's portfolios and offers 
@@ -148,6 +150,11 @@ class Dashboard extends Component {
         await this.props.fetchPortfolios(this.props.id);
 
         this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+
+        //begin product tour for new users who are logged in
+        if (this.props.error.response.status === 404 && this.props.error.response.data === "User id not found") {
+          this.props.beginTour();
+        }
       } else {
         //check for current portfolio work for guest users
         const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
@@ -155,8 +162,12 @@ class Dashboard extends Component {
           this.setState({
             guestPortfolioName: portfolioLocalStorageItem.name
           });
+        } else { //If no prior portfolio stored in localStorage, then guest user could be new
+          this.props.beginTour();
         }
       }
+
+      
       
   }
 
@@ -512,7 +523,9 @@ class Dashboard extends Component {
 
 
   render() {
-    const { error, loading, name, loggedIn, portfolios, classes } = this.props;
+    const { error, loading, name, loggedIn, portfolios, classes, tourState } = this.props;
+
+    console.log(tourState.stepIndex, tourState.run);
     
     //Handles errors from portfolio fetching.
     if (error) {
@@ -520,11 +533,20 @@ class Dashboard extends Component {
       if (error.response.status !== 404 && error.response.data !== "User id not found") {
         handleErrors(error, this.props.history);
       }
+      //otherwise, begin tour since its a new user
+      
     }
+
+    
 
     return (
       <div className={classes.root}>
         <div className={classes.appBarSpacer} />
+        <Joyride 
+          {...tourState}
+          callback={this.props.callback}
+          showSkipButton={true}
+        />
         <Typography variant="h2" component="h3">Here is your dashboard {name}!</Typography>
         <Grid container direction='row' justify='center' alignItems='center'>
           {
@@ -573,7 +595,7 @@ class Dashboard extends Component {
                                 onClick={this.handleOpenPortfolio}
                               >
                                 Open
-                                                              </Button>
+                              </Button>
                             </CardActions>
                           </div>
 
@@ -609,7 +631,12 @@ class Dashboard extends Component {
                     </Button>
           }
         </Grid>
-        <Button onClick={() => this.handleNameDialog(true)} className={classes.portfolioButton}>Add a Portfolio</Button>
+        <Button id="add-portfolio-button" 
+          onClick={() => this.handleNameDialog(true)} 
+          className={classes.portfolioButton}
+        >
+          Add a Portfolio
+        </Button>
         <Menu
           id="edit-menu"
           anchorEl={this.state.anchorEl}
@@ -657,7 +684,14 @@ class Dashboard extends Component {
               Cancel
                         </Button>
             <Button
-              onClick={this.handleAddPortfolio}
+              onClick={() => {
+                //If tour is running, we need to update the tour's step
+                if (tourState.run) {
+                  console.log("manual next")
+                  this.props.manualNext();
+                }
+                this.handleAddPortfolio();
+              }}
             >
               Set Name
                         </Button>
@@ -737,7 +771,8 @@ const mapStateToProps = state => ({
   id: state.login.id,
   portfolios: state.portfolio.portfolios,
   loading: state.portfolio.loading,
-  error: state.portfolio.error
+  error: state.portfolio.error,
+  tourState: state.tour
 });
 
 /** 
@@ -751,7 +786,10 @@ const mapDispatchToProps = {
   fetchPortfolios,
   saveCurrentWorkToLocal,
   clearCurrentWorkFromLocal,
-  deletePortfolio
+  deletePortfolio,
+  beginTour,
+  manualNext,
+  callback
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Dashboard)));

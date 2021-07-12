@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import login from "./LoginReducer";
 import portfolio from "./PortfolioReducer";
 import error from "./ErrorReducer";
+import tour from "./TourReducer";
 
 
 /**
@@ -15,5 +16,6 @@ import error from "./ErrorReducer";
 export default combineReducers({
   login,
   portfolio,
-  error
+  error,
+  tour
 });

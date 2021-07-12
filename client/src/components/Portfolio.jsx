@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
+import { manualNext, callback } from '../actions/TourAction';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
 import { Fab, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
 import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
@@ -25,7 +26,6 @@ import Joyride from 'react-joyride';
 
 import { create } from 'jss';
 import { jssPreset } from '@material-ui/styles';
-import { GiConsoleController } from 'react-icons/gi';
 const jss = create().setup({ ...jssPreset(), Renderer: null });
 
 /**
@@ -703,7 +703,8 @@ class Portfolio extends Component {
   }
 
   render() {
-    const { loggedIn, classes } = this.props;
+    const { loggedIn, classes, tourState } = this.props;
+    console.log(tourState.stepIndex);
     return (
       <ErrorBoundary>
         <div className={classes.root}>
@@ -726,17 +727,9 @@ class Portfolio extends Component {
             })}
           />
           <Joyride
-            steps={this.state.steps}
-            continuous={true}
+            {...tourState}
+            callback={this.props.callback}
             showSkipButton={true}
-            styles={{
-              options: {
-                beaconSize: 12
-              },
-              beacon: {
-                bottom: 10
-              }
-            }}
           />
           <EntryEditor
             onClose={(data, changed) => {
@@ -822,7 +815,13 @@ class Portfolio extends Component {
               id='save-portfolio-button'
               variant="extended"
               className={classes.controlFAB}
-              onClick={() => loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()}>
+              onClick={() => {
+                if (tourState.run) {
+                  this.props.manualNext();
+                }
+                loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()
+              }}
+            >
               <FaSave />
               <Typography variant="body2" component="body2" className={classes.buttonText}>Save</Typography>
             </Fab>
@@ -858,7 +857,8 @@ const mapStateToProps = state => ({
   id: state.login.id,
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
-  currentPortfolio: state.portfolio.currentPortfolio
+  currentPortfolio: state.portfolio.currentPortfolio,
+  tourState: state.tour
 })
 
 /** 
@@ -870,7 +870,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   repopulate_state,
   saveCurrentWork,
-  saveCurrentWorkToLocal
+  saveCurrentWorkToLocal,
+  manualNext,
+  callback
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))

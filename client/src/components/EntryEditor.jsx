@@ -1,6 +1,7 @@
 import React, { Component, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
+import { manualNext } from '../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle } from "react-icons/fa";
@@ -420,6 +421,10 @@ class EntryEditor extends PureComponent {
    * @param {boolean} save whether the changes should be saved to state
    */
   handleCloseEditor(save) {
+    //To manually increment steps for product tour
+    if (this.props.isTourRunning) {
+      this.props.manualNext();
+    }
 
     if (save) {
       const ret = this.state.data;
@@ -531,7 +536,7 @@ class EntryEditor extends PureComponent {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, isTourRunning } = this.props;
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
     // Prevent from rendering if info not provided, prevent errors trying to read properties from null
     if (!this.state.info) {
@@ -994,7 +999,8 @@ class EntryEditor extends PureComponent {
  * @memberof EntryEditor
  */
 const mapStateToProps = state => ({
-  loggedIn: state.login.loggedIn
+  loggedIn: state.login.loggedIn,
+  isTourRunning: state.tour.run
 })
 
 /** 
@@ -1004,7 +1010,8 @@ const mapStateToProps = state => ({
  * @memberof EntryEditor
  */
 const mapDispatchToProps = {
-  repopulate_state
+  repopulate_state,
+  manualNext
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(withStyles(styles)(EntryEditor))
