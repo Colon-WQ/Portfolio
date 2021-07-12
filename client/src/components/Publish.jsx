@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
+import { manualNext } from '../actions/TourAction';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import jszip from 'jszip';
@@ -216,6 +217,11 @@ class Publish extends Component {
    * @memberof Publish
    */
   async handlePushToGithub() {
+    //to manually increment steps for product tour
+    if (this.props.isTourRunning) {
+      this.props.manualNext();
+    }
+
     console.log(`files are being pushed to ${this.state.repositoryName}`)
     //reset loading, error and error message
     this.setState({
@@ -399,6 +405,11 @@ class Publish extends Component {
 
 
   handleGuestDownload() {
+    //to manually increment steps for product tour
+    if (this.props.isTourRunning) {
+      this.props.manualNext();
+    }
+
     this.setState({
       publishLoading: true
     })
@@ -515,10 +526,10 @@ class Publish extends Component {
           <DialogActions>
             <Button onClick={this.handleFinalizeDialogClose}>
               Cancel
-                        </Button>
+            </Button>
             <Button onClick={this.handleFinalizeEdits}>
               Finalize
-                        </Button>
+            </Button>
           </DialogActions>
         </Dialog>
 
@@ -557,6 +568,7 @@ class Publish extends Component {
  */
 const mapStateToProps = state => ({
   loggedIn: state.login.loggedIn,
+  isTourRunning: state.tour.run
 })
 
 /** 
@@ -566,7 +578,8 @@ const mapStateToProps = state => ({
  * @memberof EntryEditor
  */
 const mapDispatchToProps = {
-  repopulate_state
+  repopulate_state,
+  manualNext
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Publish))

@@ -19,7 +19,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Joyride from 'react-joyride';
 
 
 /**
@@ -238,18 +237,6 @@ class Home extends Component {
 
     this.state = {
       guestDialogState: false,
-      steps: [
-        {
-          target: '#user-login-button',
-          content: 'Click this to login with your Github account',
-          placement: 'top-end'
-        },
-        {
-          target: '#guest-login-button',
-          content: 'Click this to login as a guest',
-          placement: 'top-end'
-        },
-      ]
     };
 
     this.handleGuestLogin = this.handleGuestLogin.bind(this);
@@ -311,21 +298,6 @@ class Home extends Component {
     return (
       <div className={classes.root}>
         <CssBaseline />
-        <Joyride
-          steps={this.state.steps}
-          continuous={true}
-          showSkipButton={true}
-          disableScrolling={true}
-          styles={{
-            options: {
-              beaconSize: 12
-            },
-            beacon: {
-              bottom: 10,
-              left: 6
-            }
-          }}
-        />
         <Button
           className={classes.homeButton}
           href="/"
@@ -346,7 +318,6 @@ class Home extends Component {
             {loggedIn
               ?
               <Button
-                id="user-login-button"
                 variant="outlined"
                 className={classes.loginButton}
                 onClick={() => this.props.history.push('/dashboard')}
@@ -355,7 +326,6 @@ class Home extends Component {
                 </Button>
               :
               <Button
-                id="user-login-button"
                 href={`https://github.com/login/oauth/authorize?scope=repo&client_id=` + process.env.REACT_APP_CLIENT_ID}
                 variant="outlined"
                 className={classes.loginButton}
@@ -365,7 +335,6 @@ class Home extends Component {
             }
 
             <Button
-              id="guest-login-button"
               onClick={() => loggedIn ? this.handleGuestDialogState(true) : this.props.history.push('/dashboard')}
               variant="outlined"
               className={classes.loginButton}
