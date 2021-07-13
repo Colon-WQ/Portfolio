@@ -152,9 +152,14 @@ class Dashboard extends Component {
         this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
 
         //begin product tour for new users who are logged in
-        if (this.props.error.response.status === 404 && this.props.error.response.data === "User id not found") {
-          this.props.beginTour();
+        if (this.props.error) {
+          if (this.props.error.response) {
+            if (this.props.error.response.status === 404 && this.props.error.response.data === "User id not found") {
+              this.props.beginTour();
+            }
+          }
         }
+        
       } else {
         //check for current portfolio work for guest users
         const portfolioLocalStorageItem = await JSON.parse(window.localStorage.getItem(process.env.REACT_APP_AUTOSAVE_LOCALSTORAGE));
