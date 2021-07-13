@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../actions/LoginAction';
+import { repopulate_state } from '../../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab, TextField } from '@material-ui/core';
 import { TreeItem } from '@material-ui/lab';
-import { templates } from '../templates/Templates';
+import { templates } from '../../templates/Templates';
 import { FaPlus, FaTimes, FaLink } from 'react-icons/fa';
 
 

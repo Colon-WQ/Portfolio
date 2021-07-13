@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../actions/LoginAction';
+import { repopulate_state } from '../../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, TextField, Tooltip, Typography } from '@material-ui/core';
 import axios from 'axios';
 import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
-import { handleErrors } from '../handlers/errorHandler';
+import { handleErrors } from '../../handlers/errorHandler';
 import { imageCache } from './ImageCache';
-import pexelsLogo from '../res/assets/pexels logo.png';
+import pexelsLogo from '../../res/assets/pexels logo.png';
 
 /**
  * @file ImagePicker component to provide a user interface for users to browse royalty free images

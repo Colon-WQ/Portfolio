@@ -74,12 +74,14 @@ class DimensionSlider extends Component {
       value: isValue ? regex[1] : 100,
       format: isValue ? 'value' : this.props.defaultValue,
       showSlider: false,
-      anchorEL: null,
+      anchorEl: null,
     }
     this.handleClose = this.handleClose.bind(this);
     this.handleFormat = this.handleFormat.bind(this);
     this.handleValue = this.handleValue.bind(this);
     this.handleUnits = this.handleUnits.bind(this);
+
+    this.buttonRef = React.createRef();
   }
 
   handleValue(event) {
@@ -104,20 +106,17 @@ class DimensionSlider extends Component {
 
   render() {
     const { classes } = this.props;
-    console.log(this.state);
-    console.log(this.state.anchorEL)
     return (
       <div>
         <Typography>{this.props.label}</Typography>
         <Button
-          onClick={(event) => {
-            console.log(event)
-            this.setState({ showSlider: true, anchorEL: event.target })
-          }}
+          ref={this.buttonRef}
+          onClick={(event) => this.setState({ showSlider: true, anchorEl: event.target })}
         >{this.state.format === 'value' ? `${this.state.value}${this.state.units}` : this.state.format}</Button>
         <Popover
-          open={Boolean(this.state.anchorEL) && this.state.showSlider}
+          open={Boolean(this.state.anchorEl) && this.state.showSlider}
           anchorEl={this.state.anchorEl}
+          transformOrigin={{ vertical: "center", horizontal: "center" }}
           onClose={() => {
             this.handleClose(
               true,
@@ -125,7 +124,7 @@ class DimensionSlider extends Component {
                 ? `${this.state.value}${this.state.units}`
                 : this.state.format
             )
-            this.setState({ showSlider: false, anchorEL: null })
+            this.setState({ showSlider: false, anchorEl: null })
           }}
           placement="bottom"
         >
@@ -194,7 +193,7 @@ class DimensionSlider extends Component {
               </Select></div>
           </div>
         </Popover>
-      </div>
+      </div >
     )
   }
 }

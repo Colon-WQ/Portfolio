@@ -5,8 +5,11 @@ import Home from './components/Home';
 import LoginResult from './components/LoginResult';
 import Logout from './components/Logout';
 import Dashboard from './components/Dashboard';
-import Portfolio from './components/Portfolio';
-import Publish from './components/Publish';
+import Support from './components/Support/Support';
+import SupportPages from './components/Support/SupportPages';
+import Tutorial from './components/Tutorial/Tutorial';
+import Portfolio from './components/Portfolio/Portfolio';
+import Publish from './components/Portfolio/Publish';
 import UserConfirmation from './components/UserConfirmation';
 import ErrorDisplay from './components/ErrorDisplay';
 import Faq from './components/Faq';
@@ -43,13 +46,15 @@ ReactDOM.render(
             <Route exact path = '/' component = {Home}></Route>
             <>
               <Navbar/>
-              
                 <Route exact path = '/login/callback' component = {LoginResult}></Route>
                 <Route exact path = '/dashboard' component = {Dashboard}></Route>
                 <Route exact path = '/edit' component = {Portfolio}></Route>
                 <Route exact path = '/publish' component = {Publish}></Route>
                 <Route exact path = '/logout' component = {Logout}></Route>
                 <Route exact path = '/faq' component = {Faq}></Route>
+                <Route exact path = '/support' component = {Support}></Route>
+                <Route path = '/support/:id' component = {SupportPages}></Route>
+                <Route path = '/learn' component = {Tutorial}></Route>
             </>
           </Switch>
         </Provider>
