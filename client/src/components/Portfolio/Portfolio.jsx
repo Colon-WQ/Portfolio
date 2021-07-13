@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../actions/LoginAction';
-import { saveCurrentWork, saveCurrentWorkToLocal } from '../actions/PortfolioAction.js';
-import { manualNext, callback } from '../actions/TourAction';
+import { repopulate_state } from '../../actions/LoginAction';
+import { saveCurrentWork, saveCurrentWorkToLocal } from '../../actions/PortfolioAction.js';
+import { manualNext, callback } from '../../actions/TourAction';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
 import { Fab, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
 import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
@@ -10,17 +10,17 @@ import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import EntryEditor from './EntryEditor';
-import { templates } from '../templates/Templates';
+import { templates } from '../../templates/Templates';
 import TemplateSelector from './TemplateSelector';
 import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
 import { Prompt, withRouter } from 'react-router-dom';
-import { theme } from '../styles/styles';
+import { theme } from '../../styles/styles';
 import html2canvas from 'html2canvas';
 import FormData from 'form-data';
-import { handleErrors } from '../handlers/errorHandler';
-import ErrorBoundary from './ErrorBoundary';
+import { handleErrors } from '../../handlers/errorHandler';
+import ErrorBoundary from '../ErrorBoundary';
 import Joyride from 'react-joyride';
 
 
@@ -704,7 +704,7 @@ class Portfolio extends Component {
 
   render() {
     const { loggedIn, classes, tourState } = this.props;
-    
+
     return (
       <ErrorBoundary>
         <div className={classes.root}>

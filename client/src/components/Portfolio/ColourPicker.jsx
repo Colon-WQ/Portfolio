@@ -64,7 +64,7 @@ class ColourPicker extends Component {
     if (save && this.state.image) {
       this.props.onClose(true, {
         image: this.state.image,
-        attribution: this.state.attribution
+        attribution: ''
       });
     } else {
       this.props.onClose(false);

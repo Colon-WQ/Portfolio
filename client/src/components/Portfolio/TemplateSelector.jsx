@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { manualNext } from '../actions/TourAction';
+import { manualNext } from '../../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography, Modal, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
-import { templates } from '../templates/Templates';
+import { templates } from '../../templates/Templates';
 import { FaTimes, FaPlus } from 'react-icons/fa';
 
 

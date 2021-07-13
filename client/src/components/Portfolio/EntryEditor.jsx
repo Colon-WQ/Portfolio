@@ -1,12 +1,12 @@
 import React, { Component, PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../actions/LoginAction';
-import { manualNext } from '../actions/TourAction';
+import { repopulate_state } from '../../actions/LoginAction';
+import { manualNext } from '../../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle } from "react-icons/fa";
-import { fonts } from '../styles/fonts';
-import * as icons from '../styles/icons';
+import { fonts } from '../../styles/fonts';
+import * as icons from '../../styles/icons';
 import ImagePicker from './ImagePicker';
 import TextEditor from './TextEditor';
 import SimpleTextEditor from './SimpleTextEditor';
