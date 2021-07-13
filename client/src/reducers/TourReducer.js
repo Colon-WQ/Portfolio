@@ -1,4 +1,3 @@
-import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 
 import { 
     START,
@@ -53,11 +52,8 @@ const STEPS = [
     {
         title: 'Step 5: Publish the portfolio',
         target: '#publish-portfolio-button',
-        content: `Click this button to show a dialog that will ask you for a Github repository name.\n
-            Please input a new Github repository name and click finalize to begin building your website.\n 
-            If you have given a Github repository name that you already have, you will be asked for permission to override the repository's contents
-            (If unsure, just click cancel and repeat the step, but give a different name!)\n
-            Please wait a few minutes for the page to build. Once the page is built, a link will be shown to you.`
+        content: `If you are a user, this will open a dialog for building your portfolio website.\n
+                If you are a guest, this will download your portfolio files as a zip.`
     }
 ];
 
@@ -72,17 +68,17 @@ const initialState = {
     steps: STEPS,
     hideBackButton: true,
     disableOverlayClose: true,
-    spotlightClicks: true
+    spotlightClicks: true,
+    styles: {
+        options: {
+            zIndex: 1250
+        }
+    }
 }
 
 export default function tour(state = initialState, action) {
     switch(action.type) {
         case START:
-            return {
-                ...state,
-                run: true
-            };
-        case RESTART:
             return {
                 ...state,
                 stepIndex: 0,
@@ -93,6 +89,7 @@ export default function tour(state = initialState, action) {
         case STOP:
             return {
                 ...state,
+                stepIndex: 0,
                 run: false
             };
         case NEXT_OR_PREV:
@@ -103,7 +100,7 @@ export default function tour(state = initialState, action) {
         case NEXT:
             return {
                 ...state,
-                stepIndex: state.stepIndex + 1
+                stepIndex: action.payload.step
             }
         default:
             return state;

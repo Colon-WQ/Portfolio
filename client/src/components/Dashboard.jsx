@@ -3,7 +3,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../actions/LoginAction';
 import { fetchPortfolios, saveCurrentWorkToLocal, clearCurrentWorkFromLocal, deletePortfolio } from '../actions/PortfolioAction';
-import { beginTour, manualNext, callback } from '../actions/TourAction';
+import { beginTour, stopTour, manualNext, callback } from '../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -165,6 +165,7 @@ class Dashboard extends Component {
         } else { //If no prior portfolio stored in localStorage, then guest user could be new
           this.props.beginTour();
         }
+
       }
 
       
@@ -524,8 +525,6 @@ class Dashboard extends Component {
 
   render() {
     const { error, loading, name, loggedIn, portfolios, classes, tourState } = this.props;
-
-    console.log(tourState.stepIndex, tourState.run);
     
     //Handles errors from portfolio fetching.
     if (error) {
@@ -682,19 +681,18 @@ class Dashboard extends Component {
               onClick={() => this.handleNameDialog(false)}
             >
               Cancel
-                        </Button>
+            </Button>
             <Button
               onClick={() => {
                 //If tour is running, we need to update the tour's step
                 if (tourState.run) {
-                  console.log("manual next")
-                  this.props.manualNext();
+                  this.props.manualNext(1);
                 }
                 this.handleAddPortfolio();
               }}
             >
               Set Name
-                        </Button>
+            </Button>
           </DialogActions>
         </Dialog>
         <Dialog
@@ -788,6 +786,7 @@ const mapDispatchToProps = {
   clearCurrentWorkFromLocal,
   deletePortfolio,
   beginTour,
+  stopTour,
   manualNext,
   callback
 }
