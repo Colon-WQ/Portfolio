@@ -704,7 +704,7 @@ class Portfolio extends Component {
 
   render() {
     const { loggedIn, classes, tourState } = this.props;
-    console.log(tourState.stepIndex);
+    
     return (
       <ErrorBoundary>
         <div className={classes.root}>
@@ -817,7 +817,7 @@ class Portfolio extends Component {
               className={classes.controlFAB}
               onClick={() => {
                 if (tourState.run) {
-                  this.props.manualNext();
+                  this.props.manualNext(4);
                 }
                 loggedIn ? this.handleSavePortfolio() : this.handleSaveLocalPortfolio()
               }}

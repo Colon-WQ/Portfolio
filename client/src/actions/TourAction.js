@@ -55,17 +55,18 @@ export const beginTour = () => ({
     type: START
 })
 
-export const restartTour = () => ({
-    type: RESTART
+export const stopTour = () => ({
+  type: STOP
 })
 
-export const manualNext = () => ({
-    type: NEXT
+export const manualNext = step => ({
+    type: NEXT,
+    payload: { step: step }
 })
 
 export function callback(data) { 
   return dispatch => {
-    console.log(data)
+    //console.log(data)
     const { action, index, type, status } = data;
 
     if (

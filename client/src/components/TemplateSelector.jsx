@@ -126,7 +126,7 @@ class TemplateSelector extends Component {
   handleCloseSelector(values) {
     //To manually increment step for product tour
     if (this.props.isTourRunning) {
-      this.props.manualNext();
+      this.props.manualNext(2);
     }
 
     if (values !== undefined) {
