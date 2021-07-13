@@ -182,6 +182,7 @@ class Navbar extends Component {
     this.handleUserMenu = this.handleUserMenu.bind(this);
     this.handleReturnHome = this.handleReturnHome.bind(this);
     this.restartProductTour = this.restartProductTour.bind(this);
+    this.handleFAQ = this.handleFAQ.bind(this);
   }
 
   /**
@@ -248,6 +249,11 @@ class Navbar extends Component {
   restartProductTour() {
     this.props.beginTour();
     this.props.history.push('/dashboard');
+    this.handleUserMenu();
+  }
+
+  handleFAQ() {
+    this.props.history.push('/faq');
     this.handleUserMenu();
   }
 
@@ -319,6 +325,9 @@ class Navbar extends Component {
                   <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
                     DASHBOARD
                   </Button>
+                  <Button onClick={this.handleFAQ} fullWidth={true} className={classes.dashboardButton}>
+                    FAQ
+                  </Button>
                   <Button onClick={this.restartProductTour} fullWidth={true} className={classes.dashboardButton}>
                     START TOUR
                   </Button>
@@ -333,6 +342,9 @@ class Navbar extends Component {
                 <List className={classes.flexDown}>
                   <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
                     DASHBOARD
+                  </Button>
+                  <Button onClick={this.handleFAQ} fullWidth={true} className={classes.dashboardButton}>
+                    FAQ
                   </Button>
                   <Button onClick={this.restartProductTour} fullWidth={true} className={classes.dashboardButton}>
                     START TOUR

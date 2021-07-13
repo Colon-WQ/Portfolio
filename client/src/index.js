@@ -9,6 +9,7 @@ import Portfolio from './components/Portfolio';
 import Publish from './components/Publish';
 import UserConfirmation from './components/UserConfirmation';
 import ErrorDisplay from './components/ErrorDisplay';
+import Faq from './components/Faq';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -48,6 +49,7 @@ ReactDOM.render(
                 <Route exact path = '/edit' component = {Portfolio}></Route>
                 <Route exact path = '/publish' component = {Publish}></Route>
                 <Route exact path = '/logout' component = {Logout}></Route>
+                <Route exact path = '/faq' component = {Faq}></Route>
             </>
           </Switch>
         </Provider>
