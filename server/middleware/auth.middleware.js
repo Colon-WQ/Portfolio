@@ -52,7 +52,7 @@ const auth = async (req, res, next) => {
     const token = req.session.user.details;
 
     jwt.verify(token, JWT_SECRET, async (err, decodedData) => {
-        if (err) return res.status(403).json({ message: err.message })
+        if (err) return res.status(401).send("unauthorized user")
         req.gh_token = await decode(decodedData.gh_token);
         req.username = decodedData.login;
         console.log("successfully decoded token")
