@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { log_out_user, repopulate_state } from '../actions/LoginAction';
+import { beginTour } from '../actions/TourAction';
 import { clearCurrentWorkFromLocal } from '../actions/PortfolioAction';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
@@ -173,13 +174,14 @@ class Navbar extends Component {
     this.handleUserMenu = this.handleUserMenu.bind(this);
     this.state = {
       menu_open: false,
-      user_drawer_open: false
+      user_drawer_open: false,
     }
 
     this.handleLogout = this.handleLogout.bind(this);
     this.handleReturnDashboard = this.handleReturnDashboard.bind(this);
     this.handleUserMenu = this.handleUserMenu.bind(this);
     this.handleReturnHome = this.handleReturnHome.bind(this);
+    this.restartProductTour = this.restartProductTour.bind(this);
   }
 
   /**
@@ -213,7 +215,10 @@ class Navbar extends Component {
    */
   handleReturnDashboard() {
     this.props.history.push("/dashboard");
+
     this.handleUserMenu();
+
+    
   }
 
   /**
@@ -237,6 +242,13 @@ class Navbar extends Component {
    */
   handleUserMenu() {
     this.setState({ user_drawer_open: !this.state.user_drawer_open });
+  }
+
+
+  restartProductTour() {
+    this.props.beginTour();
+    this.props.history.push('/dashboard');
+    this.handleUserMenu();
   }
 
   render() {
@@ -271,12 +283,13 @@ class Navbar extends Component {
                   {name}
                 </Button>
               :
-                <Button onClick={() => this.props.history.push('/dashboard')} className={classes.dashboardButton}>
-                  DASHBOARD
+                <Button onClick={this.handleUserMenu} className={!this.state.user_drawer_open ? classes.dashboardButton : classes.hide}>
+                  MENU
                 </Button>
             }
           </ToolBar>
         </AppBar>
+
         <Drawer
           variant="temporary"
           anchor="right"
@@ -288,23 +301,45 @@ class Navbar extends Component {
           }}
           open={this.state.user_drawer_open}
         >
-          <div className={classes.drawerDiv}>
-            <Hidden xsDown>
-              <Avatar src={avatar_url} className={classes.expandedAvatar} />
-            </Hidden>
-            <Typography variant="h4" className={classes.title}>
-              {name}
-            </Typography>
-            <Divider />
-            <List className={classes.flexDown}>
-              <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
-                LOGOUT
-              </Button>
-              <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
-                DASHBOARD
-              </Button>
-            </List>
-          </div>
+          {
+            loggedIn
+            ?
+              <div className={classes.drawerDiv}>
+                <Hidden xsDown>
+                  <Avatar src={avatar_url} className={classes.expandedAvatar} />
+                </Hidden>
+                <Typography variant="h4" className={classes.title}>
+                  {name}
+                </Typography>
+                <Divider />
+                <List className={classes.flexDown}>
+                  <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
+                    LOGOUT
+                  </Button>
+                  <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
+                    DASHBOARD
+                  </Button>
+                  <Button onClick={this.restartProductTour} fullWidth={true} className={classes.dashboardButton}>
+                    START TOUR
+                  </Button>
+                </List>
+              </div>
+            :
+              <div className={classes.drawerDiv}>
+                <Typography variant="h4" className={classes.title}>
+                  {name}
+                </Typography>
+                <Divider />
+                <List className={classes.flexDown}>
+                  <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
+                    DASHBOARD
+                  </Button>
+                  <Button onClick={this.restartProductTour} fullWidth={true} className={classes.dashboardButton}>
+                    START TOUR
+                  </Button>
+                </List>
+              </div>
+          }
         </Drawer>
         <div className={classes.appBarSpacer} />
       </div>
@@ -335,7 +370,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   log_out_user,
   repopulate_state,
-  clearCurrentWorkFromLocal
+  clearCurrentWorkFromLocal,
+  beginTour
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Navbar)))

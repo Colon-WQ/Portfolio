@@ -423,7 +423,7 @@ class EntryEditor extends PureComponent {
   handleCloseEditor(save) {
     //To manually increment steps for product tour
     if (this.props.isTourRunning) {
-      this.props.manualNext();
+      this.props.manualNext(3);
     }
 
     if (save) {

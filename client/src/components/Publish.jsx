@@ -219,7 +219,7 @@ class Publish extends Component {
   async handlePushToGithub() {
     //to manually increment steps for product tour
     if (this.props.isTourRunning) {
-      this.props.manualNext();
+      this.props.manualNext(5);
     }
 
     console.log(`files are being pushed to ${this.state.repositoryName}`)
@@ -407,7 +407,7 @@ class Publish extends Component {
   handleGuestDownload() {
     //to manually increment steps for product tour
     if (this.props.isTourRunning) {
-      this.props.manualNext();
+      this.props.manualNext(5);
     }
 
     this.setState({
