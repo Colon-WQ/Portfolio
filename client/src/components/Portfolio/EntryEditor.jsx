@@ -13,6 +13,7 @@ import SimpleTextEditor from './SimpleTextEditor';
 import { SketchPicker } from 'react-color';
 import ColourPicker from './ColourPicker';
 import DimensionSlider from './DimensionSlider';
+import draftToHtml from 'draftjs-to-html';
 
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
@@ -259,11 +260,13 @@ class EntryEditor extends PureComponent {
     this.handleFont = this.handleFont.bind(this);
     this.handleShiftSection = this.handleShiftSection.bind(this);
 
-    this.serializeSlate = this.serializeSlate.bind(this);
-    this.deserializeSlate = this.deserializeSlate.bind(this);
-
     this.fileUploadRef = React.createRef();
     // this.imgColPickerRef = React.createRef();
+
+    //helper function for collectFontFamilies
+    this.collectFontFamily = this.collectFontFamily.bind(this);
+    //The function to collect fontfamilies from RTE outputs
+    this.collectFontFamilies = this.collectFontFamilies.bind(this);
   }
 
   // TODO: elements read from state instead of props
@@ -385,6 +388,66 @@ class EntryEditor extends PureComponent {
     }
   }
 
+  collectFontFamily(htmlString) {
+    const placeholder = document.createElement('div');
+    placeholder.innerHTML = htmlString;
+    const fonts = [];
+    placeholder.querySelectorAll('[style]').forEach(element => {
+      element.style.cssText.split(';').map(part => {
+        var temp = null
+        if (part.startsWith('font-family')) {
+          temp = part.substring(13);
+        }
+        if (part.startsWith(' font-family')) {
+          temp = part.substring(14);
+        }
+        if (temp) {
+          if (!fonts.includes(temp)) {
+            fonts.push(temp);
+          }
+        }
+      })
+    });
+
+    return fonts;
+  }
+
+  collectFontFamilies() {
+    
+    const texts = this.state.texts;
+    const textsInfo = this.state.info.texts;
+    const tempFonts = [];
+
+    Object.keys(texts).map(key => {
+      if (textsInfo[key].type === 'complexText') {
+        this.collectFontFamily(draftToHtml(texts[key])).map(font => {
+          if (!tempFonts.includes(font)) {
+            tempFonts.push(font);
+          }
+        })
+      }
+    });
+
+    
+
+    if (this.state.sections.texts) {
+      const sectionTexts = this.state.sections.texts;
+      const sectionTextsInfo = this.state.sections.entryFormat.texts;
+      
+      Object.keys(sectionTexts).map(key => {
+        if (sectionTextsInfo[key].type === 'complexText') {
+          this.collectFontFamily(draftToHtml(sectionTexts[key])).map(font => {
+            if (!tempFonts.includes(font)) {
+              tempFonts.push(font);
+            }
+          })
+        }
+      });
+    }
+
+    return tempFonts;
+  }
+
   /**
    * Event handler for entry addition. 
    * Entry will be given default fields specified in the info attribute.
@@ -426,6 +489,8 @@ class EntryEditor extends PureComponent {
       this.props.manualNext(3);
     }
 
+    
+
     if (save) {
       const ret = this.state.data;
       ret.width = this.state.width;
@@ -435,7 +500,8 @@ class EntryEditor extends PureComponent {
       ret.images = this.state.images;
       ret.texts = this.state.texts;
       ret.sections = this.state.sections;
-
+      ret.RTEfonts = this.collectFontFamilies();
+      
       this.props.onClose(ret, true);
     } else {
       this.props.onClose(null, false);
@@ -518,20 +584,6 @@ class EntryEditor extends PureComponent {
       data: fields,
 
       info: info
-    })
-  }
-
-  serializeSlate(value) {
-    return (
-      value.map(n => Node.string(n)).join('\n')
-    );
-  }
-
-  deserializeSlate(string) {
-    return string.split('\n').map(line => {
-      return {
-        children: [{ text: line }],
-      }
     })
   }
 
