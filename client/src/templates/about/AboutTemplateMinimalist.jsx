@@ -96,6 +96,7 @@ const initialContent = {
 initialContent.blocks.map(block => block.data['text-align'] = "center");
 
 export const convertToHtml = (htmlString) => {
+  
   const placeholder = document.createElement('div');
   placeholder.innerHTML = htmlString;
   const paragraphs = placeholder.getElementsByTagName("p");
@@ -106,6 +107,7 @@ export const convertToHtml = (htmlString) => {
     paragraphs[0].style.marginBlockStart = "0px";
     paragraphs[paragraphs.length - 1].style.marginBlockEnd = "0px";
   }
+
   return placeholder.innerHTML;
 }
 

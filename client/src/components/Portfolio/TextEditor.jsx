@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/styles';
 import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
+import { fonts } from '../../styles/fonts';
 
 const styles = theme => ({
   editor: {
@@ -123,6 +124,11 @@ class TextEditor extends Component {
                 editorClassName={classes.textArea}
                 toolbarClassName={classes.toolBar}
                 editorState={this.state.editorState}
+                toolbar={{
+                  fontFamily: {
+                    options: fonts
+                  }
+                }}
                 onEditorStateChange={newEditorState => {
                   this.setEditorState(newEditorState);
                 }}
