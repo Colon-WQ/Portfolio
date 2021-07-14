@@ -6,7 +6,6 @@ import LoginResult from './components/LoginResult';
 import Logout from './components/Logout';
 import Dashboard from './components/Dashboard';
 import Support from './components/Support/Support';
-import SupportPages from './components/Support/SupportPages';
 import Tutorial from './components/Tutorial/Tutorial';
 import Portfolio from './components/Portfolio/Portfolio';
 import Publish from './components/Portfolio/Publish';
@@ -53,7 +52,7 @@ ReactDOM.render(
                 <Route exact path = '/logout' component = {Logout}></Route>
                 <Route exact path = '/faq' component = {Faq}></Route>
                 <Route exact path = '/support' component = {Support}></Route>
-                <Route path = '/support/:id' component = {SupportPages}></Route>
+                <Route path = '/support/:id' component = {Support}></Route>
                 <Route path = '/learn' component = {Tutorial}></Route>
             </>
           </Switch>
