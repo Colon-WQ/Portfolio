@@ -12,6 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Box, Button, Divider, Drawer, Hidden, IconButton } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
+import { VscColorMode } from 'react-icons/vsc';
 
 /**
  * @file Home component serves as a welcome page to users and provides functionalities that allow
@@ -45,7 +46,7 @@ const styles = (theme) => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    backgroundColor: `${theme.palette.primary.main}aa`,
+    backgroundColor: theme.palette.background.light,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -140,17 +141,17 @@ const styles = (theme) => ({
       backgroundColor: theme.palette.error.dark
     }
   },
-  dashboardButton: {
-    color: theme.palette.error.main,
-    '&:hover': {
-      backgroundColor: theme.palette.error.dark
-    }
+  standardBtn: {
   },
   avatar_button: {
     width: 'auto'
   },
   logoTextDecor: {
     color: "#FF0000"
+  },
+  icon: {
+    fill: theme.palette.text.primary,
+    color: theme.palette.text.primary
   }
 });
 
@@ -219,7 +220,7 @@ class Navbar extends Component {
 
     this.handleUserMenu();
 
-    
+
   }
 
   /**
@@ -275,22 +276,25 @@ class Navbar extends Component {
             : classes.appBar}>
           <ToolBar className={classes.toolbar}>
             <IconButton className={classes.homeButton} onClick={this.handleReturnHome}>
-              <ResumateSVG width="1em" height="1em" />
-              <Typography component="h1" variant="h6" color="inherit" fontWeight="bold" noWrap className={classes.title}>
-                <Box fontWeight="bold">Resu<span className={classes.logoTextDecor} >mate</span></Box>
+              <ResumateSVG width="1em" height="1em" className={classes.icon} />
+              <Typography component="h1" variant="h5" fontWeight="bold" noWrap className={`${classes.title} ${classes.icon}`}>
+                <Box fontWeight="bold">RESU<span className={classes.logoTextDecor} >MATE</span></Box>
               </Typography>
             </IconButton>
-            {loggedIn 
+            <IconButton onClick={(event) => this.props.toggleLight()} style={{ display: 'none' }}>
+              <VscColorMode />
+            </IconButton>
+            {loggedIn
               ?
-                <Button 
-                  startIcon={<Avatar src={avatar_url} />}
-                  onClick={this.handleUserMenu}
-                  className={!this.state.user_drawer_open ? classes.avatar_button : classes.hide}>
-                  {name}
-                </Button>
+              <Button
+                startIcon={<Avatar src={avatar_url} />}
+                onClick={this.handleUserMenu}
+                className={!this.state.user_drawer_open ? classes.avatar_button : classes.hide}>
+                {name}
+              </Button>
               :
-                <Button onClick={this.handleUserMenu} className={!this.state.user_drawer_open ? classes.dashboardButton : classes.hide}>
-                  MENU
+              <Button onClick={this.handleUserMenu} className={!this.state.user_drawer_open ? classes.standardBtn : classes.hide}>
+                MENU
                 </Button>
             }
           </ToolBar>
@@ -307,51 +311,38 @@ class Navbar extends Component {
           }}
           open={this.state.user_drawer_open}
         >
-          {
-            loggedIn
-            ?
-              <div className={classes.drawerDiv}>
-                <Hidden xsDown>
+          <div className={classes.drawerDiv}>
+            {
+              loggedIn
+                ? <Hidden xsDown>
                   <Avatar src={avatar_url} className={classes.expandedAvatar} />
                 </Hidden>
-                <Typography variant="h4" className={classes.title}>
-                  {name}
-                </Typography>
-                <Divider />
-                <List className={classes.flexDown}>
-                  <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
+                : null
+            }
+
+            <Typography variant="h4" className={classes.title}>
+              {name}
+            </Typography>
+            <Divider />
+            <List className={classes.flexDown}>
+              <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.standardBtn}>
+                DASHBOARD
+                  </Button>
+              <Button onClick={this.handleFAQ} fullWidth={true} className={classes.standardBtn}>
+                FAQ
+                  </Button>
+              <Button onClick={this.restartProductTour} fullWidth={true} className={classes.standardBtn}>
+                START TOUR
+                  </Button>
+              {
+                loggedIn
+                  ? <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
                     LOGOUT
                   </Button>
-                  <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
-                    DASHBOARD
-                  </Button>
-                  <Button onClick={this.handleFAQ} fullWidth={true} className={classes.dashboardButton}>
-                    FAQ
-                  </Button>
-                  <Button onClick={this.restartProductTour} fullWidth={true} className={classes.dashboardButton}>
-                    START TOUR
-                  </Button>
-                </List>
-              </div>
-            :
-              <div className={classes.drawerDiv}>
-                <Typography variant="h4" className={classes.title}>
-                  {name}
-                </Typography>
-                <Divider />
-                <List className={classes.flexDown}>
-                  <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.dashboardButton}>
-                    DASHBOARD
-                  </Button>
-                  <Button onClick={this.handleFAQ} fullWidth={true} className={classes.dashboardButton}>
-                    FAQ
-                  </Button>
-                  <Button onClick={this.restartProductTour} fullWidth={true} className={classes.dashboardButton}>
-                    START TOUR
-                  </Button>
-                </List>
-              </div>
-          }
+                  : null
+              }
+            </List>
+          </div>
         </Drawer>
         <div className={classes.appBarSpacer} />
       </div>

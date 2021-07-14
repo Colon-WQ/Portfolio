@@ -32,7 +32,6 @@ class SupportPages extends Component {
         <Contents />
       )
     }
-    
   }
 }
 

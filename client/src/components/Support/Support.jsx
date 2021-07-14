@@ -74,7 +74,6 @@ class Support extends Component {
       </div>
     )
   }
-
 }
 
 export default withStyles(styles)(Support);

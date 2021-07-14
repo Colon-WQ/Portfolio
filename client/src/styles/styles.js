@@ -5,10 +5,14 @@ export const light = {
   palette: {
       type: 'light',
       primary: {
-        main: '#FEF9C7',
+        main: '#0096c7',
+        light: '#00b4d8',
+        dark: '#0077b6'
       },
       secondary: {
-        main: '#FCE181',
+        main: '#c71f37',
+        light: '#da1e37',
+        dark: '#85182a'
       },
       contrastPrimary: {
         main: '#9FEDD7'
@@ -17,22 +21,48 @@ export const light = {
         main: '#026670'
       },
       tertiary: {
-        light: '#687A8F',
-        main: '#9FEDD7',
-        dark: '#e76f51',
-        contrastText: '#fff'
+        main: '#3e8914',
+        light: '#3da35d',
+        dark: '#134611'
       },
       background: {
-        default: '#fff',
-        light: '#faf7e3',
-        dark: '#687A8F'
+        light: '#ffffff',
+        dark: '#eaeaea',
+        default: '#f4f4f4',
+        paper: '#ffffff',
       },
       text: {
-        primary: '#264653',
-        secondary: '#2a9d8f'
+        primary: '#000000',
+        secondary: '#073b4c',
+        contrast: '#ffffff'
       }
     },
+    
     typography: {
+      h1: {
+        fontSize: '3rem'
+      },
+      h2: {
+        fontSize: '2.5rem'
+      },
+      h3: {
+        fontSize: '2rem'
+      },
+      h4: {
+        fontSize: '1.5rem'
+      },
+      h5: {
+        fontSize: '1.25rem'
+      },
+      h6: {
+        fontSize: '1rem'
+      },
+      body1: {
+        fontSize: '1rem'
+      },
+      body2: {
+        fontSize: '0.875rem'
+      },
       fontFamily: [
         '-apple-system',
         'BlinkMacSystemFont',
@@ -50,31 +80,67 @@ export const light = {
 }
 
 export const dark = {
-    palette: {
-      type: 'dark',
+  palette: {
+      type: 'light',
       primary: {
-        light: '#EEEEEE',
-        main: '#444444',
-        dark: '#222222',
+        main: '#0096c7',
+        light: '#00b4d8',
+        dark: '#0077b6'
       },
       secondary: {
-        light: '#ff4081',
-        main: '#f50057',
-        dark: '#c51162',
-        contrastText: '#fff'
+        main: '#c71f37',
+        light: '#da1e37',
+        dark: '#85182a'
       },
-      error: {
-        light: '#e57373',
-        main: '#f44336',
-        dark: '#d32f2f',
-        contrastText: '#fff'
+      contrastPrimary: {
+        main: '#9FEDD7'
+      },
+      contrastSecondary: {
+        main: '#026670'
+      },
+      tertiary: {
+        main: '#3e8914',
+        light: '#3da35d',
+        dark: '#134611'
+      },
+      background: {
+        light: '#404040',
+        dark: '#202020',
+        default: '#303030',
+        paper: '#404040',
       },
       text: {
-        primary: 'rgba(255, 255, 255, 0.87)',
-        secondary: 'rgba(0, 0, 0, 0.87)'
+        primary: '#ffffff',
+        secondary: '#caf0f8',
+        contrast: '#000000'
       }
     },
+    
     typography: {
+      h1: {
+        fontSize: '3rem'
+      },
+      h2: {
+        fontSize: '2.5rem'
+      },
+      h3: {
+        fontSize: '2rem'
+      },
+      h4: {
+        fontSize: '1.5rem'
+      },
+      h5: {
+        fontSize: '1.25rem'
+      },
+      h6: {
+        fontSize: '1rem'
+      },
+      body1: {
+        fontSize: '1rem'
+      },
+      body2: {
+        fontSize: '0.875rem'
+      },
       fontFamily: [
         '-apple-system',
         'BlinkMacSystemFont',
@@ -89,7 +155,7 @@ export const dark = {
         }
       }
     }
-  };
-//visit here to see what to override 
-//https://material-ui.com/customization/default-theme/
-export const theme = responsiveFontSizes(createMuiTheme(light));
+}
+
+export const lightTheme = responsiveFontSizes(createMuiTheme(light));
+export const darkTheme = responsiveFontSizes(createMuiTheme(dark));

@@ -312,7 +312,7 @@ class Home extends Component {
             <Typography component="h2" variant="h2" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
               {'Show, not tell.'}
             </Typography>
-            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
+            <Typography component="h3" variant="body1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
               {'Sometimes words don\'t do your accomplishments justice.\nShowcase your best work in a visual, interactive website.'}
             </Typography>
             {loggedIn
@@ -355,7 +355,7 @@ class Home extends Component {
           <div
             className={`${classes.flexColumn} ${classes.featureDiv}`}
           >
-            <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
+            <Typography component="h2" variant="h4" color="inherit" className={classes.title}>
               Pre-Built templates
             </Typography>
             <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
@@ -372,7 +372,7 @@ class Home extends Component {
           <div
             className={`${classes.flexColumn} ${classes.featureDiv}`}
           >
-            <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
+            <Typography component="h2" variant="h4" color="inherit" className={classes.title}>
               Free forever, no watermarks
           </Typography>
             <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
@@ -399,7 +399,7 @@ class Home extends Component {
           <div
             className={`${classes.flexColumn} ${classes.featureDiv}`}
           >
-            <Typography component="h4" variant="h4" color="inherit" className={classes.title}>
+            <Typography component="h2" variant="h4" color="inherit" className={classes.title}>
               Fuss free process
           </Typography>
             <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
@@ -413,10 +413,10 @@ class Home extends Component {
         <div className={`${classes.flexRow} ${classes.messageDiv}`}>
           <RiFileCodeLine size="20em" className={classes.riFileCodeLine} />
           <div className={classes.autoMargin}>
-            <Typography component="h3" variant="h3" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
+            <Typography component="h2" variant="h2" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
               Ready to take it a step further?
             </Typography>
-            <Typography component="h6" variant="subtitle1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
+            <Typography component="body1" variant="body1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
               {'You\'ve got your website up and running.\n How about giving web development a shot? \n Beginner javascript projects to advanced full stack tutorials, we have it all.'}
             </Typography>
             <Button
