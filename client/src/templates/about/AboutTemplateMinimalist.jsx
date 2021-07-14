@@ -107,25 +107,6 @@ export const convertToHtml = (htmlString) => {
     paragraphs[0].style.marginBlockStart = "0px";
     paragraphs[paragraphs.length - 1].style.marginBlockEnd = "0px";
   }
-  const fonts = []
-  placeholder.querySelectorAll('[style]').forEach(element => {
-    element.style.cssText.split(';').map(part => {
-      var temp = null
-      if (part.startsWith('font-family')) {
-        temp = part.substring(13);
-      }
-      if (part.startsWith(' font-family')) {
-        temp = part.substring(14);
-      }
-      if (temp) {
-        if (!fonts.includes(temp)) {
-          fonts.push(temp);
-        }
-      }
-      
-    })
-  })
-  console.log('css stuff',fonts);
 
   return placeholder.innerHTML;
 }
