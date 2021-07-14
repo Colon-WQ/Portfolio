@@ -1,26 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Navbar from './components/Navbar';
-import Home from './components/Home';
-import LoginResult from './components/LoginResult';
-import Logout from './components/Logout';
-import Dashboard from './components/Dashboard';
-import Support from './components/Support/Support';
-import SupportPages from './components/Support/SupportPages';
-import Tutorial from './components/Tutorial/Tutorial';
-import Portfolio from './components/Portfolio/Portfolio';
-import Publish from './components/Portfolio/Publish';
-import UserConfirmation from './components/UserConfirmation';
-import ErrorDisplay from './components/ErrorDisplay';
-import Faq from './components/Faq';
 import { createStore, applyMiddleware } from 'redux';
-import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
-import { theme } from './styles/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
+import App from './components/App';
 
 
 /**
@@ -36,30 +21,7 @@ const store = createStore(
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme = {theme}>
-      <BrowserRouter
-        getUserConfirmation={(message, callback) => UserConfirmation(message, callback)}
-      >
-        <Provider store = {store}>
-          <ErrorDisplay/>
-          <Switch>
-            <Route exact path = '/' component = {Home}></Route>
-            <>
-              <Navbar/>
-                <Route exact path = '/login/callback' component = {LoginResult}></Route>
-                <Route exact path = '/dashboard' component = {Dashboard}></Route>
-                <Route exact path = '/edit' component = {Portfolio}></Route>
-                <Route exact path = '/publish' component = {Publish}></Route>
-                <Route exact path = '/logout' component = {Logout}></Route>
-                <Route exact path = '/faq' component = {Faq}></Route>
-                <Route exact path = '/support' component = {Support}></Route>
-                <Route path = '/support/:id' component = {SupportPages}></Route>
-                <Route path = '/learn' component = {Tutorial}></Route>
-            </>
-          </Switch>
-        </Provider>
-      </BrowserRouter>
-    </ThemeProvider>
+    <App store={store}/>
   </React.StrictMode>,
   document.getElementById('root')
 );

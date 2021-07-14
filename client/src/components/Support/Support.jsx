@@ -9,7 +9,7 @@ class Support extends Component {
     const { classes } = this.props;
 
     return (
-      <div>
+      <div className={classes.root}>
         <h2>Topics</h2>
       </div>
     )

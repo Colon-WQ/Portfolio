@@ -21,6 +21,19 @@ export const fonts = [
   'Brush Script MT',
   'LiquidCrystal'
 ];
+
+export const webSafeFonts = [
+  'Arial',
+  'Verdana',
+  'Helvetica',
+  'Tahoma',
+  'Trebuchet MS',
+  'Times New Roman',
+  'Georgia',
+  'Garamond',
+  'Courier New',
+  'Brush Script MT'
+]
 /*
  * Other formats: 'woff2', 'truetype, 'opentype', 'embedded-opentype', and 'svg'
  * however material UI only supports ttf, woff2

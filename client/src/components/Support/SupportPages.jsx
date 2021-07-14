@@ -5,6 +5,9 @@ import { withRouter } from 'react-router-dom';
 import * as pages from './pages';
 
 const styles = theme => ({
+  root: {
+    backgroundColour: '#f00'
+  }
 })
 
 class SupportPages extends Component {
@@ -13,7 +16,7 @@ class SupportPages extends Component {
 
     const Contents = pages[this.props.match.params.id.toLowerCase()];
     return (
-      <Contents />
+      <Contents classes={classes} />
     )
   }
 }

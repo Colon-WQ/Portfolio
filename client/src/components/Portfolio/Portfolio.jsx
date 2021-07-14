@@ -16,12 +16,12 @@ import Publish from './Publish';
 import axios from 'axios';
 import DirectoryManager from './DirectoryManager';
 import { Prompt, withRouter } from 'react-router-dom';
-import { theme } from '../../styles/styles';
 import html2canvas from 'html2canvas';
 import FormData from 'form-data';
 import { handleErrors } from '../../handlers/errorHandler';
 import ErrorBoundary from '../ErrorBoundary';
 import Joyride from 'react-joyride';
+import { webSafeFonts } from '../../styles/fonts';
 
 
 import { create } from 'jss';
@@ -336,14 +336,11 @@ class Portfolio extends Component {
   handleCreateFile(page, prepend) {
     // Allow users to create empty pages so they can create their own pages
     const entries = page.entries;
-    console.log(page);
     if (entries === []) return [];
 
     // removes 'root' placeholder
-    console.log(page.directory)
     const directory = `${prepend}${page.directory === 'root' ? '' : page.directory + "/"}`;
     const images = [];
-    console.log(entries);
 
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
@@ -392,13 +389,35 @@ class Portfolio extends Component {
     //We also need to wrap that component with the theme we are using so that the style can reference it properly
     //Suspect that because certain styles are missing, their defaults may be injected into our app, resulting in default css styles.
     const rawHTML = ReactDOMServer.renderToString(sheets.collect(
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={this.props.theme}>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {copy.map((entry, index) => this.renderEntry(entry))}
         </div>
       </ThemeProvider>
     ));
 
+    let fontString = '';
+    let includedFonts = [];
+
+    entries.map((entry, index) => {
+      Object.entries(entry.fonts).map(([field, font]) => {
+        if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
+          return;
+        }
+        if (fontString === '') {
+          fontString = `family=${font.replace(' ', '+')}`;
+          includedFonts.push(font);
+        } else {
+          fontString = `${fontString}&family=${font.replace(' ', '+')}`;
+          includedFonts.push(font);
+        }
+      });
+    })
+
+
+    if (fontString !== '') {
+      fontString = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${fontString}">`
+    }
 
     // TODO: add title
     // TODO: remove empty files
@@ -407,6 +426,7 @@ class Portfolio extends Component {
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
+                ${fontString === '' ? '' : fontString}
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="X-UA-Compatible" content="ie=edge">
                 <link href="styles.css" rel="stylesheet">
@@ -416,6 +436,7 @@ class Portfolio extends Component {
             <body>
             ${rawHTML}
             </body>`);
+
     const css = Base64.encode(sheets.toString());
     const js = Base64.encode(copy
       .map((entry, index) => templates[entry.type][entry.style].script(index))
