@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { manualNext } from '../../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip } from '@material-ui/core';
-import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle } from "react-icons/fa";
+import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip, Divider } from '@material-ui/core';
+import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle, FaCog } from "react-icons/fa";
 import { fonts } from '../../styles/fonts';
 import * as icons from '../../styles/icons';
 import ImagePicker from './ImagePicker';
@@ -60,22 +60,28 @@ const styles = (theme) => ({
     margin: '1vw',
     display: 'grid',
     width: '100%',
+    gridTemplateColumns: 'repeat(auto-fill, max(15vw, 150px))',
     gridTemplateRows: 'auto'
+  },
+  textLabel: {
+    width: '5vw',
+    minWidth: '50px'
   },
   imgGrid: {
     margin: '1vw',
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, 150px)'
+    gridTemplateColumns: 'repeat(auto-fill, 6vw)'
   },
   imgPreview: {
     width: '5vw',
-    height: '5vw'
+    height: '5vw',
+    objectFit: 'cover'
   },
   sectionDiv: {
     width: '100%',
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     marginTop: 'auto'
   },
   div: {
@@ -86,26 +92,34 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'row',
     overflow: 'auto',
+    alignItems: 'center',
   },
   colDiv: {
     width: '100%',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBlock: '10px'
   },
   styleDiv: {
     display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    overflow: 'auto'
+    flexDirection: 'row',
+    overflow: 'auto',
+    width: 'max-content',
+    height: 'max-content'
   },
   addSectionSpacer: {
     height: theme.spacing(5)
   },
-  ctrlDiv: {
+  controlDiv: {
     display: 'flex',
     flexDirection: 'row',
     marginTop: 'auto',
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    '& > *': {
+      marginRight: '0.5rem',
+      marginBottom: '0.2vh'
+    }
   },
   editFAB: {
     position: 'absolute',
@@ -163,19 +177,33 @@ const styles = (theme) => ({
   },
   textDiv: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'start'
   },
-  textLabel: {
-    textDecoration: 'underline'
-  },
   colBtn: {
-    padding: '1px',
-    minWidth: 0
+    padding: '3px',
+    minWidth: 0,
+    width: 'max-content',
+    height: 'max-content',
+  },
+  colourDiv: {
+    display: 'grid',
+    width: '100%',
+    gridTemplateColumns: 'repeat(auto-fill, 3em)',
+    gridTemplateRows: 'repeat(auto-fill, 3em)',
+    justifyContent: 'center',
+    overflowY: 'auto',
   },
   headerDiv: {
     padding: '5px'
+  },
+  settingsDiv: {
+    display: 'flex',
+    flexDirection: 'column',
+    textAlign: 'left',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
 
@@ -259,14 +287,10 @@ class EntryEditor extends PureComponent {
     this.handleIconSelect = this.handleIconSelect.bind(this);
     this.handleFont = this.handleFont.bind(this);
     this.handleShiftSection = this.handleShiftSection.bind(this);
+    this.collectFontFamilies = this.collectFontFamilies.bind(this);
+    this.collectFontFamily = this.collectFontFamily.bind(this);
 
     this.fileUploadRef = React.createRef();
-    // this.imgColPickerRef = React.createRef();
-
-    //helper function for collectFontFamilies
-    this.collectFontFamily = this.collectFontFamily.bind(this);
-    //The function to collect fontfamilies from RTE outputs
-    this.collectFontFamilies = this.collectFontFamilies.bind(this);
   }
 
   // TODO: elements read from state instead of props
@@ -341,7 +365,8 @@ class EntryEditor extends PureComponent {
               format: 'image'
             }
           },
-          anchorEl: null
+          anchorEl: null,
+          sectionAnchorEL: null
         })
       } else {
         const newSections = [...this.state.sections];
@@ -366,7 +391,8 @@ class EntryEditor extends PureComponent {
   handleDeleteSection(event) {
     const spliced = this.state.sections.filter((item, filterIndex) => filterIndex !== this.state.currentSection);
     this.setState({
-      sections: spliced
+      sections: spliced,
+      sectionAnchorEL: null
     })
   }
 
@@ -383,7 +409,8 @@ class EntryEditor extends PureComponent {
       sections[index + modifier] = temp;
       this.setState({
         sections: sections,
-        currentSection: index + modifier
+        currentSection: index + modifier,
+        sectionAnchorEL: null
       });
     }
   }
@@ -413,7 +440,7 @@ class EntryEditor extends PureComponent {
   }
 
   collectFontFamilies() {
-    
+
     const texts = this.state.texts;
     const textsInfo = this.state.info.texts;
     const tempFonts = [];
@@ -428,12 +455,12 @@ class EntryEditor extends PureComponent {
       }
     });
 
-    
+
 
     if (this.state.sections.texts) {
       const sectionTexts = this.state.sections.texts;
       const sectionTextsInfo = this.state.sections.entryFormat.texts;
-      
+
       Object.keys(sectionTexts).map(key => {
         if (sectionTextsInfo[key].type === 'complexText') {
           this.collectFontFamily(draftToHtml(sectionTexts[key])).map(font => {
@@ -489,7 +516,7 @@ class EntryEditor extends PureComponent {
       this.props.manualNext(3);
     }
 
-    
+
 
     if (save) {
       const ret = this.state.data;
@@ -501,7 +528,7 @@ class EntryEditor extends PureComponent {
       ret.texts = this.state.texts;
       ret.sections = this.state.sections;
       ret.RTEfonts = this.collectFontFamilies();
-      
+
       this.props.onClose(ret, true);
     } else {
       this.props.onClose(null, false);
@@ -687,93 +714,114 @@ class EntryEditor extends PureComponent {
                 </div>
               </div>
             </Modal>
-            <div className={classes.rowDiv}>
+            <div className={classes.colDiv}>
               <div className={classes.styleDiv}>
-                <div>
+                <div className={classes.colDiv}>
+                  <Typography variant="caption" display="block">
+                    Dimensions
+                    </Typography>
                   <DimensionSlider
-                    label={'width'}
+                    label={'width:'}
                     defaultValue={this.state.width}
                     onClose={(save, value) => this.handleChange(value, 'width')}
                   />
                   <DimensionSlider
-                    label={'height'}
+                    label={'height:'}
                     defaultValue={this.state.height}
                     onClose={(save, value) => this.handleChange(value, 'height')}
                   />
                 </div>
-                {Object.entries(this.state.fonts).map(([key, item]) => {
-                  return (
-                    <div>
-                      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event, key)}>
-                        <Typography variant="inherit" style={{ fontFamily: item }}>
-                          {this.state.info.fonts[key].label}
-                        </Typography>
-                      </Button>
-                      <Menu
-                        name={key}
-                        id={key}
-                        anchorEl={this.state.anchorEl}
-                        keepMounted
-                        open={this.state.showUI === UI.FONT && Boolean(this.state.anchorEl)}
-                        onClose={() => this.setState({ anchorEl: null, showUI: UI.NONE })}
-                      >
-                        {fonts.map((fontName) => (
-                          <MenuItem onClick={(event) => this.handleFont(event, key, fontName)}>
-                            <Typography variant="inherit" style={{ fontFamily: fontName }}>
-                              {fontName}
-                            </Typography>
-                          </MenuItem>
-                        ))}
-                      </Menu>
-                    </div>
-                  )
-                })}
-                {Object.entries(this.state.colours).map(([key, item]) => {
-                  return (
-                    <div>
-                      <Button
-                        className={classes.colBtn}
-                        variant="outlined"
-                        onClick={(event) => this.setState({
-                          anchorEl: event.currentTarget,
-                          showUI: UI.COLOUR,
-                          editCategory: 'colours',
-                          editField: key,
-                          editSection: false
-                        })}
-                      >
-                        <div
-                          style={{ width: '2em', height: '2em', backgroundColor: item }}
-                        />
-                      </Button>
-                      <Typography component="h6" variant="h6">
-                        {this.state.info.colours[key].label}
-                      </Typography>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className={classes.colDiv}>
-                <div className={classes.rowDiv}>
-                  <div className={classes.imgGrid}>
-                    {Object.entries(this.state.images).map(([key, item]) => {
-                      let Preview;
-                      switch (item.format) {
-                        case 'image':
-                          Preview = (props) => <img src={item.src} className={classes.imgPreview} />;
-                          break;
-                        case 'icon':
-                          const category = item.src.split('/');
-                          Preview = icons[category[0]].icons[category[1]];
-                          break;
-                        case 'colour':
-                          Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
-                          break;
-                        default:
-                          break;
-                      }
+                <Divider orientation="vertical" variant="middle" />
+                <div className={classes.colDiv}>
+                  <Typography variant="caption" display="block">
+                    Colours
+                  </Typography>
+                  <div className={classes.colourDiv}>
+                    {Object.entries(this.state.colours).map(([key, item]) => {
                       return (
-                        <div>
+                        <Tooltip title={this.state.info.colours[key].label}>
+                          <Button
+                            className={classes.colBtn}
+                            variant="outlined"
+                            onClick={(event) => this.setState({
+                              anchorEl: event.currentTarget,
+                              showUI: UI.COLOUR,
+                              editCategory: 'colours',
+                              editField: key,
+                              editSection: false
+                            })}
+                          >
+                            <div
+                              style={{ width: '2em', height: '2em', backgroundColor: item }}
+                            />
+                          </Button>
+                        </Tooltip>
+                      )
+                    })}
+                  </div>
+                </div>
+                <Divider orientation="vertical" variant="middle" />
+                <div className={classes.colDiv}>
+                  <Typography variant="caption" display="block">
+                    Fonts
+                  </Typography>
+                  {Object.entries(this.state.fonts).map(([key, item]) => {
+                    return (
+                      <div className={classes.rowDiv}>
+                        <Typography noWrap>
+                          {`${this.state.info.fonts[key].label}: `}
+                        </Typography>
+                        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={(event) => this.handleFont(event, key)}>
+                          <Typography variant="inherit" style={{ fontFamily: item }}>
+                            {item}
+                          </Typography>
+                        </Button>
+                        <Menu
+                          name={key}
+                          id={key}
+                          anchorEl={this.state.anchorEl}
+                          keepMounted
+                          open={this.state.showUI === UI.FONT && Boolean(this.state.anchorEl)}
+                          onClose={() => this.setState({ anchorEl: null, showUI: UI.NONE })}
+                        >
+                          {fonts.map((fontName) => (
+                            <MenuItem onClick={(event) => this.handleFont(event, key, fontName)}>
+                              <Typography variant="inherit" style={{ fontFamily: fontName }}>
+                                {fontName}
+                              </Typography>
+                            </MenuItem>
+                          ))}
+                        </Menu>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+              <div className={classes.colDiv} >
+                <Divider orientation="horizontal" style={{ width: '100%' }} />
+                <Typography variant="caption" display="block">
+                  Media
+                </Typography>
+                <div className={classes.imgGrid}>
+                  {Object.entries(this.state.images).map(([key, item]) => {
+                    let Preview;
+                    switch (item.format) {
+                      case 'image':
+                        Preview = (props) => <img src={item.src} className={classes.imgPreview} />;
+                        break;
+                      case 'icon':
+                        const category = item.src.split('/');
+                        Preview = icons[category[0]].icons[category[1]];
+                        break;
+                      case 'colour':
+                        Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
+                        break;
+                      default:
+                        break;
+                    }
+                    return (
+                      <div>
+                        <Tooltip title={this.state.info.images[key].label}>
                           <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState(
                             {
                               anchorEl: event.currentTarget,
@@ -783,256 +831,247 @@ class EntryEditor extends PureComponent {
                               showUI: UI.NONE
                             })}>
                             <Preview />
-                            <Typography>
-                              {this.state.info.images[key].label}
-                            </Typography>
                           </Button>
-                          <Menu
-                            id="media-menu"
-                            anchorEl={this.state.anchorEl}
-                            keepMounted
-                            open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editCategory === 'images' && this.state.editField === key}
-                            onClose={() => this.setState({ anchorEl: null })}
-                          >
-                            {this.state.info.images[key].format.map((format) => {
-                              switch (format) {
-                                case 'image':
-                                  return (<MenuItem onClick={() => {
-                                    this.setState({
-                                      showUI: UI.IMAGE,
-                                      editFormat: 'image',
+                        </Tooltip>
+                        <Menu
+                          id="media-menu"
+                          anchorEl={this.state.anchorEl}
+                          keepMounted
+                          open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editCategory === 'images' && this.state.editField === key}
+                          onClose={() => this.setState({ anchorEl: null })}
+                        >
+                          {this.state.info.images[key].format.map((format) => {
+                            switch (format) {
+                              case 'image':
+                                return (<MenuItem onClick={() => {
+                                  this.setState({
+                                    showUI: UI.IMAGE,
+                                    editFormat: 'image',
+                                    anchorEl: null,
+                                  })
+                                }}
+                                >{format}</MenuItem>)
+                              case 'icon':
+                                const category = item.src.split('/');
+                                return (<MenuItem onClick={() => this.setState(
+                                  {
+                                    showUI: UI.ICON,
+                                    iconCategory: category[0],
+                                    editFormat: 'icon',
+                                    anchorEl: null,
+                                  })}
+                                >{format}</MenuItem>);
+                              case 'colour':
+                                return (
+                                  <MenuItem
+                                    onClick={(event) => this.setState({
+                                      anchorEl: event.currentTarget,
+                                      showUI: UI.COLOUR,
+                                      editFormat: 'colour',
                                       anchorEl: null,
                                     })
-                                  }}
-                                  >{format}</MenuItem>)
+                                    }
+                                  > { format}</MenuItem>);
+                              default:
+                                break;
+                            }
+                          })}
+                        </Menu>
+                      </div>
+                    );
+                  })}
+                </div>
+
+              </div>
+              <div className={classes.colDiv}>
+                <Divider orientation="horizontal" style={{ width: '100%' }} />
+                <Typography variant="caption" display="block">
+                  Texts
+                </Typography>
+                <div className={classes.textGrid}>
+                  {Object.entries(this.state.texts).map(([key, item]) =>
+                    <div className={classes.textDiv}>
+                      <Typography variant="h6" component="h3" className={classes.textLabel} align="left">
+                        {`${this.state.info.texts[key].label}: `}
+                      </Typography>
+                      {this.state.info.texts[key].type === "complexText"
+                        ? <TextEditor
+                          item={item}
+                          label={this.state.info.texts[key].label}
+                          onClose={(value) => this.handleChange(value, key, "texts")}
+                        />
+                        : <SimpleTextEditor
+                          label={this.state.info.texts[key].label}
+                          item={item}
+                          onClose={(value) => this.handleChange(value, key, "texts")}
+                          category={"texts"}
+                          section={false}
+                        />}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {this.state.info.sections.enabled &&
+                <div className={classes.sectionDiv}>
+                  <Divider orientation="horizontal" style={{ width: '100%' }} />
+                  <Typography variant="caption" display="block">
+                    Section Data
+                </Typography>
+                  <div className={classes.rowDiv} style={{ position: 'relative' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', marginInline: 'auto', alignItems: 'center' }}>
+                      <IconButton id="left" onClick={() => this.handleSectionView(-1)}>
+                        <FaChevronLeft />
+                      </IconButton>
+                      <Typography component="h4" variant="h4">
+                        {
+                          this.state.currentSection === this.state.sections.length
+                            ? 'Add new section'
+                            : `Section ${this.state.currentSection + 1}`
+                        }
+                      </Typography>
+                      <IconButton id="right" onClick={() => this.handleSectionView(1)}>
+                        <FaChevronRight />
+                      </IconButton>
+                    </div>
+                    {this.state.currentSection !== this.state.sections.length
+                      ?
+                      <div>
+                        <IconButton onClick={(event) => this.setState({ sectionAnchorEL: event.target })}
+                          style={{ position: 'absolute', right: 0, top: 0 }}>
+                          <FaCog />
+                        </IconButton>
+                        <Menu
+                          anchorEl={this.state.sectionAnchorEL}
+                          keepMounted
+                          open={Boolean(this.state.sectionAnchorEL)}
+                          onClose={() => this.setState({ sectionAnchorEL: null })}
+                        >
+                          <MenuItem onClick={() => this.handleShiftSection(-1)}>shift section up</MenuItem>
+                          <MenuItem onClick={() => this.handleShiftSection(1)}>shift section up</MenuItem>
+                          <MenuItem onClick={(event) => this.handleDeleteSection(event)}>delete section</MenuItem>
+                        </Menu>
+                      </div>
+                      : null
+                    }
+                  </div>
+
+                  {
+                    this.state.currentSection === this.state.sections.length
+                      ? <IconButton onClick={this.handleCreateEntry}><FaPlus /></IconButton>
+                      : <div className={classes.rowDiv} style={{ alignItems: 'flex-start' }}>
+                        <div className={classes.colDiv}>
+                          <Typography variant="caption" display="block">
+                            Section Media
+                          </Typography>
+                          <div className={classes.imgGrid}>
+                            {Object.entries(this.state.sections[this.state.currentSection].images).map(([key, item]) => {
+                              let Preview;
+                              switch (item.format) {
+                                case 'image':
+                                  Preview = (props) => <img src={item.src} className={classes.imgPreview} />;
+                                  break;
                                 case 'icon':
                                   const category = item.src.split('/');
-                                  return (<MenuItem onClick={() => this.setState(
-                                    {
-                                      showUI: UI.ICON,
-                                      iconCategory: category[0],
-                                      editFormat: 'icon',
-                                      anchorEl: null,
-                                    })}
-                                  >{format}</MenuItem>);
+                                  const SvgIcon = icons[category[0]].icons[category[1]];
+                                  Preview = (props) => <SvgIcon size='3em' />
+                                  break;
                                 case 'colour':
-                                  return (
-                                    <MenuItem
-                                      onClick={(event) => this.setState({
-                                        anchorEl: event.currentTarget,
-                                        showUI: UI.COLOUR,
-                                        editFormat: 'colour',
-                                        anchorEl: null,
-                                      })
-                                      }
-                                    > { format}</MenuItem>);
+                                  Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
+                                  break;
                                 default:
                                   break;
                               }
-                            })}
-                          </Menu>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className={classes.textGrid}>
-                    {Object.entries(this.state.texts).map(([key, item]) => {
-                      if (this.state.info.texts[key].type === "complexText") {
-                        return (
-                          <div className={classes.textDiv}>
-                            <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
-                            <TextEditor
-                              item={item}
-                              label={this.state.info.texts[key].label}
-                              onClose={(value) => this.handleChange(value, key, "texts")}
-                            />
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div className={classes.textDiv}>
-                            <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.texts[key].label}</Typography>
-                            <SimpleTextEditor
-                              label={this.state.info.texts[key].label}
-                              item={item}
-                              onClose={(value) => this.handleChange(value, key, "texts")}
-                              category={"texts"}
-                              section={false}
-                            />
-                          </div>
-                          // <TextField
-                          //   name={key}
-                          //   id={key}
-                          //   label={this.state.info.texts[key].label}
-                          //   value={item}
-                          //   margin="normal"
-                          //   variant="outlined"
-                          //   onChange={(event) => this.handleChange(event, "texts")}
-                          // />
-                        );
-                      }
-                    })}
-                  </div>
-                </div>
-                {this.state.info.sections.enabled &&
-                  <div className={classes.sectionDiv}>
-                    <IconButton id="left" onClick={() => this.handleSectionView(-1)}>
-                      <FaChevronLeft />
-                    </IconButton>
-                    {
-                      this.state.currentSection === this.state.sections.length
-                        ? <div className={classes.colDiv}>
-                          <Typography component="h4" variant="h4" className={classes.colDiv}>Add new section</Typography>
-                          <div className={classes.addSectionSpacer} />
-                          <IconButton onClick={this.handleCreateEntry}><FaPlus /></IconButton>
-                        </div>
-                        : <div className={classes.colDiv}>
-                          <div className={`${classes.rowDiv} ${classes.headerDiv}`}>
-                            <Typography component="h4" variant="h4" className={classes.colDiv}>Section {this.state.currentSection + 1}</Typography>
-                            <ButtonGroup
-                              variant="contained"
-                              color="default"
-                              size="medium"
-                            >
-                              <Button onClick={() => this.handleShiftSection(-1)}>Shift Up</Button>
-                              <Button onClick={() => this.handleShiftSection(1)}>Shift Down</Button>
-                            </ButtonGroup>
-                            <Button
-                              variant="contained"
-                              color="default"
-                              size="medium"
-                              onClick={(event) => this.handleDeleteSection(event)}
-                              startIcon={<FaTrashAlt />}
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                          <div className={classes.rowDiv}>
-                            <div className={classes.imgGrid}>
-                              {Object.entries(this.state.sections[this.state.currentSection].images).map(([key, item]) => {
-                                let Preview;
-                                switch (item.format) {
-                                  case 'image':
-                                    Preview = (props) => <img src={item.src} className={classes.imgPreview} />;
-                                    break;
-                                  case 'icon':
-                                    const category = item.src.split('/');
-                                    const SvgIcon = icons[category[0]].icons[category[1]];
-                                    Preview = (props) => <SvgIcon size='3em' />
-                                    break;
-                                  case 'colour':
-                                    Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
-                                    break;
-                                  default:
-                                    break;
-                                }
-                                return (
-                                  <div>
-                                    <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState({
-                                      anchorEl: event.currentTarget,
-                                      editField: key,
-                                      editSection: true,
-                                      showUI: UI.NONE
-                                    })}>
-                                      <div className={classes.entryInfoDiv}>
-                                        <Preview />
-                                        <Typography>
-                                          {this.state.info.sections.entryFormat.images[key].label}
-                                        </Typography>
-                                      </div>
+                              return (
+                                <div>
+                                  <Tooltip title={this.state.info.sections.entryFormat.images[key].label}>
+                                    <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState(
+                                      {
+                                        anchorEl: event.currentTarget,
+                                        editField: key,
+                                        editSection: true,
+                                        editCategory: 'images',
+                                        showUI: UI.NONE
+                                      })}>
+                                      <Preview />
                                     </Button>
-                                    <Menu
-                                      id="media-menu"
-                                      anchorEl={this.state.anchorEl}
-                                      keepMounted
-                                      open={Boolean(this.state.anchorEl) && this.state.editSection && this.state.editField === key}
-                                      onClose={() => this.setState({ anchorEl: null })}
-                                    >
-                                      {this.state.info.sections.entryFormat.images[key].format.map((format) => {
-                                        // TODO: debug change format errors
-                                        switch (format) {
-                                          case 'image':
-                                            return (<MenuItem onClick={() => this.setState(
-                                              {
-                                                showUI: UI.IMAGE,
-                                                editFormat: 'image'
-                                              })}
-                                            >{format}</MenuItem>)
-                                          case 'icon':
-                                            const category = item.src.split('/');
-                                            return (<MenuItem onClick={() => this.setState(
-                                              {
-                                                showUI: UI.ICON,
-                                                iconCategory: category[0],
-                                                editFormat: 'icon'
-                                              })}
-                                            >{format}</MenuItem>);
-                                          case 'colour':
-                                            return (<MenuItem onClick={(event) => this.setState({
-                                              anchorEl: event.currentTarget,
-                                              showUI: UI.COLOUR,
-                                              editFormat: 'colour'
-                                            })
-                                            }>{format}</MenuItem>);
-                                          default:
-                                            break;
-                                        }
-                                      })}
-                                    </Menu>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                            <div className={classes.textGrid}>
-                              {Object.entries(this.state.sections[this.state.currentSection].texts).map(([key, item]) => {
-                                // TODO: make maxRow field in info?
-                                if (this.state.info.sections.entryFormat.texts[key].type === "complexText") {
-                                  return (
-                                    <div className={classes.textDiv}>
-                                      <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
-                                      <TextEditor
-                                        item={item}
-                                        label={this.state.info.sections.entryFormat.texts[key].label}
-                                        onClose={(value, name) => this.handleChange(value, key, "texts", true)} />
-                                    </div>
-                                  );
-                                } else {
-                                  return (
-                                    <div className={classes.textDiv}>
-                                      <Typography className={classes.textLabel} variant="h6" component="h6">{this.state.info.sections.entryFormat.texts[key].label}</Typography>
-                                      <SimpleTextEditor
-                                        label={this.state.info.sections.entryFormat.texts[key].label}
-                                        item={item}
-                                        onClose={(value) => this.handleChange(value, key, "texts", true)}
-                                        category={"texts"}
-                                        section={true}
-                                      />
-                                    </div>
-                                    // <TextField
-                                    //   name={key}
-                                    //   id={key}
-                                    //   label={this.state.info.sections.entryFormat.texts[key].label}
-                                    //   value={item}
-                                    //   margin="normal"
-                                    //   variant="outlined"
-                                    //   onChange={(event) => this.handleChange(event, 'texts', true)}
-                                    //   multiline
-                                    //   rowsMax={3}
-                                    // />
-                                  );
-                                }
-                              })}
-                            </div>
+                                  </Tooltip>
+                                  <Menu
+                                    id="media-menu"
+                                    anchorEl={this.state.anchorEl}
+                                    keepMounted
+                                    open={Boolean(this.state.anchorEl) && this.state.editSection && this.state.editField === key}
+                                    onClose={() => this.setState({ anchorEl: null })}
+                                  >
+                                    {this.state.info.sections.entryFormat.images[key].format.map((format) => {
+                                      // TODO: debug change format errors
+                                      switch (format) {
+                                        case 'image':
+                                          return (<MenuItem onClick={() => this.setState(
+                                            {
+                                              showUI: UI.IMAGE,
+                                              editFormat: 'image'
+                                            })}
+                                          >{format}</MenuItem>)
+                                        case 'icon':
+                                          const category = item.src.split('/');
+                                          return (<MenuItem onClick={() => this.setState(
+                                            {
+                                              showUI: UI.ICON,
+                                              iconCategory: category[0],
+                                              editFormat: 'icon'
+                                            })}
+                                          >{format}</MenuItem>);
+                                        case 'colour':
+                                          return (<MenuItem onClick={(event) => this.setState({
+                                            anchorEl: event.currentTarget,
+                                            showUI: UI.COLOUR,
+                                            editFormat: 'colour'
+                                          })
+                                          }>{format}</MenuItem>);
+                                        default:
+                                          break;
+                                      }
+                                    })}
+                                  </Menu>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
-                    }
-                    <IconButton id="right" onClick={() => this.handleSectionView(1)}>
-                      <FaChevronRight />
-                    </IconButton>
-                  </div>}
-              </div>
+                        <Divider orientation="vertical" variant="middle" flexItem />
+                        <div className={classes.colDiv}>
+                          <Typography variant="caption" display="block">
+                            Section Text
+                          </Typography>
+                          <div className={classes.textGrid}>
+                            {Object.entries(this.state.sections[this.state.currentSection].texts).map(([key, item]) =>
+                              <div className={classes.textDiv}>
+                                <Typography variant="h6" component="h3" className={classes.textLabel} align="left">
+                                  {`${this.state.info.sections.entryFormat.texts[key].label}: `}
+                                </Typography>
+                                {
+                                  this.state.info.sections.entryFormat.texts[key].type === "complexText"
+                                    ? <TextEditor
+                                      item={item}
+                                      label={this.state.info.sections.entryFormat.texts[key].label}
+                                      onClose={(value, name) => this.handleChange(value, key, "texts", true)} />
+                                    : <SimpleTextEditor
+                                      label={this.state.info.sections.entryFormat.texts[key].label}
+                                      item={item}
+                                      onClose={(value) => this.handleChange(value, key, "texts", true)}
+                                      category={"texts"}
+                                      section={true}
+                                    />
+                                }
+                              </div>)}
+                          </div>
+                        </div>
+                      </div>
+                  }
+
+                </div>}
             </div>
-            <div className={classes.ctrlDiv}>
+            <div className={classes.controlDiv}>
               <Fab variant="extended" onClick={() => this.handleCloseEditor(true)}><FaSave />Save</Fab>
               <Fab variant="extended" onClick={() => this.handleCloseEditor(false)}><FaTimes />Cancel</Fab>
             </div>
@@ -1055,10 +1094,10 @@ const mapStateToProps = state => ({
   isTourRunning: state.tour.run
 })
 
-/** 
+/**
  * Provides action creators to Home component's props.
- * 
- * @type {Object.<Function>} 
+ *
+ * @type {Object.< Function >}
  * @memberof EntryEditor
  */
 const mapDispatchToProps = {

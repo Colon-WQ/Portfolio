@@ -47,7 +47,7 @@ const styles = (theme) => ({
     width: '80%',
     height: '80%',
     margin: 'auto',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.default,
     textAlign: 'center',
   },
   cardDiv: {
@@ -204,7 +204,7 @@ class ImagePicker extends Component {
         className={classes.modal}
         // open always set to true, open/close logic handled by portfolio
         open={this.props.open}
-        // TODO: add onClose save logic
+        hideBackdrop
         onClose={() => this.handleClose(true)}
         aria-labelledby="Image gallery"
         aria-describedby="Select any image"

@@ -108,11 +108,21 @@ class DimensionSlider extends Component {
     const { classes } = this.props;
     return (
       <div>
-        <Typography>{this.props.label}</Typography>
-        <Button
-          ref={this.buttonRef}
-          onClick={(event) => this.setState({ showSlider: true, anchorEl: event.target })}
-        >{this.state.format === 'value' ? `${this.state.value}${this.state.units}` : this.state.format}</Button>
+        <div className={classes.rowDiv}>
+          <Typography>
+            {this.props.label}
+          </Typography>
+          <Button
+            ref={this.buttonRef}
+            onClick={(event) => this.setState({ showSlider: true, anchorEl: event.target })}
+          >
+            {
+              this.state.format === 'value'
+                ? `${this.state.value}${this.state.units}`
+                : this.state.format
+            }
+          </Button>
+        </div>
         <Popover
           open={Boolean(this.state.anchorEl) && this.state.showSlider}
           anchorEl={this.state.anchorEl}
