@@ -58,7 +58,7 @@ class App extends Component {
                 <Route exact path='/logout' component={Logout}></Route>
                 <Route exact path='/faq' component={Faq}></Route>
                 <Route exact path='/support' component={Support}></Route>
-                <Route path='/support/:id' component={SupportPages}></Route>
+                <Route path='/support/:id' component={Support}></Route>
                 <Route path='/learn' component={Tutorial}></Route>
               </>
             </Switch>
