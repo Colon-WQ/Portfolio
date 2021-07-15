@@ -3,6 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Modal from '@material-ui/core/Modal';
 import { withStyles } from '@material-ui/styles';
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
   modal: {
@@ -16,7 +17,9 @@ const styles = theme => ({
   },
   modalButton: {
     marginTop: '1%',
-    marginBottom: '1%'
+    marginBottom: '1%',
+    width: '10vw',
+    minWidth: '100px',
   },
   textArea: {
     height: 'auto',
@@ -34,16 +37,18 @@ class SimpleTextEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: "",
+      text: '',
+      displayText: '',
       modalState: false
     }
     this.setText = this.setText.bind(this);
-    this.toggleModalState = this.toggleModalState.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
     this.setState({
-      text: this.props.item
+      text: this.props.item,
+      displayText: this.props.item
     })
   }
 
@@ -53,9 +58,10 @@ class SimpleTextEditor extends Component {
     })
   }
 
-  toggleModalState(bool) {
+  handleClose(save) {
     this.setState({
-      modalState: bool
+      modalState: !this.state.modalState,
+      displayText: save ? this.state.text : this.state.displayText
     })
   }
 
@@ -66,17 +72,18 @@ class SimpleTextEditor extends Component {
       <div>
         <Button
           className={classes.modalButton}
-          onClick={() => this.toggleModalState(true)}
-          variant="outlined"
+          onClick={() => this.handleClose(true)}
         >
-          {`Edit ${label}`}
+          <Typography noWrap>
+            {this.state.displayText}
+          </Typography>
         </Button>
         <Modal
           className={`${classes.modal} ${classes.subModal}`}
           open={this.state.modalState}
           onClose={() => {
             this.props.onClose(this.state.text);
-            this.toggleModalState(false);
+            this.handleClose(true);
           }}
           aria-labelledby="simple-text-editor"
           aria-describedby="simple-text-editor"
@@ -94,7 +101,7 @@ class SimpleTextEditor extends Component {
             />
           </div>
         </Modal>
-      
+
       </div>
     )
   }

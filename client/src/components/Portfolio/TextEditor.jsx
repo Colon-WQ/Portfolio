@@ -6,6 +6,7 @@ import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import { fonts } from '../../styles/fonts';
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
   editor: {
@@ -50,7 +51,9 @@ const styles = theme => ({
   },
   modalButton: {
     marginTop: '1%',
-    marginBottom: '1%'
+    marginBottom: '1%',
+    width: '10vw',
+    minWidth: '100px',
   },
   finalizeButton: {
     height: '5%',
@@ -103,9 +106,10 @@ class TextEditor extends Component {
         <Button
           className={classes.modalButton}
           onClick={() => this.toggleModalState(true)}
-          variant="outlined"
         >
-          {`Edit ${label}`}
+          <Typography noWrap>
+            {`Edit ${label}`}
+          </Typography>
         </Button>
         <Modal
           className={`${classes.modal} ${classes.subModal}`}

@@ -70,7 +70,11 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'row',
     marginTop: 'auto',
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    '& > *': {
+      marginRight: '0.5rem',
+      marginBottom: '0.2vh'
+    }
   },
   closeBtn: {
     marginLeft: 'auto',
