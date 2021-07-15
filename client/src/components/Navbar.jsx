@@ -184,6 +184,7 @@ class Navbar extends Component {
     this.handleReturnHome = this.handleReturnHome.bind(this);
     this.restartProductTour = this.restartProductTour.bind(this);
     this.handleFAQ = this.handleFAQ.bind(this);
+    this.handleSupport = this.handleSupport.bind(this);
   }
 
   /**
@@ -258,6 +259,11 @@ class Navbar extends Component {
     this.handleUserMenu();
   }
 
+  handleSupport() {
+    this.props.history.push('/support');
+    this.handleUserMenu();
+  }
+
   render() {
 
     const { loggedIn, name, avatar_url, error, classes } = this.props;
@@ -327,13 +333,16 @@ class Navbar extends Component {
             <List className={classes.flexDown}>
               <Button onClick={this.handleReturnDashboard} fullWidth={true} className={classes.standardBtn}>
                 DASHBOARD
-                  </Button>
+              </Button>
               <Button onClick={this.handleFAQ} fullWidth={true} className={classes.standardBtn}>
                 FAQ
-                  </Button>
+              </Button>
               <Button onClick={this.restartProductTour} fullWidth={true} className={classes.standardBtn}>
                 START TOUR
-                  </Button>
+              </Button>
+              <Button onClick={this.handleSupport} fullWidth={true} className={classes.standardBtn}>
+                SUPPORT
+              </Button>
               {
                 loggedIn
                   ? <Button onClick={this.handleLogout} fullWidth={true} className={classes.logoutButton}>
