@@ -412,12 +412,27 @@ class Portfolio extends Component {
           includedFonts.push(font);
         }
       });
+      if (entry.RTEfonts !== undefined) {
+        entry.RTEfonts.map((font, index) => {
+          if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
+            return;
+          }
+          if (fontString === '') {
+            fontString = `family=${font.replace(' ', '+')}`;
+            includedFonts.push(font);
+          } else {
+            fontString = `${fontString}&family=${font.replace(' ', '+')}`;
+            includedFonts.push(font);
+          }
+        })
+      }
     })
 
 
     if (fontString !== '') {
       fontString = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${fontString}">`
     }
+    console.log(fontString);
 
     // TODO: add title
     // TODO: remove empty files
