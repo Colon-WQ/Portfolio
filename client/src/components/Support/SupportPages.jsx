@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { FaDotCircle } from 'react-icons/fa';
-
 import * as pages from './pages';
 
 
