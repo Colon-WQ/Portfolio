@@ -31,6 +31,19 @@ export const LOG_OUT_USER = "LOG_OUT_USER"
 export const REPOPULATE_STATE = "REPOPULATE_STATE"
 
 /**
+ * string that identifies a TOGGLE_UNSAVED_STATE action.
+ * 
+ * @type {string}
+ * @member TOGGLE_UNSAVED_STATE
+ */
+export const TOGGLE_UNSAVED_STATE = "TOGGLE_UNSAVED_STATE"
+
+export const toggle_unsaved_state = bool => ({
+    type: TOGGLE_UNSAVED_STATE,
+    payload: { bool: bool }
+})
+
+/**
  * LOG_IN_USER action creator. This action saves user details contained in res to Redux Store and
  * sets boolean loggedIn in Redux Store to true.
  * 
