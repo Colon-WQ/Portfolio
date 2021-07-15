@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { repopulate_state } from '../../actions/LoginAction';
+import { repopulate_state, toggle_unsaved_state } from '../../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../../actions/PortfolioAction.js';
 import { manualNext, callback } from '../../actions/TourAction';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
@@ -125,31 +125,6 @@ class Portfolio extends Component {
       currentEntryAnchor: null,
 
       autosaveTimer: null,
-      isUnsaved: false,
-      steps: [
-        {
-          target: '#add-template-button',
-          content: 'Click this button to add a template',
-          placement: 'top'
-        },
-        {
-          target: '#save-portfolio-button',
-          content: 'Click this button to save your current portfolio',
-          placement: 'top'
-        },
-        {
-          target: '#manage-directories-button',
-          content: 'Click this button to manage your directories/pages',
-          placement: 'top'
-        },
-        {
-          target: '#publish-portfolio-button',
-          content: this.props.loggedIn
-            ? 'Once satisfied with your current portfolio, you may click this to deploy your portfolio website. Please wait patiently for the link to be generated for you'
-            : 'Once satisfied with your current portfolio, you may click this to download a zip file of your portfolio files',
-          placement: 'top'
-        }
-      ]
     }
 
     this.entryEditorRef = React.createRef();
@@ -207,7 +182,7 @@ class Portfolio extends Component {
   }
 
   /**
-   * componentDidUpdate checks when isUnsaved is changed and triggers a timer to autosave so that we will not save
+   * componentDidUpdate checks when redux store's isUnsaved is changed and triggers a timer to autosave so that we will not save
    * while the user is actively editing his Portfolio.
    * 
    * First sets isTimerExist in state to true
@@ -221,7 +196,7 @@ class Portfolio extends Component {
    */
   componentDidUpdate() {
 
-    if (this.state.isUnsaved && this.state.autosaveTimer === null) {
+    if (this.props.isUnsaved && this.state.autosaveTimer === null) {
       this.state.autosaveTimer = setTimeout(async () => {
         if (this.props.loggedIn) {
           console.log("Autosaving")
@@ -236,11 +211,17 @@ class Portfolio extends Component {
 
   /**
    * Autosave needs to be cancelled if user has already left the portfolio page.
+   * Prompt will already ask if user wishes to save or discard work. If user discards unsaved work, we will
+   * set unsaved state to false before unmounting.
    * 
    * @return void
    * @memberof Portfolio
    */
   componentWillUnmount() {
+    if (this.props.isUnsaved) {
+      console.log("discarding unsaved work")
+      this.props.toggle_unsaved_state(false);
+    }
     if (this.state.autosaveTimer !== null) {
       console.log("unmount clear autosave")
       clearTimeout(this.state.autosaveTimer);
@@ -291,9 +272,7 @@ class Portfolio extends Component {
     })
 
     //triggers Autosave
-    this.setState({
-      isUnsaved: true
-    });
+    this.props.toggle_unsaved_state(true);
   }
 
   /**
@@ -314,8 +293,10 @@ class Portfolio extends Component {
         showEntryMenu: false,
         currentEntryAnchor: null,
         currentPage: currentPage,
-        isUnsaved: true
-      })
+      });
+
+      //triggers autosave
+      this.props.toggle_unsaved_state(true);
     } else {
       this.setState({
         showEntryMenu: false,
@@ -541,9 +522,7 @@ class Portfolio extends Component {
         await this.handleUploadPreview();
 
         //toggle unsaved to false after saving is succesful
-        this.setState({
-          isUnsaved: false
-        })
+        this.props.toggle_unsaved_state(false)
 
         //After toggling unsaved to false, we need to clear the autosave timeout if any
         if (this.state.autosaveTimer !== null) {
@@ -607,10 +586,11 @@ class Portfolio extends Component {
       );
     this.setState({
       pages: newPages,
-      currentPage: currentPage,
-      //triggers Autosave
-      isUnsaved: true
+      currentPage: currentPage
     });
+
+    //triggers Autosave
+    this.props.toggle_unsaved_state(true);
   }
 
   handleShiftEntry(modifier, index) {
@@ -628,8 +608,10 @@ class Portfolio extends Component {
     this.setState({
       pages: newPages,
       currentPage: currentPage,
-      isUnsaved: true
     });
+
+    //triggers Autosave
+    this.props.toggle_unsaved_state(true);
   }
 
   handleUpdatePages(newDirTree) {
@@ -638,9 +620,7 @@ class Portfolio extends Component {
     this.state.currentPath = [];
 
     //Triggers autosave
-    this.setState({
-      isUnsaved: true
-    });
+    this.props.toggle_unsaved_state(true);
   }
 
   handleDirectory(currentPage, currentPath) {
@@ -724,9 +704,7 @@ class Portfolio extends Component {
       pages: this.state.pages
     });
 
-    this.setState({
-      isUnsaved: false
-    });
+    this.props.toggle_unsaved_state(false);
 
     //After toggling unsaved to false, we need to clear the autosave timeout if any
     if (this.state.autosaveTimer !== null) {
@@ -739,13 +717,13 @@ class Portfolio extends Component {
   }
 
   render() {
-    const { loggedIn, classes, tourState } = this.props;
+    const { loggedIn, classes, tourState, isUnsaved } = this.props;
 
     return (
       <ErrorBoundary>
         <div className={classes.root}>
           <Prompt
-            when={this.state.isUnsaved}
+            when={isUnsaved}
             message={JSON.stringify({
               message: "Are you sure you want to leave?",
               portfolio: {
@@ -894,6 +872,7 @@ const mapStateToProps = state => ({
   avatar_url: state.login.avatar_url,
   gravatar_id: state.login.gravatar_id,
   currentPortfolio: state.portfolio.currentPortfolio,
+  isUnsaved: state.login.unsaved,
   tourState: state.tour
 })
 
@@ -905,6 +884,7 @@ const mapStateToProps = state => ({
  */
 const mapDispatchToProps = {
   repopulate_state,
+  toggle_unsaved_state,
   saveCurrentWork,
   saveCurrentWorkToLocal,
   manualNext,

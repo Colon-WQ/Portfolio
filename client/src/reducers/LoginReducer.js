@@ -9,7 +9,8 @@
 import { 
     LOG_IN_USER,
     LOG_OUT_USER,
-    REPOPULATE_STATE
+    REPOPULATE_STATE,
+    TOGGLE_UNSAVED_STATE
 } from '../actions/LoginAction';
 
 /** 
@@ -46,7 +47,8 @@ const initialState = {
     id: MISSING,
     avatar_url: MISSING,
     gravatar_id: MISSING,
-    error: null
+    error: null,
+    unsaved: false
 }
 
 //TODO handle actions for GUEST
@@ -89,6 +91,11 @@ export default function login(state = initialState, action) {
                 id: action.payload.id,
                 avatar_url: action.payload.avatar_url,
                 gravatar_id: action.payload.gravatar_id
+            }
+        case TOGGLE_UNSAVED_STATE:
+            return {
+                ...state,
+                unsaved: action.payload.bool
             }
         default:
             return state
