@@ -64,6 +64,12 @@ const styles = (theme) => ({
   fabMain: {
     textAlign: 'center',
     marginLeft: '0.5rem'
+  },
+  previewLink: {
+    marginTop: '0.5rem',
+    marginBottom: '0.75rem',
+    border: '1px solid black',
+    paddingInline: '0.5rem'
   }
 })
 
@@ -91,7 +97,9 @@ class Publish extends Component {
       publishError: false,
       publishErrorMessage: "",
       pageUrl: "",
-      pageCheckIntervalTask: null
+      pageCheckIntervalTask: null,
+      repositoryNameError: false,
+      repositoryNameErrorMessage: ""
     }
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleFinalizeDialogOpen = this.handleFinalizeDialogOpen.bind(this);
@@ -105,11 +113,19 @@ class Publish extends Component {
     this.handleStatusClose = this.handleStatusClose.bind(this);
     this.handleCopyClipboard = this.handleCopyClipboard.bind(this);
     this.handleGuestDownload = this.handleGuestDownload.bind(this);
+    this.handleSetDefaultRepositoryName = this.handleSetDefaultRepositoryName.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      repositoryName: `${this.props.name}.github.io`
+    });
   }
 
 
   /**
    * Handles onChange events. Changes a state variable under the name of the event target to value provided by user.
+   * Also need to reset error and error message accordingly.
    *
    * @param {Object} event
    * @return void
@@ -117,8 +133,15 @@ class Publish extends Component {
    */
   handleOnChange(event) {
     this.setState({
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
+
+    if (event.target.name = 'repositoryName') {
+      this.setState({
+        repositoryNameError: false,
+        repositoryNameErrorMessage: ""
+      })
+    }
   }
 
   /**
@@ -277,46 +300,55 @@ class Publish extends Component {
    * @memberof Publish
    */
   async handleFinalizeEdits() {
-    console.log("chosen repository name is " + this.state.repositoryName)
-    await axios({
-      method: "GET",
-      url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
-      withCredentials: true,
-      params: {
-        repo: this.state.repositoryName
-      }
-    }).then(async res => {
-      console.log(res.data.message)
-      //waits for repository to be created
+
+    if (this.state.repositoryName === "") {
+      this.setState({
+        repositoryNameError: true,
+        repositoryNameErrorMessage: "Repository name cannot be empty. "
+      })
+    } else {
+      console.log("chosen repository name is " + this.state.repositoryName)
       await axios({
-        method: "POST",
-        url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
+        method: "GET",
+        url: process.env.REACT_APP_BACKEND + "/portfolio/checkExistingRepos",
         withCredentials: true,
-        data: {
+        params: {
           repo: this.state.repositoryName
         }
-      }).then(response => {
-        console.log(response.data.message)
+      }).then(async res => {
+        console.log(res.data.message)
+        //waits for repository to be created
+        await axios({
+          method: "POST",
+          url: process.env.REACT_APP_BACKEND + "/portfolio/createRepo",
+          withCredentials: true,
+          data: {
+            repo: this.state.repositoryName
+          }
+        }).then(response => {
+          console.log(response.data.message)
+        }).catch(err => {
+          handleErrors(err, this.props.history);
+        })
+
+        //no need to wait for push to go through
+        this.handlePushToGithub();
       }).catch(err => {
-        handleErrors(err, this.props.history);
+        if (err.response.status === 404 && err.response.data === `${this.state.repositoryName} exists. Possible data loss. Requires user permission`) {
+          this.setState({
+            overrideDialogState: true
+          })
+        } else {
+          handleErrors(err, this.props.history);
+        }
       })
 
-      //no need to wait for push to go through
-      this.handlePushToGithub();
-    }).catch(err => {
-      if (err.response.status === 404 && err.response.data === `${this.state.repositoryName} exists. Possible data loss. Requires user permission`) {
-        this.setState({
-          overrideDialogState: true
-        })
-      } else {
-        handleErrors(err, this.props.history);
-      }
-    })
-
-    //Intentional: closes finalizeDialog but doesn't remove repository name.
-    this.setState({
-      finalizeDialogState: false
-    })
+      //Intentional: closes finalizeDialog but doesn't remove repository name.
+      this.setState({
+        finalizeDialogState: false
+      })
+    }
+    
   }
 
   /**
@@ -401,6 +433,15 @@ class Publish extends Component {
    */
   handleCopyClipboard() {
     navigator.clipboard.writeText(this.state.pageUrl)
+  }
+
+  //Also cancels out error since default name will be accepted.
+  handleSetDefaultRepositoryName() {
+    this.setState({
+      repositoryName: `${this.props.name}.github.io`,
+      repositoryNameError: false,
+      repositoryNameErrorMessage: ""
+    });
   }
 
 
@@ -496,8 +537,6 @@ class Publish extends Component {
               </React.Fragment>
             }
           />
-
-
         </Snackbar>
 
         <Dialog
@@ -510,18 +549,32 @@ class Publish extends Component {
                     </DialogTitle>
           <DialogContent>
             <DialogContentText >
-              Choose a Github repository name to save portfolio edits
-                        </DialogContentText>
+              Choose a Github repository name to save portfolio edits. By default, we will use your Github page root repository.
+            </DialogContentText>
             <TextField
               name="repositoryName"
               autoFocus
               margin="dense"
               label="Repository Name"
               type="string"
-              defaultValue={this.state.repositoryName}
+              value={this.state.repositoryName}
               fullWidth
               onChange={this.handleOnChange}
+              error={this.state.repositoryNameError}
+              helperText={this.state.repositoryNameErrorMessage}
             />
+            <div className={classes.previewLink}>
+              <span>Preview: </span>
+              {this.state.repositoryName === `${this.props.name}.github.io` 
+                ? `https://${this.state.repositoryName}`
+                : this.state.repositoryName === ""
+                  ? "Invalid Repository Name"
+                  : `https://${this.props.name}.github.io/${this.state.repositoryName}`
+              }
+            </div>
+            <Button onClick={this.handleSetDefaultRepositoryName} variant='outlined'>
+              Set Default
+            </Button>
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleFinalizeDialogClose}>
@@ -540,7 +593,7 @@ class Publish extends Component {
         >
           <DialogTitle id="override permission input">
             Warning!
-                    </DialogTitle>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
               Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
@@ -568,6 +621,7 @@ class Publish extends Component {
  */
 const mapStateToProps = state => ({
   loggedIn: state.login.loggedIn,
+  name: state.login.name,
   isTourRunning: state.tour.run
 })
 
