@@ -31,7 +31,7 @@ const styles = theme => ({
   }
 })
 
-class EntryEditor extends Component {
+class Entryeditor extends Component {
   render() {
     const { classes } = this.props;
 
@@ -58,4 +58,4 @@ class EntryEditor extends Component {
   }
 }
 
-export default withStyles(styles)(EntryEditor);
+export default withStyles(styles)(Entryeditor);
