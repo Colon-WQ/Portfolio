@@ -11,7 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { FaDotCircle } from 'react-icons/fa';
 
-const drawerWidth = '20vh'
+const drawerWidth = '25vh'
 
 const styles = theme => ({
   root: {

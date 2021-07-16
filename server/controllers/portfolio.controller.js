@@ -257,7 +257,8 @@ export const upsertPortfolio = async (req, res) => {
             directory: requestPage.directory,
             portfolio: portfolio._id,
             // directories: requestPage.directories. Shldn't set to this, need to reset it.
-            directories: {}
+            directories: {},
+            backgroundColor: requestPage.backgroundColor
         });
 
         //new entries array for requestPage for ids
