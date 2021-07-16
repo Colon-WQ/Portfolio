@@ -12,7 +12,7 @@ const styles = theme => ({
   },
   subDialog: {
     width: '80%',
-    height: '10%',
+    height: 'max-content',
     margin: 'auto',
   },
   dialogButton: {

@@ -329,6 +329,7 @@ class Portfolio extends Component {
         showTheme: false,
         themeAnchor: null
       });
+      document.body.style.backgroundColor = colour;
 
       //triggers autosave
       this.props.toggle_unsaved_state(true);
@@ -524,8 +525,8 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   async handleSavePortfolio() {
-    console.log("saving begins");
-    console.log(this.state.pages);
+    console.log("saving...");
+    // console.log(this.state.pages);
     await axios({
       method: "PUT",
       url: process.env.REACT_APP_BACKEND + "/portfolio/upsert",
