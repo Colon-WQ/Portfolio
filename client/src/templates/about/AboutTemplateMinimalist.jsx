@@ -5,6 +5,7 @@ import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
 import draftToHtml from 'draftjs-to-html';
 import { Markup } from 'interweave';
+import { Divider } from '@material-ui/core';
 
 
 const styles = (theme) => ({
@@ -12,45 +13,18 @@ const styles = (theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "start",
-    padding: "0px",
+    padding: "5%",
     alignItems: "center",
     width: "100%",
     height: 'auto'
   },
+  box: {
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
+    width: '100%',
+    height: '100%'
+  }
 });
-
-const initialTitle = {
-  entityMap: {},
-  blocks: [
-    {
-      key: "e4brl",
-      text: "About Me",
-      type: "unstyled",
-      depth: 0,
-      inlineStyleRanges: [
-        {
-          offset: 0,
-          length: 8,
-          style: "BOLD"
-        },
-        {
-          offset: 0,
-          length: 8,
-          style: "fontsize-30"
-        },
-        {
-          offset: 0,
-          length: 8,
-          style: "fontfamily-Tahoma"
-        }
-      ],
-      entityRanges: [],
-      data: {}
-    }
-  ]
-};
-
-initialTitle.blocks.map(block => block.data['text-align'] = "center");
 
 const initialContent = {
   entityMap: {},
@@ -70,33 +44,13 @@ const initialContent = {
       entityRanges: [],
       data: {}
     },
-    {
-      key: "apr5k",
-      text: "I am a hard worker.",
-      type: "unstyled",
-      depth: 0,
-      inlineStyleRanges: [
-        {
-          length: 19,
-          offset: 0,
-          style: "fontfamily-Tahoma"
-        },
-        {
-          length: 4,
-          offset: 7,
-          style: "BOLD"
-        }
-      ],
-      entityRanges: [],
-      data: {}
-    }
   ]
 };
 
 initialContent.blocks.map(block => block.data['text-align'] = "center");
 
 export const convertToHtml = (htmlString) => {
-  
+
   const placeholder = document.createElement('div');
   placeholder.innerHTML = htmlString;
   const paragraphs = placeholder.getElementsByTagName("p");
@@ -121,11 +75,11 @@ class AboutTemplateMinimalist extends Component {
   static info = {
     fonts: {},
     colours: {
-      headerBackgroundFill: { label: "header background fill" },
-      bodyBackgroundFill: { label: "body background fill" }
+      bg: { label: "background fill" },
+      primary: { label: "primary colour" }
     },
     images: {},
-    texts: { title: { label: "Title", type: "complexText" }, content: { label: "Description", type: "complexText" } },
+    texts: { title: { label: "Title", type: "simpleText" }, content: { label: "Description", type: "complexText" } },
     sections: {}
   };
 
@@ -138,12 +92,12 @@ class AboutTemplateMinimalist extends Component {
     height: "80vh",
     fonts: {},
     colours: {
-      headerBackgroundFill: "whitesmoke",
-      bodyBackgroundFill: "#FFFFFF"
+      bg: "#e8dfcf",
+      primary: "#d19a19"
     },
     images: {},
     texts: {
-      title: initialTitle,
+      title: 'About me',
       content: initialContent
     },
     sections: []
@@ -155,33 +109,35 @@ class AboutTemplateMinimalist extends Component {
     return (
       <div
         className={classes.root}
+        style={{
+          backgroundColor: fields.colours.bg
+        }}
       >
-        <Card
-          style={{ width: fields.width, border: 'none', boxShadow: 'none', borderRadius: '0px' }}
+        <Typography
+          component="h2"
+          variant="h2"
+          style={{
+            color: fields.colours.primary,
+            fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`
+          }}
         >
-          <CardContent
-            style={{ padding: '0px' }}
+          {fields.texts.title}
+        </Typography>
+        <div
+          className={classes.box}
+          style={{
+            borderTopColor: fields.colours.primary
+          }}
+        >
+          <Typography
+            style={{
+              backgroundColor: fields.colours.bg,
+              paddingInline: '10%',
+            }}
           >
-            <Typography
-              style={{
-                textAlign: 'center',
-                backgroundColor: fields.colours.headerBackgroundFill,
-              }}
-            >
-              <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.title))} />
-            </Typography>
-            <Typography
-              style={{
-                backgroundColor: fields.colours.bodyBackgroundFill,
-                paddingInline: '10%',
-              }}
-            >
-              <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.content))} />
-            </Typography>
-
-          </CardContent>
-
-        </Card>
+            <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.content))} />
+          </Typography>
+        </div>
       </div>
     )
   }

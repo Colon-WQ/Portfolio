@@ -14,10 +14,11 @@ const styles = (theme) => ({
   },
   std: { display: 'block' },
   textBox: {
-    backgroundColor: '#FFFFFF',
     opacity: '75%',
     padding: '15%',
-    width: 'max-content'
+    width: 'max-content',
+    borderRightWidth: '1px',
+    borderRightStyle: 'solid'
   }
 });
 
@@ -45,7 +46,7 @@ class IntroTemplateMinimalist extends Component {
     height: "80vh",
     fonts: { titleFont: "Roboto" },
     colours: { primary: "#d19a19", secondary: "#000000" },
-    images: { dp: { src: "https://bit.ly/3fRv2Y2", format: 'image' }, bg: { src: "https://bit.ly/2RWO4Ei", format: 'image' } },
+    images: { dp: { src: "https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260", format: 'image' }, bg: { src: "#e8dfcf", format: 'colour' } },
     texts: {
       name: "Port Folio",
       status: "UI/UX developer"
@@ -70,19 +71,35 @@ class IntroTemplateMinimalist extends Component {
       }}>
         <CssBaseline />
         <div style={{ marginLeft: "auto", marginRight: "10%" }}>
-          <Box className={classes.textBox}>
-            <Typography component="h2" variant="h2" style={{ color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif" }}>
-              Hello! my name is
-            </Typography>
-            <Typography component="h1" variant="h1" style={{ color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif` }}>
+          <Box
+            className={classes.textBox}
+            style={{
+              borderRightColor: fields.colours.primary,
+            }}
+          >
+            <Typography
+              component="h1"
+              variant="h1"
+              style={{
+                color: fields.colours.primary,
+                fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`
+              }}
+            >
               {fields.texts.name}
             </Typography>
-            <Typography component="h2" variant="h2" style={{ color: fields.colours.secondary, fontFamily: "Arial, Helvetica, sans-serif" }}>
+            <Typography
+              component="h2"
+              variant="h2"
+              style={{
+                color: fields.colours.secondary,
+                fontFamily: "Arial, Helvetica, sans-serif"
+              }}
+            >
               {fields.texts.status}
             </Typography>
           </Box>
         </div>
-        <img src={fields.images.dp.src} alt="my portrait" style={{ height: "100%", width: "auto", marginRight: "auto" }} />
+        <img src={fields.images.dp.src} alt="my portrait" style={{ height: "100%", width: "30%", marginRight: "auto", objectFit: "contain" }} />
       </div>);
   }
 }

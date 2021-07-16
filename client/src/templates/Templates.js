@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import IntroTemplateMinimalist from './introduction/IntroTemplateMinimalist';
 import TimelineTemplateMinimalist from './timeline/TimelineTemplateMinimalist';
+import AboutTemplateBasic from './about/AboutTemplateBasic';
 import AboutTemplateMinimalist from './about/AboutTemplateMinimalist';
 import IntroTemplateRedline from './introduction/IntroTemplateRedline';
 //  TODO: rename to templates?
@@ -31,6 +32,14 @@ export const templates = {
     },
   ],
   about: [
+    {
+      name: AboutTemplateBasic.templateName,
+      preview: AboutTemplateBasic.preview,
+      component: (fields, id) => (<AboutTemplateBasic fields={fields} id={id}/>),
+      script: AboutTemplateBasic.script,
+      info: AboutTemplateBasic.info,
+      defaultField: AboutTemplateBasic.defaultField
+    },
     {
       name: AboutTemplateMinimalist.templateName,
       preview: AboutTemplateMinimalist.preview,

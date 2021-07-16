@@ -10,12 +10,19 @@ const styles = (theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
+    padding: '30px'
   },
   std: { display: 'block' },
   timelineImg: {
     borderRadius: '50%',
     height: '5vw',
     width: '5vw'
+  },
+  box: {
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    width: '100%',
+    height: '100%'
   },
   title: {
     margin: '5%'
@@ -50,7 +57,7 @@ class TimelineTemplateMinimalist extends Component {
   static info = {
     fonts: { titleFont: { label: "title font" } },
     colours: { primary: { label: "primary" }, secondary: { label: "secondary" } },
-    images: { bg: { label: "Entry background", format: ['image'] } },
+    images: { bg: { label: "Entry background", format: ['image', 'colour'] } },
     texts: { title: { label: "Timeline title" } },
     sections: {
       enabled: true,
@@ -70,7 +77,7 @@ class TimelineTemplateMinimalist extends Component {
     height: "fit-content",
     fonts: { titleFont: "roboto" },
     colours: { primary: "#d19a19", secondary: "#000000" },
-    images: { bg: { src: "https://bit.ly/3i3I9I2", format: 'image' } },
+    images: { bg: { src: "#e8dfcf", format: 'colour' } },
     texts: { title: "My past experiences" },
     sections: [{
       images: { timelineImage: { src: "https://bit.ly/3hXPM2R", format: 'image' } },
@@ -87,7 +94,8 @@ class TimelineTemplateMinimalist extends Component {
     return (
       <div className={classes.root} style={{
         backgroundRepeat: false,
-        backgroundImage: `url("${fields.images.bg.src}")`,
+        backgroundImage: fields.images.bg.format === 'image' ? `url("${fields.images.bg.src}")` : '',
+        backgroundColor: fields.images.bg.format === 'colour' ? fields.images.bg.src : '',
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         width: fields.width,
@@ -97,40 +105,48 @@ class TimelineTemplateMinimalist extends Component {
         textAlign: "center"
       }}>
         <CssBaseline />
-        <Typography
-          component="h2"
-          variant="h2"
+        <div
+          className={classes.box}
           style={{
-            color: fields.colours.primary,
-            fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`
+            borderColor: fields.colours.primary
           }}
-          className={classes.title}
         >
-          {fields.texts.title}
-        </Typography>
-        {fields.sections.map((section, index) => {
-          return (
-            <div className={classes.section}>
-              <img src={section.images.timelineImage.src} className={classes.timelineImg} />
-              <div className={classes.sectionTextDiv}>
-                <Typography
-                  style={{ color: fields.colours.secondary }}
-                  component="h5"
-                  variant="h5"
-                >
-                  {section.texts.timelineDate}
-                </Typography>
-                <Typography
-                  style={{ color: fields.colours.secondary }}
-                  component="h5"
-                  variant="h5"
-                >
-                  {section.texts.timelineTitle}
-                </Typography>
+
+          <Typography
+            component="h2"
+            variant="h2"
+            style={{
+              color: fields.colours.primary,
+              fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`
+            }}
+            className={classes.title}
+          >
+            {fields.texts.title}
+          </Typography>
+          {fields.sections.map((section, index) => {
+            return (
+              <div className={classes.section}>
+                <img src={section.images.timelineImage.src} className={classes.timelineImg} />
+                <div className={classes.sectionTextDiv}>
+                  <Typography
+                    style={{ color: fields.colours.secondary }}
+                    component="h5"
+                    variant="h5"
+                  >
+                    {section.texts.timelineDate}
+                  </Typography>
+                  <Typography
+                    style={{ color: fields.colours.secondary }}
+                    component="h5"
+                    variant="h5"
+                  >
+                    {section.texts.timelineTitle}
+                  </Typography>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>);
   }
 }
