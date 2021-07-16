@@ -21,7 +21,6 @@ const styles = theme => ({
   },
   divider: {
     width: '100%',
-    marginBottom: '1rem'
   },
   topSpace: {
     height: '1vh'

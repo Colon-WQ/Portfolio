@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
+import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -19,9 +20,21 @@ const styles = theme => ({
     padding: '1rem',
     paddingLeft: '2rem'
   },
+  nestedParagraph: {
+    paddingLeft: '2rem'
+  },
+  link: {
+    color: theme.palette.primary.main,
+    textDecoration: 'underline',
+    '&:hover': {
+      color: theme.palette.primary.light
+    }
+  },
+  warning: {
+    color: 'red'
+  },
   divider: {
     width: '100%',
-    marginBottom: '1rem'
   },
   topSpace: {
     height: '1vh'
@@ -64,6 +77,11 @@ class Portfolio extends Component {
             <li>Add Entry button allows user to add prebuilt components/templates into their portfolio.</li>
             <li>Clicking on the Add Entry button will open an interface where the user can browse the available templates</li>
             <li>Select a template to add it into your portfolio</li>
+            <li>You can then edit the template using the Entry Editor</li>
+            <li>{'Read more about the '}
+              <span className={classes.link} onClick={() => this.props.history.push('/support/entryeditor')}>Entry Editor</span>
+              {` interface`}
+            </li>
         </ul>
         <Divider orientation="horizontal" className={classes.divider}/>
 
@@ -71,11 +89,27 @@ class Portfolio extends Component {
         <ul className={classes.paragraph}>
             <li>Manage Directory button allows user to manage pages within their portfolio</li>
             <li>
-                What are pages? The pages we are referring to are your portfolio website's pages. The default page in which you currently have would be your root page
-                and is available at https://your-github-username.github.io/, where your-github-username is your Github username.
-                Suppose you were to add a page called 'skills', then it would be displayed if you visit https://your-github-username.github.io/skills.
+                What are pages?
             </li>
+
+            <div className={classes.nestedParagraph}>
+              <li>
+                The pages we are referring to are your portfolio website's pages. 
+              </li>
+              <li>
+                The default page in which you currently have would be your root page
+                and is available at https://your-github-username.github.io/, where your-github-username is your Github username.
+              </li>
+              <li>
+                Suppose you were to add a page called 'skills', then it would be displayed if you visit https://your-github-username.github.io/skills.
+              </li>
+            </div>
+            
             <li>If you have multiple pages, then it would be a directory. The Manage Directory button will open an interface that allows the user to add, delete and rename pages.</li>
+            <li>{'Read more about '}
+              <span className={classes.link} onClick={() => this.props.history.push('/support/directorymanager')}>Directory Manager</span>
+              {' interface'}
+            </li>
         </ul>
         <Divider orientation="horizontal" className={classes.divider}/>
 
@@ -84,12 +118,28 @@ class Portfolio extends Component {
             <li>
                 For users, the Publish button will open a dialog asking for the user to input a name for the Github repository they wish to use. 
                 If the Github repository does not exist, it will be created.
-                The name input is by default the root repository of the user's Github page.
             </li>
+            <div className={classes.nestedParagraph}>
+              <li>The name input is by default the root repository of the user's Github page.</li>
+              <li>A preview exists to show you the link that your website will have according to the repository name you chose</li>
+              <li>You can revert to the default input by clicking on the Set Default button</li>
+            </div>
             <li>
-                Once done, click on the Finalize button. If the name provided matches a Github repository already owned by the user, another dialog will show asking the user
-                for permission to override the contents in the existing Github repository.
+                Once done, click on the Finalize button to proceed with publish operation, otherwise click Cancel to cancel the publish operation.
             </li>
+            <div className={classes.nestedParagraph}>
+              <li>
+                If the name provided matches a Github repository already owned by the user, another dialog will show asking the user
+                for permission to override the contents in the existing Github repository.
+              </li>
+              <li>
+                If you wish to override, click on Override button, otherwise click on Cancel to cancel the publish operation.
+              </li>
+              <li>
+                <span className={classes.warning}>
+                *This override action is irreversible by the app. Make sure you do not have important content already present in your existing Github repository.*
+                </span></li>
+            </div>
         </ul>
         <Divider orientation="horizontal" className={classes.divider}/>
 
@@ -106,4 +156,4 @@ class Portfolio extends Component {
   }
 }
 
-export default withStyles(styles)(Portfolio);
+export default withStyles(styles)(withRouter(Portfolio));
