@@ -113,7 +113,7 @@ class Dashboard extends Component {
       changedName: "",
       images: {},
       defaultPreviewSrc: "https://cdn.dribbble.com/users/200733/screenshots/15094543/media/fb4bf141f17b05df82f77926d94ccd6d.png",
-      guestPortfolioName: ""
+      guestPortfolioName: "",
     }
 
     this.handleAddPortfolio = this.handleAddPortfolio.bind(this);
@@ -167,14 +167,11 @@ class Dashboard extends Component {
           this.setState({
             guestPortfolioName: portfolioLocalStorageItem.name
           });
-        } else { //If no prior portfolio stored in localStorage, then guest user could be new
-          this.props.beginTour();
         }
 
-      }
+        //decided to not give product tour for guest.
 
-      
-      
+      }
   }
 
   /**
@@ -258,6 +255,7 @@ class Dashboard extends Component {
    * @memberof Dashboard
    */
   handleAddPortfolio() {
+
     if (this.state.portfolioName === "") {
       this.setState({
         duplicateKeyError: true,
@@ -265,6 +263,11 @@ class Dashboard extends Component {
       })
     } else {
       if (this.props.portfolios.filter(portfolio => portfolio.name === this.state.portfolioName).length === 0) {
+        //If tour is running, we need to update the tour's step
+        if (this.props.tourState.run) {
+          this.props.manualNext(1);
+        }
+
         //This clears current work from local, so we need to arrest the screen whenever user attempts to leave a portfolio
         //page and remind him to save before leaving.
         this.props.clearCurrentWorkFromLocal();
@@ -541,8 +544,6 @@ class Dashboard extends Component {
       
     }
 
-    
-
     return (
       <div className={classes.root}>
         <div className={classes.appBarSpacer} />
@@ -688,13 +689,7 @@ class Dashboard extends Component {
               Cancel
             </Button>
             <Button
-              onClick={() => {
-                //If tour is running, we need to update the tour's step
-                if (tourState.run) {
-                  this.props.manualNext(1);
-                }
-                this.handleAddPortfolio();
-              }}
+              onClick={this.handleAddPortfolio}
             >
               Set Name
             </Button>

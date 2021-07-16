@@ -1,7 +1,6 @@
 
 import { 
     START,
-    RESTART,
     STOP,
     NEXT_OR_PREV,
     NEXT

@@ -319,7 +319,8 @@ export const upsertPortfolio = async (req, res) => {
                 colours: requestEntry.colours,
                 images: requestEntry.images,
                 texts: requestEntry.texts,
-                sections: requestEntry.sections
+                sections: requestEntry.sections,
+                RTEfonts: requestEntry.RTEfonts
             });
 
             if (entry._id === undefined) {
