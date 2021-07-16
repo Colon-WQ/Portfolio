@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Modal, TextField, Tooltip, Typography } from '@material-ui/core';
+import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Dialog, TextField, Tooltip, Typography, Dialogy } from '@material-ui/core';
 import axios from 'axios';
 import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
@@ -25,27 +25,22 @@ import pexelsLogo from '../../res/assets/pexels logo.png';
  * @param {Object} theme 
  */
 const styles = (theme) => ({
-  root: {
+  rootDiv: {
+    padding: '20px',
+    height: '100%',
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '5%',
-    textAlign: 'center',
-    backgroundColor: theme.palette.background.default,
-    opacity: '85%'
+    flexDirection: 'column'
   },
   title: {
     marginRight: 'auto',
     fontWeight: 'bold'
   },
-  modal: {
+  dialog: {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    padding: '1%',
-    width: '80%',
-    height: '80%',
+    width: '90%',
+    height: '90%',
     margin: 'auto',
     backgroundColor: theme.palette.background.default,
     textAlign: 'center',
@@ -62,11 +57,6 @@ const styles = (theme) => ({
   cardMedia: {
     maxHeight: 200,
     overflowY: 'hidden'
-  },
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
   },
   fab: {
     marginLeft: '5px',
@@ -200,16 +190,17 @@ class ImagePicker extends Component {
     const { classes } = this.props;
     // console.log(this.state)
     return (
-      <Modal
-        className={classes.modal}
+      <Dialog
+        className={classes.dialog}
+        maxWidth="xl"
+        fullScreen
         // open always set to true, open/close logic handled by portfolio
         open={this.props.open}
-        hideBackdrop
         onClose={() => this.handleClose(true)}
         aria-labelledby="Image gallery"
         aria-describedby="Select any image"
       >
-        <div className={classes.root}>
+        <div className={classes.rootDiv}>
           <input
             accept="image/*"
             className={classes.hide}
@@ -299,7 +290,7 @@ class ImagePicker extends Component {
             </Fab>
           </div>
         </div>
-      </Modal>
+      </Dialog>
     )
   }
 }

@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Modal from '@material-ui/core/Modal';
+import Dialog from '@material-ui/core/Dialog';
 import { withStyles } from '@material-ui/styles';
 import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
-  modal: {
+  dialog: {
     position: 'fixed',
     padding: '1%',
   },
-  subModal: {
+  subDialog: {
     width: '80%',
     height: '10%',
     margin: 'auto',
   },
-  modalButton: {
+  dialogButton: {
     marginTop: '1%',
     marginBottom: '1%',
     width: '10vw',
@@ -39,7 +39,7 @@ class SimpleTextEditor extends Component {
     this.state = {
       text: '',
       displayText: '',
-      modalState: false
+      dialogState: false
     }
     this.setText = this.setText.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -60,7 +60,7 @@ class SimpleTextEditor extends Component {
 
   handleClose(save) {
     this.setState({
-      modalState: !this.state.modalState,
+      dialogState: !this.state.dialogState,
       displayText: save ? this.state.text : this.state.displayText
     })
   }
@@ -71,16 +71,18 @@ class SimpleTextEditor extends Component {
     return (
       <div>
         <Button
-          className={classes.modalButton}
+          className={classes.dialogButton}
           onClick={() => this.handleClose(true)}
         >
           <Typography noWrap>
             {this.state.displayText}
           </Typography>
         </Button>
-        <Modal
-          className={`${classes.modal} ${classes.subModal}`}
-          open={this.state.modalState}
+        <Dialog
+          maxWidth="xl"
+          fullScreen
+          className={`${classes.dialog} ${classes.subDialog}`}
+          open={this.state.dialogState}
           onClose={() => {
             this.props.onClose(this.state.text);
             this.handleClose(true);
@@ -100,7 +102,7 @@ class SimpleTextEditor extends Component {
               onChange={(event) => this.setText(event.target.value)}
             />
           </div>
-        </Modal>
+        </Dialog>
 
       </div>
     )

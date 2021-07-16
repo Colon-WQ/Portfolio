@@ -53,7 +53,9 @@ class App extends Component {
                 <Navbar toggleLight={this.handleToggleLight} />
                 <Route exact path='/login/callback' component={LoginResult}></Route>
                 <Route exact path='/dashboard' component={Dashboard}></Route>
-                <Route exact path='/edit' component={Portfolio} theme={this.state.lightMode ? lightTheme : darkTheme}></Route>
+                <Route exact path='/edit'>
+                  <Portfolio theme={this.state.lightMode ? lightTheme : darkTheme} />
+                </Route>
                 <Route exact path='/publish' component={Publish}></Route>
                 <Route exact path='/logout' component={Logout}></Route>
                 <Route exact path='/faq' component={Faq}></Route>

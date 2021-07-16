@@ -3,10 +3,9 @@ import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { withStyles } from '@material-ui/styles';
 import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
-import Modal from '@material-ui/core/Modal';
-import Button from '@material-ui/core/Button';
 import { fonts } from '../../styles/fonts';
-import { Typography } from '@material-ui/core';
+import { Button, Fab, Dialog, Typography } from '@material-ui/core';
+import { FaSave } from 'react-icons/fa';
 
 const styles = theme => ({
   editor: {
@@ -34,7 +33,10 @@ const styles = theme => ({
   },
   modalDiv: {
     height: '100%',
-    width: '100%'
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '10px'
   },
   modal: {
     position: 'fixed',
@@ -43,11 +45,11 @@ const styles = theme => ({
     justifyContent: 'start',
     padding: '1%',
   },
-  subModal: {
+  subDialog: {
     width: '80%',
     height: '80%',
     margin: 'auto',
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.background.default
   },
   modalButton: {
     marginTop: '1%',
@@ -56,16 +58,7 @@ const styles = theme => ({
     minWidth: '100px',
   },
   finalizeButton: {
-    height: '5%',
-    width: '10%',
-    marginLeft: "90%",
-    marginRight: "0%",
-    marginTop: '1.5%',
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: 'green',
-      color: 'white'
-    }
+    marginLeft: 'auto',
   }
 })
 
@@ -78,7 +71,7 @@ class TextEditor extends Component {
     }
     // this.setHideToolbar = this.setHideToolbar.bind(this);
     this.setEditorState = this.setEditorState.bind(this);
-    this.toggleModalState = this.toggleModalState.bind(this);
+    this.toggleDialogState = this.toggleDialogState.bind(this);
   }
 
   componentDidMount() {
@@ -93,7 +86,7 @@ class TextEditor extends Component {
     });
   }
 
-  toggleModalState(bool) {
+  toggleDialogState(bool) {
     this.setState({
       modalState: bool
     })
@@ -105,18 +98,20 @@ class TextEditor extends Component {
       <div>
         <Button
           className={classes.modalButton}
-          onClick={() => this.toggleModalState(true)}
+          onClick={() => this.toggleDialogState(true)}
         >
           <Typography noWrap>
             {`Edit ${label}`}
           </Typography>
         </Button>
-        <Modal
-          className={`${classes.modal} ${classes.subModal}`}
+        <Dialog
+          maxWidth="xl"
+          fullScreen
+          className={`${classes.modal} ${classes.subDialog}`}
           open={this.state.modalState}
           onClose={() => {
             this.props.onClose(convertToRaw(this.state.editorState.getCurrentContent()));
-            this.toggleModalState(false);
+            this.toggleDialogState(false);
           }}
           aria-labelledby="complex-text-editor"
           aria-describedby="complex-text-editor"
@@ -138,18 +133,20 @@ class TextEditor extends Component {
                 }}
               />
             </div>
-            <Button
+            <Fab
               className={classes.finalizeButton}
+              variant="extended"
               onClick={() => {
                 this.props.onClose(convertToRaw(this.state.editorState.getCurrentContent()));
-                this.toggleModalState(false);
+                this.toggleDialogState(false);
               }}
               variant='outlined'
             >
-              Finalize
-            </Button>
+              <FaSave />
+              Save
+            </Fab>
           </div>
-        </Modal>
+        </Dialog>
 
       </div>
     )

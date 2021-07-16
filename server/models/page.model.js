@@ -7,7 +7,8 @@ const PageSchema = mongoose.Schema({
     //Need to convert directories at each page into array first. will have to convert back later.
     directories: { type: Map, of: {type: mongoose.Schema.Types.ObjectId, ref: 'page'} },
     portfolio: {type: mongoose.Schema.Types.ObjectId, ref: 'portfolio'},
-    entries: [{type: mongoose.Schema.Types.ObjectId, ref: 'entry'}]
+    entries: [{type: mongoose.Schema.Types.ObjectId, ref: 'entry'}],
+    backgroundColour: { type: String, default: "#fff"},
 })
 
 let Page = mongoose.model('page', PageSchema);
