@@ -381,32 +381,35 @@ class Portfolio extends Component {
     let includedFonts = [];
 
     entries.map((entry, index) => {
+
       Object.entries(entry.fonts).map(([field, font]) => {
         if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
           return;
         }
         if (fontString === '') {
-          fontString = `family=${font.replace(' ', '+')}`;
+          fontString = `family=${font.replaceAll(' ', '+')}`;
           includedFonts.push(font);
         } else {
-          fontString = `${fontString}&family=${font.replace(' ', '+')}`;
+          fontString = `${fontString}&family=${font.replaceAll(' ', '+')}`;
           includedFonts.push(font);
         }
       });
+
       if (entry.RTEfonts !== undefined) {
         entry.RTEfonts.map((font, index) => {
           if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
             return;
           }
           if (fontString === '') {
-            fontString = `family=${font.replace(' ', '+')}`;
+            fontString = `family=${font.replaceAll(' ', '+')}`;
             includedFonts.push(font);
           } else {
-            fontString = `${fontString}&family=${font.replace(' ', '+')}`;
+            fontString = `${fontString}&family=${font.replaceAll(' ', '+')}`;
             includedFonts.push(font);
           }
         })
       }
+      console.log("run")
     })
 
 

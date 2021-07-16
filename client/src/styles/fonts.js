@@ -104,12 +104,12 @@ export const Bangers = {
 
 
 export const BebasNeue = {
-  fontFamily:  ,
+  fontFamily: 'Bebas Neue',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local( ),
+  local('Bebas Neue'),
   local('BebasNeue-Regular'),
   url(${BebasNeueNormal}) format('truetype')
   `
