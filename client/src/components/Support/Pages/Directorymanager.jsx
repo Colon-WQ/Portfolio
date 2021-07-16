@@ -9,6 +9,16 @@ const styles = theme => ({
     justifyContent: 'start',
     alignItems: 'center'
   },
+  header: {
+    color: theme.palette.text.secondary,
+    marginTop: '1rem',
+    marginBottom: '1rem'
+  },
+  subHeader: {
+    color: theme.palette.text.main,
+    marginTop: '0.5rem',
+    marginBottom: '0.5rem'
+  },
   paragraph: {
     backgroundColor: 'white',
     width: '85%',
@@ -18,6 +28,22 @@ const styles = theme => ({
     borderWidth: 'thin',
     padding: '1rem',
     paddingLeft: '2rem'
+  },
+  paragraphEnd: {
+    height: '1rem'
+  },
+  nestedParagraph: {
+    paddingLeft: '2rem'
+  },
+  link: {
+    color: theme.palette.primary.main,
+    textDecoration: 'underline',
+    '&:hover': {
+      color: theme.palette.primary.light
+    }
+  },
+  warning: {
+    color: 'red'
   },
   divider: {
     width: '100%',
@@ -39,16 +65,56 @@ class Directorymanager extends Component {
         <span className={classes.topSpace}/>
 
         <Typography variant='h2' component='h2'>Directory Manager</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
 
-        <Typography variant='h5' component='h5'>Features</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
+        <Typography className={classes.header} variant='h5' component='h5'>Accessing the Directory Manager</Typography>
         <ul className={classes.paragraph}>
-            <li>To access the Entry Editor, there must be an existing entry.</li>
-            <li>The Entry Editor is by default hidden from view.</li>
-            <li>Hover your cursor over an entry to reveal a Settings button</li>
-            <li>Click on the Settings button, then click on the Edit Entry button to open the Entry Editor for the entry</li>
+            <li>To access the Directory Manager, click on Directories button in the tool panel at the bottom right of the screen.</li>
+            <li>This will open up the Directory Manager interface where you will see the root button by default.</li>
+            <div className={classes.nestedParagraph}>
+              <li>The root button represents a page. If you have just created the portfolio, the page you are currently on would be the root page.</li>
+              <li>Suppose your Github page is https://your-github-username.github.io, then the root page would be accessible at https://your-github-username.github.io/.</li>
+            </div>
         </ul>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Adding a new page</Typography>
+        <ul className={classes.paragraph}>
+            <li>In the Directory Manager, click on NEW PAGE button at the bottom right of the interface.</li>
+            <li>The NEW PAGE button will change to CREATE button and an input box will show, where you can name your page.</li>
+            <li>Once done providing a name for your new page, click on CREATE button.</li>
+            <li>Notice that the root button now has a "+" sign, click on it.</li>
+            <li>The button will expand downwards to show another button. Suppose you named your page "skills". The new button will be called "skills".</li>
+            <li>Click on the "skills" button and your page will change to display the newly created page.</li>
+        </ul>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Navigating through the directory</Typography>
+        <ul className={classes.paragraph}>
+            <li>Suppose you are now at a new page that you just created, called "skills".</li>
+            <li>Open the Directory Manager, click on the root button to expand it if it is not already expanded.</li>
+            <li>Click on the page that you wish to navigate to. It will be highlighted.</li>
+            <li>Close the Directory Manager by clicking on the x button in the top right, or click away from the interface. Your page will change to that of the page you selected.</li>
+        </ul>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Deleting a page</Typography>
+        <ul className={classes.paragraph}>
+            <li>Suppose you have just created a new page.</li>
+            <li>Open the Directory Manager, click on the root button to expand it if it is not already expanded.</li>
+            <li>Click on the page that you wish to delete. It will be highlighted.</li>
+            <li>Click on DELETE PAGE button at the bottom right of the interface. The page will be deleted.</li>
+            <li>
+              <span className={classes.warning}>*This delete action is irreversible. Once the page is deleted, it cannot be recovered. Think twice before proceeding with the delete.*</span>
+            </li>
+        </ul>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Renaming a page</Typography>
+        <ul className={classes.paragraph}>
+            <li>Suppose you have just created a new page.</li>
+            <li>Open the Directory Manager, click on the root button to expand it if it is not already expanded.</li>
+            <li>Click on the page that you wish to rename. It will be highlighted.</li>
+            <li>Click on RENAME PAGE button at the bottom right of the interface</li>
+            <li>An input box will show, where you can input the new name of your page.</li>
+            <li>Once done, click on RENAME PAGE button again. You will see that the name of the page you selected has been changed.</li>
+        </ul>
+        <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>
 
         <span className={classes.bottomSpace}/>

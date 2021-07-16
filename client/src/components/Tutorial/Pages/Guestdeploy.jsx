@@ -43,46 +43,16 @@ const styles = theme => ({
   }
 })
 
-class Dashboard extends Component {
+class Guestdeploy extends Component {
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
         <span className={classes.topSpace}/>
-        <Typography variant='h2' component='h2'>Dashboard Features</Typography>
+        <Typography variant='h2' component='h2'>Guest Deploy</Typography>
 
         <Typography className={classes.header} variant='h5' component='h5'>For users</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
-
-        <Typography className={classes.subHeader} variant='h6' component='h6'>Creating a portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
-            <li>This will open up a dialog asking for the portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
-            <li>Once done, click on 'Set Name' to create the portfolio.</li>
-        </ul>
-        <Typography className={classes.subHeader} variant='h6' component='h6'>Opening existing portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>To open an existing portfolio, you must have an existing portfolio in your Dashboard</li>
-            <li>Click on "Open" button on the portfolio of your choice</li>
-        </ul>
-        <Typography className={classes.subHeader} variant='h6' component='h6'>Change portfolio name</Typography>
-        <ul className={classes.paragraph}>
-            <li>To change portfolio name, you must have an existing portfolio in your Dashboard.</li>
-            <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
-            <li>Select "Change Name" button.</li>
-            <li>This will open up a dialog asking for the new portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
-            <li>Once done, click on "Change" button to finalize the changes to portfolio name.</li>
-        </ul>
-        <Typography className={classes.subHeader} variant='h6' component='h6'>Delete portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>To delete portfolio, you must have an existing portfolio in your Dashboard.</li>
-            <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
-            <li>Select "Delete" button.</li>
-            <li>This will open up a dialog asking for your confirmation.</li>
-            <li>Click on "Delete" button to confirm. This delete action is irreversible.</li>
-        </ul>
-        <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>
 
         <Typography className={classes.header} variant='h5' component='h5'>For guests</Typography>
@@ -106,4 +76,4 @@ class Dashboard extends Component {
   }
 }
 
-export default withStyles(styles)(Dashboard);
+export default withStyles(styles)(Guestdeploy);

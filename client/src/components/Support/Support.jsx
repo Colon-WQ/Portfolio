@@ -59,12 +59,26 @@ class Support extends Component {
           <div className={classes.appBarSpacer} />
           <Divider />
           <List>
-            {Object.keys(pages).map((topic) => (
-              <ListItem className={classes.listItem} button key={topic} onClick={() => this.props.history.push(`/support/${topic}`)}>
+            {Object.keys(pages).map((key) => {
+              var topic = key;
+              switch (key) {
+                case 'directorymanager':
+                  topic = 'Directory Manager'
+                  break;
+                case 'entryeditor':
+                  topic = 'Entry Editor'
+                  break;
+                default:
+                  topic = topic[0].toUpperCase() + topic.substring(1);
+                  break;
+              }
+
+              return (<ListItem className={classes.listItem} button key={topic} onClick={() => this.props.history.push(`/support/${key}`)}>
                 <ListItemIcon className={classes.listIcon}>{<FaDotCircle />}</ListItemIcon>
                 <ListItemText primary={topic} />
-              </ListItem>
-            ))}
+              </ListItem>)
+              }
+            )}
           </List>
           <Divider />
         </Drawer>

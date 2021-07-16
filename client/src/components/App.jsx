@@ -5,7 +5,6 @@ import LoginResult from './LoginResult';
 import Logout from './Logout';
 import Dashboard from './Dashboard';
 import Support from './Support/Support';
-import SupportPages from './Support/SupportPages';
 import Tutorial from './Tutorial/Tutorial';
 import Portfolio from './Portfolio/Portfolio';
 import Publish from './Portfolio/Publish';
@@ -60,7 +59,9 @@ class App extends Component {
                 <Route exact path='/logout' component={Logout}></Route>
                 <Route exact path='/faq' component={Faq}></Route>
                 <Route exact path='/support' component={Support}></Route>
-                <Route path='/support/:id' component={Support}></Route>
+                <Route exact path='/support/:id' component={Support}></Route>
+                <Route exact path='/tutorial' component={Tutorial}></Route>
+                <Route exact path='/tutorial/:id' component={Tutorial}></Route>
                 <Route path='/learn' component={Tutorial}></Route>
               </>
             </Switch>
