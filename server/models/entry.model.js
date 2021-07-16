@@ -14,7 +14,8 @@ const EntrySchema = mongoose.Schema({
     sections: [{
         images: {type: Map, of: {type: Map, of: String}},
         texts: {type: Map, of: String}
-    }]
+    }],
+    RTEfonts: [String]
 })
 
 let Entry = mongoose.model('entry', EntrySchema);

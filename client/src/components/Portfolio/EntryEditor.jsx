@@ -414,30 +414,18 @@ class EntryEditor extends PureComponent {
   }
 
   collectFontFamily(htmlString) {
-    const placeholder = document.createElement('div');
-    placeholder.innerHTML = htmlString;
+    const pattern = /(?<=style=").*?(?=")/g;
     const fonts = [];
-    const pattern = /(?<=font-family: ).*?(?=;)/g;
-    placeholder.querySelectorAll('[style]').forEach(element => {
-      console.log(element.style.cssText)
-      let matches = element.style.cssText.match(pattern);
-      console.log('matches: ', matches)
-      if (matches !== null) console.log('first elem', matches[0]);
-      element.style.cssText.split(';').map(part => {
-        var temp = null
-        if (part.startsWith('font-family')) {
-          temp = part.substring(13);
+    [...htmlString.matchAll(pattern)].map(match => {
+      const pattern2 = /(?<=font-family: ).*?(?=;)/g;
+      const fontFamily = match[0].match(pattern2);
+      if (fontFamily) {
+        console.log(fontFamily[0])
+        if (!fonts.includes(fontFamily[0])) {
+          fonts.push(fontFamily[0]);
         }
-        if (part.startsWith(' font-family')) {
-          temp = part.substring(14);
-        }
-        if (temp) {
-          if (!fonts.includes(temp)) {
-            fonts.push(temp);
-          }
-        }
-      })
-    });
+      }
+    })
 
     return fonts;
   }
@@ -520,7 +508,6 @@ class EntryEditor extends PureComponent {
     }
 
 
-
     if (save) {
       const ret = this.state.data;
       ret.width = this.state.width;
@@ -531,6 +518,7 @@ class EntryEditor extends PureComponent {
       ret.texts = this.state.texts;
       ret.sections = this.state.sections;
       ret.RTEfonts = this.collectFontFamilies();
+
 
       this.props.onClose(ret, true);
     } else {

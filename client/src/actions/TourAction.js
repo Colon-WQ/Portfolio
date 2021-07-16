@@ -17,14 +17,6 @@ import { STEPS_COUNT } from '../reducers/TourReducer';
  */
 export const START = "START";
 
-/**
- * string that identifies a RESTART action.
- * 
- * @type {string}
- * @member RESTART
- */
-export const RESTART = "RESTART";
-
 
 
 /**
@@ -66,15 +58,14 @@ export const manualNext = step => ({
 
 export function callback(data) { 
   return dispatch => {
-    //console.log(data)
-    const { action, index, type, status } = data;
-
+    console.log(data)
+    const { action, index, lifecycle } = data;
+    console.log(STEPS_COUNT)
     if (
       // If close button clicked then close the tour
-      
       // If skipped or end tour, then close the tour
-      (action === ACTIONS.NEXT && index >= STEPS_COUNT) ||
-      action === ACTIONS.SKIP
+      action === ACTIONS.SKIP || action === ACTIONS.CLOSE || 
+      (action === ACTIONS.NEXT && lifecycle === LIFECYCLE.COMPLETE && index === (STEPS_COUNT - 1))
     ) {
         dispatch({
             type: STOP
