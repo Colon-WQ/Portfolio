@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state, toggle_unsaved_state } from '../../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../../actions/PortfolioAction.js';
-import { manualNext, callback } from '../../actions/TourAction';
+import { manualNext, callback, stopTour } from '../../actions/TourAction';
 import { ThemeProvider, withStyles } from '@material-ui/core/styles'
 import { Fab, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
 import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
@@ -178,6 +178,11 @@ class Portfolio extends Component {
           currentPage: this.props.currentPortfolio.pages
         })
       }
+    }
+
+    //If tour stepIndex is not 1, tour is either stopped or user decided to skip tutorial in dashboard. Either case, we stop tour.
+    if (this.props.tourState.stepIndex !== 1) {
+      this.props.stopTour();
     }
   }
 
@@ -718,7 +723,6 @@ class Portfolio extends Component {
 
   render() {
     const { loggedIn, classes, tourState, isUnsaved } = this.props;
-
     return (
       <ErrorBoundary>
         <div className={classes.root}>
@@ -888,7 +892,8 @@ const mapDispatchToProps = {
   saveCurrentWork,
   saveCurrentWorkToLocal,
   manualNext,
-  callback
+  callback,
+  stopTour
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(Portfolio)))

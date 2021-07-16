@@ -517,7 +517,6 @@ class EntryEditor extends PureComponent {
     }
 
 
-
     if (save) {
       const ret = this.state.data;
       ret.width = this.state.width;
