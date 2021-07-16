@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { manualNext } from '../../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip, Divider } from '@material-ui/core';
+import { Button, IconButton, TextField, Typography, Dialog, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip, Divider } from '@material-ui/core';
 import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle, FaCog } from "react-icons/fa";
 import { fonts } from '../../styles/fonts';
 import * as icons from '../../styles/icons';
@@ -35,17 +35,16 @@ const styles = (theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '5%',
+    padding: '30px',
     textAlign: 'center',
     backgroundColor: theme.palette.background.default,
     opacity: '85%'
   },
-  modal: {
+  dialog: {
     overflowX: 'hidden',
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    padding: '1%',
   },
   floating: {
     margin: 0,
@@ -105,7 +104,7 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'row',
     overflow: 'auto',
-    width: 'max-content',
+    width: '100%',
     height: 'max-content'
   },
   addSectionSpacer: {
@@ -148,7 +147,7 @@ const styles = (theme) => ({
     width: 'inherit',
     height: 'inherit'
   },
-  subModal: {
+  subDialog: {
     width: '80%',
     height: '80%',
     margin: 'auto',
@@ -193,7 +192,6 @@ const styles = (theme) => ({
     gridTemplateColumns: 'repeat(auto-fill, 3em)',
     gridTemplateRows: 'repeat(auto-fill, 3em)',
     justifyContent: 'center',
-    overflowY: 'auto',
   },
   headerDiv: {
     padding: '5px'
@@ -419,7 +417,12 @@ class EntryEditor extends PureComponent {
     const placeholder = document.createElement('div');
     placeholder.innerHTML = htmlString;
     const fonts = [];
+    const pattern = /(?<=font-family: ).*?(?=;)/g;
     placeholder.querySelectorAll('[style]').forEach(element => {
+      console.log(element.style.cssText)
+      let matches = element.style.cssText.match(pattern);
+      console.log('matches: ', matches)
+      if (matches !== null) console.log('first elem', matches[0]);
       element.style.cssText.split(';').map(part => {
         var temp = null
         if (part.startsWith('font-family')) {
@@ -597,7 +600,6 @@ class EntryEditor extends PureComponent {
   }
 
   openWith(fields, info) {
-    console.log(fields)
     this.setState({
       showEditor: true,
       width: fields.width,
@@ -625,12 +627,11 @@ class EntryEditor extends PureComponent {
     return (
       <div
         data-html2canvas-ignore="true"
-        className
       >
-        <Modal className={classes.modal}
-          // open always set to true, open/close logic handled by portfolio
+        <Dialog className={classes.dialog}
           open={this.state.showEditor}
-          // TODO: add onClose save logic
+          maxWidth="xl"
+          fullWidth
           onClose={() => this.handleCloseEditor(true)}
           aria-labelledby="Entry editor"
           aria-describedby="Edit your entry fields here"
@@ -679,11 +680,11 @@ class EntryEditor extends PureComponent {
                 this.setState({ showUI: UI.NONE, anchorEl: null })
               }}
             />
-            <Modal
+            <Dialog
               open={this.state.showUI === UI.ICON}
-              aria-labelledby="icon selection modal"
-              aria-describedby="a modal for users to pick an icon"
-              className={`${classes.modal} ${classes.subModal}`}
+              aria-labelledby="icon selection dialog"
+              aria-describedby="a dialog for users to pick an icon"
+              className={`${classes.dialog} ${classes.subDialog}`}
               onClose={() => this.setState({ showUI: UI.NONE, anchorEl: null })}
             >
               <div className={classes.maxHeightWidth}>
@@ -713,7 +714,7 @@ class EntryEditor extends PureComponent {
                   })}
                 </div>
               </div>
-            </Modal>
+            </Dialog>
             <div className={classes.colDiv}>
               <div className={classes.styleDiv}>
                 <div className={classes.colDiv}>
@@ -1076,7 +1077,7 @@ class EntryEditor extends PureComponent {
               <Fab variant="extended" onClick={() => this.handleCloseEditor(false)}><FaTimes />Cancel</Fab>
             </div>
           </div>
-        </Modal>
+        </Dialog>
       </div >
     )
   }

@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
-import { Typography, Modal, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab, TextField } from '@material-ui/core';
+import { Typography, Dialog, Icon, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab, TextField } from '@material-ui/core';
 import { TreeItem } from '@material-ui/lab';
 import { templates } from '../../templates/Templates';
-import { FaPlus, FaTimes, FaLink } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaLink, FaEdit, FaTrash } from 'react-icons/fa';
 
 
 /**
@@ -34,7 +34,7 @@ const styles = (theme) => ({
     opacity: '85%',
     height: '100%',
   },
-  modal: {
+  dialog: {
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
@@ -312,7 +312,9 @@ class DirectoryManager extends Component {
           <FaLink />
           <Typography variant="body2" component="body2" className={classes.buttonText}>Directories</Typography>
         </Fab>
-        <Modal className={classes.modal}
+        <Dialog className={classes.dialog}
+          maxWidth="xl"
+          fullScreen
           open={this.state.showDirectory}
           onClose={() => this.handleCloseDirectory(true)}
           aria-labelledby="Directory Manager"
@@ -360,7 +362,7 @@ class DirectoryManager extends Component {
                 variant="extended"
                 onClick={(event) => this.setState({ showInput: true, inputMode: RENAME })}
                 className={!this.state.showInput || this.state.inputMode !== RENAME ? classes.controlFAB : classes.hide}>
-                <FaPlus />
+                <FaEdit />
                 <Typography variant="body2" component="body2" className={classes.buttonText}>Rename Page</Typography>
               </Fab>
 
@@ -373,11 +375,12 @@ class DirectoryManager extends Component {
               <Fab
                 variant="extended"
                 onClick={this.handleDeletePage}>
+                <FaTrash />
                 <Typography variant="body2" component="body2" className={classes.buttonText}>Delete Page</Typography>
               </Fab>
             </div>
           </div>
-        </Modal>
+        </Dialog>
       </div>
     )
   }

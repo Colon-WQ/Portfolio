@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { repopulate_state, toggle_unsaved_state } from '../../actions/LoginAction';
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../../actions/PortfolioAction.js';
 import { manualNext, callback } from '../../actions/TourAction';
-import { ThemeProvider, withStyles } from '@material-ui/core/styles'
-import { Fab, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
+import { ThemeProvider, withStyles, createMuiTheme } from '@material-ui/core/styles'
+import { CssBaseline, Fab, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
 import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
@@ -22,6 +22,7 @@ import { handleErrors } from '../../handlers/errorHandler';
 import ErrorBoundary from '../ErrorBoundary';
 import Joyride from 'react-joyride';
 import { webSafeFonts } from '../../styles/fonts';
+import ColourPicker from './ColourPicker';
 
 
 import { create } from 'jss';
@@ -106,17 +107,22 @@ class Portfolio extends Component {
    */
   constructor(props) {
     super(props);
+    const temp = {
+      directory: 'root',
+      entries: [],
+      directories: {},
+      id: 'root_mongo_id',
+      backgroundColor: '#fff'
+    };
+
     this.state = {
       editMode: true,
       portfolio_id: undefined,
       name: "",
-      pages: {
-        directory: 'root',
-        entries: [],
-        directories: {},
-        id: 'root_mongo_id'
-      },
-      currentPage: undefined,
+      showTheme: false,
+      themeAnchor: null,
+      pages: temp,
+      currentPage: temp,
       currentPath: [],
 
       currentEntry: 0,
@@ -129,7 +135,9 @@ class Portfolio extends Component {
 
     this.entryEditorRef = React.createRef();
 
-    this.state.currentPage = this.state.pages
+    this.state.currentPage = this.state.pages;
+
+    this.handlePageTheme = this.handlePageTheme.bind(this);
     this.handleEditorClose = this.handleEditorClose.bind(this);
     this.handleCreateFile = this.handleCreateFile.bind(this);
     this.handleProduction = this.handleProduction.bind(this);
@@ -175,7 +183,7 @@ class Portfolio extends Component {
         this.setState({
           portfolio_id: this.props.currentPortfolio._id,
           pages: this.props.currentPortfolio.pages,
-          currentPage: this.props.currentPortfolio.pages
+          currentPage: this.props.currentPortfolio.pages,
         })
       }
     }
@@ -305,6 +313,30 @@ class Portfolio extends Component {
     }
   }
 
+  handlePageTheme(changed, colour) {
+    if (changed) {
+      const newPages = { ...this.state.pages };
+      const currentPage = this.traverseDirectory(newPages, this.state.currentPath)
+      currentPage.backgroundColor = colour;
+      this.setState({
+        pages: newPages,
+        currentPage: currentPage,
+        showTheme: false,
+        themeAnchor: null
+      });
+
+      //triggers autosave
+      this.props.toggle_unsaved_state(true);
+    } else {
+      this.setState({
+        showEntryMenu: false,
+        currentEntryAnchor: null,
+        showTheme: false,
+        themeAnchor: null
+      })
+    }
+  }
+
   // TODO: publish component check file empty before load?
   /**
    * A function to generate the necessary html/css/js files for a single page.
@@ -370,7 +402,14 @@ class Portfolio extends Component {
     //We also need to wrap that component with the theme we are using so that the style can reference it properly
     //Suspect that because certain styles are missing, their defaults may be injected into our app, resulting in default css styles.
     const rawHTML = ReactDOMServer.renderToString(sheets.collect(
-      <ThemeProvider theme={this.props.theme}>
+      <ThemeProvider theme={createMuiTheme({
+        palette: {
+          background: {
+            default: page.backgroundColor
+          }
+        }
+      })}>
+        <CssBaseline />
         <div style={{ display: "flex", flexDirection: "column" }}>
           {copy.map((entry, index) => this.renderEntry(entry))}
         </div>
@@ -435,8 +474,10 @@ class Portfolio extends Component {
             <body>
             ${rawHTML}
             </body>`);
+    const cssGenerated = sheets.toString();
+    console.log(cssGenerated)
 
-    const css = Base64.encode(sheets.toString());
+    const css = Base64.encode(cssGenerated);
     const js = Base64.encode(copy
       .map((entry, index) => templates[entry.type][entry.style].script(index))
       .filter(Boolean).join('\n'));
@@ -760,7 +801,9 @@ class Portfolio extends Component {
             // }
             ref={this.entryEditorRef}
           />
-          <div id="preview">
+          <div id="preview" style={{
+            backgroundColor: this.state.currentPage.backgroundColor
+          }}>
             {this.state.currentPage.entries.map((entry, index) => {
               // Key MUST be unique -> component will be reinitialized if key is different.
               return (
@@ -824,9 +867,37 @@ class Portfolio extends Component {
                     </MenuItem>
                   </Menu>
                   {this.renderEntry(entry)}
+                  <ColourPicker
+                    open={this.state.showTheme}
+                    anchorEl={this.state.anchorEl}
+                    onClose={this.handlePageTheme}
+                  />
                 </div>);
             })}
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                padding: '30px'
+              }}
+            >
+              <IconButton
+                onClick={(e) => this.setState({
+                  showTheme: true,
+                  themeAnchor: e.currentTarget
+                })}
+                style={{
+                  backgroundColor: '#fff',
+                  borderRadius: '5px'
+                }}
+              >
+                <FaCog />
+              Edit Theme
+            </IconButton>
+            </div>
           </div>
+
           <div className={`${classes.fixedDiv} mui-fixed`}>
             <Fab
               id='save-portfolio-button'

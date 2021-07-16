@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { manualNext } from '../../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Typography, Modal, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
+import { Typography, Dialog, Tab, Tabs, ButtonBase, Card, CardMedia, CardContent, Fab } from '@material-ui/core';
 import { templates } from '../../templates/Templates';
 import { FaTimes, FaPlus } from 'react-icons/fa';
 
@@ -34,7 +34,7 @@ const styles = (theme) => ({
     overflowX: 'hidden',
     overflowY: 'auto'
   },
-  modal: {
+  dialog: {
     overflowX: 'hidden',
     overflowY: 'auto',
     display: 'flex',
@@ -151,10 +151,10 @@ class TemplateSelector extends Component {
           <FaPlus />
           <Typography variant="body2" component="body2" className={classes.buttonText}>New Entry</Typography>
         </Fab>
-        <Modal className={classes.modal}
-          // open always set to true, open/close logic handled by portfolio
+        <Dialog className={classes.dialog}
           open={this.state.showSelector}
-          // TODO: add onClose save logic
+          maxWidth="xl"
+          fullScreen
           onClose={() => this.handleCloseSelector()}
           aria-labelledby="Template Selector"
           aria-describedby="Select a template."
@@ -202,7 +202,7 @@ class TemplateSelector extends Component {
                 CANCEL
               </Fab>
           </div>
-        </Modal>
+        </Dialog>
       </div>
     )
   }
