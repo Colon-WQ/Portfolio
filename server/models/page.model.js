@@ -8,7 +8,7 @@ const PageSchema = mongoose.Schema({
     directories: { type: Map, of: {type: mongoose.Schema.Types.ObjectId, ref: 'page'} },
     portfolio: {type: mongoose.Schema.Types.ObjectId, ref: 'portfolio'},
     entries: [{type: mongoose.Schema.Types.ObjectId, ref: 'entry'}],
-    backgroundColour: { type: String, default: "#fff"},
+    backgroundColor: { type: String, default: "#fff"},
 })
 
 let Page = mongoose.model('page', PageSchema);
