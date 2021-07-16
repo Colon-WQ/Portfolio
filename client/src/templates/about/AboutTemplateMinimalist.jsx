@@ -157,7 +157,7 @@ class AboutTemplateMinimalist extends Component {
         className={classes.root}
       >
         <Card
-          style={{ width: '100%', border: 'none', boxShadow: 'none', borderRadius: '0px' }}
+          style={{ width: fields.width, border: 'none', boxShadow: 'none', borderRadius: '0px' }}
         >
           <CardContent
             style={{ padding: '0px' }}
