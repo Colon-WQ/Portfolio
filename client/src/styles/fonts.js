@@ -35,30 +35,30 @@ export const fonts = [
   'Garamond',
   'Courier New',
   'Brush Script MT',
-  'AmaticSC',
+  'Amatic SC',
   'Bangers',
-  'BebasNeue',
+  'Bebas Neue',
   'Bitter',
-  'BonaNova',
+  'Bona Nova',
   'Comfortaa',
   'Festive',
-  'FredokaOne',
+  'Fredoka One',
   'Fuggles',
   'Lobster',
-  'LobsterTwo',
+  'Lobster Two',
   'Montserrat',
   'Oswald',
   'Pacifico',
-  'PlayfairDisplay',
-  'PoiretOne',
+  'Playfair Display',
+  'Poiret One',
   'Poppins',
   'Raleway',
   'Roboto',
-  'ShadowsIntoLight',
-  'STIXTwoMath',
+  'Shadows Into Light',
+  'STIX Two Math',
   'Yomogi',
-  'ZenLoop',
-  'ZenTokyoZoo'
+  'Zen Loop',
+  'Zen Tokyo Zoo'
 ];
 
 export const webSafeFonts = [
@@ -78,12 +78,12 @@ export const webSafeFonts = [
  * however material UI only supports ttf, woff2
 */
 export const AmaticSC = {
-  fontFamily: 'AmaticSC',
+  fontFamily: 'Amatic SC',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('AmaticSC'),
+  local('Amatic SC'),
   local('AmaticSC-Regular'),
   url(${AmaticSCNormal}) format('truetype')
   `
@@ -104,12 +104,12 @@ export const Bangers = {
 
 
 export const BebasNeue = {
-  fontFamily: 'BebasNeue',
+  fontFamily:  ,
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('BebasNeue'),
+  local( ),
   local('BebasNeue-Regular'),
   url(${BebasNeueNormal}) format('truetype')
   `
@@ -130,12 +130,12 @@ export const Bitter = {
 
 
 export const BonaNova = {
-  fontFamily: 'BonaNova',
+  fontFamily: 'Bona Nova',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('BonaNova'),
+  local('Bona Nova'),
   local('BonaNova-Regular'),
   url(${BonaNovaNormal}) format('truetype')
   `
@@ -169,12 +169,12 @@ export const Festive = {
 
 
 export const FredokaOne = {
-  fontFamily: 'FredokaOne',
+  fontFamily: 'Fredoka One',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('FredokaOne'),
+  local('Fredoka One'),
   local('FredokaOne-Regular'),
   url(${FredokaOneNormal}) format('truetype')
   `
@@ -208,12 +208,12 @@ export const Lobster = {
 
 
 export const LobsterTwo = {
-  fontFamily: 'LobsterTwo',
+  fontFamily: 'Lobster Two',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('LobsterTwo'),
+  local('Lobster Two'),
   local('LobsterTwo-Regular'),
   url(${LobsterTwoNormal}) format('truetype')
   `
@@ -260,12 +260,12 @@ export const Pacifico = {
 
 
 export const PlayfairDisplay = {
-  fontFamily: 'PlayfairDisplay',
+  fontFamily: 'Playfair Display',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('PlayfairDisplay'),
+  local('Playfair Display'),
   local('PlayfairDisplay-VariableFont_wght'),
   url(${PlayfairDisplayNormal}) format('truetype')
   `
@@ -273,12 +273,12 @@ export const PlayfairDisplay = {
 
 
 export const PoiretOne = {
-  fontFamily: 'PoiretOne',
+  fontFamily: 'Poiret One',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('PoiretOne'),
+  local('Poiret One'),
   local('PoiretOne-Regular'),
   url(${PoiretOneNormal}) format('truetype')
   `
@@ -324,12 +324,12 @@ export const Roboto = {
 
 
 export const ShadowsIntoLight = {
-  fontFamily: 'ShadowsIntoLight',
+  fontFamily: 'Shadows Into Light',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('ShadowsIntoLight'),
+  local('Shadows Into Light'),
   local('ShadowsIntoLight-Regular'),
   url(${ShadowsIntoLightNormal}) format('truetype')
   `
@@ -337,12 +337,12 @@ export const ShadowsIntoLight = {
 
 
 export const STIXTwoMath = {
-  fontFamily: 'STIXTwoMath',
+  fontFamily: 'STIX Two Math',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('STIXTwoMath'),
+  local('STIX Two Math'),
   local('STIXTwoMath-Regular'),
   url(${STIXTwoMathNormal}) format('truetype')
   `
@@ -363,12 +363,12 @@ export const Yomogi = {
 
 
 export const ZenLoop = {
-  fontFamily: 'ZenLoop',
+  fontFamily: 'Zen Loop',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('ZenLoop'),
+  local('Zen Loop'),
   local('ZenLoop-Regular'),
   url(${ZenLoopNormal}) format('truetype')
   `
@@ -376,12 +376,12 @@ export const ZenLoop = {
 
 
 export const ZenTokyoZoo = {
-  fontFamily: 'ZenTokyoZoo',
+  fontFamily: 'Zen Tokyo Zoo',
   fontStyle: 'normal',
   fontDisplay: 'swap',
   fontWeight: 400,
   src: `
-  local('ZenTokyoZoo'),
+  local('Zen Tokyo Zoo'),
   local('ZenTokyoZoo-Regular'),
   url(${ZenTokyoZooNormal}) format('truetype')
   `

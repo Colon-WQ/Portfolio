@@ -411,7 +411,7 @@ class Portfolio extends Component {
 
 
     if (fontString !== '') {
-      fontString = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${fontString}">`
+      fontString = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${fontString}&display=swap">`
     }
     console.log(fontString);
 
