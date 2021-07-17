@@ -53,7 +53,7 @@ const swaggerSpecs = await swaggerJSDoc(swaggerOptions)
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({limit: '25mb'}));
 app.use(cookieParser(SIGN_COOKIE_SECRET));
 
 //uncomment for production

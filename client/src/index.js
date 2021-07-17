@@ -19,6 +19,11 @@ const store = createStore(
   applyMiddleware(thunk)
 )
 
+
+// document.getElementsByTagName('html')[0].style.height = '100%'
+// document.getElementsByTagName('body')[0].style.height = '100%'
+
+
 ReactDOM.render(
   <React.StrictMode>
     <App store={store}/>

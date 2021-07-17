@@ -47,7 +47,8 @@ const jss = create().setup({ ...jssPreset(), Renderer: null });
 const styles = (theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    height: '100%'
   },
   entryDiv: {
     position: 'relative'
@@ -192,6 +193,11 @@ class Portfolio extends Component {
     if (this.props.tourState.stepIndex !== 1) {
       this.props.stopTour();
     }
+
+    //Set page theme color on mount
+    this.handlePageTheme(true, this.state.currentPage.backgroundColor)
+    console.log("theme color preset")
+
   }
 
   /**
@@ -218,7 +224,6 @@ class Portfolio extends Component {
           await this.handleSaveLocalPortfolio();
         }
       }, 30000);
-
     }
   }
 
@@ -239,6 +244,8 @@ class Portfolio extends Component {
       console.log("unmount clear autosave")
       clearTimeout(this.state.autosaveTimer);
     }
+    //reset document body background color to white
+    document.body.style.backgroundColor = `#ffffff`;
   }
 
   /**
@@ -329,6 +336,7 @@ class Portfolio extends Component {
         showTheme: false,
         themeAnchor: null
       });
+
       document.body.style.backgroundColor = colour;
 
       //triggers autosave
@@ -366,16 +374,19 @@ class Portfolio extends Component {
       let dupeEntry = copy[idx];
       Object.entries(dupeEntry.images).map(([key, item]) => {
         if (item.format === 'image' && item.src.startsWith('data:image/')) {
+          console.log(key)
+          console.log(item.src)
           const split = item.src.split(',');
           const fileType = split[0].substring(11, split[0].indexOf(';'));
           const baseContent = split[1];
-          console.log(baseContent);
+          //console.log(baseContent);
           const imgDir = `assets/${key}${idx}.${fileType}`;
           images.push({
             file: `${directory}${imgDir}`,
             contents: baseContent
           });
-          copy[idx].images[key] = imgDir;
+          //Added .src to comply with the template.
+          copy[idx].images[key].src = imgDir;
         }
         // copy.images[key] = `${directory}/${key}.jpg`
       })
@@ -454,7 +465,7 @@ class Portfolio extends Component {
           }
         })
       }
-      console.log("run")
+      //console.log("run")
     })
 
 
@@ -481,7 +492,9 @@ class Portfolio extends Component {
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
-    console.log(cssGenerated)
+    //console.log(cssGenerated)
+
+    console.log(Base64.decode(html))
 
     const css = Base64.encode(cssGenerated);
     const js = Base64.encode(copy
@@ -678,6 +691,10 @@ class Portfolio extends Component {
       this.state.currentPage = currentPage;
       this.state.currentPath = currentPath;
     }
+
+    //theme changes on page change
+    this.handlePageTheme(true, this.state.currentPage.backgroundColor)
+
     this.forceUpdate();
   }
 
@@ -768,9 +785,10 @@ class Portfolio extends Component {
 
   render() {
     const { loggedIn, classes, tourState, isUnsaved } = this.props;
+    
     return (
       <ErrorBoundary>
-        <div className={classes.root}>
+        <div id='portfolio-background' className={classes.root}>
           <Prompt
             when={isUnsaved}
             message={JSON.stringify({
