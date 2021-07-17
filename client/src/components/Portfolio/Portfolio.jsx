@@ -478,6 +478,7 @@ class Portfolio extends Component {
 
     // TODO: add title
     // TODO: remove empty files
+    //Needed to add style="body" to enable the body element to use the body css class.
     const html = Base64.encode(`
             <!DOCTYPE html>
             <html lang="en">
@@ -490,7 +491,7 @@ class Portfolio extends Component {
                 <script defer src="script.js"></script>
                 <title>Welcome</title>
             </head>
-            <body>
+            <body style="body">
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();

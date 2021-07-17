@@ -29,6 +29,9 @@ const styles = theme => ({
     padding: '1rem',
     paddingLeft: '2rem'
   },
+  nestedParagraph: {
+    paddingLeft: '2rem'
+  },
   paragraphEnd: {
     height: '1rem'
   },
@@ -51,22 +54,33 @@ class Guestdeploy extends Component {
       <div className={classes.root}>
         <span className={classes.topSpace}/>
         <Typography variant='h2' component='h2'>Guest Deploy</Typography>
-
-        <Typography className={classes.header} variant='h5' component='h5'>For users</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
-
-        <Typography className={classes.header} variant='h5' component='h5'>For guests</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
-        <Typography className={classes.subHeader} variant='h6' component='h6'>Creating a portfolio</Typography>
         <ul className={classes.paragraph}>
-            <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
-            <li>This will open up a dialog asking for the portfolio name. Please provide a non-empty name for your portfolio.</li>
-            <li>Once done, click on 'Set Name' to create the portfolio.</li>
+            <li>Using a Guest account instead of the user account means that you do not have access to the automatic Github page deployment service that we provide.</li>
+            <li>This would mean some hands-on work on your side to deploy and host your portfolio website.</li>
         </ul>
-        <Typography className={classes.subHeader} variant='h6' component='h6'>Opening existing portfolio</Typography>
+
+        <Typography className={classes.header} variant='h5' component='h5'>You have an existing Github account</Typography>
+        <Divider orientation="horizontal" className={classes.divider}/>
+
+        <Typography className={classes.subHeader} variant='h6' component='h6'>1. Downloading the zip files for your Portfolio website</Typography>
         <ul className={classes.paragraph}>
-            <li>Guests can only have 1 portfolio at a time, unlike users.</li>
-            <li>Click on "Continue editing your-portfolio-name" button to open your existing portfolio</li>
+            <li>Create your portfolio and once done, click on the Publish button as a Guest.</li>
+            <li>A zip file named after your portfolio name will be downloaded.</li>
+        </ul>
+        <Typography className={classes.subHeader} variant='h6' component='h6'>2. Uploading files to Github repository</Typography>
+        <ul className={classes.paragraph}>
+            <li>Login to your Github account, then create a new Github repository.</li>
+            <div className={classes.nestedParagraph}>
+              <li>
+                You would have to provide a name for the Github repository. If you are unsure, 
+                we recommend you to name it your-github-username.github.io, where your-github-username is your Github account username.
+              </li>
+              <li>If you name it as your-github-username.github.io, then your portfolio website will be created at https://your-github-username.github.io later</li>
+              <li>You may also name your repository as other names, like for example "skills".</li>
+              <li>If you name it as "skills", then your portfolio website will be created at https://your-github-username.github.io/skills later</li>
+            </div>
+            <li>Once the Github repository is created, click on it to open your repository page.</li>
+            <li>h</li>
         </ul>
         <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>
