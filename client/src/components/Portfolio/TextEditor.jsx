@@ -140,7 +140,6 @@ class TextEditor extends Component {
                 this.props.onClose(convertToRaw(this.state.editorState.getCurrentContent()));
                 this.toggleDialogState(false);
               }}
-              variant='outlined'
             >
               <FaSave />
               Save

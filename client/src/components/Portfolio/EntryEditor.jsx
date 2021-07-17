@@ -1,16 +1,15 @@
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { manualNext } from '../../actions/TourAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Dialog, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, ButtonGroup, Tooltip, Divider } from '@material-ui/core';
-import { FaPlus, FaTrashAlt, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaEdit, FaInfo, FaInfoCircle, FaCog } from "react-icons/fa";
+import { Button, IconButton, Typography, Dialog, Fab, MenuItem, Menu, Tab, Tabs, Tooltip, Divider } from '@material-ui/core';
+import { FaPlus, FaChevronLeft, FaChevronRight, FaSave, FaTimes, FaCog } from "react-icons/fa";
 import { fonts } from '../../styles/fonts';
 import * as icons from '../../styles/icons';
 import ImagePicker from './ImagePicker';
 import TextEditor from './TextEditor';
 import SimpleTextEditor from './SimpleTextEditor';
-import { SketchPicker } from 'react-color';
 import ColourPicker from './ColourPicker';
 import DimensionSlider from './DimensionSlider';
 import draftToHtml from 'draftjs-to-html';
@@ -420,11 +419,12 @@ class EntryEditor extends PureComponent {
       const pattern2 = /(?<=font-family: ).*?(?=;)/g;
       const fontFamily = match[0].match(pattern2);
       if (fontFamily) {
-        console.log(fontFamily[0])
+        
         if (!fonts.includes(fontFamily[0])) {
           fonts.push(fontFamily[0]);
         }
       }
+      return match;
     })
 
     return fonts;
@@ -436,9 +436,9 @@ class EntryEditor extends PureComponent {
     const textsInfo = this.state.info.texts;
     const tempFonts = [];
 
-    Object.keys(texts).map(key => {
+    Object.keys(texts).forEach(key => {
       if (textsInfo[key].type === 'complexText') {
-        this.collectFontFamily(draftToHtml(texts[key])).map(font => {
+        this.collectFontFamily(draftToHtml(texts[key])).forEach(font => {
           if (!tempFonts.includes(font)) {
             tempFonts.push(font);
           }
@@ -452,9 +452,9 @@ class EntryEditor extends PureComponent {
       const sectionTexts = this.state.sections.texts;
       const sectionTextsInfo = this.state.sections.entryFormat.texts;
 
-      Object.keys(sectionTexts).map(key => {
+      Object.keys(sectionTexts).forEach(key => {
         if (sectionTextsInfo[key].type === 'complexText') {
-          this.collectFontFamily(draftToHtml(sectionTexts[key])).map(font => {
+          this.collectFontFamily(draftToHtml(sectionTexts[key])).forEach(font => {
             if (!tempFonts.includes(font)) {
               tempFonts.push(font);
             }
@@ -605,7 +605,7 @@ class EntryEditor extends PureComponent {
   }
 
   render() {
-    const { classes, isTourRunning } = this.props;
+    const { classes } = this.props;
     // TODO: change name/id to field-name-id to avoid collision i.e. colours-primary-0
     // Prevent from rendering if info not provided, prevent errors trying to read properties from null
     if (!this.state.info) {
@@ -829,7 +829,7 @@ class EntryEditor extends PureComponent {
                           open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editCategory === 'images' && this.state.editField === key}
                           onClose={() => this.setState({ anchorEl: null })}
                         >
-                          {this.state.info.images[key].format.map((format) => {
+                          {this.state.info.images[key].format.forEach(format => {
                             switch (format) {
                               case 'image':
                                 return (<MenuItem onClick={() => {

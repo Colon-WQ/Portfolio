@@ -136,7 +136,7 @@ class Publish extends Component {
       [event.target.name]: event.target.value,
     });
 
-    if (event.target.name = 'repositoryName') {
+    if (event.target.name === 'repositoryName') {
       this.setState({
         repositoryNameError: false,
         repositoryNameErrorMessage: ""

@@ -134,8 +134,8 @@ class AboutTemplateBasic extends Component {
   static script = (index) => "";
 
   static defaultField = {
-    width: "60%",
-    height: "80vh",
+    width: "80%",
+    height: "auto",
     fonts: {},
     colours: {
       headerBackgroundFill: "whitesmoke",
@@ -157,7 +157,7 @@ class AboutTemplateBasic extends Component {
         className={classes.root}
       >
         <Card
-          style={{ width: '100%', border: 'none', boxShadow: 'none', borderRadius: '0px' }}
+          style={{ width: fields.width, height: fields.height, border: 'none', boxShadow: 'none', borderRadius: '0px' }}
         >
           <CardContent
             style={{ padding: '0px' }}

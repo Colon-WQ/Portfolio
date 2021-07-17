@@ -70,6 +70,13 @@ class Portfolio extends Component {
             <li>The Portfolio page shows a preview of the user's portfolio website and provides tools to edit the website.</li>
         </ul>
 
+        <Typography className={classes.header} variant='h5' component='h5'>Edit Theme</Typography>
+        <ul className={classes.paragraph}>
+            <li>By default, there will be an Edit Theme button.</li>
+            <li>Click on the Edit Theme button. A colour picker will show, allowing you to select a background color for the page.</li>
+            <li>Once done, the page's background color will change accordingly.</li>
+        </ul>
+
         <Typography className={classes.header} variant='h5' component='h5'>Tool Panel</Typography>
         <Divider orientation="horizontal" className={classes.divider}/>
 

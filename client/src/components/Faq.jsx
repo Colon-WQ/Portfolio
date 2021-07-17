@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/styles';
-import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { FaDotCircle, FaAngleDown } from 'react-icons/fa';
 import Accordion from '@material-ui/core/Accordion';

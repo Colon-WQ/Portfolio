@@ -6,7 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
-import { theme } from '../styles/styles';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
 import homeWelcome from '../res/assets/homeWelcome.png';
 import sunsetBackground from '../res/assets/sunset.png';
