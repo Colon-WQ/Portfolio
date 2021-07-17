@@ -1,4 +1,4 @@
-import { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
+import { ACTIONS, LIFECYCLE } from 'react-joyride';
 import { STEPS_COUNT } from '../reducers/TourReducer';
 
 /**

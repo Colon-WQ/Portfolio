@@ -4,7 +4,7 @@ import { repopulate_state, toggle_unsaved_state } from '../../actions/LoginActio
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../../actions/PortfolioAction.js';
 import { manualNext, callback, stopTour } from '../../actions/TourAction';
 import { ThemeProvider, withStyles, createMuiTheme } from '@material-ui/core/styles'
-import { CssBaseline, Fab, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
+import { CssBaseline, Fab, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
@@ -216,14 +216,16 @@ class Portfolio extends Component {
   componentDidUpdate() {
 
     if (this.props.isUnsaved && this.state.autosaveTimer === null) {
-      this.state.autosaveTimer = setTimeout(async () => {
-        if (this.props.loggedIn) {
-          console.log("Autosaving")
-          await this.handleSavePortfolio();
-        } else {
-          await this.handleSaveLocalPortfolio();
-        }
-      }, 30000);
+      this.setState({
+        autosaveTimer: setTimeout(async () => {
+          if (this.props.loggedIn) {
+            console.log("Autosaving")
+            await this.handleSavePortfolio();
+          } else {
+            await this.handleSaveLocalPortfolio();
+          }
+        }, 30000)
+      });
     }
   }
 
@@ -372,7 +374,7 @@ class Portfolio extends Component {
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
       let dupeEntry = copy[idx];
-      Object.entries(dupeEntry.images).map(([key, item]) => {
+      Object.entries(dupeEntry.images).forEach(([key, item]) => {
         if (item.format === 'image' && item.src.startsWith('data:image/')) {
           console.log(key)
           console.log(item.src)
@@ -392,12 +394,12 @@ class Portfolio extends Component {
       })
       for (let s_idx = 0; s_idx < dupeEntry.sections.length; s_idx++) {
         let dupeSection = dupeEntry.sections[s_idx];
-        Object.entries(dupeSection.images).map(([key, item]) => {
+        Object.entries(dupeSection.images).forEach(([key, item]) => {
           if (item.format === 'image' && item.src.startsWith('data:image/')) {
             const split = item.src.split(',');
             const fileType = split[0].substring(11, split[0].indexOf(';'));
             const baseContent = split[1];
-            const size = baseContent.length * 3 / 4 - baseContent.split('=')
+            //const size = baseContent.length * 3 / 4 - baseContent.split('=')
             console.log(baseContent);
             const imgDir = `assets/${key}${idx}_section${s_idx}.${fileType}`;
             images.push({
@@ -436,7 +438,7 @@ class Portfolio extends Component {
     let fontString = '';
     let includedFonts = [];
 
-    entries.map((entry, index) => {
+    entries.forEach((entry, index) => {
 
       Object.entries(entry.fonts).map(([field, font]) => {
         if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
@@ -452,7 +454,7 @@ class Portfolio extends Component {
       });
 
       if (entry.RTEfonts !== undefined) {
-        entry.RTEfonts.map((font, index) => {
+        entry.RTEfonts.forEach((font, index) => {
           if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
             return;
           }
@@ -519,7 +521,7 @@ class Portfolio extends Component {
 
     // inefficient code, might be able to optimise
     if (page.directories !== {}) {
-      Object.values(page.directories).map((value) => {
+      Object.values(page.directories).forEach((value) => {
         console.log(value);
         const fileArray = this.handleCreateFile(value, directory);
         files = files.concat(fileArray);
@@ -621,7 +623,7 @@ class Portfolio extends Component {
     const fileArray = this.handleCreateFile(this.state.pages, '');
     // fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     let renameArray = [];
-    fileArray.map((obj) => {
+    fileArray.forEach((obj) => {
       renameArray.push({
         fileName: obj.file,
         fileContent: obj.contents
@@ -641,7 +643,7 @@ class Portfolio extends Component {
    */
   handleDeleteEntry(index) {
     const newPages = { ...this.state.pages };
-    let ptr = newPages;
+    //let ptr = newPages;
     const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
     currentPage.entries =
       this.state.currentPage.entries.filter(
@@ -658,7 +660,7 @@ class Portfolio extends Component {
 
   handleShiftEntry(modifier, index) {
     const newPages = { ...this.state.pages };
-    let ptr = newPages;
+    //let ptr = newPages;
     const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
 
     console.log(modifier);
