@@ -424,7 +424,7 @@ class Portfolio extends Component {
       <ThemeProvider theme={this.props.theme}>
         {/* <CssBaseline /> */}
         <div style={{ display: "flex", flexDirection: "column" }}>
-          {copy.map((entry, index) => this.renderEntry(entry))}
+          {copy.map((entry, index) => this.renderEntry(entry, index))}
         </div>
       </ThemeProvider>
     ));
@@ -468,7 +468,6 @@ class Portfolio extends Component {
     if (fontString !== '') {
       fontString = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${fontString}&display=swap">`
     }
-    console.log(fontString);
 
     // TODO: add title
     // TODO: remove empty files
@@ -482,21 +481,20 @@ class Portfolio extends Component {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="X-UA-Compatible" content="ie=edge">
                 <link href="styles.css" rel="stylesheet">
-                <script defer src="script.js"></script>
+                <script defer src="scripts.js"></script>
                 <title>Welcome</title>
             </head>
             <body style="background-color: ${page.backgroundColor};">
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
-    //console.log(cssGenerated)
-
-    console.log(Base64.decode(html))
 
     const css = Base64.encode(cssGenerated);
-    const js = Base64.encode(copy
-      .map((entry, index) => templates[entry.type][entry.style].script(index))
-      .filter(Boolean).join('\n'));
+
+    let scriptText = copy
+      .map((entry, index) => templates[entry.type][entry.style].script(entry, index))
+      .filter(Boolean).join('\n');
+    const js = Base64.encode(scriptText);
 
     let files = [
       ...images,

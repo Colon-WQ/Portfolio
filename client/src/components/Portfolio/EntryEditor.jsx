@@ -791,7 +791,7 @@ class EntryEditor extends PureComponent {
                           id={key}
                           anchorEl={this.state.anchorEl}
                           keepMounted
-                          open={this.state.showUI === UI.FONT && Boolean(this.state.anchorEl)}
+                          open={this.state.showUI === UI.FONT && Boolean(this.state.anchorEl) && this.state.editField === key}
                           onClose={() => this.setState({ anchorEl: null, showUI: UI.NONE })}
                         >
                           {fonts.map((fontName) => (
@@ -824,7 +824,7 @@ class EntryEditor extends PureComponent {
                         Preview = icons[category[0]].icons[category[1]];
                         break;
                       case 'colour':
-                        Preview = (props) => <div style={{ backgroundColor: item.src, height: 100, width: 100 }} />;
+                        Preview = (props) => <div style={{ backgroundColor: item.src, height: '5vw', width: '5vw' }} />;
                         break;
                       default:
                         break;
@@ -832,14 +832,19 @@ class EntryEditor extends PureComponent {
                     return (
                       <div>
                         <Tooltip title={this.state.info.images[key].label}>
-                          <Button aria-controls="media-menu" aria-haspopup="true" onClick={(event) => this.setState(
-                            {
-                              anchorEl: event.currentTarget,
-                              editField: key,
-                              editSection: false,
-                              editCategory: 'images',
-                              showUI: UI.NONE
-                            })}>
+                          <Button aria-controls="media-menu" aria-haspopup="true" onClick={
+
+                            (event) => {
+                              console.log(this.state.info.images[key]);
+                              this.setState(
+                                {
+                                  anchorEl: event.currentTarget,
+                                  editField: key,
+                                  editSection: false,
+                                  editCategory: 'images',
+                                  showUI: UI.NONE
+                                })
+                            }}>
                             <Preview />
                           </Button>
                         </Tooltip>
@@ -850,7 +855,7 @@ class EntryEditor extends PureComponent {
                           open={Boolean(this.state.anchorEl) && !this.state.editSection && this.state.editCategory === 'images' && this.state.editField === key}
                           onClose={() => this.setState({ anchorEl: null })}
                         >
-                          {this.state.info.images[key].format.forEach(format => {
+                          {this.state.info.images[key].format.map(format => {
                             switch (format) {
                               case 'image':
                                 return (<MenuItem onClick={() => {
@@ -1030,8 +1035,6 @@ class EntryEditor extends PureComponent {
                                             })}
                                           >{format}</MenuItem>)
                                         case 'icon':
-                                          console.log(this.state.iconCategory)
-
                                           const category = item.format === 'icon' ? item.src.split('/')[0] : this.state.iconCategory;
                                           return (<MenuItem onClick={() => this.setState(
                                             {

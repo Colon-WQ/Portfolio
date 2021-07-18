@@ -1,10 +1,12 @@
 import React from 'react';
 import IntroTemplateMinimalist from './introduction/IntroTemplateMinimalist';
 import TimelineTemplateMinimalist from './timeline/TimelineTemplateMinimalist';
-import AboutTemplateBasic from './about/AboutTemplateBasic';
+import TimelineTemplateSpace from './timeline/TimelineTemplateSpace.jsx';
 import AboutTemplateMinimalist from './about/AboutTemplateMinimalist';
+import AboutTemplateSpace from './about/AboutTemplateSpace.jsx';
 import IntroTemplateRedline from './introduction/IntroTemplateRedline';
 import ContactTemplateMinimalist from './contact/ContactTemplateMinimalist';
+import SplashTemplateSpace from './splash/SplashTemplateSpace.jsx';
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
  * 
@@ -33,12 +35,12 @@ export const templates = {
   ],
   about: [
     {
-      name: AboutTemplateBasic.templateName,
-      preview: AboutTemplateBasic.preview,
-      component: (fields, id) => (<AboutTemplateBasic fields={fields} id={id}/>),
-      script: AboutTemplateBasic.script,
-      info: AboutTemplateBasic.info,
-      defaultField: AboutTemplateBasic.defaultField
+      name: AboutTemplateSpace.templateName,
+      preview: AboutTemplateSpace.preview,
+      component: (fields, id) => (<AboutTemplateSpace fields={fields} id={id}/>),
+      script: AboutTemplateSpace.script,
+      info: AboutTemplateSpace.info,
+      defaultField: AboutTemplateSpace.defaultField
     },
     {
       name: AboutTemplateMinimalist.templateName,
@@ -57,6 +59,14 @@ export const templates = {
       script: TimelineTemplateMinimalist.script,
       info: TimelineTemplateMinimalist.info,
       defaultField: TimelineTemplateMinimalist.defaultField
+    },
+    {
+      name: TimelineTemplateSpace.templateName,
+      preview: TimelineTemplateSpace.preview,
+      component: (fields, id) => (<TimelineTemplateSpace fields={fields} id={id}/>),
+      script: TimelineTemplateSpace.script,
+      info: TimelineTemplateSpace.info,
+      defaultField: TimelineTemplateSpace.defaultField
     }
   ],
   contact: [
@@ -67,6 +77,16 @@ export const templates = {
       script: ContactTemplateMinimalist.script,
       info: ContactTemplateMinimalist.info,
       defaultField: ContactTemplateMinimalist.defaultField
+    }
+  ],
+  splash: [
+    {
+      name: SplashTemplateSpace.templateName,
+      preview: SplashTemplateSpace.preview,
+      component: (fields, id) => (<SplashTemplateSpace fields={fields} id={id}/>),
+      script: SplashTemplateSpace.script,
+      info: SplashTemplateSpace.info,
+      defaultField: SplashTemplateSpace.defaultField
     }
   ]
 }

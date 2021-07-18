@@ -53,10 +53,15 @@ class ContactTemplateMinimalist extends Component {
 
   static preview = "https://bit.ly/3fwsFKX";
 
-  static script = (index) => "";
+  static script = (entry, index) => {
+    let scriptText = entry.sections.map((section, sectionIndex) => {
+      return `document.getElementById("link-${index}-${sectionIndex}").onclick = () => window.open("${section.texts.socialLink}");`
+    }).join('\n');
+    return scriptText;
+  };
 
   static info = {
-    fonts: { titleFont: { label: 'title font' }, linkFont: { label: 'link font' } },
+    fonts: { titleFont: { label: 'title font' } },
     colours: { bg: { label: 'background' }, primary: { label: 'primary' } },
     images: {},
     texts: { title: { label: 'Title', type: "simpleText" } },
@@ -76,7 +81,7 @@ class ContactTemplateMinimalist extends Component {
   static defaultField = {
     width: '100%',
     height: 'fit-content',
-    fonts: { titleFont: 'Roboto', linkFont: 'Roboto' },
+    fonts: { titleFont: 'Roboto' },
     colours: { bg: '#e8dfcf', primary: '#d19a19' },
     images: {},
     texts: {
@@ -113,7 +118,11 @@ class ContactTemplateMinimalist extends Component {
             width: '100%',
             height: '100%',
           }}>
-          <Typography component="h1" variant="h1" style={{ color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif` }}>
+          <Typography
+            component="h1"
+            variant="h1"
+            style={{ color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif` }}
+          >
             {fields.texts.title}
           </Typography>
           <div
@@ -140,6 +149,7 @@ class ContactTemplateMinimalist extends Component {
                 <div className={classes.section}>
                   <Tooltip title={section.texts.socialLabel}>
                     <Button
+                      id={`link-${this.props.id}-${index}`}
                       onClick={() => window.open(section.texts.socialLink)}
                       className={classes.socialButton}
                     >

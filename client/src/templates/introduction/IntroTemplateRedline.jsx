@@ -46,7 +46,7 @@ class IntroTemplateRedline extends Component {
 
   static preview = "https://bit.ly/3fwsFKX";
 
-  static script = (index) => "";
+  static script = (entry, index) => "";
 
   static info = {
     fonts: { titleFont: { label: 'title font' } },
@@ -72,9 +72,10 @@ class IntroTemplateRedline extends Component {
     fonts: { titleFont: 'Roboto' },
     colours: { primary: '#dd0000', secondary: '#FFFFFF' },
     images: { bg: { src: 'https://bit.ly/3gSDGpJ', format: 'image' } },
-    texts: { 
-      name: "Lorem Ipsum", 
-      status: "Developer" },
+    texts: {
+      name: "Lorem Ipsum",
+      status: "Developer"
+    },
     sections: [{
       images: { socialIcon: { src: 'fa/FaGithub', format: 'icon' } },
       texts: { socialLink: 'https://github.com' }
