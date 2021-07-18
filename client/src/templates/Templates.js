@@ -4,7 +4,7 @@ import TimelineTemplateMinimalist from './timeline/TimelineTemplateMinimalist';
 import AboutTemplateBasic from './about/AboutTemplateBasic';
 import AboutTemplateMinimalist from './about/AboutTemplateMinimalist';
 import IntroTemplateRedline from './introduction/IntroTemplateRedline';
-//  TODO: rename to templates?
+import ContactTemplateMinimalist from './contact/ContactTemplateMinimalist';
 /**
  * @file EntryEditor component to provide a user interface for users to style their entries
  * 
@@ -57,6 +57,16 @@ export const templates = {
       script: TimelineTemplateMinimalist.script,
       info: TimelineTemplateMinimalist.info,
       defaultField: TimelineTemplateMinimalist.defaultField
+    }
+  ],
+  contact: [
+    {
+      name: ContactTemplateMinimalist.templateName,
+      preview: ContactTemplateMinimalist.preview,
+      component: (fields, id) => (<ContactTemplateMinimalist fields={fields} id={id}/>),
+      script: ContactTemplateMinimalist.script,
+      info: ContactTemplateMinimalist.info,
+      defaultField: ContactTemplateMinimalist.defaultField
     }
   ]
 }

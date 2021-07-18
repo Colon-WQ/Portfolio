@@ -420,7 +420,7 @@ class EntryEditor extends PureComponent {
       const pattern2 = /(?<=font-family: ).*?(?=;)/g;
       const fontFamily = match[0].match(pattern2);
       if (fontFamily) {
-        
+
         if (!fonts.includes(fontFamily[0])) {
           fonts.push(fontFamily[0]);
         }
@@ -967,7 +967,14 @@ class EntryEditor extends PureComponent {
 
                   {
                     this.state.currentSection === this.state.sections.length
-                      ? <IconButton onClick={this.handleCreateEntry}><FaPlus /></IconButton>
+                      ? <Fab
+                        onClick={this.handleCreateEntry}
+                        variant="extended"
+                        style={{
+                          width: 'max-content',
+                          marginInline: 'auto'
+                        }}
+                      ><FaPlus /> Add new section</Fab>
                       : <div className={classes.rowDiv} style={{ alignItems: 'flex-start' }}>
                         <div className={classes.colDiv}>
                           <Typography variant="caption" display="block">
@@ -1066,13 +1073,16 @@ class EntryEditor extends PureComponent {
                                     ? <TextEditor
                                       item={item}
                                       label={this.state.info.sections.entryFormat.texts[key].label}
-                                      onClose={(value, name) => this.handleChange(value, key, "texts", true)} />
+                                      onClose={(value, name) => this.handleChange(value, key, "texts", true)}
+                                      key={this.state.currentSection}
+                                    />
                                     : <SimpleTextEditor
                                       label={this.state.info.sections.entryFormat.texts[key].label}
                                       item={item}
                                       onClose={(value) => this.handleChange(value, key, "texts", true)}
                                       category={"texts"}
                                       section={true}
+                                      key={this.state.currentSection}
                                     />
                                 }
                               </div>)}
