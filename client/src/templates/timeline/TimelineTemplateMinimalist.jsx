@@ -3,6 +3,8 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import preview from '../../res/preview/timeline/TimelineMinimalist.JPG'
+import { Divider } from '@material-ui/core';
+import * as icons from '../../styles/icons';
 
 const styles = (theme) => ({
   root: {
@@ -15,17 +17,16 @@ const styles = (theme) => ({
   std: { display: 'block' },
   timelineImg: {
     borderRadius: '50%',
-    height: '5vw',
-    width: '5vw'
+    height: '100px',
+    width: '100px'
   },
-  box: {
-    borderWidth: '1px',
-    borderStyle: 'solid',
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
     width: '100%',
     height: '100%'
   },
   title: {
-    margin: '5%'
   },
   section: {
     display: 'flex',
@@ -39,7 +40,19 @@ const styles = (theme) => ({
   sectionTextDiv: {
     marginLeft: '3%',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    width: '50%',
+    height: '50%'
+  },
+  timelineDiv: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '50%'
+  },
+  connectorDiv: {
+    height: '100px',
+    borderLeft: 'solid 1px',
+    marginLeft: 'calc(1% + 50px)'
   }
 });
 
@@ -66,7 +79,7 @@ class TimelineTemplateMinimalist extends Component {
         texts: { timelineTitle: "New section", timelineDate: "2077" }
       },
       entryFormat: {
-        images: { timelineImage: { label: "Event Image", format: ['image'] } },
+        images: { timelineImage: { label: "Event Image", format: ['image', 'icon'] } },
         texts: { timelineTitle: { label: "Event name" }, timelineDate: { label: "Event date" } }
       }
     }
@@ -106,7 +119,7 @@ class TimelineTemplateMinimalist extends Component {
       }}>
         <CssBaseline />
         <div
-          className={classes.box}
+          className={classes.row}
           style={{
             borderColor: fields.colours.primary
           }}
@@ -117,35 +130,57 @@ class TimelineTemplateMinimalist extends Component {
             variant="h2"
             style={{
               color: fields.colours.primary,
-              fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`
+              fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`,
+              width: '50%'
             }}
             className={classes.title}
           >
             {fields.texts.title}
           </Typography>
-          {fields.sections.map((section, index) => {
-            return (
-              <div className={classes.section}>
-                <img src={section.images.timelineImage.src} className={classes.timelineImg} />
-                <div className={classes.sectionTextDiv}>
-                  <Typography
-                    style={{ color: fields.colours.secondary }}
-                    component="h5"
-                    variant="h5"
-                  >
-                    {section.texts.timelineDate}
-                  </Typography>
-                  <Typography
-                    style={{ color: fields.colours.secondary }}
-                    component="h5"
-                    variant="h5"
-                  >
-                    {section.texts.timelineTitle}
-                  </Typography>
-                </div>
-              </div>
-            );
-          })}
+          <Divider variant="middle" orientation="vertical" />
+          <div
+            className={classes.timelineDiv}
+          >
+            {fields.sections.map((section, index) => {
+              let SocialIcon;
+              if (section.images.timelineImage.format === 'icon') {
+                const category = section.images.timelineImage.src.split('/');
+                SocialIcon = icons[category[0]].icons[category[1]];
+              } else {
+                SocialIcon = (props) => <img src={section.images.timelineImage.src} className={classes.timelineImg} />;
+              }
+
+              return (
+                <React.Fragment>
+                  <div className={classes.section}>
+                    <SocialIcon size='100px' color={fields.colours.primary} />
+                    <div className={classes.sectionTextDiv}>
+                      <Typography
+                        style={{ color: fields.colours.primary }}
+                        component="h5"
+                        variant="h5"
+                      >
+                        {section.texts.timelineTitle}
+                      </Typography>
+                      <Typography
+                        style={{ color: fields.colours.secondary }}
+                        component="h5"
+                        variant="h5"
+                      >
+                        {section.texts.timelineDate}
+                      </Typography>
+                    </div>
+
+                  </div>
+                  {
+                    index < fields.sections.length - 1
+                      ? <div className={classes.connectorDiv} />
+                      : null
+                  }
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
       </div>);
   }
