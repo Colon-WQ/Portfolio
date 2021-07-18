@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Modal, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover, Select, Tooltip } from '@material-ui/core';
-import { FaInfoCircle, FaSave, FaTimes } from 'react-icons/fa';
-import { SketchPicker } from 'react-color';
+import { Button, TextField, Typography, MenuItem, Popover, Select, Tooltip } from '@material-ui/core';
+import { FaInfoCircle } from 'react-icons/fa';
 
 /**
  * @file DimensionSlider component for users to pick colours

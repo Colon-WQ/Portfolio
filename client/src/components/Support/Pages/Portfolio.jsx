@@ -10,6 +10,16 @@ const styles = theme => ({
     justifyContent: 'start',
     alignItems: 'center'
   },
+  header: {
+    color: theme.palette.text.secondary,
+    marginTop: '1rem',
+    marginBottom: '1rem'
+  },
+  subHeader: {
+    color: theme.palette.text.main,
+    marginTop: '0.5rem',
+    marginBottom: '0.5rem'
+  },
   paragraph: {
     backgroundColor: 'white',
     width: '85%',
@@ -22,6 +32,9 @@ const styles = theme => ({
   },
   nestedParagraph: {
     paddingLeft: '2rem'
+  },
+  paragraphEnd: {
+    height: '1rem'
   },
   link: {
     color: theme.palette.primary.main,
@@ -53,15 +66,21 @@ class Portfolio extends Component {
         <span className={classes.topSpace}/>
 
         <Typography variant='h2' component='h2'>Portfolio</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
         <ul className={classes.paragraph}>
             <li>The Portfolio page shows a preview of the user's portfolio website and provides tools to edit the website.</li>
         </ul>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Edit Theme</Typography>
+        <ul className={classes.paragraph}>
+            <li>By default, there will be an Edit Theme button.</li>
+            <li>Click on the Edit Theme button. A colour picker will show, allowing you to select a background color for the page.</li>
+            <li>Once done, the page's background color will change accordingly.</li>
+        </ul>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Tool Panel</Typography>
         <Divider orientation="horizontal" className={classes.divider}/>
 
-        <Typography variant='h5' component='h5'>Tool Panel</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
-        <Typography variant='h6' component='h6'>Save</Typography>
+        <Typography className={classes.subHeader} variant='h6' component='h6'>Save</Typography>
         <ul className={classes.paragraph}>
             <li>Save button allows for manual saving of current portfolio work.</li>
             <li>A 30s countdown to autosave will begin after every edit to portfolio.</li>
@@ -70,9 +89,8 @@ class Portfolio extends Component {
                 ask the user to either discard or save unsaved work before leaving the portfolio page.
             </li>
         </ul>
-        <Divider orientation="horizontal" className={classes.divider}/>
         
-        <Typography variant='h6' component='h6'>Add Entry</Typography>
+        <Typography className={classes.subHeader} variant='h6' component='h6'>Add Entry</Typography>
         <ul className={classes.paragraph}>
             <li>Add Entry button allows user to add prebuilt components/templates into their portfolio.</li>
             <li>Clicking on the Add Entry button will open an interface where the user can browse the available templates</li>
@@ -83,9 +101,8 @@ class Portfolio extends Component {
               {` interface`}
             </li>
         </ul>
-        <Divider orientation="horizontal" className={classes.divider}/>
 
-        <Typography variant='h6' component='h6'>Manage Directory</Typography>
+        <Typography className={classes.subHeader} variant='h6' component='h6'>Manage Directory</Typography>
         <ul className={classes.paragraph}>
             <li>Manage Directory button allows user to manage pages within their portfolio</li>
             <li>
@@ -111,9 +128,8 @@ class Portfolio extends Component {
               {' interface'}
             </li>
         </ul>
-        <Divider orientation="horizontal" className={classes.divider}/>
 
-        <Typography variant='h6' component='h6'>Publish for Users</Typography>
+        <Typography className={classes.subHeader} variant='h6' component='h6'>Publish for Users</Typography>
         <ul className={classes.paragraph}>
             <li>
                 For users, the Publish button will open a dialog asking for the user to input a name for the Github repository they wish to use. 
@@ -141,13 +157,13 @@ class Portfolio extends Component {
                 </span></li>
             </div>
         </ul>
-        <Divider orientation="horizontal" className={classes.divider}/>
 
-        <Typography variant='h6' component='h6'>Publish for Guests</Typography>
+        <Typography className={classes.subHeader} variant='h6' component='h6'>Publish for Guests</Typography>
         <ul className={classes.paragraph}>
             <li>For guests, the Publish button will download a zip file of the portfolio.</li>
             <li>To find out how to build and host your own portfolio website using this zip file, look into tutorial for a quick guide.</li>
         </ul>
+        <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>
 
         <span className={classes.bottomSpace}/>

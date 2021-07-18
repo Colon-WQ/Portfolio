@@ -4,7 +4,7 @@ import { repopulate_state, toggle_unsaved_state } from '../../actions/LoginActio
 import { saveCurrentWork, saveCurrentWorkToLocal } from '../../actions/PortfolioAction.js';
 import { manualNext, callback, stopTour } from '../../actions/TourAction';
 import { ThemeProvider, withStyles, createMuiTheme } from '@material-ui/core/styles'
-import { CssBaseline, Fab, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@material-ui/core';
+import { CssBaseline, Fab, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import { FaChevronDown, FaChevronUp, FaCog, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import { Base64 } from 'js-base64';
 import ReactDOMServer from 'react-dom/server';
@@ -47,7 +47,8 @@ const jss = create().setup({ ...jssPreset(), Renderer: null });
 const styles = (theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    height: '100%'
   },
   entryDiv: {
     position: 'relative'
@@ -192,6 +193,11 @@ class Portfolio extends Component {
     if (this.props.tourState.stepIndex !== 1) {
       this.props.stopTour();
     }
+
+    //Set page theme color on mount
+    this.handlePageTheme(true, this.state.currentPage.backgroundColor)
+    console.log("theme color preset")
+
   }
 
   /**
@@ -210,15 +216,16 @@ class Portfolio extends Component {
   componentDidUpdate() {
 
     if (this.props.isUnsaved && this.state.autosaveTimer === null) {
-      this.state.autosaveTimer = setTimeout(async () => {
-        if (this.props.loggedIn) {
-          console.log("Autosaving")
-          await this.handleSavePortfolio();
-        } else {
-          await this.handleSaveLocalPortfolio();
-        }
-      }, 30000);
-
+      this.setState({
+        autosaveTimer: setTimeout(async () => {
+          if (this.props.loggedIn) {
+            console.log("Autosaving")
+            await this.handleSavePortfolio();
+          } else {
+            await this.handleSaveLocalPortfolio();
+          }
+        }, 30000)
+      });
     }
   }
 
@@ -239,6 +246,8 @@ class Portfolio extends Component {
       console.log("unmount clear autosave")
       clearTimeout(this.state.autosaveTimer);
     }
+    //reset document body background color to white
+    document.body.style.backgroundColor = `#ffffff`;
   }
 
   /**
@@ -329,6 +338,7 @@ class Portfolio extends Component {
         showTheme: false,
         themeAnchor: null
       });
+
       document.body.style.backgroundColor = colour;
 
       //triggers autosave
@@ -364,29 +374,32 @@ class Portfolio extends Component {
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
       let dupeEntry = copy[idx];
-      Object.entries(dupeEntry.images).map(([key, item]) => {
+      Object.entries(dupeEntry.images).forEach(([key, item]) => {
         if (item.format === 'image' && item.src.startsWith('data:image/')) {
+          console.log(key)
+          console.log(item.src)
           const split = item.src.split(',');
           const fileType = split[0].substring(11, split[0].indexOf(';'));
           const baseContent = split[1];
-          console.log(baseContent);
+          //console.log(baseContent);
           const imgDir = `assets/${key}${idx}.${fileType}`;
           images.push({
             file: `${directory}${imgDir}`,
             contents: baseContent
           });
-          copy[idx].images[key] = imgDir;
+          //Added .src to comply with the template.
+          copy[idx].images[key].src = imgDir;
         }
         // copy.images[key] = `${directory}/${key}.jpg`
       })
       for (let s_idx = 0; s_idx < dupeEntry.sections.length; s_idx++) {
         let dupeSection = dupeEntry.sections[s_idx];
-        Object.entries(dupeSection.images).map(([key, item]) => {
+        Object.entries(dupeSection.images).forEach(([key, item]) => {
           if (item.format === 'image' && item.src.startsWith('data:image/')) {
             const split = item.src.split(',');
             const fileType = split[0].substring(11, split[0].indexOf(';'));
             const baseContent = split[1];
-            const size = baseContent.length * 3 / 4 - baseContent.split('=')
+            //const size = baseContent.length * 3 / 4 - baseContent.split('=')
             console.log(baseContent);
             const imgDir = `assets/${key}${idx}_section${s_idx}.${fileType}`;
             images.push({
@@ -425,7 +438,7 @@ class Portfolio extends Component {
     let fontString = '';
     let includedFonts = [];
 
-    entries.map((entry, index) => {
+    entries.forEach((entry, index) => {
 
       Object.entries(entry.fonts).map(([field, font]) => {
         if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
@@ -441,7 +454,7 @@ class Portfolio extends Component {
       });
 
       if (entry.RTEfonts !== undefined) {
-        entry.RTEfonts.map((font, index) => {
+        entry.RTEfonts.forEach((font, index) => {
           if (webSafeFonts.includes(font) || includedFonts.includes(font)) {
             return;
           }
@@ -454,7 +467,7 @@ class Portfolio extends Component {
           }
         })
       }
-      console.log("run")
+      //console.log("run")
     })
 
 
@@ -465,6 +478,7 @@ class Portfolio extends Component {
 
     // TODO: add title
     // TODO: remove empty files
+    //Needed to add style="body" to enable the body element to use the body css class.
     const html = Base64.encode(`
             <!DOCTYPE html>
             <html lang="en">
@@ -477,11 +491,13 @@ class Portfolio extends Component {
                 <script defer src="script.js"></script>
                 <title>Welcome</title>
             </head>
-            <body>
+            <body style="body">
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
-    console.log(cssGenerated)
+    //console.log(cssGenerated)
+
+    console.log(Base64.decode(html))
 
     const css = Base64.encode(cssGenerated);
     const js = Base64.encode(copy
@@ -506,7 +522,7 @@ class Portfolio extends Component {
 
     // inefficient code, might be able to optimise
     if (page.directories !== {}) {
-      Object.values(page.directories).map((value) => {
+      Object.values(page.directories).forEach((value) => {
         console.log(value);
         const fileArray = this.handleCreateFile(value, directory);
         files = files.concat(fileArray);
@@ -608,7 +624,7 @@ class Portfolio extends Component {
     const fileArray = this.handleCreateFile(this.state.pages, '');
     // fileArray.map((value) => alert(`file: ${value.file};\n${Base64.decode(value.contents)}`));
     let renameArray = [];
-    fileArray.map((obj) => {
+    fileArray.forEach((obj) => {
       renameArray.push({
         fileName: obj.file,
         fileContent: obj.contents
@@ -628,7 +644,7 @@ class Portfolio extends Component {
    */
   handleDeleteEntry(index) {
     const newPages = { ...this.state.pages };
-    let ptr = newPages;
+    //let ptr = newPages;
     const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
     currentPage.entries =
       this.state.currentPage.entries.filter(
@@ -645,7 +661,7 @@ class Portfolio extends Component {
 
   handleShiftEntry(modifier, index) {
     const newPages = { ...this.state.pages };
-    let ptr = newPages;
+    //let ptr = newPages;
     const currentPage = this.traverseDirectory(newPages, this.state.currentPath);
 
     console.log(modifier);
@@ -678,6 +694,10 @@ class Portfolio extends Component {
       this.state.currentPage = currentPage;
       this.state.currentPath = currentPath;
     }
+
+    //theme changes on page change
+    this.handlePageTheme(true, this.state.currentPage.backgroundColor)
+
     this.forceUpdate();
   }
 
@@ -768,9 +788,10 @@ class Portfolio extends Component {
 
   render() {
     const { loggedIn, classes, tourState, isUnsaved } = this.props;
+    
     return (
       <ErrorBoundary>
-        <div className={classes.root}>
+        <div id='portfolio-background' className={classes.root}>
           <Prompt
             when={isUnsaved}
             message={JSON.stringify({

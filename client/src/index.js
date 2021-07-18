@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers/RootReducer';
 import reportWebVitals from './reportWebVitals';
@@ -18,6 +17,11 @@ const store = createStore(
   rootReducer,
   applyMiddleware(thunk)
 )
+
+
+// document.getElementsByTagName('html')[0].style.height = '100%'
+// document.getElementsByTagName('body')[0].style.height = '100%'
+
 
 ReactDOM.render(
   <React.StrictMode>

@@ -3,7 +3,6 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
-import { FaGithub } from 'react-icons/fa';
 import * as icons from '../../styles/icons';
 
 const styles = (theme) => ({

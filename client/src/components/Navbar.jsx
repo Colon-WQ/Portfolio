@@ -185,6 +185,7 @@ class Navbar extends Component {
     this.restartProductTour = this.restartProductTour.bind(this);
     this.handleFAQ = this.handleFAQ.bind(this);
     this.handleSupport = this.handleSupport.bind(this);
+    this.handleTutorial = this.handleTutorial.bind(this);
   }
 
   /**
@@ -261,6 +262,11 @@ class Navbar extends Component {
 
   handleSupport() {
     this.props.history.push('/support');
+    this.handleUserMenu();
+  }
+
+  handleTutorial() {
+    this.props.history.push('/tutorial');
     this.handleUserMenu();
   }
 
@@ -342,6 +348,9 @@ class Navbar extends Component {
               </Button>
               <Button onClick={this.handleSupport} fullWidth={true} className={classes.standardBtn}>
                 SUPPORT
+              </Button>
+              <Button onClick={this.handleTutorial} fullWidth={true} className={classes.standardBtn}>
+                TUTORIALS
               </Button>
               {
                 loggedIn

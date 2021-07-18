@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import IntroTemplateMinimalist from './introduction/IntroTemplateMinimalist';
 import TimelineTemplateMinimalist from './timeline/TimelineTemplateMinimalist';
 import AboutTemplateBasic from './about/AboutTemplateBasic';

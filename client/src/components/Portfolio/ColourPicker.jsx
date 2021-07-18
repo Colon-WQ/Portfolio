@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, IconButton, TextField, Typography, Input, Fab, MenuList, MenuItem, Menu, Tab, Tabs, Popover } from '@material-ui/core';
-import { FaSave, FaTimes } from 'react-icons/fa';
+import { Button, Popover } from '@material-ui/core';
 import { SketchPicker } from 'react-color';
 /**
  * @file ColourPicker component for users to pick colours
@@ -72,7 +71,7 @@ class ColourPicker extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    //const { classes } = this.props;
     // console.log(this.state)
     return (
       <Popover

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/styles';
-import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { FaDotCircle, FaAngleDown } from 'react-icons/fa';
 import Accordion from '@material-ui/core/Accordion';
@@ -8,6 +7,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 
+const sideBarWidth = '15%'
 
 const styles = (theme) => ({
     appBarSpacer: theme.mixins.toolbar,
@@ -20,14 +20,14 @@ const styles = (theme) => ({
         alignItems: 'center'
     },
     sideBar: {
-        flex: '20%',
+        position: 'fixed',
         display: 'flex',
         height: '100%',
-        width: '100%',
+        width: sideBarWidth,
         flexDirection: 'column',
         justifyContent: 'start',
         alignItems: 'center',
-        backgroundColor: theme.palette.contrastPrimary.main
+        backgroundColor: theme.palette.background.dark
     },
     sideBarRow: {
         display: 'flex',
@@ -39,7 +39,7 @@ const styles = (theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.text.main,
         '&:hover': {
-            backgroundColor: theme.palette.secondary.main
+            backgroundColor: theme.palette.primary.light
         }
     },
     sideRowText: {
@@ -58,16 +58,21 @@ const styles = (theme) => ({
         height: '100%',
         width: '100%'
     },
+    sideBarSpace: {
+        flex: sideBarWidth
+    },
     contentArea: {
-        flex: '80%',
+        flex: `calc(100% - ${sideBarWidth})`,
         display: 'flex',
         height: '100%',
         width: '100%',
         flexDirection: 'column',
         justifyContent: 'start',
         alignItems: 'center',
-        backgroundColor: theme.palette.contrastSecondary.main,
-        padding: '2%'
+        backgroundColor: theme.palette.background.dark,
+        padding: '2%',
+        overflowY: 'auto',
+        overflowX: 'hidden'
     },
     accordionRoot: {
         width: '100%',
@@ -219,6 +224,7 @@ class Faq extends Component {
                         )
                     })}
                 </div>
+                <div className={classes.sideBarSpace}/>
                 <Divider orientation="vertical" flexItem />
                 <div className={classes.contentArea}>
                     {

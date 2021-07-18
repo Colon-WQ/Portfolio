@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { withStyles } from '@material-ui/core/styles';
-import { Button, ButtonBase, Card, CardContent, CardMedia, Fab, IconButton, Dialog, TextField, Tooltip, Typography, Dialogy } from '@material-ui/core';
+import { Button, Fab, Dialog, TextField, Tooltip, Typography } from '@material-ui/core';
 import axios from 'axios';
-import { FaFileUpload, FaSave, FaSearch, FaTimes, FaTrash } from 'react-icons/fa';
-import { MdAccessAlarm, MdAddAlert } from 'react-icons/md';
+import { FaFileUpload, FaSave, FaSearch, FaTrash } from 'react-icons/fa';
 import { handleErrors } from '../../handlers/errorHandler';
 import { imageCache } from './ImageCache';
-import pexelsLogo from '../../res/assets/pexels logo.png';
 
 /**
  * @file ImagePicker component to provide a user interface for users to browse royalty free images
@@ -165,7 +163,7 @@ class ImagePicker extends Component {
   queryImages(event) {
     let queryParams = {};
     if (Boolean(this.state.queryParams.query)) {
-      Object.entries(this.state.queryParams).map(([key, value]) => { if (value !== '') queryParams[key] = value });
+      Object.entries(this.state.queryParams).forEach(([key, value]) => { if (value !== '') queryParams[key] = value });
       axios({
         method: "GET",
         url: process.env.REACT_APP_BACKEND + "/images",
@@ -243,9 +241,9 @@ class ImagePicker extends Component {
             {this.state.photos !== undefined && this.state.photos !== []
               ? this.state.photos.map((photo) => {
                 const photographer = photo.photographer;
-                const photographer_url = photo.photographer_url;
+                //const photographer_url = photo.photographer_url;
                 const thumbnail = photo.src.tiny;
-                const id = photo.id;
+                //const id = photo.id;
                 return (
                   <div>
 
