@@ -421,14 +421,8 @@ class Portfolio extends Component {
     //We also need to wrap that component with the theme we are using so that the style can reference it properly
     //Suspect that because certain styles are missing, their defaults may be injected into our app, resulting in default css styles.
     const rawHTML = ReactDOMServer.renderToString(sheets.collect(
-      <ThemeProvider theme={createMuiTheme({
-        palette: {
-          background: {
-            default: page.backgroundColor
-          }
-        }
-      })}>
-        <CssBaseline />
+      <ThemeProvider theme={this.props.theme}>
+        {/* <CssBaseline /> */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {copy.map((entry, index) => this.renderEntry(entry))}
         </div>
@@ -491,7 +485,7 @@ class Portfolio extends Component {
                 <script defer src="script.js"></script>
                 <title>Welcome</title>
             </head>
-            <body class="body">
+            <body style="background-color: ${page.backgroundColor};">
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
@@ -788,7 +782,7 @@ class Portfolio extends Component {
 
   render() {
     const { loggedIn, classes, tourState, isUnsaved } = this.props;
-    
+
     return (
       <ErrorBoundary>
         <div id='portfolio-background' className={classes.root}>
