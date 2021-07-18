@@ -20,12 +20,6 @@ const styles = (theme) => ({
     height: '100px',
     width: '100px'
   },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    height: '100%'
-  },
   title: {
   },
   section: {
@@ -56,19 +50,19 @@ const styles = (theme) => ({
   }
 });
 
-class TimelineTemplateMinimalist extends Component {
+class TimelineTemplateSpace extends Component {
   constructor() {
     super();
   }
 
-  static templateName = "Minimalist";
+  static templateName = "Space";
 
   static script = (entry, index) => "";
 
   static preview = preview;
 
   static info = {
-    fonts: { titleFont: { label: "title font" } },
+    fonts: { titleFont: { label: "title font" }, mainFont: { label: "body font" } },
     colours: { primary: { label: "primary" }, secondary: { label: "secondary" } },
     images: { bg: { label: "Entry background", format: ['image', 'colour'] } },
     texts: { title: { label: "Timeline title" } },
@@ -88,10 +82,12 @@ class TimelineTemplateMinimalist extends Component {
   static defaultField = {
     width: "100%",
     height: "fit-content",
-    fonts: { titleFont: "roboto" },
-    colours: { primary: "#d19a19", secondary: "#000000" },
-    images: { bg: { src: "#e8dfcf", format: 'colour' } },
-    texts: { title: "My past experiences" },
+    fonts: { titleFont: "Zen Tokyo Zoo", mainFont: "Roboto" },
+    colours: { primary: '#fff', secondary: '#ff9d96' },
+    images: { bg: { src: "https://bit.ly/3kuRB8x", format: 'image' } },
+    texts: {
+      title: "Work history"
+    },
     sections: [{
       images: { timelineImage: { src: "https://bit.ly/3hXPM2R", format: 'image' } },
       texts: { timelineTitle: "Portfolio Deployed on Github!", timelineDate: "2021" }
@@ -105,39 +101,60 @@ class TimelineTemplateMinimalist extends Component {
   render() {
     const { classes, fields } = this.props;
     return (
-      <div className={classes.root} style={{
-        backgroundRepeat: false,
-        backgroundImage: fields.images.bg.format === 'image' ? `url("${fields.images.bg.src}")` : '',
-        backgroundColor: fields.images.bg.format === 'colour' ? fields.images.bg.src : '',
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        width: fields.width,
-        height: fields.height,
-        display: "flex",
-        flexDirection: "column",
-        textAlign: "center"
-      }}>
+      <div
+        className={classes.root}
+        style={
+          {
+            backgroundRepeat: false,
+            backgroundImage: fields.images.bg.format === 'image' ? `url("${fields.images.bg.src}")` : '',
+            backgroundColor: fields.images.bg.format === 'colour' ? fields.images.bg.src : '',
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+            width: fields.width,
+            height: fields.height,
+            minHeight: '100vh',
+            display: "flex",
+            flexDirection: "column"
+          }
+        }
+      >
         <CssBaseline />
         <div
-          className={classes.row}
           style={{
-            borderColor: fields.colours.primary
+            borderColor: fields.colours.primary,
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            height: '100%'
           }}
         >
-
-          <Typography
-            component="h2"
-            variant="h2"
+          <div
             style={{
-              color: fields.colours.primary,
-              fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`,
-              width: '50%'
+              display: 'flex',
+              borderBottomStyle: 'dotted',
+              borderBottomWidth: '3px',
+              borderBottomColor: fields.colours.secondary,
+              width: '50%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              margin: 'auto',
+              padding: '50px'
             }}
-            className={classes.title}
           >
-            {fields.texts.title}
-          </Typography>
-          <Divider variant="middle" orientation="vertical" />
+            <Typography
+              component="h2"
+              variant="h2"
+              style={{
+                color: fields.colours.primary,
+                fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`,
+              }}
+              className={classes.title}
+            >
+              {fields.texts.title}
+            </Typography>
+          </div>
           <div
             className={classes.timelineDiv}
           >
@@ -149,7 +166,6 @@ class TimelineTemplateMinimalist extends Component {
               } else {
                 SocialIcon = (props) => <img src={section.images.timelineImage.src} className={classes.timelineImg} />;
               }
-
               return (
                 <React.Fragment>
                   <div className={classes.section}>
@@ -186,4 +202,4 @@ class TimelineTemplateMinimalist extends Component {
   }
 }
 
-export default withStyles(styles)(TimelineTemplateMinimalist);
+export default withStyles(styles)(TimelineTemplateSpace);

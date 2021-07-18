@@ -5,7 +5,6 @@ import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
 import draftToHtml from 'draftjs-to-html';
 import { Markup } from 'interweave';
-import { Divider } from '@material-ui/core';
 
 
 const styles = (theme) => ({
@@ -85,7 +84,7 @@ class AboutTemplateMinimalist extends Component {
 
   static preview = "https://bit.ly/3fwsFKX";
 
-  static script = (index) => "";
+  static script = (entry, index) => "";
 
   static defaultField = {
     width: "60%",
