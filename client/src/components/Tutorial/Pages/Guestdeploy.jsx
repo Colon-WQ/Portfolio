@@ -69,7 +69,7 @@ class Guestdeploy extends Component {
             <li>We will be providing guides on how to host your portfolio website for free using these two services, but take note that both WILL require you to open user accounts with them.</li>
         </ul>
 
-        <Typography className={classes.header} variant='h5' component='h5'>You have an existing Github account</Typography>
+        <Typography className={classes.header} variant='h5' component='h5'>Hosting using Github</Typography>
         <Divider orientation="horizontal" className={classes.divider}/>
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>1. Downloading the zip files for your Portfolio website</Typography>
@@ -110,6 +110,71 @@ class Guestdeploy extends Component {
 
         <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Hosting using InfinityFree</Typography>
+        <Divider orientation="horizontal" className={classes.divider}/>
+
+        <Typography className={classes.subHeader} variant='h6' component='h6'>1. Downloading the zip files for your Portfolio website</Typography>
+        <ul className={classes.paragraph}>
+            <li>Create your portfolio and once done, click on the Publish button as a Guest.</li>
+            <li>A zip file named after your portfolio name will be downloaded.</li>
+            <li>Open and extract the contents of the zip file to a temporary location on your computer. Remember where you stored it, you'll need to access the file contents later.</li>
+        </ul>
+
+        <Typography className={classes.subHeader} variant='h6' component='h6'>2. Set up an InfinityFree account</Typography>
+        <ul className={classes.paragraph}>
+            <li>Visit infinityfree.net and register for an InfinityFree account.</li>
+            <li>Login using your InfinityFree account. You will see an Accounts page.</li>
+            <li>Click on NEW ACCOUNT to create a new management account for your portfolio website.</li>
+            <li>
+              Under Free Subdomain, provide a name for your portfolio website. 
+              Take note that the name is subject to availability in InfinityFree's pool of free subdomains. You may have to change your portfolio website name.
+            </li>
+            <li>Once done, click CREATE ACCOUNT and your website will take a while to be created at the subdomain that you provided.</li>
+            <li>For now, return to your Accounts page, you will see that the management account is showing "pending creation".</li>
+            <li>Refresh the page from time to time until it shows "active", meaning that the website is created.</li>
+        </ul>
+
+        <Typography className={classes.subHeader} variant='h6' component='h6'>3. Connecting to your portfolio website server</Typography>
+        <ul className={classes.paragraph}>
+            <li>In the Accounts page, click on your management account.</li>
+            <li>Scroll down to see the FTP Details. You will need this to connect to your portfolio website server.</li>
+            <li>You will need to download FileZilla at https://filezilla-project.org/. Choose to download FileZilla Client.</li>
+            <li>Run FileZilla. Under File tab, click on Site Manager.</li>
+            <li>Click on New Site and give it a name. For example, your portfolio website name.</li>
+            <li>Head back to your InfinityFree Accounts page, copy the FTP Hostname from under FTP Details and input it in the Host text box in FileZilla.</li>
+            <li>Then, copy the FTP Portname from under FTP Details and input it in the Port text box in FileZilla.</li>
+            <li>In FileZilla, under Logon Type, change it to Normal. You will see that a username and password is required.</li>
+            <li>
+              Head back to your InfinityFree Accounts page, copy the FTP username and FTP 
+              password from under FTP Details and input it in the username and password text box in FileZilla respectively.
+            </li>
+            <li>Click on Connect button. A dialog will show. Click OK to trust the server's certificate and proceed with the connection.</li>
+        </ul>
+
+        <Typography className={classes.subHeader} variant='h6' component='h6'>4. Uploading files to your portfolio website server</Typography>
+        <ul className={classes.paragraph}>
+          <li>You are now connected to your portfolio website server. You will see a file directory in the bottom right of the FileZilla interface.</li>
+          <li>Open the htdocs folder by clicking on it. You will see an index2.html file and another file with name "file for your website should be uploaded here"</li>
+          <li>Open the folder in which you extracted your portfolio zip file to. Select all the contents in the folder and drag it into the htdocs folder.</li>
+          <li>Upload will then begin. It will be completed when you see a Transfer finished message.</li>
+          <li>Return to your InfinityFree Accounts page, check and refresh till your management account shows "active". This means that your portfolio website is updated.</li>
+          <li>Visit your portfolio website and you will see the portfolio that you designed on Resumate.</li>
+        </ul>
+
+        <span className={classes.paragraphEnd} />
+        <Divider orientation="horizontal" className={classes.divider}/>
+
+        <Typography className={classes.header} variant='h5' component='h5'>Hosting using other services</Typography>
+
+        <ul className={classes.paragraph}>
+          <li>You are free to explore other options other than Github and InfinityFree to host your portfolio website for free.</li>
+          <li>You can visit this website at https://themeisle.com/blog/best-free-website-hosting/ to view other free website hosting services.</li>
+          <li>However, we will not be able to provide guides to cover all these other options but set up guides are usually provided in good detail by these services.</li>
+        </ul>
+        <span className={classes.paragraphEnd} />
+        <Divider orientation="horizontal" className={classes.divider}/>
+
         <span className={classes.bottomSpace}/>
       </div>
     )

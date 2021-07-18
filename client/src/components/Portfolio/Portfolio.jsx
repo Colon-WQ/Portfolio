@@ -491,7 +491,7 @@ class Portfolio extends Component {
                 <script defer src="script.js"></script>
                 <title>Welcome</title>
             </head>
-            <body style="body">
+            <body class="body">
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
