@@ -150,7 +150,8 @@ const styles = (theme) => ({
     width: '80%',
     height: '80%',
     margin: 'auto',
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.background.default,
+    padding: '20px'
   },
   hide: {
     display: 'none'
@@ -671,11 +672,20 @@ class EntryEditor extends PureComponent {
             <Dialog
               open={this.state.showUI === UI.ICON}
               aria-labelledby="icon selection dialog"
+              maxWidth="xl"
+              fullScreen
               aria-describedby="a dialog for users to pick an icon"
               className={`${classes.dialog} ${classes.subDialog}`}
               onClose={() => this.setState({ showUI: UI.NONE, anchorEl: null })}
             >
-              <div className={classes.maxHeightWidth}>
+              <div
+                className={classes.maxHeightWidth}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '20px'
+                }}
+              >
                 <Tabs
                   name="iconCategory"
                   value={this.state.iconCategory}
@@ -701,6 +711,17 @@ class EntryEditor extends PureComponent {
                       </IconButton>);
                   })}
                 </div>
+                <Fab
+                  variant="extended"
+                  style={{
+                    marginLeft: 'auto',
+                    marginTop: '10px'
+                  }}
+                  onClose={() => this.setState({ showUI: UI.NONE, anchorEl: null })}
+                >
+                  <FaTimes />
+                  Cancel
+                </Fab>
               </div>
             </Dialog>
             <div className={classes.colDiv}>
@@ -1002,11 +1023,13 @@ class EntryEditor extends PureComponent {
                                             })}
                                           >{format}</MenuItem>)
                                         case 'icon':
-                                          const category = item.src.split('/');
+                                          console.log(this.state.iconCategory)
+
+                                          const category = item.format === 'icon' ? item.src.split('/')[0] : this.state.iconCategory;
                                           return (<MenuItem onClick={() => this.setState(
                                             {
                                               showUI: UI.ICON,
-                                              iconCategory: category[0],
+                                              iconCategory: category,
                                               editFormat: 'icon'
                                             })}
                                           >{format}</MenuItem>);
