@@ -73,6 +73,7 @@ class Portfolio extends Component {
         <Typography className={classes.header} variant='h5' component='h5'>Edit Theme</Typography>
         <ul className={classes.paragraph}>
             <li>By default, there will be an Edit Theme button.</li>
+            <li>You can only open the Theme colour picker if there is an existing entry.</li>
             <li>Click on the Edit Theme button. A colour picker will show, allowing you to select a background color for the page.</li>
             <li>Once done, the page's background color will change accordingly.</li>
         </ul>
@@ -93,18 +94,18 @@ class Portfolio extends Component {
         <Typography className={classes.subHeader} variant='h6' component='h6'>Add Entry</Typography>
         <ul className={classes.paragraph}>
             <li>Add Entry button allows user to add prebuilt components/templates into their portfolio.</li>
-            <li>Clicking on the Add Entry button will open an interface where the user can browse the available templates</li>
-            <li>Select a template to add it into your portfolio</li>
-            <li>You can then edit the template using the Entry Editor</li>
+            <li>Clicking on the Add Entry button will open an interface where the user can browse the available templates.</li>
+            <li>Select a template to add it into your portfolio.</li>
+            <li>You can then edit the template using the Entry Editor.</li>
             <li>{'Read more about the '}
               <span className={classes.link} onClick={() => this.props.history.push('/support/entryeditor')}>Entry Editor</span>
-              {` interface`}
+              {` interface.`}
             </li>
         </ul>
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Manage Directory</Typography>
         <ul className={classes.paragraph}>
-            <li>Manage Directory button allows user to manage pages within their portfolio</li>
+            <li>Manage Directory button allows user to manage pages within their portfolio.</li>
             <li>
                 What are pages?
             </li>
@@ -125,7 +126,7 @@ class Portfolio extends Component {
             <li>If you have multiple pages, then it would be a directory. The Manage Directory button will open an interface that allows the user to add, delete and rename pages.</li>
             <li>{'Read more about '}
               <span className={classes.link} onClick={() => this.props.history.push('/support/directorymanager')}>Directory Manager</span>
-              {' interface'}
+              {' interface.'}
             </li>
         </ul>
 
@@ -137,8 +138,8 @@ class Portfolio extends Component {
             </li>
             <div className={classes.nestedParagraph}>
               <li>The name input is by default the root repository of the user's Github page.</li>
-              <li>A preview exists to show you the link that your website will have according to the repository name you chose</li>
-              <li>You can revert to the default input by clicking on the Set Default button</li>
+              <li>A preview exists to show you the link that your website will have according to the repository name you chose.</li>
+              <li>You can revert to the default input by clicking on the Set Default button.</li>
             </div>
             <li>
                 Once done, click on the Finalize button to proceed with publish operation, otherwise click Cancel to cancel the publish operation.
@@ -161,7 +162,10 @@ class Portfolio extends Component {
         <Typography className={classes.subHeader} variant='h6' component='h6'>Publish for Guests</Typography>
         <ul className={classes.paragraph}>
             <li>For guests, the Publish button will download a zip file of the portfolio.</li>
-            <li>To find out how to build and host your own portfolio website using this zip file, look into tutorial for a quick guide.</li>
+            <li>
+              {`To find out how to build and host your own portfolio website using this zip file, look into `}
+              <span onClick={() => this.props.history.push('/tutorial/guestdeploy')} className={classes.link}>Guest Deploy</span> 
+              {` in Tutorials for a quick guide.`}</li>
         </ul>
         <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>

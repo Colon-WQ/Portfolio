@@ -131,32 +131,27 @@ class Faq extends Component {
             FAQdata: {
                 General: [
                     {
-                        question: 'Question 1?',
+                        question: 'Network Error after saving or uploading.',
                         answers: [
-                            'Answer 1', 
-                            'Answer 2'
-                        ]
-                    },
-                    {
-                        question: 'Question 2?',
-                        answers: [
-                            'Answer 1',
+                            'There is a problem with your internet connection.', 
+                            'Due to limitations, we cannot save data that is beyond 16mb in size. Please remove some uploaded images.'
                         ]
                     }
                 ],
                 User: [
                     {
-                        question: 'Question 1?',
+                        question: 'The app redirects me to the home page and is showing unauthorized user.',
                         answers: [
-                            'Answer 1',
+                            'Your login session has expired. Please login again.',
                         ]
                     }
                 ],
                 Guest: [
                     {
-                        question: 'Question 1?',
+                        question: 'Why do I receive a zip file after publishing?',
                         answers: [
-                            'Answer 1',
+                            `We only provide automatic website deployment for users. 
+                            Please select menu in the top right corner and select TUTORIALS to find out how you can deploy your portfolio website using the zip file.`,
                         ]
                     }
                 ]

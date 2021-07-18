@@ -65,6 +65,9 @@ class Tutorial extends Component {
                 case "guestdeploy":
                   topic = "Guest Deploy"
                   break;
+                case "snakegame":
+                  topic = "Snake Game"
+                  break;
                 default:
                   topic = topic[0].toUpperCase() + topic.substring(1);
                   break;
