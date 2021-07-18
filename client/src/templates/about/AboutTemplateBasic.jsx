@@ -131,7 +131,7 @@ class AboutTemplateBasic extends Component {
 
   static preview = "https://bit.ly/3fwsFKX";
 
-  static script = (index) => "";
+  static script = (entry, index) => "";
 
   static defaultField = {
     width: "80%",

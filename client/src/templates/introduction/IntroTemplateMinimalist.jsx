@@ -39,7 +39,7 @@ class IntroTemplateMinimalist extends Component {
     sections: {}
   };
 
-  static script = (index) => "";
+  static script = (entry, index) => "";
 
   static defaultField = {
     width: "100%",
@@ -48,7 +48,7 @@ class IntroTemplateMinimalist extends Component {
     colours: { primary: "#d19a19", secondary: "#000000" },
     images: { dp: { src: "https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260", format: 'image' }, bg: { src: "#e8dfcf", format: 'colour' } },
     texts: {
-      name: "Port Folio",
+      name: "Resumate",
       status: "UI/UX developer"
     },
     sections: []
