@@ -162,22 +162,22 @@ class AboutTemplateBasic extends Component {
           <CardContent
             style={{ padding: '0px' }}
           >
-            <Typography
+            <div
               style={{
                 textAlign: 'center',
                 backgroundColor: fields.colours.headerBackgroundFill,
               }}
             >
               <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.title))} />
-            </Typography>
-            <Typography
+            </div>
+            <div
               style={{
                 backgroundColor: fields.colours.bodyBackgroundFill,
                 paddingInline: '10%',
               }}
             >
               <Markup noWrap content={convertToHtml(draftToHtml(fields.texts.content))} />
-            </Typography>
+            </div>
 
           </CardContent>
 
