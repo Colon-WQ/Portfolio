@@ -27,7 +27,7 @@ import ColourPicker from './ColourPicker';
 
 import { create } from 'jss';
 import { jssPreset } from '@material-ui/styles';
-const jss = create().setup({ ...jssPreset(), Renderer: null });
+// const jss = create().setup({ ...jssPreset(), Renderer: null });
 
 /**
  * @file Portfolio component representing a user created portfolio
@@ -371,6 +371,8 @@ class Portfolio extends Component {
     const directory = `${prepend}${page.directory === 'root' ? '' : page.directory + "/"}`;
     const images = [];
 
+    const jss = create().setup({ ...jssPreset(), Renderer: null });
+
     const copy = JSON.parse(JSON.stringify(entries));
     for (let idx = 0; idx < copy.length; idx++) {
       let dupeEntry = copy[idx];
@@ -488,6 +490,7 @@ class Portfolio extends Component {
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
+    console.log(page.directory, cssGenerated);
 
     const css = Base64.encode(cssGenerated);
 

@@ -29,7 +29,9 @@ const styles = (theme) => ({
     justifyContent: 'left',
     textAlign: 'left',
     width: '50%',
-    margin: '1%'
+    margin: '1%',
+    border: 'dotted 3px',
+    padding: '10px'
   },
   sectionTextDiv: {
     marginLeft: '3%',
@@ -41,12 +43,14 @@ const styles = (theme) => ({
   timelineDiv: {
     display: 'flex',
     flexDirection: 'column',
-    width: '50%'
+    width: '75%',
+    margin: 'auto',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   connectorDiv: {
     height: '100px',
-    borderLeft: 'solid 1px',
-    marginLeft: 'calc(1% + 50px)'
+    borderLeft: 'dotted 3px',
   }
 });
 
@@ -149,6 +153,7 @@ class TimelineTemplateSpace extends Component {
               style={{
                 color: fields.colours.primary,
                 fontFamily: `${fields.fonts.titleFont}, Helvetica, sans-serif`,
+                fontSize: '8rem',
               }}
               className={classes.title}
             >
@@ -168,7 +173,12 @@ class TimelineTemplateSpace extends Component {
               }
               return (
                 <React.Fragment>
-                  <div className={classes.section}>
+                  <div
+                    className={classes.section}
+                    style={{
+                      borderColor: fields.colours.secondary
+                    }}
+                  >
                     <SocialIcon size='100px' color={fields.colours.primary} />
                     <div className={classes.sectionTextDiv}>
                       <Typography
@@ -176,21 +186,26 @@ class TimelineTemplateSpace extends Component {
                         component="h5"
                         variant="h5"
                       >
-                        {section.texts.timelineTitle}
+                        {section.texts.timelineDate}
                       </Typography>
                       <Typography
                         style={{ color: fields.colours.secondary }}
                         component="h5"
                         variant="h5"
                       >
-                        {section.texts.timelineDate}
+                        {section.texts.timelineTitle}
                       </Typography>
-                    </div>
 
+                    </div>
                   </div>
                   {
                     index < fields.sections.length - 1
-                      ? <div className={classes.connectorDiv} />
+                      ? <div
+                        className={classes.connectorDiv}
+                        style={{
+                          borderColor: fields.colours.secondary
+                        }}
+                      />
                       : null
                   }
                 </React.Fragment>
