@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
+import entryEditor from '../Assets/entryEditor.png';
+import entryEditor2 from '../Assets/entryEditor2.png';
+import entryEditor3 from '../Assets/entryEditor3.png';
 
 const styles = theme => ({
   root: {
@@ -32,6 +35,12 @@ const styles = theme => ({
   paragraphEnd: {
     height: '1rem'
   },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   divider: {
     width: '100%',
   },
@@ -40,6 +49,10 @@ const styles = theme => ({
   },
   bottomSpace: {
     height: '10vh'
+  },
+  image: {
+    width: '80%',
+    height: 'auto'
   }
 })
 
@@ -58,7 +71,13 @@ class EntryEditor extends Component {
           <li>To access the Entry Editor, there must be an existing entry.</li>
           <li>The Entry Editor is by default hidden from view.</li>
           <li>Hover your cursor over an entry to reveal a Settings button.</li>
+          <div className={classes.imageContainer}>
+            <img src={entryEditor} alt="entryEditor settings example" className={classes.image}/>
+          </div>
           <li>Click on the Settings button, then click on the Edit entry button to open the Entry Editor for the entry.</li>
+          <div className={classes.imageContainer}>
+            <img src={entryEditor2} alt="edit entry/delete entry example" />
+          </div>
         </ul>
         <span className={classes.paragraphEnd} />
 
@@ -83,6 +102,11 @@ class EntryEditor extends Component {
 
         <Typography className={classes.header} variant='h5' component='h5'>Entry Editor Interface</Typography>
         <Divider orientation="horizontal" className={classes.divider} />
+        <ul className={classes.paragraph}>
+          <div className={classes.imageContainer}>
+            <img src={entryEditor3} alt="entryEditor interface example" className={classes.image} />
+          </div>
+        </ul>
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Dimensions</Typography>
         <ul className={classes.paragraph}>

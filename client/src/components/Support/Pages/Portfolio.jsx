@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'react-router-dom';
+import portfolio from '../Assets/portfolio.png';
+import toolPanel from '../Assets/toolPanel.png';
+import publish from '../Assets/publish.png';
+import publish2 from '../Assets/publish2.png';
+import editTheme from '../Assets/editTheme.png';
 
 const styles = theme => ({
   root: {
@@ -36,6 +41,12 @@ const styles = theme => ({
   paragraphEnd: {
     height: '1rem'
   },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   link: {
     color: theme.palette.primary.main,
     textDecoration: 'underline',
@@ -54,6 +65,10 @@ const styles = theme => ({
   },
   bottomSpace: {
     height: '10vh'
+  },
+  image: {
+    width: '50%',
+    height: 'auto'
   }
 })
 
@@ -67,12 +82,18 @@ class Portfolio extends Component {
 
         <Typography variant='h2' component='h2'>Portfolio</Typography>
         <ul className={classes.paragraph}>
+            <div className={classes.imageContainer}>
+              <img src={portfolio} alt="portfolio example" className={classes.image} />
+            </div>
             <li>The Portfolio page shows a preview of the user's portfolio website and provides tools to edit the website.</li>
         </ul>
 
         <Typography className={classes.header} variant='h5' component='h5'>Edit Theme</Typography>
         <ul className={classes.paragraph}>
             <li>By default, there will be an Edit Theme button.</li>
+            <div className={classes.imageContainer}>
+              <img src={editTheme} alt="editTheme example" />
+            </div>
             <li>You can only open the Theme colour picker if there is an existing entry.</li>
             <li>Click on the Edit Theme button. A colour picker will show, allowing you to select a background color for the page.</li>
             <li>Once done, the page's background color will change accordingly.</li>
@@ -80,6 +101,11 @@ class Portfolio extends Component {
 
         <Typography className={classes.header} variant='h5' component='h5'>Tool Panel</Typography>
         <Divider orientation="horizontal" className={classes.divider}/>
+        <ul className={classes.paragraph}>
+            <div className={classes.imageContainer}>
+              <img src={toolPanel} alt="toolPanel example" />
+            </div>
+        </ul>
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Save</Typography>
         <ul className={classes.paragraph}>
@@ -132,6 +158,9 @@ class Portfolio extends Component {
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Publish for Users</Typography>
         <ul className={classes.paragraph}>
+            <div className={classes.imageContainer}>
+              <img src={publish} alt="publish example" />
+            </div>
             <li>
                 For users, the Publish button will open a dialog asking for the user to input a name for the Github repository they wish to use. 
                 If the Github repository does not exist, it will be created.
@@ -144,6 +173,9 @@ class Portfolio extends Component {
             <li>
                 Once done, click on the Finalize button to proceed with publish operation, otherwise click Cancel to cancel the publish operation.
             </li>
+            <div className={classes.imageContainer}>
+              <img src={publish2} alt="publish override example" />
+            </div>
             <div className={classes.nestedParagraph}>
               <li>
                 If the name provided matches a Github repository already owned by the user, another dialog will show asking the user
