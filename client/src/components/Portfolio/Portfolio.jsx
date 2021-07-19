@@ -886,6 +886,7 @@ class Portfolio extends Component {
                   </Menu>
                   {this.renderEntry(entry)}
                   <ColourPicker
+                    data-html2canvas-ignore="true"
                     open={this.state.showTheme}
                     anchorEl={this.state.anchorEl}
                     onClose={this.handlePageTheme}
