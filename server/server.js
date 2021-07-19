@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from "cookie-parser";
 import { FRONT_END, BACK_END, SIGN_COOKIE_SECRET, MONGO_URL, PORT } from './utils/config.js';
+import html2canvasProxy from 'html2canvas-proxy';
 
 import session from 'express-session';
 
@@ -88,6 +89,7 @@ app.use("/api/login", loginRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/images", imageRoutes);
+app.use("/api/html2canvasProxy", html2canvasProxy());
 
 const PORT_CONFIG = PORT || 5000;
 
