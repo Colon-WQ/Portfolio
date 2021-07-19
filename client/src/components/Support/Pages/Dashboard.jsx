@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
+import dashboard from '../Assets/dashboard.png';
+import dashboard2 from '../Assets/dashboard2.png';
+import dashboard3 from '../Assets/dashboard3.png';
+
 
 const styles = theme => ({
   root: {
@@ -32,6 +36,12 @@ const styles = theme => ({
   paragraphEnd: {
     height: '1rem'
   },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   divider: {
     width: '100%',
   },
@@ -57,7 +67,13 @@ class Dashboard extends Component {
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Creating a portfolio</Typography>
         <ul className={classes.paragraph}>
+            <div className={classes.imageContainer}>
+              <img src={dashboard} alt="dashboard example" />
+            </div>
             <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
+            <div className={classes.imageContainer}>
+              <img src={dashboard2} alt="set name dialog example" />
+            </div>
             <li>This will open up a dialog asking for the portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
             <li>Once done, click on 'Set Name' to create the portfolio.</li>
         </ul>
@@ -70,6 +86,9 @@ class Dashboard extends Component {
         <ul className={classes.paragraph}>
             <li>To change portfolio name, you must have an existing portfolio in your Dashboard.</li>
             <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
+            <div className={classes.imageContainer}>
+              <img src={dashboard3} alt="options menu example" />
+            </div>
             <li>Select "Change Name" button.</li>
             <li>This will open up a dialog asking for the new portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
             <li>Once done, click on "Change" button to finalize the changes to portfolio name.</li>

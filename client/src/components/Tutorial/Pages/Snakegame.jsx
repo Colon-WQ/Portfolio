@@ -44,6 +44,12 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  image: {
+    width: '50%',
+    height: 'auto',
+    marginTop: '1rem',
+    marginBottom: '1rem'
+  },
   link: {
     color: theme.palette.primary.main,
     textDecoration: 'underline',
@@ -80,7 +86,7 @@ class Snakegame extends Component {
             <li>Suppose you have your own portfolio website created now.</li>
             <li>You can actually edit your portfolio files yourself to achieve amazing effects.</li>
             <li>In this guide, we will show you how to create a snake game using files that you would typically obtain for your portfolio website.</li>
-            <li>Throughout this guide, we will be using SublimeText to edit the portfolio website files. You can download it here https://www.sublimetext.com/3</li>
+            <li>Throughout this guide, we will be using SublimeText to edit the portfolio website files. You can download it here <a href="https://www.sublimetext.com/3" target="_blank" rel="noopener noreferrer">https://www.sublimetext.com/3</a></li>
         </ul>
 
         <Typography className={classes.header} variant='h5' component='h5'>Obtaining the files needed</Typography>
@@ -144,7 +150,7 @@ class Snakegame extends Component {
             <li>The image above shows a snippet of the styles.css that you would have. Simply scroll to the bottom and add the required css classes.</li>
             <li>In this case, the canvas class is given a greyish background color, which will be used by the canvas element.</li>
             <li>Margin defines the space surrounding the html element itself. The playButton class is given a margin of 0.5 rem to separate it from the canvas element by that screen distance.</li>
-            <li>As for snake-container and game-container, they are given a display of flex and related attributes. You can visit https://css-tricks.com/snippets/css/a-guide-to-flexbox/ to learn more.</li>
+            <li>As for snake-container and game-container, they are given a display of flex and related attributes. You can visit <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" target="_blank" rel="noopener noreferrer">https://css-tricks.com/snippets/css/a-guide-to-flexbox/</a> to learn more.</li>
             <li>Refresh the web page opened earlier to view the changes made to your portfolio website.</li>
         </div>
         <span className={classes.paragraphEnd} />
@@ -202,10 +208,10 @@ class Snakegame extends Component {
             <li>Next, we have to create a snake.js file in the same folder.</li>
             <li>As mentioned previously, we will need draw, eat, changeDirection and update methods in our Snake function object.</li>
             <div className={classes.imageContainer}>
-                <img src={snake} alt="snake.js example"/>
+                <img src={snake} alt="snake.js example" className={classes.image}/>
             </div>
             <div className={classes.imageContainer}>
-                <img src={snake2} alt="snake.js example"/>
+                <img src={snake2} alt="snake.js example" className={classes.image}/>
             </div>
             <li>We will be using the Snake function object to keep track of its own location and manage its own movement direction.</li>
             <div className={classes.nestedParagraph}>

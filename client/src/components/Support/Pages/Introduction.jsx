@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
+import login from '../Assets/login.png';
 
 const styles = theme => ({
   root: {
@@ -32,6 +33,12 @@ const styles = theme => ({
   paragraphEnd: {
     height: '1rem'
   },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   divider: {
     width: '100%',
     marginBottom: '1rem'
@@ -41,6 +48,10 @@ const styles = theme => ({
   },
   bottomSpace: {
     height: '10vh'
+  },
+  image: {
+    width: '60%',
+    height: 'auto'
   }
 })
 
@@ -61,8 +72,11 @@ class Introduction extends Component {
         <ul className={classes.paragraph}>
             <li>To login as User, you must have an existing Github account.</li>
             <li>In the Home page, click on "Get Started" button.</li>
+            <div className={classes.imageContainer}>
+              <img src={login} alt="login example"/>
+            </div>
             <li>You will be taken to Github login page, then to our Github OAuth page.</li>
-            <li>Grant permissions to our OAuth page to allow us to build your portfolio website for you.</li>
+            <li>Grant permissions to our OAuth page by clicking Authorize Colon-WQ to allow us to build your portfolio website for you.</li>
         </ul>
 
         <Typography variant='h6' component='h6'>User Features</Typography>

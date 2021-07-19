@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
+import addFile from '../Assets/addFile.png';
+import settings from '../Assets/settings.png';
+import pages from '../Assets/pages.png';
 
 const styles = theme => ({
   root: {
@@ -31,6 +34,12 @@ const styles = theme => ({
   },
   nestedParagraph: {
     paddingLeft: '2rem'
+  },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   paragraphEnd: {
     height: '1rem'
@@ -92,6 +101,9 @@ class Guestdeploy extends Component {
             </div>
             <li>Once the Github repository is created, click on it to open your repository page.</li>
             <li>Click on Add File button and then in the dropdown, click on upload files.</li>
+            <div className={classes.imageContainer}>
+              <img src={addFile} alt="Add File example" />
+            </div>
             <li>Upload the contents of the zip file you had previously extracted into the Github repository. Take note that you can only upload one file at a time in this wayy.</li>
             <li>After uploading, make sure that the contents of the Github repository is the exact same as that of the zip file.</li>
         </ul>
@@ -101,7 +113,13 @@ class Guestdeploy extends Component {
             <li>At this point, you should have uploaded the file contents of the zip file you had downloaded to a Github repository of your choice.</li>
             <li>Open the Github repository that you have uploaded the file contents to.</li>
             <li>Click on the Settings tab.</li>
+            <div className={classes.imageContainer}>
+              <img src={settings} alt="settings example" />
+            </div>
             <li>You will see a column of options. Click on Pages.</li>
+            <div className={classes.imageContainer}>
+              <img src={pages} alt="pages example" />
+            </div>
             <li>Under Source, you will see None with a expand down button. Click on it and select main branch.</li>
             <li>To the immediate right, you'll see a folder button. Change it to "root" if it isn't already "root"</li>
             <li>Click on Save and wait on the same page while the Github Page for your Github repository is being built.</li>
@@ -139,7 +157,7 @@ class Guestdeploy extends Component {
         <ul className={classes.paragraph}>
             <li>In the Accounts page, click on your management account.</li>
             <li>Scroll down to see the FTP Details. You will need this to connect to your portfolio website server.</li>
-            <li>You will need to download FileZilla at https://filezilla-project.org/. Choose to download FileZilla Client.</li>
+            <li>You will need to download FileZilla at <a href="https://filezilla-project.org/" target="_blank" rel="noopener noreferrer">https://filezilla-project.org/</a>. Choose to download FileZilla Client.</li>
             <li>Run FileZilla. Under File tab, click on Site Manager.</li>
             <li>Click on New Site and give it a name. For example, your portfolio website name.</li>
             <li>Head back to your InfinityFree Accounts page, copy the FTP Hostname from under FTP Details and input it in the Host text box in FileZilla.</li>
@@ -169,7 +187,7 @@ class Guestdeploy extends Component {
 
         <ul className={classes.paragraph}>
           <li>You are free to explore other options other than Github and InfinityFree to host your portfolio website for free.</li>
-          <li>You can visit this website at https://themeisle.com/blog/best-free-website-hosting/ to view other free website hosting services.</li>
+          <li>You can visit this website at <a href="https://themeisle.com/blog/best-free-website-hosting/" target="_blank" rel="noopener noreferrer">https://themeisle.com/blog/best-free-website-hosting/</a> to view other free website hosting services.</li>
           <li>However, we will not be able to provide guides to cover all these other options but set up guides are usually provided in good detail by these services.</li>
         </ul>
         <span className={classes.paragraphEnd} />

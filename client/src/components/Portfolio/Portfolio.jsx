@@ -570,14 +570,14 @@ class Portfolio extends Component {
         withCredentials: true
       }).then(async res => {
         console.log("_id updated");
-        console.log(res.data.portfolio);
+        //console.log(res.data.portfolio);
         this.props.saveCurrentWorkToLocal(res.data.portfolio);
         //There is no need to set the _id for portfolio since we already did it as a prerequisite for this step.
         //Name is also set.
         this.setState({
           pages: res.data.portfolio.pages
         });
-        console.log(this.state.pages);
+        //console.log(this.state.pages);
 
         //After _id is fetched, we then update the preview.
         await this.handleUploadPreview();
@@ -705,7 +705,7 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   async handleUploadPreview() {
-    await html2canvas(document.querySelector("#preview"), { backgroundColor: null, useCORS: true })
+    await html2canvas(document.querySelector("#preview"), { backgroundColor: null, proxy: `${process.env.REACT_APP_BACKEND}/html2canvasProxy` })
       .then(canvas => {
 
         canvas.toBlob(async blob => {
@@ -889,6 +889,7 @@ class Portfolio extends Component {
                   </Menu>
                   {this.renderEntry(entry)}
                   <ColourPicker
+                    data-html2canvas-ignore="true"
                     open={this.state.showTheme}
                     anchorEl={this.state.anchorEl}
                     onClose={this.handlePageTheme}

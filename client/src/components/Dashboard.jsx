@@ -327,18 +327,17 @@ class Dashboard extends Component {
    * @memberof Dashboard
    */
   async handleDeletePortfolio() {
+    //deletes all images related to said portfolio
+    for (let key of Object.keys(this.state.images[this.state.currentPortfolio_Id])) {
+      await this.handleDeleteImage(key);
+    }
+
     await axios({
       method: "DELETE",
       url: process.env.REACT_APP_BACKEND + "/portfolio/delete/" + this.state.currentPortfolio_Id,
       withCredentials: true
     }).then(async res => {
       console.log(res.data.message);
-      await this.props.fetchPortfolios(this.props.id);
-
-      //deletes all images related to said portfolio
-      for (let key of Object.keys(this.state.images[this.state.currentPortfolio_Id])) {
-        await this.handleDeleteImage(key);
-      }
 
       const temp = this.state.images;
       delete temp[this.state.currentPortfolio_Id];
@@ -346,7 +345,9 @@ class Dashboard extends Component {
         images: temp
       });
 
-      this.props.deletePortfolio(this.state.currentPortfolio_Id)
+      this.props.deletePortfolio(this.state.currentPortfolio_Id);
+
+      await this.props.fetchPortfolios(this.props.id);
 
     }).catch(err => {
       handleErrors(err, this.props.history);
