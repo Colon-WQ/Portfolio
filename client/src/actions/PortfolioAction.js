@@ -135,7 +135,7 @@ export function clearCurrentWorkFromLocal() {
 
 export const deletePortfolio = id => ({
     type: DELETE_PORTFOLIO,
-    paylod: { id }
+    payload: { id }
 })
 
 /**

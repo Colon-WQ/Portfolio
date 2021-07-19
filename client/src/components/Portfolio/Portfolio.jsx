@@ -702,7 +702,7 @@ class Portfolio extends Component {
    * @memberof Portfolio
    */
   async handleUploadPreview() {
-    await html2canvas(document.querySelector("#preview"), { backgroundColor: null, useCORS: true })
+    await html2canvas(document.querySelector("#preview"), { backgroundColor: null, proxy: `${process.env.REACT_APP_BACKEND}/html2canvasProxy` })
       .then(canvas => {
 
         canvas.toBlob(async blob => {
