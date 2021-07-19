@@ -5,6 +5,7 @@ import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
 import draftToHtml from 'draftjs-to-html';
 import { Markup } from 'interweave';
+import preview from '../../res/preview/about/AboutMinimalist.JPG';
 
 
 const styles = (theme) => ({

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
-import preview from '../../res/preview/timeline/TimelineMinimalist.JPG'
+import preview from '../../res/preview/timeline/TimelineSpace.JPG'
 import { Divider } from '@material-ui/core';
 import * as icons from '../../styles/icons';
 

@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import * as icons from '../../styles/icons';
+import preview from '../../res/preview/introduction/IntroRedline.JPG';
 
 const styles = (theme) => ({
   root: {
@@ -11,7 +12,7 @@ const styles = (theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    padding: '15vh'
+    paddingBlock: '30vh'
   },
   std: { display: 'block' },
   title: {
@@ -44,15 +45,24 @@ class IntroTemplateRedline extends Component {
 
   static templateName = "Redline";
 
-  static preview = "https://bit.ly/3fwsFKX";
+  static preview = preview;
 
-  static script = (entry, index) => "";
+  static script = (entry, index) => {
+    let scriptText = entry.sections.map((section, sectionIndex) => {
+      return `document.getElementById("link-${index}-${sectionIndex}").onclick = () => window.open("${section.texts.socialLink}");`
+    }).join('\n');
+    return scriptText;
+  };
 
   static info = {
     fonts: { titleFont: { label: 'title font' } },
     colours: { primary: { label: 'primary' }, secondary: { label: 'secondary' } },
     images: { bg: { label: 'Entry background', format: ['image'] } },
-    texts: { name: { label: 'Your name', type: "simpleText" }, status: { label: 'Your current status', type: "simpleText" } },
+    texts: {
+      name: { label: 'Your name', type: "simpleText" },
+      status: { label: 'Your current status', type: "simpleText" },
+      prompt: { label: 'Contact title', type: 'simpleText' },
+    },
     sections: {
       enabled: true,
       defaultEntry: {
@@ -69,12 +79,13 @@ class IntroTemplateRedline extends Component {
   static defaultField = {
     width: '100%',
     height: 'fit-content',
-    fonts: { titleFont: 'Roboto' },
-    colours: { primary: '#dd0000', secondary: '#FFFFFF' },
-    images: { bg: { src: 'https://bit.ly/3gSDGpJ', format: 'image' } },
+    fonts: { titleFont: 'Pacifico' },
+    colours: { primary: '#FF3838', secondary: '#FFFFFF' },
+    images: { bg: { src: 'https://bit.ly/2UjRnXs', format: 'image' } },
     texts: {
       name: "Lorem Ipsum",
-      status: "Developer"
+      status: "Developer",
+      prompt: 'Contact me'
     },
     sections: [{
       images: { socialIcon: { src: 'fa/FaGithub', format: 'icon' } },
@@ -89,15 +100,13 @@ class IntroTemplateRedline extends Component {
         className={classes.root}
         style={
           {
-            backgroundRepeat: false,
             backgroundImage: `url("${fields.images.bg.src}")`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
-            backgroundAttachment: 'fixed',
             width: fields.width,
             height: fields.height,
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             textAlign: "center"
           }
         }
@@ -105,30 +114,50 @@ class IntroTemplateRedline extends Component {
         <CssBaseline />
         <div
           style={{
-            padding: '5vh',
-            paddingBlock: '10vh',
-            backgroundColor: '#FFFFFF10',
-            width: '100%',
-            height: '100%',
-            border: `solid 1px ${fields.colours.primary}`
-          }}>
+            width: '50%',
+            margin: 'auto'
+          }}
+        >
           <Typography component="h1" variant="h1" style={{ color: fields.colours.primary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif` }}>
             {fields.texts.name}
           </Typography>
           <Typography component="h2" variant="h2" style={{ color: fields.colours.secondary, fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif` }}>
             {fields.texts.status}
           </Typography>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: 'max-content',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBlock: 'auto',
+            marginLeft: 'auto',
+          }}>
+
+          <Typography
+            component="h3"
+            variant="h3"
+            style={{
+              color: fields.colours.primary,
+              fontFamily: `${fields.fonts.titleFont}, Arial, Helvetica, sans-serif`,
+              textOrientation: 'sideways',
+              writingMode: 'sideways-lr'
+            }}
+          >
+            {fields.texts.prompt}
+          </Typography>
           <div
             style={{
               display: 'flex',
-              flexDirection: 'row',
-              marginInline: 'auto',
-              width: 'max-content',
+              flexDirection: 'column',
+              width: '4em',
               justifyContent: 'center',
-              alignItems: 'center',
-              height: '8vh',
-              marginTop: '5vh'
-            }}>
+              alignItems: 'center'
+            }}
+          >
             {fields.sections.map((section, index) => {
               let SocialIcon;
               if (section.images.socialIcon.format === 'icon') {
@@ -140,11 +169,11 @@ class IntroTemplateRedline extends Component {
               return (
                 <div className={classes.section}>
                   <IconButton
-                    //need to get the string
+                    id={`link-${this.props.id}-${index}`}
                     onClick={() => window.open(section.texts.socialLink)}
                     className={classes.socialButton}
                   >
-                    {<SocialIcon size='100%' color='red' />}
+                    {<SocialIcon size='100%' color={fields.colours.primary} />}
                   </IconButton>
                 </div>
               );

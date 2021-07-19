@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Tooltip } from '@material-ui/core';
 import * as icons from '../../styles/icons';
+import preview from '../../res/preview/about/AboutSpace.JPG';
 
 const styles = (theme) => ({
   root: {
@@ -43,7 +44,7 @@ class AboutTemplateSpace extends Component {
 
   static templateName = "Space";
 
-  static preview = "https://bit.ly/3fwsFKX";
+  static preview = preview;
 
   static script = (entry, index) => "";
 
