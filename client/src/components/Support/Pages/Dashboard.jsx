@@ -63,8 +63,8 @@ class Dashboard extends Component {
         </ul>
         <Typography className={classes.subHeader} variant='h6' component='h6'>Opening existing portfolio</Typography>
         <ul className={classes.paragraph}>
-            <li>To open an existing portfolio, you must have an existing portfolio in your Dashboard</li>
-            <li>Click on "Open" button on the portfolio of your choice</li>
+            <li>To open an existing portfolio, you must have an existing portfolio in your Dashboard.</li>
+            <li>Click on "Open" button on the portfolio of your choice.</li>
         </ul>
         <Typography className={classes.subHeader} variant='h6' component='h6'>Change portfolio name</Typography>
         <ul className={classes.paragraph}>
@@ -96,7 +96,7 @@ class Dashboard extends Component {
         <Typography className={classes.subHeader} variant='h6' component='h6'>Opening existing portfolio</Typography>
         <ul className={classes.paragraph}>
             <li>Guests can only have 1 portfolio at a time, unlike users.</li>
-            <li>Click on "Continue editing your-portfolio-name" button to open your existing portfolio</li>
+            <li>Click on "Continue editing your-portfolio-name" button to open your existing portfolio.</li>
         </ul>
         <span className={classes.paragraphEnd} />
         <Divider orientation="horizontal" className={classes.divider}/>
