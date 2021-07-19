@@ -4,7 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import * as icons from '../../styles/icons';
-import preview from '../../res/preview/introduction/IntroMinimalist.JPG';
+import preview from '../../res/preview/introduction/IntroRedline.JPG';
 
 const styles = (theme) => ({
   root: {
@@ -12,7 +12,7 @@ const styles = (theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    paddingBlock: '25vh'
+    paddingBlock: '30vh'
   },
   std: { display: 'block' },
   title: {
@@ -79,9 +79,9 @@ class IntroTemplateRedline extends Component {
   static defaultField = {
     width: '100%',
     height: 'fit-content',
-    fonts: { titleFont: 'Roboto' },
-    colours: { primary: '#dd0000', secondary: '#FFFFFF' },
-    images: { bg: { src: 'https://bit.ly/2UoXLfW', format: 'image' } },
+    fonts: { titleFont: 'Pacifico' },
+    colours: { primary: '#FF3838', secondary: '#FFFFFF' },
+    images: { bg: { src: 'https://bit.ly/2UjRnXs', format: 'image' } },
     texts: {
       name: "Lorem Ipsum",
       status: "Developer",
@@ -173,7 +173,7 @@ class IntroTemplateRedline extends Component {
                     onClick={() => window.open(section.texts.socialLink)}
                     className={classes.socialButton}
                   >
-                    {<SocialIcon size='100%' color='red' />}
+                    {<SocialIcon size='100%' color={fields.colours.primary} />}
                   </IconButton>
                 </div>
               );
