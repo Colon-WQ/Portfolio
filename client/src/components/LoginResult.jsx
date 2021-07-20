@@ -108,7 +108,7 @@ class LoginResult extends Component {
                 }
                 window.localStorage.setItem(process.env.REACT_APP_USER_LOCALSTORAGE, JSON.stringify(forLocalStorage))
                 
-                this.props.fetchPortfolios(data.id)
+                //this.props.fetchPortfolios(data.id)
                 this.props.log_in_user(data)
             }).then(() => {
                 this.props.history.push("/dashboard");
