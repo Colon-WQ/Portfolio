@@ -65,7 +65,7 @@ app.use(session({
   // proxy: true,
   cookie: {
     // secure: true,
-    // sameSite: true
+    // sameSite: true,
     httpOnly: true
   },
   name: 'id',
