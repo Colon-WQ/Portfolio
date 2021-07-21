@@ -48,7 +48,13 @@ const auth = async (req, res, next) => {
     console.log("middleware authenticating...");
 
     if (req.session.user === undefined) {
-        return res.status(401).send("unauthorized user");
+        console.log("failed to fetch session")
+        req.session.destroy(function(err) {
+            if (err) {
+                console.log(err);
+            }
+            return res.status(401).send("unauthorized user");
+        })
     }
 
     const token = req.session.user.details;

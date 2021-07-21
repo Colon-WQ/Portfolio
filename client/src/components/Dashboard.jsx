@@ -149,7 +149,9 @@ class Dashboard extends Component {
       if (this.props.loggedIn) {
         await this.props.fetchPortfolios(this.props.id);
 
-        this.props.portfolios.map(portfolio => this.handleGetImage(portfolio._id));
+        for (let portfolio of this.props.portfolios) {
+          await this.handleGetImage(portfolio._id)
+        }
 
         //begin product tour for new users who are logged in
         if (this.props.error) {

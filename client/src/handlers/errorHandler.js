@@ -27,7 +27,6 @@ export const handleErrors = (err, history) => {
     if (err.response) {
         console.log(err.response.data);
         
-        //could be improved
         const message = err.response.data !== undefined ? err.response.data : "error encountered"
         store.dispatch(add_error(message, err.response.status));
 
