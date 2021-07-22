@@ -63,10 +63,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   // proxy: true,
-  // cookie: {
-  //   secure: true,
-  //   sameSite: true
-  // },
+  cookie: {
+    // secure: true,
+    // sameSite: true,
+    httpOnly: true
+  },
+  name: 'id',
   store: MongoStore.create({
     mongoUrl: MONGO_URL,
     ttl: 6 * 60 * 60,

@@ -196,7 +196,6 @@ class Portfolio extends Component {
 
     //Set page theme color on mount
     this.handlePageTheme(true, this.state.currentPage.backgroundColor)
-    console.log("theme color preset")
 
   }
 
@@ -490,7 +489,7 @@ class Portfolio extends Component {
             ${rawHTML}
             </body>`);
     const cssGenerated = sheets.toString();
-    console.log(page.directory, cssGenerated);
+    //console.log(page.directory, cssGenerated);
 
     const css = Base64.encode(cssGenerated);
 
@@ -889,7 +888,6 @@ class Portfolio extends Component {
                   </Menu>
                   {this.renderEntry(entry)}
                   <ColourPicker
-                    data-html2canvas-ignore="true"
                     open={this.state.showTheme}
                     anchorEl={this.state.anchorEl}
                     onClose={this.handlePageTheme}
@@ -905,6 +903,7 @@ class Portfolio extends Component {
               }}
             >
               <IconButton
+                data-html2canvas-ignore="true"
                 onClick={(e) => this.setState({
                   showTheme: true,
                   themeAnchor: e.currentTarget
