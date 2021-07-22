@@ -221,8 +221,6 @@ class Navbar extends Component {
     this.props.history.push("/dashboard");
 
     this.handleUserMenu();
-
-
   }
 
   /**
@@ -233,7 +231,6 @@ class Navbar extends Component {
    */
   handleReturnHome() {
     this.props.history.push("/")
-    this.handleUserMenu();
   }
 
 

@@ -49,7 +49,7 @@ const styles = (theme) => ({
   },
   card: {
     width: 345,
-    minHeight: 150,
+    minHeight: 200,
     display: 'flex',
     flexDirection: 'column'
   },

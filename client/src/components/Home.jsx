@@ -5,10 +5,12 @@ import { clearCurrentWorkFromLocal } from '../actions/PortfolioAction';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { Button, Link } from '@material-ui/core';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
 import homeWelcome from '../res/assets/homeWelcome.png';
-import sunsetBackground from '../res/assets/sunset.png';
+import workflow from '../res/assets/workflow.png';
+import components from '../res/assets/components.png';
+import templateImage from '../res/assets/templates.png';
 import { RiFileCodeLine } from 'react-icons/ri';
 import { withRouter } from 'react-router';
 import axios from 'axios';
@@ -18,6 +20,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { Link as RouterLink } from 'react-router-dom';
+import { FaArrowRight } from 'react-icons/fa';
 
 
 /**
@@ -42,26 +46,32 @@ const styles = (theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
     overflowX: 'auto',
-    backgroundImage: `url(${sunsetBackground})`,
+    // backgroundImage: `url(${sunsetBackground})`,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed'
   },
   centeredDiv: {
     display: 'flex',
+    width: '100%',
+    height: '100%',
+    padding: '5em',
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
+
   },
   welcomeDiv: {
     width: '100%',
-    height: '100vh',
+    height: 'max-content',
+    minHeight: '300px',
     display: 'flex',
     flexDirection: 'row',
-    textAlign: 'left',
+    textAlign: 'center',
     justifyContent: 'center',
-    alignItems: 'left',
-    position: 'relative'
+    alignItems: 'center',
+    position: 'relative',
+    padding: '10vh'
   },
   tutorialDiv: {
     width: '90%',
@@ -77,55 +87,18 @@ const styles = (theme) => ({
     flexGrow: 1,
 
   },
-  typoHeader: {
-  },
-  typoSubtitle: {
-
-  },
-
   portfolioIcon: {
     width: '40vh',
     height: '40vh',
     borderRadius: '20vh',
   },
   featuresDiv: {
-    position: 'relative',
-    width: '80vw',
+    width: '100%',
     height: '70vh',
     flexDirection: 'row',
-    marginBlock: '10vh',
-    backgroundColor: 'transparent',
-    borderWidth: '1px',
-    borderStyle: 'solid'
+    // marginBlock: '30px',
+    backgroundColor: '#fff',
   },
-  boxShadow: {
-    zIndex: '-1',
-    top: '5vh',
-    left: '-5vh',
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  boxShadowColor1: {
-    backgroundColor: '#FEF9C7'
-  },
-  boxShadowColor2: {
-    backgroundColor: '#FCE181'
-  },
-  boxShadowColor3: {
-    backgroundColor: '#9FEDD7'
-  },
-  boxShadowColor4: {
-    backgroundColor: '#026670'
-  },
-  // boxShadowLeft: {
-  //   marginLeft: 'auto',
-  //   boxShadow: '-5vh 5vh #00000044, calc(80vw - 5vh) 5vh #00000044',
-  // },
-  // boxShadowRight: {
-  //   marginRight: 'auto',
-  //   boxShadow: '-5vh 5vh #00000044',
-  // },
   fullSize: {
     width: '100%',
     height: '100%',
@@ -144,11 +117,8 @@ const styles = (theme) => ({
   featureImg: {
     width: '50%',
     height: 'inherit',
-    objectFit: 'cover',
-    maxHeight: '90%',
-    maxWidth: '90%',
-    margin: '5vh',
-    marginInline: '5vh'
+    objectFit: 'contain',
+    padding: '30px'
   },
   flexColumn: {
     display: 'flex',
@@ -188,15 +158,18 @@ const styles = (theme) => ({
     marginRight: '0.5rem'
   },
   welcomeImage: {
-    marginRight: 'auto',
     maxWidth: '50%',
     minHeight: '50%',
     maxHeight: '100%'
   },
-  featureDiv: {
+  sectionDiv: {
     marginInline: 'auto',
-    maxWidth: '50%',
-    padding: '6vh'
+    padding: '6vh',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center'
   },
   messageDiv: {
     borderColor: '#000',
@@ -211,10 +184,30 @@ const styles = (theme) => ({
   bottomLogoDiv: {
     backgroundColor: '#000',
     height: '50vh',
-    width: '100%'
+    width: '100%',
+    alignItems: 'start'
   },
   bottomLogoFill: {
     fill: "#fff"
+  },
+  boxDiv: {
+    width: '15em',
+    height: '15em',
+    padding: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    border: 'solid 1px',
+    borderColor: theme.palette.primary.main,
+    justifyContent: 'center',
+    textAlign: 'center',
+    margin: '20px'
+  },
+  linkDiv: {
+    marginRight: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    textAlign: 'left',
+    color: '#fff'
   }
 });
 
@@ -301,18 +294,18 @@ class Home extends Component {
           className={classes.homeButton}
           href="/"
         >
-          <ResumateSVG width="2em" height="2em" />
           <Typography component="h1" variant="h2" color="inherit" className={`${classes.title} ${classes.logoFont}`}>
             RESUMATE
           </Typography>
         </Button>
         <div className={classes.welcomeDiv}>
           <div className={classes.autoMargin}>
+            <ResumateSVG width="15em" height="15em" />
             <Typography component="h2" variant="h2" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
               {'Show, not tell.'}
             </Typography>
             <Typography component="h3" variant="body1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
-              {'Sometimes words don\'t do your accomplishments justice.\nShowcase your best work in a visual, interactive website.'}
+              {'Sometimes words don\'t do your skills justice.\nShowcase your portfolio in a website you can call your own.'}
             </Typography>
             {loggedIn
               ?
@@ -332,7 +325,6 @@ class Home extends Component {
                 GET STARTED
                 </Button>
             }
-
             <Button
               onClick={() => loggedIn ? this.handleGuestDialogState(true) : this.props.history.push('/dashboard')}
               variant="outlined"
@@ -341,99 +333,244 @@ class Home extends Component {
               LOGIN AS GUEST
             </Button>
           </div>
+        </div>
+        <div
+          style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
+        >
           <img src={homeWelcome} className={classes.welcomeImage} />
         </div>
         <div
-          className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureRight}`}
+          className={`${classes.featuresDiv} ${classes.centeredDiv}`}
         >
-          <img
-            className={classes.featureImg}
-            src="https://edut.to/2TeoUBz"
-            alt="feature"
-          />
-          <div
-            className={`${classes.flexColumn} ${classes.featureDiv}`}
-          >
-            <Typography component="h2" variant="h4" color="inherit" className={classes.title}>
-              Pre-Built templates
-            </Typography>
-            <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
-              Not a designer? No worries, choose from a selection of templates
-            </Typography>
-          </div>
-          <div
-            className={`${classes.boxShadow} ${classes.boxShadowColor1}`}
-          />
-        </div>
-        <div
-          className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureLeft}`}
-        >
-          <div
-            className={`${classes.flexColumn} ${classes.featureDiv}`}
-          >
-            <Typography component="h2" variant="h4" color="inherit" className={classes.title}>
-              Free forever, no watermarks
-          </Typography>
-            <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
-              You own your website. No watermarks, no restrictions. Take full control of your website.
-          </Typography>
-          </div>
-          <img
-            className={classes.featureImg}
-            src="https://edut.to/2TeoUBz"
-            alt="feature"
-          />
-          <div
-            className={`${classes.boxShadow} ${classes.boxShadowColor2}`}
-          />
-        </div>
-        <div
-          className={`${classes.featuresDiv} ${classes.centeredDiv} ${classes.featureRight}`}
-        >
-          <img
-            className={classes.featureImg}
-            src="https://edut.to/2TeoUBz"
-            alt="feature"
-          />
-          <div
-            className={`${classes.flexColumn} ${classes.featureDiv}`}
-          >
-            <Typography component="h2" variant="h4" color="inherit" className={classes.title}>
-              Fuss free process
-          </Typography>
-            <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
-              Pick your templates, edit your entries. We'll handle the rest — compilation and hosting all by us.
-          </Typography>
-          </div>
-          <div
-            className={`${classes.boxShadow} ${classes.boxShadowColor3}`}
-          />
-        </div>
-        <div className={`${classes.flexRow} ${classes.messageDiv}`}>
-          <RiFileCodeLine size="20em" className={classes.riFileCodeLine} />
-          <div className={classes.autoMargin}>
-            <Typography component="h2" variant="h2" color="inherit" gutterBottom className={`${classes.typoHeader} ${classes.boldFont}`}>
-              Ready to take it a step further?
-            </Typography>
-            <Typography component="body1" variant="body1" color="inherit" gutterBottom className={classes.whiteSpacePreLine}>
-              {'You\'ve got your website up and running.\n How about giving web development a shot? \n Beginner javascript projects to advanced full stack tutorials, we have it all.'}
-            </Typography>
-            <Button
-              href="/"
-              onClick={() => alert('Coming soon in the near future!')}
-              color="primary"
-              variant="outlined"
-            >
-              Browse tutorials
-          </Button>
-          </div>
 
           <div
-            className={`${classes.boxShadow} ${classes.boxShadowColor4}`}
+            className={classes.sectionDiv}
+            style={{
+              flexDirection: 'column',
+              width: '50%'
+            }}
+          >
+            <Typography component="h2" variant="h2" color="inherit" className={classes.title}>
+              Creating your online portfolio has never been easier
+            </Typography>
+            <Typography component="h3" variant="h5" color="inherit" className={classes.title}>
+              Easily design and host your ideal portfolio in minutes with our built in tools. All without watermarks or hosting fees — your site is yours to keep.
+            </Typography>
+          </div>
+          <img
+            className={classes.featureImg}
+            src={components}
+            alt="feature"
           />
         </div>
+        <div
+          className={`${classes.featuresDiv} ${classes.centeredDiv}`}
+          style={{
+            height: '80vh',
+            minHeight: '600px'
+          }}
+        >
+          <img
+            className={classes.featureImg}
+            src={workflow}
+            style={{
+              width: '60%',
+            }}
+            alt="feature"
+          />
+          <div
+            className={` ${classes.sectionDiv}`}
+            style={{
+              flexDirection: 'column',
+              width: '40%',
+            }}
+          >
+            <div
+              className={`${classes.fullSize} ${classes.centeredDiv}`}
+            >
+              <div
+                className={`${classes.fullSize} ${classes.centeredDiv}`}
+                style={{
+                  flexDirection: 'column'
+                }}
+              >
+                <Typography component="h2" variant="h3" color="inherit" className={classes.title}>
+                  Personalise your site
+                </Typography>
+                <Typography component="h3" variant="body1" color="inherit" className={classes.title}>
+                  Upload images, edit texts, and more, all from a single editor.
+                </Typography>
+              </div>
+              <div
+                className={`${classes.fullSize} ${classes.centeredDiv}`}
+                style={{
+                  flexDirection: 'column'
+                }}
+              >
+                <Typography component="h2" variant="h3" color="inherit" className={classes.title}>
+                  Export your creations
+                </Typography>
+                <Typography component="h3" variant="body1" color="inherit" className={classes.title}>
+                  Download your website as their component files. They're yours to keep, forever.
+                </Typography>
+              </div>
+            </div>
+            <div
+              className={`${classes.fullSize} ${classes.centeredDiv}`}
+            >
+              <div
+                className={`${classes.fullSize} ${classes.centeredDiv}`}
+                style={{
+                  flexDirection: 'column'
+                }}
+              >
+                <Typography component="h2" variant="h3" color="inherit" className={classes.title}>
+                  Stock image gallery
+                </Typography>
+                <Typography component="h3" variant="body1" color="inherit" className={classes.title}>
+                  Looking for royalty free images? We have that covered, courtesy of Pexels.
+                </Typography>
+              </div>
+              <div
+                className={`${classes.fullSize} ${classes.centeredDiv}`}
+                style={{
+                  flexDirection: 'column'
+                }}
+              >
+                <Typography component="h2" variant="h3" color="inherit" className={classes.title}>
+                  Publish your work
+                </Typography>
+                <Typography component="h3" variant="body1" color="inherit" className={classes.title}>
+                  Want to bring your portfolio online? We can help you with that.
+                </Typography>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          className={`${classes.featuresDiv} ${classes.centeredDiv}`}
+        >
+          <div
+            className={classes.sectionDiv}
+            style={{
+              flexDirection: 'column',
+              width: '50%'
+            }}
+          >
+
+            <Typography component="h2" variant="h2" color="inherit" className={classes.title}>
+              Take the plunge
+            </Typography>
+            <Typography component="h3" variant="h5" color="inherit" className={classes.title}>
+              Want to know how we made this? How about learning some web development? Check out our tutorials page — add a new skill to your portfolio.
+            </Typography>
+            <div
+              className={classes.flexRow}
+            >
+              <div
+                className={classes.boxDiv}
+              >
+                <Typography component="h4" variant="h5" color="inherit" className={classes.title}>
+                  Introduction to HTML
+                </Typography>
+                <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
+                  Learn what makes up your site — html, css, javascript.
+                </Typography>
+                <Typography>
+                  <Link component={RouterLink} to='/tutorial/guestdeploy'>
+                    view
+                  </Link>
+                </Typography>
+              </div>
+              <div
+                className={classes.boxDiv}
+              >
+                <Typography component="h4" variant="h5" color="inherit" className={classes.title}>
+                  Snake game
+            </Typography>
+                <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
+                  A simple game of snake written in javascript that you can add to your site.
+            </Typography>
+                <Typography>
+                  <Link component={RouterLink} to='/tutorial/snakegame'>
+                    view
+              </Link>
+                </Typography>
+              </div>
+
+              <Link component={RouterLink} to='/tutorial'>
+                <div
+                  className={classes.boxDiv}
+                >
+                  <FaArrowRight size="5em" style={{ margin: 'auto' }} />
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
         <div className={`${classes.centeredDiv} ${classes.bottomLogoDiv}`}>
-          <ResumateSVG width="7em" height="7em" className={classes.bottomLogoFill} />
+          <div
+            style={{
+              color: '#fff',
+              marginRight: '30px'
+            }}
+          >
+            <Typography component="h2" variant="h5">
+              Directory
+            </Typography>
+            <div className={classes.linkDiv}>
+              <Typography component="body1" variant="body1">
+                <Link component={RouterLink} color="inherit" to='/edit'>
+                  Website builder
+                </Link>
+              </Typography>
+              <Typography component="body1" variant="body1">
+                <Link component={RouterLink} color="inherit" to='/support'>
+                  Support
+                </Link>
+              </Typography>
+              <Typography component="body1" variant="body1">
+                <Link component={RouterLink} color="inherit" to='/tutorial'>
+                  Tutorials
+                </Link>
+              </Typography>
+              <Typography component="body1" variant="body1">
+                <Link component={RouterLink} color="inherit" to='/faq'>
+                  FAQ
+                </Link>
+              </Typography>
+            </div>
+          </div>
+          <div
+            style={{
+              color: '#fff',
+              marginRight: 'auto'
+            }}
+          >
+            <Typography component="h2" variant="h5">
+              External
+            </Typography>
+            <div className={classes.linkDiv}>
+              <Typography component="body1" variant="body1">
+                <Link href="https://www.pexels.com/" onClick={e => e.preventDefault()} color="inherit">
+                  Pexels
+                </Link>
+              </Typography>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              color: '#fff'
+            }}
+          >
+            <ResumateSVG width="7em" height="7em" className={classes.bottomLogoFill} />
+            <Typography component="body1" variant="body1" color="inherit">
+              Resumate 2021
+            </Typography>
+          </div>
+
         </div>
         <Dialog
           open={this.state.guestDialogState}
@@ -479,10 +616,10 @@ const mapStateToProps = state => ({
   error: state.login.error
 })
 
-/** 
+/**
  * Provides action creators to Home component's props.
- * 
- * @type {Object.<Function>} 
+ *
+ * @type {Object.< Function >}
  * @memberof Home
  */
 const mapDispatchToProps = {

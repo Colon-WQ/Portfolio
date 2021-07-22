@@ -194,7 +194,7 @@ class ImagePicker extends Component {
         fullScreen
         // open always set to true, open/close logic handled by portfolio
         open={this.props.open}
-        onClose={() => this.handleClose(true)}
+        onClose={() => this.props.onClose(false)}
         aria-labelledby="Image gallery"
         aria-describedby="Select any image"
       >
@@ -247,7 +247,13 @@ class ImagePicker extends Component {
                 return (
                   <div>
 
-                    <Button onClick={() => this.setState({ image: photo.src.original, attribution: photo.photographer })}>
+                    <Button onClick={() => {
+                      this.props.onClose(true, {
+                        image: photo.src.original,
+                        attribution: photo.photographer
+                      });
+                    }
+                    }>
                       <Tooltip arrow title={photographer} placement="top">
                         <img src={thumbnail} alt={photographer} />
                       </Tooltip>
@@ -274,21 +280,30 @@ class ImagePicker extends Component {
             </Fab>
             <Fab
               variant="extended"
-              onClick={() => this.handleClose(true)}
+              onClick={() => {
+                if (this.state.image) {
+                  this.props.onClose(true, {
+                    image: this.state.image,
+                    attribution: this.state.attribution
+                  });
+                } else {
+                  this.props.onClose(false);
+                }
+              }}
               className={classes.fab}>
               <FaSave />
               SAVE
             </Fab>
             <Fab
               variant="extended"
-              onClick={() => this.handleClose(false)}
+              onClick={() => this.props.onClose(false)}
               className={classes.fab}>
               <FaTrash />
               CANCEL
             </Fab>
           </div>
-        </div>
-      </Dialog>
+        </div >
+      </Dialog >
     )
   }
 }
