@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { repopulate_state } from '../../actions/LoginAction';
 import { manualNext } from '../../actions/TourAction';
@@ -243,7 +243,7 @@ const UI = {
  * }
  * return (<EntryEditor fields={fields} info={info} onChange=true/>)
  */
-class EntryEditor extends PureComponent {
+class EntryEditor extends Component {
   // TODO: check if componenetDidMount can overwrite constructor
 
   /**

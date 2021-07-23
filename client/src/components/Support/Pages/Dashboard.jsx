@@ -6,123 +6,78 @@ import dashboard2 from '../Assets/dashboard2.png';
 import dashboard3 from '../Assets/dashboard3.png';
 
 
-const styles = theme => ({
-  root: {
-    display: 'flex', 
-    flexDirection: 'column',
-    justifyContent: 'start',
-    alignItems: 'center'
-  },
-  header: {
-    color: theme.palette.text.secondary,
-    marginTop: '1rem',
-    marginBottom: '1rem'
-  },
-  subHeader: {
-    color: theme.palette.text.main,
-    marginTop: '0.5rem',
-    marginBottom: '0.5rem'
-  },
-  paragraph: {
-    backgroundColor: 'white',
-    width: '85%',
-    height: 'auto',
-    borderStyle: 'solid',
-    borderColor: 'black',
-    borderWidth: 'thin',
-    padding: '1rem',
-    paddingLeft: '2rem'
-  },
-  paragraphEnd: {
-    height: '1rem'
-  },
-  imageContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  divider: {
-    width: '100%',
-  },
-  topSpace: {
-    height: '1vh'
-  },
-  bottomSpace: {
-    height: '10vh'
-  }
-})
-
 class Dashboard extends Component {
+  static topic = 'Navigating the dashboard';
+
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <span className={classes.topSpace}/>
+        <span className={classes.topSpace} />
         <Typography variant='h2' component='h2'>Dashboard Features</Typography>
 
         <Typography className={classes.header} variant='h5' component='h5'>For users</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
+        <Divider orientation="horizontal" className={classes.divider} />
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Creating a portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <div className={classes.imageContainer}>
-              <img src={dashboard} alt="dashboard example" />
-            </div>
-            <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
-            <div className={classes.imageContainer}>
-              <img src={dashboard2} alt="set name dialog example" />
-            </div>
-            <li>This will open up a dialog asking for the portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
-            <li>Once done, click on 'Set Name' to create the portfolio.</li>
+        <ul className={classes.list}>
+          <div className={classes.imageContainer}>
+            <img src={dashboard} alt="dashboard example" />
+          </div>
+          <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
+          <div className={classes.imageContainer}>
+            <img src={dashboard2} alt="set name dialog example" />
+          </div>
+          <li>This will open up a dialog asking for the portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
+          <li>Once done, click on 'Set Name' to create the portfolio.</li>
         </ul>
         <Typography className={classes.subHeader} variant='h6' component='h6'>Opening existing portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>To open an existing portfolio, you must have an existing portfolio in your Dashboard.</li>
-            <li>Click on "Open" button on the portfolio of your choice.</li>
+        <ul className={classes.list}>
+          <li>To open an existing portfolio, you must have an existing portfolio in your Dashboard.</li>
+          <li>Click on "Open" button on the portfolio of your choice.</li>
         </ul>
         <Typography className={classes.subHeader} variant='h6' component='h6'>Change portfolio name</Typography>
-        <ul className={classes.paragraph}>
-            <li>To change portfolio name, you must have an existing portfolio in your Dashboard.</li>
-            <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
-            <div className={classes.imageContainer}>
-              <img src={dashboard3} alt="options menu example" />
-            </div>
-            <li>Select "Change Name" button.</li>
-            <li>This will open up a dialog asking for the new portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
-            <li>Once done, click on "Change" button to finalize the changes to portfolio name.</li>
+        <ul className={classes.list}>
+          <li>To change portfolio name, you must have an existing portfolio in your Dashboard.</li>
+          <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
+          <div className={classes.imageContainer}>
+            <img src={dashboard3} alt="options menu example" />
+          </div>
+          <li>Select "Change Name" button.</li>
+          <li>This will open up a dialog asking for the new portfolio name. Please provide a unique, non-empty name for your portfolio.</li>
+          <li>Once done, click on "Change" button to finalize the changes to portfolio name.</li>
         </ul>
         <Typography className={classes.subHeader} variant='h6' component='h6'>Delete portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>To delete portfolio, you must have an existing portfolio in your Dashboard.</li>
-            <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
-            <li>Select "Delete" button.</li>
-            <li>This will open up a dialog asking for your confirmation.</li>
-            <li>Click on "Delete" button to confirm. This delete action is irreversible.</li>
+        <ul className={classes.list}>
+          <li>To delete portfolio, you must have an existing portfolio in your Dashboard.</li>
+          <li>Click on the edit icon on an existing portfolio to reveal a menu.</li>
+          <li>Select "Delete" button.</li>
+          <li>This will open up a dialog asking for your confirmation.</li>
+          <li>Click on "Delete" button to confirm. This delete action is irreversible.</li>
         </ul>
-        <span className={classes.paragraphEnd} />
-        <Divider orientation="horizontal" className={classes.divider}/>
+        <span className={classes.listEnd} />
+        <Divider orientation="horizontal" className={classes.divider} />
 
         <Typography className={classes.header} variant='h5' component='h5'>For guests</Typography>
-        <Divider orientation="horizontal" className={classes.divider}/>
+        <Divider orientation="horizontal" className={classes.divider} />
         <Typography className={classes.subHeader} variant='h6' component='h6'>Creating a portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
-            <li>This will open up a dialog asking for the portfolio name. Please provide a non-empty name for your portfolio.</li>
-            <li>Once done, click on 'Set Name' to create the portfolio.</li>
+        <ul className={classes.list}>
+          <li>To create a portfolio, click on the "Add a Portfolio" button.</li>
+          <li>This will open up a dialog asking for the portfolio name. Please provide a non-empty name for your portfolio.</li>
+          <li>Once done, click on 'Set Name' to create the portfolio.</li>
         </ul>
         <Typography className={classes.subHeader} variant='h6' component='h6'>Opening existing portfolio</Typography>
-        <ul className={classes.paragraph}>
-            <li>Guests can only have 1 portfolio at a time, unlike users.</li>
-            <li>Click on "Continue editing your-portfolio-name" button to open your existing portfolio.</li>
+        <ul className={classes.list}>
+          <li>Guests can only have 1 portfolio at a time, unlike users.</li>
+          <li>Click on "Continue editing your-portfolio-name" button to open your existing portfolio.</li>
         </ul>
-        <span className={classes.paragraphEnd} />
-        <Divider orientation="horizontal" className={classes.divider}/>
-        <span className={classes.bottomSpace}/>
+        <span className={classes.listEnd} />
+        <Divider orientation="horizontal" className={classes.divider} />
+        <span className={classes.bottomSpace} />
       </div>
     )
   }
 }
 
-export default withStyles(styles)(Dashboard);
+export default Dashboard;

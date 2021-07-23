@@ -19,24 +19,27 @@ const styles = theme => ({
   },
   drawer: {
     width: drawerWidth,
+    minWidth: '250px',
     flexShrink: 0,
   },
   drawerPaper: {
     width: drawerWidth,
+    minWidth: '250px',
+    padding: '10px'
   },
   listItem: {
     padding: 0
   },
   listIcon: {
-    display: 'flex', 
-    justifyContent: 'center', 
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row'
   },
   contentArea: {
-    width: `calc(100% - ${drawerWidth}vh)`,
+    width: `calc(100% - max(${drawerWidth}, 250px))`,
     height: 'auto',
-    marginLeft: drawerWidth,
+    padding: '10px'
   },
   appBarSpacer: theme.mixins.toolbar,
 })
@@ -44,9 +47,13 @@ const styles = theme => ({
 class Support extends Component {
   render() {
     const { classes } = this.props;
-    
+
     return (
-      <div>
+      <div
+        style={{
+          display: 'flex'
+        }}
+      >
         <CssBaseline />
         <Drawer
           className={classes.drawer}
@@ -59,31 +66,20 @@ class Support extends Component {
           <div className={classes.appBarSpacer} />
           <Divider />
           <List>
-            {Object.keys(pages).map((key) => {
-              var topic = key;
-              switch (key) {
-                case 'directorymanager':
-                  topic = 'Directory Manager'
-                  break;
-                case 'entryeditor':
-                  topic = 'Entry Editor'
-                  break;
-                default:
-                  topic = topic[0].toUpperCase() + topic.substring(1);
-                  break;
-              }
+            {Object.entries(pages).map(([key, value]) => {
+              var topic = value.topic;
 
               return (<ListItem className={classes.listItem} button key={topic} onClick={() => this.props.history.push(`/support/${key}`)}>
                 <ListItemIcon className={classes.listIcon}>{<FaDotCircle />}</ListItemIcon>
                 <ListItemText primary={topic} />
               </ListItem>)
-              }
+            }
             )}
           </List>
           <Divider />
         </Drawer>
         <div className={classes.contentArea}>
-          <SupportPages/>
+          <SupportPages />
         </div>
       </div>
     )
