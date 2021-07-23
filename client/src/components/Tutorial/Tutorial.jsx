@@ -16,27 +16,33 @@ const drawerWidth = '25vh';
 const styles = theme => ({
   root: {
     display: 'flex',
+    flexDirection: 'row'
   },
   drawer: {
     width: drawerWidth,
+    minWidth: '250px',
     flexShrink: 0,
   },
   drawerPaper: {
     width: drawerWidth,
+    minWidth: '250px',
+    padding: '10px'
   },
   listItem: {
     padding: 0
   },
   listIcon: {
-    display: 'flex', 
-    justifyContent: 'center', 
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row'
   },
   contentArea: {
-    width: `calc(100% - ${drawerWidth}vh)`,
+    width: `calc(100% - max(${drawerWidth}, 250px))`,
+    padding: '10px',
     height: 'auto',
-    marginLeft: drawerWidth,
+    display: 'flex',
+    flexDirection: 'row'
   },
   appBarSpacer: theme.mixins.toolbar,
 })
@@ -46,7 +52,11 @@ class Tutorial extends Component {
     const { classes } = this.props;
 
     return (
-      <div>
+      <div
+        style={{
+          display: 'flex'
+        }}
+      >
         <CssBaseline />
         <Drawer
           className={classes.drawer}
@@ -59,31 +69,32 @@ class Tutorial extends Component {
           <div className={classes.appBarSpacer} />
           <Divider />
           <List>
-            {Object.keys(pages).map((key) => {
-              var topic = key;
-              switch (key) {
-                case "guestdeploy":
-                  topic = "Guest Deploy"
-                  break;
-                case "snakegame":
-                  topic = "Snake Game"
-                  break;
-                default:
-                  topic = topic[0].toUpperCase() + topic.substring(1);
-                  break;
-              }
+            {Object.entries(pages).map(([key, value]) => {
+              console.log(value)
+              var topic = value.topic;
+              // switch (key) {
+              //   case "guestdeploy":
+              //     topic = "Guest Deploy"
+              //     break;
+              //   case "snakegame":
+              //     topic = "Snake Game"
+              //     break;
+              //   default:
+              //     topic = topic[0].toUpperCase() + topic.substring(1);
+              //     break;
+              // }
               return (
                 <ListItem className={classes.listItem} button key={topic} onClick={() => this.props.history.push(`/tutorial/${key}`)}>
                   <ListItemIcon className={classes.listIcon}>{<FaDotCircle />}</ListItemIcon>
                   <ListItemText primary={topic} />
                 </ListItem>)
-              }
+            }
             )}
           </List>
           <Divider />
         </Drawer>
         <div className={classes.contentArea}>
-          <TutorialPages/>
+          <TutorialPages />
         </div>
       </div>
     )

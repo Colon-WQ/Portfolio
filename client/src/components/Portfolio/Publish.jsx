@@ -348,7 +348,7 @@ class Publish extends Component {
         finalizeDialogState: false
       })
     }
-    
+
   }
 
   /**
@@ -565,7 +565,7 @@ class Publish extends Component {
             />
             <div className={classes.previewLink}>
               <span>Preview: </span>
-              {this.state.repositoryName === `${this.props.name}.github.io` 
+              {this.state.repositoryName === `${this.props.name}.github.io`
                 ? `https://${this.state.repositoryName}`
                 : this.state.repositoryName === ""
                   ? "Invalid Repository Name"
@@ -579,6 +579,9 @@ class Publish extends Component {
           <DialogActions>
             <Button onClick={this.handleFinalizeDialogClose}>
               Cancel
+            </Button>
+            <Button onClick={this.handleGuestDownload}>
+              Download
             </Button>
             <Button onClick={this.handleFinalizeEdits}>
               Finalize

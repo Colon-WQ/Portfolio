@@ -55,7 +55,7 @@ const styles = (theme) => ({
     display: 'flex',
     width: '100%',
     height: '100%',
-    padding: '5em',
+    padding: '5px',
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
@@ -185,7 +185,8 @@ const styles = (theme) => ({
     backgroundColor: '#000',
     height: '50vh',
     width: '100%',
-    alignItems: 'start'
+    alignItems: 'start',
+    padding: '5em'
   },
   bottomLogoFill: {
     fill: "#fff"
@@ -457,7 +458,6 @@ class Home extends Component {
               width: '50%'
             }}
           >
-
             <Typography component="h2" variant="h2" color="inherit" className={classes.title}>
               Take the plunge
             </Typography>
@@ -487,17 +487,16 @@ class Home extends Component {
               >
                 <Typography component="h4" variant="h5" color="inherit" className={classes.title}>
                   Snake game
-            </Typography>
+                </Typography>
                 <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
                   A simple game of snake written in javascript that you can add to your site.
-            </Typography>
+                </Typography>
                 <Typography>
                   <Link component={RouterLink} to='/tutorial/snakegame'>
                     view
-              </Link>
+                  </Link>
                 </Typography>
               </div>
-
               <Link component={RouterLink} to='/tutorial'>
                 <div
                   className={classes.boxDiv}
@@ -570,7 +569,6 @@ class Home extends Component {
               Resumate 2021
             </Typography>
           </div>
-
         </div>
         <Dialog
           open={this.state.guestDialogState}
