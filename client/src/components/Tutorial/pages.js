@@ -1,9 +1,17 @@
-import Guestdeploy from "./Pages/Guestdeploy";
+import Hosting from "./Pages/Hosting";
 import Navigation from "./Pages/Navigation";
 import Snakegame from "./Pages/Snakegame";
 
-export const guestdeploy = Guestdeploy;
+export const hosting = {
+  topic: Hosting.topic,
+  component: Hosting
+};
 
-export const navigation = Navigation;
-
-export const snakegame = Snakegame;
+export const navigation = {
+  component: Navigation,
+  topic: Navigation.topic
+}
+export const snakegame = {
+  component: Snakegame,
+  topic: Snakegame.topic
+}
