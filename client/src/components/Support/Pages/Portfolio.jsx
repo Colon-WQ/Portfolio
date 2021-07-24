@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { Link, Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'react-router-dom';
-import portfolio from '../Assets/portfolio.png';
-import toolPanel from '../Assets/toolPanel.png';
-import publish from '../Assets/publish.png';
-import publish2 from '../Assets/publish2.png';
-import editTheme from '../Assets/editTheme.png';
+import portfolio from '../../../res/assets/support/portfolio.png';
+import toolPanel from '../../../res/assets/support/toolPanel.png';
+import publish from '../../../res/assets/support/publish.png';
+import publish2 from '../../../res/assets/support/publish2.png';
+import editTheme from '../../../res/assets/support/editTheme.png';
 import { Link as RouterLink } from 'react-router-dom';
 
 

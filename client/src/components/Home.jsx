@@ -7,10 +7,10 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Link } from '@material-ui/core';
 import { ReactComponent as ResumateSVG } from '../res/assets/resumate3.svg';
-import homeWelcome from '../res/assets/homeWelcome.png';
-import workflow from '../res/assets/workflow.png';
-import components from '../res/assets/components.png';
-import templateImage from '../res/assets/templates.png';
+import homeWelcome from '../res/assets/home/homeWelcome.png';
+import workflow from '../res/assets/home/workflow.png';
+import components from '../res/assets/home/components.png';
+import templateImage from '../res/assets/home/templates.png';
 import { RiFileCodeLine } from 'react-icons/ri';
 import { withRouter } from 'react-router';
 import axios from 'axios';
@@ -471,13 +471,13 @@ class Home extends Component {
                 className={classes.boxDiv}
               >
                 <Typography component="h4" variant="h5" color="inherit" className={classes.title}>
-                  Introduction to HTML
+                  Web dev basics
                 </Typography>
                 <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
-                  Learn what makes up your site — html, css, javascript.
+                  An overview of what makes up a website — HTML, JS and CSS
                 </Typography>
                 <Typography>
-                  <Link component={RouterLink} to='/tutorial/guestdeploy'>
+                  <Link component={RouterLink} to='/tutorial/introduction'>
                     view
                   </Link>
                 </Typography>
@@ -486,13 +486,28 @@ class Home extends Component {
                 className={classes.boxDiv}
               >
                 <Typography component="h4" variant="h5" color="inherit" className={classes.title}>
-                  Snake game
+                  Adding contact forms
                 </Typography>
                 <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
-                  A simple game of snake written in javascript that you can add to your site.
+                  Add a contact form to allow visitors on your website to email you directly.
                 </Typography>
                 <Typography>
-                  <Link component={RouterLink} to='/tutorial/snakegame'>
+                  <Link component={RouterLink} to='/tutorial/contact'>
+                    view
+                  </Link>
+                </Typography>
+              </div>
+              <div
+                className={classes.boxDiv}
+              >
+                <Typography component="h4" variant="h5" color="inherit" className={classes.title}>
+                  Hosting static pages
+                </Typography>
+                <Typography component="body1" variant="body1" color="inherit" className={classes.title}>
+                  How to publish static websites like the ones you can download from us.
+                </Typography>
+                <Typography>
+                  <Link component={RouterLink} to='/tutorial/hosting'>
                     view
                   </Link>
                 </Typography>

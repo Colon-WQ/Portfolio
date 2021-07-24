@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import index from '../Assets/index.png';
-import cssStyles from '../Assets/styles.png';
-import draw from '../Assets/draw.png';
-import draw2 from '../Assets/draw2.png';
-import snake from '../Assets/snake.png';
-import snake2 from '../Assets/snake2.png';
-import snake3 from '../Assets/snake3.png';
-import fruit from '../Assets/fruit.png';
-import result from '../Assets/result.png';
+import index from '../../../res/assets/tutorials/index.png';
+import cssStyles from '../../../res/assets/tutorials/styles.png';
+import draw from '../../../res/assets/tutorials/draw.png';
+import draw2 from '../../../res/assets/tutorials/draw2.png';
+import snake from '../../../res/assets/tutorials/snake.png';
+import snake2 from '../../../res/assets/tutorials/snake2.png';
+import snake3 from '../../../res/assets/tutorials/snake3.png';
+import fruit from '../../../res/assets/tutorials/fruit.png';
+import result from '../../../res/assets/tutorials/result.png';
 
 // const styles = theme => ({
 //   root: {

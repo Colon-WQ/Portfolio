@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import login from '../Assets/login.png';
+import login from '../../../res/assets/support/login.png';
 
 
 class Introduction extends Component {

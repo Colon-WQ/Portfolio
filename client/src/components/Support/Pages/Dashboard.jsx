@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import dashboard from '../Assets/dashboard.png';
-import dashboard2 from '../Assets/dashboard2.png';
-import dashboard3 from '../Assets/dashboard3.png';
+import dashboard from '../../../res/assets/support/dashboard.png';
+import dashboard2 from '../../../res/assets/support/dashboard2.png';
+import dashboard3 from '../../../res/assets/support/dashboard3.png';
 
 
 class Dashboard extends Component {

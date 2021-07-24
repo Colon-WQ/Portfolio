@@ -72,17 +72,6 @@ class Tutorial extends Component {
             {Object.entries(pages).map(([key, value]) => {
               console.log(value)
               var topic = value.topic;
-              // switch (key) {
-              //   case "guestdeploy":
-              //     topic = "Guest Deploy"
-              //     break;
-              //   case "snakegame":
-              //     topic = "Snake Game"
-              //     break;
-              //   default:
-              //     topic = topic[0].toUpperCase() + topic.substring(1);
-              //     break;
-              // }
               return (
                 <ListItem className={classes.listItem} button key={topic} onClick={() => this.props.history.push(`/tutorial/${key}`)}>
                   <ListItemIcon className={classes.listIcon}>{<FaDotCircle />}</ListItemIcon>
