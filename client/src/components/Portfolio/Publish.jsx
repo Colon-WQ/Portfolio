@@ -599,7 +599,7 @@ class Publish extends Component {
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Repository already exists. This will override data in your existing repository and could lead to possible data loss! Do you still wish to continue?
+              Repository already exists. This will overwrite data in your existing repository and could lead to possible data loss! Do you still wish to continue?
                         </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -607,7 +607,7 @@ class Publish extends Component {
               Cancel
                         </Button>
             <Button onClick={this.handleOverrideAllowed}>
-              Allow Override
+              Allow Overwrite
                         </Button>
           </DialogActions>
         </Dialog>

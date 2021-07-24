@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Typography, withStyles } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
 import login from '../Assets/login.png';
 
@@ -23,9 +23,7 @@ class Introduction extends Component {
         <ul className={classes.list}>
           <li>To login as User, you must have an existing Github account.</li>
           <li>In the Home page, click on "Get Started" button.</li>
-          <div className={classes.imageContainer}>
-            <img src={login} alt="login example" />
-          </div>
+          <img src={login} alt="login example" className={classes.image}/>
           <li>You will be taken to Github login page, then to our Github OAuth page.</li>
           <li>Grant permissions to our OAuth page by clicking Authorize Colon-WQ to allow us to build your portfolio website for you.</li>
         </ul>

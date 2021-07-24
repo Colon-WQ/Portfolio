@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Link, Typography, withStyles } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import { withRouter } from 'react-router-dom';
 import portfolio from '../Assets/portfolio.png';
 import toolPanel from '../Assets/toolPanel.png';
 import publish from '../Assets/publish.png';
@@ -22,18 +21,14 @@ class Portfolio extends Component {
 
         <Typography variant='h2' component='h2'>Portfolio</Typography>
         <ul className={classes.list}>
-          <div className={classes.imageContainer}>
-            <img src={portfolio} alt="portfolio example" className={classes.image} />
-          </div>
+          <img src={portfolio} alt="portfolio example" className={classes.image} />
           <li>The Portfolio page shows a preview of the user's portfolio website and provides tools to edit the website.</li>
         </ul>
 
         <Typography className={classes.header} variant='h5' component='h5'>Edit Theme</Typography>
         <ul className={classes.list}>
           <li>By default, there will be an Edit Theme button.</li>
-          <div className={classes.imageContainer}>
-            <img src={editTheme} alt="editTheme example" />
-          </div>
+            <img src={editTheme} alt="editTheme example" className={classes.image}/>
           <li>You can only open the Theme colour picker if there is an existing entry.</li>
           <li>Click on the Edit Theme button. A colour picker will show, allowing you to select a background color for the page.</li>
           <li>Once done, the page's background color will change accordingly.</li>
@@ -42,9 +37,7 @@ class Portfolio extends Component {
         <Typography className={classes.header} variant='h5' component='h5'>Tool Panel</Typography>
         <Divider orientation="horizontal" className={classes.divider} />
         <ul className={classes.list}>
-          <div className={classes.imageContainer}>
-            <img src={toolPanel} alt="toolPanel example" />
-          </div>
+          <img src={toolPanel} alt="toolPanel example" className={classes.image}/>
         </ul>
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Save</Typography>
@@ -98,9 +91,7 @@ class Portfolio extends Component {
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Publish for Users</Typography>
         <ul className={classes.list}>
-          <div className={classes.imageContainer}>
-            <img src={publish} alt="publish example" />
-          </div>
+            <img src={publish} alt="publish example" className={classes.image}/>
           <li>
             For users, the Publish button will open a dialog asking for the user to input a name for the Github repository they wish to use.
             If the Github repository does not exist, it will be created.
@@ -113,20 +104,18 @@ class Portfolio extends Component {
           <li>
             Once done, click on the Finalize button to proceed with publish operation, otherwise click Cancel to cancel the publish operation.
             </li>
-          <div className={classes.imageContainer}>
-            <img src={publish2} alt="publish override example" />
-          </div>
+            <img src={publish2} alt="publish override example" className={classes.image}/>
           <div className={classes.nestedList}>
             <li>
               If the name provided matches a Github repository already owned by the user, another dialog will show asking the user
-              for permission to override the contents in the existing Github repository.
+              for permission to overwrite the contents in the existing Github repository.
               </li>
             <li>
-              If you wish to override, click on Override button, otherwise click on Cancel to cancel the publish operation.
+              If you wish to override, click on Overwrite button, otherwise click on Cancel to cancel the publish operation.
               </li>
             <li>
               <span className={classes.warning}>
-                *This override action is irreversible by the app. Make sure you do not have important content already present in your existing Github repository.*
+                *This overwrite action is irreversible by the app. Make sure you do not have important content already present in your existing Github repository.*
                 </span></li>
           </div>
         </ul>

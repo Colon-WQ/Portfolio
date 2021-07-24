@@ -3,10 +3,16 @@ import Dashboard from './Pages/Dashboard';
 import Portfolio from './Pages/Portfolio';
 import EntryEditor from './Pages/EntryEditor';
 import Directorymanager from './Pages/Directorymanager';
+import Gettingstarted from './Pages/Gettingstarted';
 
 export const introduction = {
   component: Introduction,
   topic: Introduction.topic,
+}
+
+export const gettingstarted = {
+  component: Gettingstarted,
+  topic: Gettingstarted.topic,
 }
 
 export const dashboard = {
