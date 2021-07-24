@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Typography, withStyles } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
 import entryEditor from '../../../res/assets/support/entryEditor.png';
 import entryEditor2 from '../../../res/assets/support/entryEditor2.png';
@@ -23,13 +23,13 @@ class EntryEditor extends Component {
           <li>To access the Entry Editor, there must be an existing entry.</li>
           <li>The Entry Editor is by default hidden from view.</li>
           <li>Hover your cursor over an entry to reveal a Settings button.</li>
-          <div className={classes.imageContainer}>
-            <img src={entryEditor} alt="entryEditor settings example" className={classes.image} />
-          </div>
+
+          <img src={entryEditor} alt="entryEditor settings example" className={classes.image} />
+
           <li>Click on the Settings button, then click on the Edit entry button to open the Entry Editor for the entry.</li>
-          <div className={classes.imageContainer}>
-            <img src={entryEditor2} alt="edit entry/delete entry example" />
-          </div>
+
+          <img src={entryEditor2} alt="edit entry/delete entry example" className={classes.image}/>
+
         </ul>
         <span className={classes.listEnd} />
 
@@ -55,9 +55,7 @@ class EntryEditor extends Component {
         <Typography className={classes.header} variant='h5' component='h5'>Entry Editor Interface</Typography>
         <Divider orientation="horizontal" className={classes.divider} />
         <ul className={classes.list}>
-          <div className={classes.imageContainer}>
-            <img src={entryEditor3} alt="entryEditor interface example" className={classes.image} />
-          </div>
+          <img src={entryEditor3} alt="entryEditor interface example" className={classes.image} />
         </ul>
 
         <Typography className={classes.subHeader} variant='h6' component='h6'>Dimensions</Typography>
