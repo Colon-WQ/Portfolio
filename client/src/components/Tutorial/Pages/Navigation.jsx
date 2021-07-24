@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import navigation from '../Assets/navigate.png';
-import navigationScript from '../Assets/navigateScript.png';
+import navigation from '../../../res/assets/tutorials/navigate.png';
+import navigationScript from '../../../res/assets/tutorials/navigateScript.png';
 
 // const styles = theme => ({
 //   root: {
@@ -62,7 +62,7 @@ import navigationScript from '../Assets/navigateScript.png';
 // })
 
 class Navigation extends Component {
-  static topic = 'Routing';
+  static topic = 'Linking pages';
 
   render() {
     const { classes } = this.props;

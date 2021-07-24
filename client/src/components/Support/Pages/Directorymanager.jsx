@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Typography } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import directoryManager from '../Assets/directoryManager.png';
-import directoryManager2 from '../Assets/directoryManager2.png';
-import directoryManager3 from '../Assets/directoryManager3.png';
-import directoryManager4 from '../Assets/directoryManager4.png';
+import directoryManager from '../../../res/assets/support/directoryManager.png';
+import directoryManager2 from '../../../res/assets/support/directoryManager2.png';
+import directoryManager3 from '../../../res/assets/support/directoryManager3.png';
+import directoryManager4 from '../../../res/assets/support/directoryManager4.png';
 
 
 class Directorymanager extends Component {

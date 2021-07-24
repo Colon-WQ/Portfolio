@@ -27,11 +27,24 @@ const styles = theme => ({
   },
   nestedList: {
     paddingLeft: '2rem'
+  },
+  codeDiv: {
+    backgroundColor: '#00000033',
+    width: '100%',
+    overflow: 'auto',
+    padding: '10px'
+  },
+  multiline: {
+    whiteSpace: 'pre-line'
+  },
+  divider: {
+    marginInline: '5px'
   }
 })
 
 class TutorialPages extends Component {
   render() {
+    console.log(this.props);
     const { classes } = this.props;
 
     if (this.props.match.params.id === undefined) {

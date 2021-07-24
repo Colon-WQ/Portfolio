@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Typography } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import entryEditor from '../Assets/entryEditor.png';
-import entryEditor2 from '../Assets/entryEditor2.png';
-import entryEditor3 from '../Assets/entryEditor3.png';
+import entryEditor from '../../../res/assets/support/entryEditor.png';
+import entryEditor2 from '../../../res/assets/support/entryEditor2.png';
+import entryEditor3 from '../../../res/assets/support/entryEditor3.png';
 
 
 class EntryEditor extends Component {

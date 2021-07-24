@@ -1,66 +1,15 @@
 import React, { Component } from 'react';
 import { Typography, withStyles } from "@material-ui/core";
 import Divider from '@material-ui/core/Divider';
-import addFile from '../Assets/addFile.png';
-import settings from '../Assets/settings.png';
-import pages from '../Assets/pages.png';
-
-// const styles = theme => ({
-//   root: {
-//     display: 'flex',
-//     flexDirection: 'column',
-//     justifyContent: 'start',
-//     alignItems: 'center'
-//   },
-//   header: {
-//     color: theme.palette.text.secondary,
-//     marginTop: '1rem',
-//     marginBottom: '1rem'
-//   },
-//   subHeader: {
-//     color: theme.palette.text.main,
-//     marginTop: '0.5rem',
-//     marginBottom: '0.5rem'
-//   },
-//   paragraph: {
-//     backgroundColor: 'white',
-//     width: '85%',
-//     height: 'auto',
-//     borderStyle: 'solid',
-//     borderColor: 'black',
-//     borderWidth: 'thin',
-//     padding: '1rem',
-//     paddingLeft: '2rem'
-//   },
-//   nestedParagraph: {
-//     paddingLeft: '2rem'
-//   },
-//   imageContainer: {
-//     display: 'flex',
-//     flexDirection: 'row',
-//     justifyContent: 'center',
-//     alignItems: 'center'
-//   },
-//   paragraphEnd: {
-//     height: '1rem'
-//   },
-//   divider: {
-//     width: '100%',
-//   },
-//   topSpace: {
-//     height: '1vh'
-//   },
-//   bottomSpace: {
-//     height: '10vh'
-//   }
-// })
+import addFile from '../../../res/assets/tutorials/addFile.png';
+import settings from '../../../res/assets/tutorials/settings.png';
+import pages from '../../../res/assets/tutorials/pages.png';
 
 class Hosting extends Component {
   static topic = 'Hosting static pages';
 
   render() {
     const { classes } = this.props;
-
     return (
       <div className={classes.root}>
         <span className={classes.topSpace} />
